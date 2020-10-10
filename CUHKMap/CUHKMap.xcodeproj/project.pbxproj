@@ -7,62 +7,62 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B463BCD12531FB3F00E1EF24 /* CUHKMapApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B463BCD02531FB3F00E1EF24 /* CUHKMapApp.swift */; };
-		B463BCD32531FB3F00E1EF24 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B463BCD22531FB3F00E1EF24 /* ContentView.swift */; };
-		B463BCD52531FB4200E1EF24 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B463BCD42531FB4200E1EF24 /* Assets.xcassets */; };
-		B463BCD82531FB4200E1EF24 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B463BCD72531FB4200E1EF24 /* Preview Assets.xcassets */; };
-		B463BCE32531FB4200E1EF24 /* CUHKMapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B463BCE22531FB4200E1EF24 /* CUHKMapTests.swift */; };
-		B463BCEE2531FB4200E1EF24 /* CUHKMapUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B463BCED2531FB4200E1EF24 /* CUHKMapUITests.swift */; };
+		B463BD0E2531FFA800E1EF24 /* CUHKMapApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B463BD0D2531FFA800E1EF24 /* CUHKMapApp.swift */; };
+		B463BD102531FFA800E1EF24 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B463BD0F2531FFA800E1EF24 /* ContentView.swift */; };
+		B463BD122531FFAA00E1EF24 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B463BD112531FFAA00E1EF24 /* Assets.xcassets */; };
+		B463BD152531FFAA00E1EF24 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B463BD142531FFAA00E1EF24 /* Preview Assets.xcassets */; };
+		B463BD202531FFAA00E1EF24 /* CUHKMapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B463BD1F2531FFAA00E1EF24 /* CUHKMapTests.swift */; };
+		B463BD2B2531FFAA00E1EF24 /* CUHKMapUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B463BD2A2531FFAA00E1EF24 /* CUHKMapUITests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		B463BCDF2531FB4200E1EF24 /* PBXContainerItemProxy */ = {
+		B463BD1C2531FFAA00E1EF24 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B463BCC52531FB3F00E1EF24 /* Project object */;
+			containerPortal = B463BD022531FFA800E1EF24 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = B463BCCC2531FB3F00E1EF24;
+			remoteGlobalIDString = B463BD092531FFA800E1EF24;
 			remoteInfo = CUHKMap;
 		};
-		B463BCEA2531FB4200E1EF24 /* PBXContainerItemProxy */ = {
+		B463BD272531FFAA00E1EF24 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B463BCC52531FB3F00E1EF24 /* Project object */;
+			containerPortal = B463BD022531FFA800E1EF24 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = B463BCCC2531FB3F00E1EF24;
+			remoteGlobalIDString = B463BD092531FFA800E1EF24;
 			remoteInfo = CUHKMap;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		B463BCCD2531FB3F00E1EF24 /* CUHKMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CUHKMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B463BCD02531FB3F00E1EF24 /* CUHKMapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CUHKMapApp.swift; sourceTree = "<group>"; };
-		B463BCD22531FB3F00E1EF24 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		B463BCD42531FB4200E1EF24 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		B463BCD72531FB4200E1EF24 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		B463BCD92531FB4200E1EF24 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B463BCDE2531FB4200E1EF24 /* CUHKMapTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CUHKMapTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		B463BCE22531FB4200E1EF24 /* CUHKMapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CUHKMapTests.swift; sourceTree = "<group>"; };
-		B463BCE42531FB4200E1EF24 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B463BCE92531FB4200E1EF24 /* CUHKMapUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CUHKMapUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		B463BCED2531FB4200E1EF24 /* CUHKMapUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CUHKMapUITests.swift; sourceTree = "<group>"; };
-		B463BCEF2531FB4200E1EF24 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B463BD0A2531FFA800E1EF24 /* CUHKMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CUHKMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B463BD0D2531FFA800E1EF24 /* CUHKMapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CUHKMapApp.swift; sourceTree = "<group>"; };
+		B463BD0F2531FFA800E1EF24 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B463BD112531FFAA00E1EF24 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B463BD142531FFAA00E1EF24 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		B463BD162531FFAA00E1EF24 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B463BD1B2531FFAA00E1EF24 /* CUHKMapTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CUHKMapTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B463BD1F2531FFAA00E1EF24 /* CUHKMapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CUHKMapTests.swift; sourceTree = "<group>"; };
+		B463BD212531FFAA00E1EF24 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B463BD262531FFAA00E1EF24 /* CUHKMapUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CUHKMapUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B463BD2A2531FFAA00E1EF24 /* CUHKMapUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CUHKMapUITests.swift; sourceTree = "<group>"; };
+		B463BD2C2531FFAA00E1EF24 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		B463BCCA2531FB3F00E1EF24 /* Frameworks */ = {
+		B463BD072531FFA800E1EF24 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B463BCDB2531FB4200E1EF24 /* Frameworks */ = {
+		B463BD182531FFAA00E1EF24 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B463BCE62531FB4200E1EF24 /* Frameworks */ = {
+		B463BD232531FFAA00E1EF24 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -72,60 +72,60 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		B463BCC42531FB3F00E1EF24 = {
+		B463BD012531FFA800E1EF24 = {
 			isa = PBXGroup;
 			children = (
-				B463BCCF2531FB3F00E1EF24 /* CUHKMap */,
-				B463BCE12531FB4200E1EF24 /* CUHKMapTests */,
-				B463BCEC2531FB4200E1EF24 /* CUHKMapUITests */,
-				B463BCCE2531FB3F00E1EF24 /* Products */,
+				B463BD0C2531FFA800E1EF24 /* CUHKMap */,
+				B463BD1E2531FFAA00E1EF24 /* CUHKMapTests */,
+				B463BD292531FFAA00E1EF24 /* CUHKMapUITests */,
+				B463BD0B2531FFA800E1EF24 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		B463BCCE2531FB3F00E1EF24 /* Products */ = {
+		B463BD0B2531FFA800E1EF24 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B463BCCD2531FB3F00E1EF24 /* CUHKMap.app */,
-				B463BCDE2531FB4200E1EF24 /* CUHKMapTests.xctest */,
-				B463BCE92531FB4200E1EF24 /* CUHKMapUITests.xctest */,
+				B463BD0A2531FFA800E1EF24 /* CUHKMap.app */,
+				B463BD1B2531FFAA00E1EF24 /* CUHKMapTests.xctest */,
+				B463BD262531FFAA00E1EF24 /* CUHKMapUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B463BCCF2531FB3F00E1EF24 /* CUHKMap */ = {
+		B463BD0C2531FFA800E1EF24 /* CUHKMap */ = {
 			isa = PBXGroup;
 			children = (
-				B463BCD02531FB3F00E1EF24 /* CUHKMapApp.swift */,
-				B463BCD22531FB3F00E1EF24 /* ContentView.swift */,
-				B463BCD42531FB4200E1EF24 /* Assets.xcassets */,
-				B463BCD92531FB4200E1EF24 /* Info.plist */,
-				B463BCD62531FB4200E1EF24 /* Preview Content */,
+				B463BD0D2531FFA800E1EF24 /* CUHKMapApp.swift */,
+				B463BD0F2531FFA800E1EF24 /* ContentView.swift */,
+				B463BD112531FFAA00E1EF24 /* Assets.xcassets */,
+				B463BD162531FFAA00E1EF24 /* Info.plist */,
+				B463BD132531FFAA00E1EF24 /* Preview Content */,
 			);
 			path = CUHKMap;
 			sourceTree = "<group>";
 		};
-		B463BCD62531FB4200E1EF24 /* Preview Content */ = {
+		B463BD132531FFAA00E1EF24 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
-				B463BCD72531FB4200E1EF24 /* Preview Assets.xcassets */,
+				B463BD142531FFAA00E1EF24 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		B463BCE12531FB4200E1EF24 /* CUHKMapTests */ = {
+		B463BD1E2531FFAA00E1EF24 /* CUHKMapTests */ = {
 			isa = PBXGroup;
 			children = (
-				B463BCE22531FB4200E1EF24 /* CUHKMapTests.swift */,
-				B463BCE42531FB4200E1EF24 /* Info.plist */,
+				B463BD1F2531FFAA00E1EF24 /* CUHKMapTests.swift */,
+				B463BD212531FFAA00E1EF24 /* Info.plist */,
 			);
 			path = CUHKMapTests;
 			sourceTree = "<group>";
 		};
-		B463BCEC2531FB4200E1EF24 /* CUHKMapUITests */ = {
+		B463BD292531FFAA00E1EF24 /* CUHKMapUITests */ = {
 			isa = PBXGroup;
 			children = (
-				B463BCED2531FB4200E1EF24 /* CUHKMapUITests.swift */,
-				B463BCEF2531FB4200E1EF24 /* Info.plist */,
+				B463BD2A2531FFAA00E1EF24 /* CUHKMapUITests.swift */,
+				B463BD2C2531FFAA00E1EF24 /* Info.plist */,
 			);
 			path = CUHKMapUITests;
 			sourceTree = "<group>";
@@ -133,13 +133,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B463BCCC2531FB3F00E1EF24 /* CUHKMap */ = {
+		B463BD092531FFA800E1EF24 /* CUHKMap */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B463BCF22531FB4200E1EF24 /* Build configuration list for PBXNativeTarget "CUHKMap" */;
+			buildConfigurationList = B463BD2F2531FFAA00E1EF24 /* Build configuration list for PBXNativeTarget "CUHKMap" */;
 			buildPhases = (
-				B463BCC92531FB3F00E1EF24 /* Sources */,
-				B463BCCA2531FB3F00E1EF24 /* Frameworks */,
-				B463BCCB2531FB3F00E1EF24 /* Resources */,
+				B463BD062531FFA800E1EF24 /* Sources */,
+				B463BD072531FFA800E1EF24 /* Frameworks */,
+				B463BD082531FFA800E1EF24 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -147,68 +147,68 @@
 			);
 			name = CUHKMap;
 			productName = CUHKMap;
-			productReference = B463BCCD2531FB3F00E1EF24 /* CUHKMap.app */;
+			productReference = B463BD0A2531FFA800E1EF24 /* CUHKMap.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B463BCDD2531FB4200E1EF24 /* CUHKMapTests */ = {
+		B463BD1A2531FFAA00E1EF24 /* CUHKMapTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B463BCF52531FB4200E1EF24 /* Build configuration list for PBXNativeTarget "CUHKMapTests" */;
+			buildConfigurationList = B463BD322531FFAA00E1EF24 /* Build configuration list for PBXNativeTarget "CUHKMapTests" */;
 			buildPhases = (
-				B463BCDA2531FB4200E1EF24 /* Sources */,
-				B463BCDB2531FB4200E1EF24 /* Frameworks */,
-				B463BCDC2531FB4200E1EF24 /* Resources */,
+				B463BD172531FFAA00E1EF24 /* Sources */,
+				B463BD182531FFAA00E1EF24 /* Frameworks */,
+				B463BD192531FFAA00E1EF24 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				B463BCE02531FB4200E1EF24 /* PBXTargetDependency */,
+				B463BD1D2531FFAA00E1EF24 /* PBXTargetDependency */,
 			);
 			name = CUHKMapTests;
 			productName = CUHKMapTests;
-			productReference = B463BCDE2531FB4200E1EF24 /* CUHKMapTests.xctest */;
+			productReference = B463BD1B2531FFAA00E1EF24 /* CUHKMapTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		B463BCE82531FB4200E1EF24 /* CUHKMapUITests */ = {
+		B463BD252531FFAA00E1EF24 /* CUHKMapUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B463BCF82531FB4200E1EF24 /* Build configuration list for PBXNativeTarget "CUHKMapUITests" */;
+			buildConfigurationList = B463BD352531FFAA00E1EF24 /* Build configuration list for PBXNativeTarget "CUHKMapUITests" */;
 			buildPhases = (
-				B463BCE52531FB4200E1EF24 /* Sources */,
-				B463BCE62531FB4200E1EF24 /* Frameworks */,
-				B463BCE72531FB4200E1EF24 /* Resources */,
+				B463BD222531FFAA00E1EF24 /* Sources */,
+				B463BD232531FFAA00E1EF24 /* Frameworks */,
+				B463BD242531FFAA00E1EF24 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				B463BCEB2531FB4200E1EF24 /* PBXTargetDependency */,
+				B463BD282531FFAA00E1EF24 /* PBXTargetDependency */,
 			);
 			name = CUHKMapUITests;
 			productName = CUHKMapUITests;
-			productReference = B463BCE92531FB4200E1EF24 /* CUHKMapUITests.xctest */;
+			productReference = B463BD262531FFAA00E1EF24 /* CUHKMapUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		B463BCC52531FB3F00E1EF24 /* Project object */ = {
+		B463BD022531FFA800E1EF24 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1200;
 				LastUpgradeCheck = 1200;
 				TargetAttributes = {
-					B463BCCC2531FB3F00E1EF24 = {
+					B463BD092531FFA800E1EF24 = {
 						CreatedOnToolsVersion = 12.0.1;
 					};
-					B463BCDD2531FB4200E1EF24 = {
+					B463BD1A2531FFAA00E1EF24 = {
 						CreatedOnToolsVersion = 12.0.1;
-						TestTargetID = B463BCCC2531FB3F00E1EF24;
+						TestTargetID = B463BD092531FFA800E1EF24;
 					};
-					B463BCE82531FB4200E1EF24 = {
+					B463BD252531FFAA00E1EF24 = {
 						CreatedOnToolsVersion = 12.0.1;
-						TestTargetID = B463BCCC2531FB3F00E1EF24;
+						TestTargetID = B463BD092531FFA800E1EF24;
 					};
 				};
 			};
-			buildConfigurationList = B463BCC82531FB3F00E1EF24 /* Build configuration list for PBXProject "CUHKMap" */;
+			buildConfigurationList = B463BD052531FFA800E1EF24 /* Build configuration list for PBXProject "CUHKMap" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -216,36 +216,36 @@
 				en,
 				Base,
 			);
-			mainGroup = B463BCC42531FB3F00E1EF24;
-			productRefGroup = B463BCCE2531FB3F00E1EF24 /* Products */;
+			mainGroup = B463BD012531FFA800E1EF24;
+			productRefGroup = B463BD0B2531FFA800E1EF24 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B463BCCC2531FB3F00E1EF24 /* CUHKMap */,
-				B463BCDD2531FB4200E1EF24 /* CUHKMapTests */,
-				B463BCE82531FB4200E1EF24 /* CUHKMapUITests */,
+				B463BD092531FFA800E1EF24 /* CUHKMap */,
+				B463BD1A2531FFAA00E1EF24 /* CUHKMapTests */,
+				B463BD252531FFAA00E1EF24 /* CUHKMapUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		B463BCCB2531FB3F00E1EF24 /* Resources */ = {
+		B463BD082531FFA800E1EF24 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B463BCD82531FB4200E1EF24 /* Preview Assets.xcassets in Resources */,
-				B463BCD52531FB4200E1EF24 /* Assets.xcassets in Resources */,
+				B463BD152531FFAA00E1EF24 /* Preview Assets.xcassets in Resources */,
+				B463BD122531FFAA00E1EF24 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B463BCDC2531FB4200E1EF24 /* Resources */ = {
+		B463BD192531FFAA00E1EF24 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B463BCE72531FB4200E1EF24 /* Resources */ = {
+		B463BD242531FFAA00E1EF24 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -255,48 +255,48 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		B463BCC92531FB3F00E1EF24 /* Sources */ = {
+		B463BD062531FFA800E1EF24 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B463BCD32531FB3F00E1EF24 /* ContentView.swift in Sources */,
-				B463BCD12531FB3F00E1EF24 /* CUHKMapApp.swift in Sources */,
+				B463BD102531FFA800E1EF24 /* ContentView.swift in Sources */,
+				B463BD0E2531FFA800E1EF24 /* CUHKMapApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B463BCDA2531FB4200E1EF24 /* Sources */ = {
+		B463BD172531FFAA00E1EF24 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B463BCE32531FB4200E1EF24 /* CUHKMapTests.swift in Sources */,
+				B463BD202531FFAA00E1EF24 /* CUHKMapTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B463BCE52531FB4200E1EF24 /* Sources */ = {
+		B463BD222531FFAA00E1EF24 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B463BCEE2531FB4200E1EF24 /* CUHKMapUITests.swift in Sources */,
+				B463BD2B2531FFAA00E1EF24 /* CUHKMapUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		B463BCE02531FB4200E1EF24 /* PBXTargetDependency */ = {
+		B463BD1D2531FFAA00E1EF24 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = B463BCCC2531FB3F00E1EF24 /* CUHKMap */;
-			targetProxy = B463BCDF2531FB4200E1EF24 /* PBXContainerItemProxy */;
+			target = B463BD092531FFA800E1EF24 /* CUHKMap */;
+			targetProxy = B463BD1C2531FFAA00E1EF24 /* PBXContainerItemProxy */;
 		};
-		B463BCEB2531FB4200E1EF24 /* PBXTargetDependency */ = {
+		B463BD282531FFAA00E1EF24 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = B463BCCC2531FB3F00E1EF24 /* CUHKMap */;
-			targetProxy = B463BCEA2531FB4200E1EF24 /* PBXContainerItemProxy */;
+			target = B463BD092531FFA800E1EF24 /* CUHKMap */;
+			targetProxy = B463BD272531FFAA00E1EF24 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		B463BCF02531FB4200E1EF24 /* Debug */ = {
+		B463BD2D2531FFAA00E1EF24 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -357,7 +357,7 @@
 			};
 			name = Debug;
 		};
-		B463BCF12531FB4200E1EF24 /* Release */ = {
+		B463BD2E2531FFAA00E1EF24 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -412,13 +412,14 @@
 			};
 			name = Release;
 		};
-		B463BCF32531FB4200E1EF24 /* Debug */ = {
+		B463BD302531FFAA00E1EF24 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"CUHKMap/Preview Content\"";
+				DEVELOPMENT_TEAM = N5A7GY9PDW;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = CUHKMap/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -426,20 +427,21 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Wendy-Gazer.CUHKMap";
+				PRODUCT_BUNDLE_IDENTIFIER = FYP.CUHKMap;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		B463BCF42531FB4200E1EF24 /* Release */ = {
+		B463BD312531FFAA00E1EF24 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"CUHKMap/Preview Content\"";
+				DEVELOPMENT_TEAM = N5A7GY9PDW;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = CUHKMap/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -447,14 +449,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Wendy-Gazer.CUHKMap";
+				PRODUCT_BUNDLE_IDENTIFIER = FYP.CUHKMap;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
-		B463BCF62531FB4200E1EF24 /* Debug */ = {
+		B463BD332531FFAA00E1EF24 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -467,7 +469,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Wendy-Gazer.CUHKMapTests";
+				PRODUCT_BUNDLE_IDENTIFIER = FYP.CUHKMapTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -475,7 +477,7 @@
 			};
 			name = Debug;
 		};
-		B463BCF72531FB4200E1EF24 /* Release */ = {
+		B463BD342531FFAA00E1EF24 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -488,7 +490,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Wendy-Gazer.CUHKMapTests";
+				PRODUCT_BUNDLE_IDENTIFIER = FYP.CUHKMapTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -496,7 +498,7 @@
 			};
 			name = Release;
 		};
-		B463BCF92531FB4200E1EF24 /* Debug */ = {
+		B463BD362531FFAA00E1EF24 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -507,7 +509,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Wendy-Gazer.CUHKMapUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = FYP.CUHKMapUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -515,7 +517,7 @@
 			};
 			name = Debug;
 		};
-		B463BCFA2531FB4200E1EF24 /* Release */ = {
+		B463BD372531FFAA00E1EF24 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -526,7 +528,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Wendy-Gazer.CUHKMapUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = FYP.CUHKMapUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -537,43 +539,43 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		B463BCC82531FB3F00E1EF24 /* Build configuration list for PBXProject "CUHKMap" */ = {
+		B463BD052531FFA800E1EF24 /* Build configuration list for PBXProject "CUHKMap" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B463BCF02531FB4200E1EF24 /* Debug */,
-				B463BCF12531FB4200E1EF24 /* Release */,
+				B463BD2D2531FFAA00E1EF24 /* Debug */,
+				B463BD2E2531FFAA00E1EF24 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B463BCF22531FB4200E1EF24 /* Build configuration list for PBXNativeTarget "CUHKMap" */ = {
+		B463BD2F2531FFAA00E1EF24 /* Build configuration list for PBXNativeTarget "CUHKMap" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B463BCF32531FB4200E1EF24 /* Debug */,
-				B463BCF42531FB4200E1EF24 /* Release */,
+				B463BD302531FFAA00E1EF24 /* Debug */,
+				B463BD312531FFAA00E1EF24 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B463BCF52531FB4200E1EF24 /* Build configuration list for PBXNativeTarget "CUHKMapTests" */ = {
+		B463BD322531FFAA00E1EF24 /* Build configuration list for PBXNativeTarget "CUHKMapTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B463BCF62531FB4200E1EF24 /* Debug */,
-				B463BCF72531FB4200E1EF24 /* Release */,
+				B463BD332531FFAA00E1EF24 /* Debug */,
+				B463BD342531FFAA00E1EF24 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B463BCF82531FB4200E1EF24 /* Build configuration list for PBXNativeTarget "CUHKMapUITests" */ = {
+		B463BD352531FFAA00E1EF24 /* Build configuration list for PBXNativeTarget "CUHKMapUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B463BCF92531FB4200E1EF24 /* Debug */,
-				B463BCFA2531FB4200E1EF24 /* Release */,
+				B463BD362531FFAA00E1EF24 /* Debug */,
+				B463BD372531FFAA00E1EF24 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = B463BCC52531FB3F00E1EF24 /* Project object */;
+	rootObject = B463BD022531FFA800E1EF24 /* Project object */;
 }
