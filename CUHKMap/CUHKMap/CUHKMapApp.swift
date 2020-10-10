@@ -11,7 +11,7 @@ import SwiftUI
 struct CUHKMapApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(start: "", dest: "", show_list: 0)
         }
     }
 }

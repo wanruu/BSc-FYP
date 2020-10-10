@@ -13,6 +13,7 @@
 		B463BD152531FFAA00E1EF24 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B463BD142531FFAA00E1EF24 /* Preview Assets.xcassets */; };
 		B463BD202531FFAA00E1EF24 /* CUHKMapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B463BD1F2531FFAA00E1EF24 /* CUHKMapTests.swift */; };
 		B463BD2B2531FFAA00E1EF24 /* CUHKMapUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B463BD2A2531FFAA00E1EF24 /* CUHKMapUITests.swift */; };
+		B472F63F25326A1E0022437F /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B472F63E25326A1E0022437F /* MapView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +46,7 @@
 		B463BD262531FFAA00E1EF24 /* CUHKMapUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CUHKMapUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B463BD2A2531FFAA00E1EF24 /* CUHKMapUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CUHKMapUITests.swift; sourceTree = "<group>"; };
 		B463BD2C2531FFAA00E1EF24 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B472F63E25326A1E0022437F /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +99,7 @@
 			children = (
 				B463BD0D2531FFA800E1EF24 /* CUHKMapApp.swift */,
 				B463BD0F2531FFA800E1EF24 /* ContentView.swift */,
+				B472F63E25326A1E0022437F /* MapView.swift */,
 				B463BD112531FFAA00E1EF24 /* Assets.xcassets */,
 				B463BD162531FFAA00E1EF24 /* Info.plist */,
 				B463BD132531FFAA00E1EF24 /* Preview Content */,
@@ -260,6 +263,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B463BD102531FFA800E1EF24 /* ContentView.swift in Sources */,
+				B472F63F25326A1E0022437F /* MapView.swift in Sources */,
 				B463BD0E2531FFA800E1EF24 /* CUHKMapApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
