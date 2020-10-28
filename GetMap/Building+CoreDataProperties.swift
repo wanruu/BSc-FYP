@@ -16,10 +16,10 @@ extension Building {
         return NSFetchRequest<Building>(entityName: "Building")
     }
 
-    @NSManaged public var name_en: String?
+    @NSManaged public var name_en: String
     @NSManaged public var latitude: Double
     @NSManaged public var longitude: Double
-    @NSManaged public var timestamp: Date?
+    @NSManaged public var timestamp: Date
 
 }
 

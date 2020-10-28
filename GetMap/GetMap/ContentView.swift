@@ -38,11 +38,11 @@ struct ContentView: View {
     @State var buildingName: String = ""
 
     var body: some View {
-        print(buildings)
         /* user location point: at the center by default; panned with offset */
         let center = CGPoint(x: centerX + offset.x, y: centerY + offset.y)
         /* render */
         return ZStack(alignment: .bottomLeading) {
+            // BuildingList()
             GestureControlLayer { pan in
                 if(pan.moving) {
                     offset.x = lastOffset.x + pan.offset.x
@@ -83,6 +83,7 @@ struct ContentView: View {
             InnerPoint(center: center)
                 .fill(Color.blue)
             /* ******************************* */
+            
             VStack {
                 HStack {
                     TextField( "Name of the building", text: $buildingName)
@@ -99,7 +100,7 @@ struct ContentView: View {
                 .padding()
         }
     }
-
+    /* add current location to building list */
     private func addBuilding() {
         withAnimation {
             let newBuilding = Building(context: viewContext)
@@ -119,7 +120,7 @@ struct ContentView: View {
             }
         }
     }
-
+    /* TODO: modify it */
     private func deleteBuildings(offsets: IndexSet) {
         withAnimation {
             offsets.map { buildings[$0] }.forEach(viewContext.delete)
