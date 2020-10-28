@@ -7,15 +7,20 @@
 
 import CoreData
 
+/* includes various properties */
 struct PersistenceController {
     static let shared = PersistenceController()
-
+    
+    /* The preview property allows us to use the CoreData functionality inside preview simulators. */
     static var preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
         for _ in 0..<10 {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
+            let newBuilding = Building(context: viewContext)
+            newBuilding.timestamp = Date()
+            newBuilding.name_en = "test"
+            newBuilding.latitude = 0
+            newBuilding.longitude = 0
         }
         do {
             try viewContext.save()
@@ -27,9 +32,12 @@ struct PersistenceController {
         }
         return result
     }()
-
+    
+    /* The container property is the heart of the PersistenceController, which performs many different operations for us in the background when we store and call data. */
+    /* Most importantly, the container allows us to access the so-called viewContext, which serves as in an in-memory scratchpad where objects are created, fetched, updated, deleted, and saved back to the persistent store of the device where the app runs on. */
     let container: NSPersistentCloudKitContainer
 
+    /* the container gets initialized */
     init(inMemory: Bool = false) {
         container = NSPersistentCloudKitContainer(name: "GetMap")
         if inMemory {

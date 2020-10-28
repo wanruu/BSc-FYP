@@ -8,7 +8,9 @@
 import SwiftUI
 
 @main
+/* App struct primarily handles booting up the initial view, which is the ContentView by default */
 struct GetMapApp: App {
+    /* related to core data */
     let persistenceController = PersistenceController.shared
 
     var body: some Scene {

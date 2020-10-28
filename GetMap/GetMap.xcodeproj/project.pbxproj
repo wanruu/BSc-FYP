@@ -18,6 +18,8 @@
 		B4E500FC2549E003001A7582 /* GestureControlLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E500FB2549E003001A7582 /* GestureControlLayer.swift */; };
 		B4E501012549E024001A7582 /* LocationPointViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E501002549E024001A7582 /* LocationPointViewModel.swift */; };
 		B4E501062549E03B001A7582 /* LocationGetterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E501052549E03B001A7582 /* LocationGetterModel.swift */; };
+		B4E501292549F16E001A7582 /* Building+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E501272549F16E001A7582 /* Building+CoreDataClass.swift */; };
+		B4E5012A2549F16E001A7582 /* Building+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E501282549F16E001A7582 /* Building+CoreDataProperties.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +57,9 @@
 		B4E500FB2549E003001A7582 /* GestureControlLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestureControlLayer.swift; sourceTree = "<group>"; };
 		B4E501002549E024001A7582 /* LocationPointViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPointViewModel.swift; sourceTree = "<group>"; };
 		B4E501052549E03B001A7582 /* LocationGetterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationGetterModel.swift; sourceTree = "<group>"; };
+		B4E5010D2549E5AB001A7582 /* GetMap.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GetMap.entitlements; sourceTree = "<group>"; };
+		B4E501272549F16E001A7582 /* Building+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Building+CoreDataClass.swift"; sourceTree = "<group>"; };
+		B4E501282549F16E001A7582 /* Building+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Building+CoreDataProperties.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +90,8 @@
 		B4E500BC2549DF08001A7582 = {
 			isa = PBXGroup;
 			children = (
+				B4E501272549F16E001A7582 /* Building+CoreDataClass.swift */,
+				B4E501282549F16E001A7582 /* Building+CoreDataProperties.swift */,
 				B4E500C72549DF08001A7582 /* GetMap */,
 				B4E500DE2549DF0B001A7582 /* GetMapTests */,
 				B4E500E92549DF0B001A7582 /* GetMapUITests */,
@@ -105,6 +112,7 @@
 		B4E500C72549DF08001A7582 /* GetMap */ = {
 			isa = PBXGroup;
 			children = (
+				B4E5010D2549E5AB001A7582 /* GetMap.entitlements */,
 				B4E500C82549DF08001A7582 /* GetMapApp.swift */,
 				B4E500FB2549E003001A7582 /* GestureControlLayer.swift */,
 				B4E501002549E024001A7582 /* LocationPointViewModel.swift */,
@@ -275,8 +283,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				B4E500FC2549E003001A7582 /* GestureControlLayer.swift in Sources */,
+				B4E501292549F16E001A7582 /* Building+CoreDataClass.swift in Sources */,
 				B4E500D22549DF0B001A7582 /* Persistence.swift in Sources */,
 				B4E501012549E024001A7582 /* LocationPointViewModel.swift in Sources */,
+				B4E5012A2549F16E001A7582 /* Building+CoreDataProperties.swift in Sources */,
 				B4E501062549E03B001A7582 /* LocationGetterModel.swift in Sources */,
 				B4E500D52549DF0B001A7582 /* GetMap.xcdatamodeld in Sources */,
 				B4E500CB2549DF08001A7582 /* ContentView.swift in Sources */,
@@ -437,6 +447,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = GetMap/GetMap.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"GetMap/Preview Content\"";
 				DEVELOPMENT_TEAM = N5A7GY9PDW;
@@ -459,6 +470,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = GetMap/GetMap.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"GetMap/Preview Content\"";
 				DEVELOPMENT_TEAM = N5A7GY9PDW;
