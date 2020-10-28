@@ -19,11 +19,10 @@ let centerY = SCHeight/2
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
-
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Building.name_en, ascending: true)],
         animation: .default)
-    private var buildings: FetchedResults<Building>
+    var buildings: FetchedResults<Building>
     
     /* location getter */
     @ObservedObject var locationGetter = LocationGetterModel()
@@ -35,6 +34,7 @@ struct ContentView: View {
     @State var buildingName: String = ""
 
     @State var showBuildingList: Bool = false
+    
     var body: some View {
         /* render */
         NavigationView {
@@ -65,7 +65,7 @@ struct ContentView: View {
                 /* show current location point */
                 UserPoint(offset: $offset, locationGetter: locationGetter)
                 /* show building location point */
-                BuildingPoints(offset: $offset, locationGetter: locationGetter)
+                BuildingPoints(offset: $offset, locationGetter: locationGetter, buildings: buildings)
                 
                 VStack {
                     HStack {
@@ -87,7 +87,7 @@ struct ContentView: View {
                 Text("Buildings")
             })
             .sheet(isPresented: $showBuildingList) {
-                Text("hi")
+                BuildingListSheet(buildings: buildings)
             }
         }
     }

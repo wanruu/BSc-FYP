@@ -20,6 +20,7 @@
 		B4E501062549E03B001A7582 /* LocationGetterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E501052549E03B001A7582 /* LocationGetterModel.swift */; };
 		B4E501292549F16E001A7582 /* Building+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E501272549F16E001A7582 /* Building+CoreDataClass.swift */; };
 		B4E5012A2549F16E001A7582 /* Building+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E501282549F16E001A7582 /* Building+CoreDataProperties.swift */; };
+		B4E50137254A2B8A001A7582 /* BuildingListSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E50136254A2B8A001A7582 /* BuildingListSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +61,7 @@
 		B4E5010D2549E5AB001A7582 /* GetMap.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GetMap.entitlements; sourceTree = "<group>"; };
 		B4E501272549F16E001A7582 /* Building+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Building+CoreDataClass.swift"; sourceTree = "<group>"; };
 		B4E501282549F16E001A7582 /* Building+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Building+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B4E50136254A2B8A001A7582 /* BuildingListSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildingListSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +120,7 @@
 				B4E501002549E024001A7582 /* LocationPointViewModel.swift */,
 				B4E501052549E03B001A7582 /* LocationGetterModel.swift */,
 				B4E500CA2549DF08001A7582 /* ContentView.swift */,
+				B4E50136254A2B8A001A7582 /* BuildingListSheet.swift */,
 				B4E500CC2549DF0B001A7582 /* Assets.xcassets */,
 				B4E500D12549DF0B001A7582 /* Persistence.swift */,
 				B4E500D62549DF0B001A7582 /* Info.plist */,
@@ -289,6 +292,7 @@
 				B4E5012A2549F16E001A7582 /* Building+CoreDataProperties.swift in Sources */,
 				B4E501062549E03B001A7582 /* LocationGetterModel.swift in Sources */,
 				B4E500D52549DF0B001A7582 /* GetMap.xcdatamodeld in Sources */,
+				B4E50137254A2B8A001A7582 /* BuildingListSheet.swift in Sources */,
 				B4E500CB2549DF08001A7582 /* ContentView.swift in Sources */,
 				B4E500C92549DF08001A7582 /* GetMapApp.swift in Sources */,
 			);

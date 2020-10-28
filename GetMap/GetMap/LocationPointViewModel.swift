@@ -15,10 +15,9 @@ import SwiftUI
 /* Building Points */
 /* *************** */
 struct BuildingPoints: View {
-    @FetchRequest(sortDescriptors: [], animation: .default)
-    private var buildings: FetchedResults<Building>
     @Binding var offset: CGPoint
     @ObservedObject var locationGetter: LocationGetterModel
+    @State var buildings: FetchedResults<Building>
     
     var body: some View {
         ForEach(buildings) { building in
