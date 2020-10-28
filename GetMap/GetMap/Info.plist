@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Get your location and then navigate.</string>
+	<string>We need your location information to provide navigation.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>To get paths in CUHK.</string>
+	<string>We need your location information to provide navigation.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>

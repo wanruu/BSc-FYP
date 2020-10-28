@@ -68,7 +68,6 @@ extension LocationGetterModel: CLLocationManagerDelegate {
                 paths.append(current)
             }
         }
-        print(paths)
     }
     /* successfully update heading */
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {

@@ -2,7 +2,7 @@
 //  GetMapTests.swift
 //  GetMapTests
 //
-//  Created by wanruuu on 24/10/2020.
+//  Created by wanruuu on 29/10/2020.
 //
 
 import XCTest
