@@ -11,8 +11,11 @@
 import Foundation
 import SwiftUI
 
-let innerRadius: CGFloat = 8
+/* ********** */
+/* User Point */
+/* ********** */
 
+let innerRadius: CGFloat = 8
 struct UserPoint: View {
     @Binding var offset: CGPoint
     @ObservedObject var locationGetter: LocationGetterModel
@@ -46,10 +49,7 @@ struct UserPoint: View {
 /* blue */
 /* inner part of point */
 struct InnerPoint: Shape {
-    var center: CGPoint
-    init(center: CGPoint) {
-        self.center = center
-    }
+    @State var center: CGPoint
     func path(in rect: CGRect) -> Path {
         var p = Path()
         p.addArc(center: center, radius: innerRadius, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: true)
@@ -61,12 +61,8 @@ struct InnerPoint: Shape {
 /* the size of it will change from time to time,
  to show location is updating */
 struct Animation: Shape {
-    var center: CGPoint
-    var radius: CGFloat
-    init(center: CGPoint, radius: CGFloat) {
-        self.center = center
-        self.radius = radius
-    }
+    @State var center: CGPoint
+    @State var radius: CGFloat
     func path(in rect: CGRect) -> Path {
         var p = Path()
         p.addArc(center: center, radius: radius, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: true)
@@ -77,12 +73,8 @@ struct Animation: Shape {
 /* blue */
 /* show direction of user */
 struct UserDirection: Shape {
-    var center: CGPoint
-    var heading: Double
-    init(center: CGPoint, heading: Double) {
-        self.center = center
-        self.heading = heading
-    }
+    @State var center: CGPoint
+    @State var heading: Double
     func path(in rect: CGRect) -> Path {
         var p = Path()
 
@@ -103,10 +95,7 @@ struct UserDirection: Shape {
 /* outer part of point */
 /* white layer between CorePoint and direction */
 struct OuterPoint: Shape {
-    var center: CGPoint
-    init(center: CGPoint) {
-        self.center = center
-    }
+    @State var center: CGPoint
     func path(in rect: CGRect) -> Path {
         var p = Path()
         p.addArc(center: center, radius: innerRadius + 2, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: true)
