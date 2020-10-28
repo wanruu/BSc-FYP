@@ -13,6 +13,36 @@ import SwiftUI
 
 let innerRadius: CGFloat = 8
 
+struct UserPoint: View {
+    @Binding var offset: CGPoint
+    @ObservedObject var locationGetter: LocationGetterModel
+    
+    let timer = Timer.publish(every: 0.08, on: .main, in: .common).autoconnect()
+    @State var animationRadius: CGFloat = 8
+    @State var up: Bool = true // animationRadius is becoming larger or not
+    
+    var body: some View {
+        let center = CGPoint(x: centerX + offset.x, y: centerY + offset.y)
+        return
+            ZStack {
+                Animation(center: center, radius: animationRadius)
+                    .fill(Color.blue.opacity(0.2))
+                    .onReceive(timer) { _ in
+                        if(up) { animationRadius += 0.4 }
+                        else { animationRadius -= 0.4 }
+                        if(animationRadius > 17) { up = false }
+                        else if(animationRadius < 11) { up = true }
+                    }
+                UserDirection(center: center, heading: locationGetter.heading)
+                    .fill(Color.blue)
+                OuterPoint(center: center)
+                    .fill(Color.white)
+                InnerPoint(center: center)
+                    .fill(Color.blue)
+            }
+    }
+}
+
 /* blue */
 /* inner part of point */
 struct InnerPoint: Shape {

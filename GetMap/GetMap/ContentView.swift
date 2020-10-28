@@ -26,20 +26,17 @@ struct ContentView: View {
     private var buildings: FetchedResults<Building>
     
     /* location getter */
-    @ObservedObject var locationView = LocationGetterModel()
+    @ObservedObject var locationGetter = LocationGetterModel()
     /* panned offset */
     @State var lastOffset: CGPoint = CGPoint(x: 0, y: 0)
     @State var offset: CGPoint = CGPoint(x: 0, y: 0)
     /* for animation of current location point */
-    let timer = Timer.publish(every: 0.08, on: .main, in: .common).autoconnect()
-    @State var animationRadius: CGFloat = 8
-    @State var up: Bool = true // animationRadius is becoming larger or not
+    
+    
     /* add building function */
     @State var buildingName: String = ""
 
     var body: some View {
-        /* user location point: at the center by default; panned with offset */
-        let center = CGPoint(x: centerX + offset.x, y: centerY + offset.y)
         /* render */
         return ZStack(alignment: .bottomLeading) {
             // BuildingList()
@@ -54,11 +51,11 @@ struct ContentView: View {
             
             Path { path in
                 /* draw paths of point list */
-                for location in locationView.paths {
+                for location in locationGetter.paths {
                     /* 1m = 2 (of screen) = 1/111000(latitude) = 1/85390(longitude) */
-                    let x = centerX + CGFloat((location.coordinate.longitude - locationView.current.coordinate.longitude)*85390*2) + offset.x
-                    let y = centerY + CGFloat((locationView.current.coordinate.latitude - location.coordinate.latitude)*111000*2) + offset.y
-                    if(location == locationView.paths[0]) {
+                    let x = centerX + CGFloat((location.coordinate.longitude - locationGetter.current.coordinate.longitude)*85390*2) + offset.x
+                    let y = centerY + CGFloat((locationGetter.current.coordinate.latitude - location.coordinate.latitude)*111000*2) + offset.y
+                    if(location == locationGetter.paths[0]) {
                         path.move(to: CGPoint(x: x, y: y))
                     } else {
                         path.addLine(to: CGPoint(x: x, y: y))
@@ -66,23 +63,8 @@ struct ContentView: View {
                 }
             }.stroke(Color.black, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
             
-            /* TODO: Try to capsulate */
             /* showing current location point */
-            Animation(center: center, radius: animationRadius)
-                .fill(Color.blue.opacity(0.2))
-                .onReceive(timer) { _ in
-                    if(up) { animationRadius += 0.4 }
-                    else { animationRadius -= 0.4 }
-                    if(animationRadius > 17) { up = false }
-                    else if(animationRadius < 11) { up = true }
-                }
-            UserDirection(center: center, heading: locationView.heading)
-                .fill(Color.blue)
-            OuterPoint(center: center)
-                .fill(Color.white)
-            InnerPoint(center: center)
-                .fill(Color.blue)
-            /* ******************************* */
+            UserPoint(offset: $offset, locationGetter: locationGetter)
             
             VStack {
                 HStack {
@@ -107,8 +89,8 @@ struct ContentView: View {
             /* building information */
             newBuilding.timestamp = Date()
             newBuilding.name_en = buildingName
-            newBuilding.latitude = locationView.current.coordinate.latitude
-            newBuilding.longitude = locationView.current.coordinate.longitude
+            newBuilding.latitude = locationGetter.current.coordinate.latitude
+            newBuilding.longitude = locationGetter.current.coordinate.longitude
             do {
                 try viewContext.save()
                 print("New Building saved.")
