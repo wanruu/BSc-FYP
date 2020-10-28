@@ -11,6 +11,24 @@
 import Foundation
 import SwiftUI
 
+/* *************** */
+/* Building Points */
+/* *************** */
+struct BuildingPoints: View {
+    @FetchRequest(sortDescriptors: [], animation: .default)
+    private var buildings: FetchedResults<Building>
+    @Binding var offset: CGPoint
+    @ObservedObject var locationGetter: LocationGetterModel
+    
+    var body: some View {
+        ForEach(buildings) { building in
+            let x = centerX + CGFloat((building.longitude - locationGetter.current.coordinate.longitude)*85390*2) + offset.x
+            let y = centerY + CGFloat((locationGetter.current.coordinate.latitude - building.latitude)*111000*2) + offset.y
+            Text(building.name_en).position(x: x, y: y)
+        }
+    }
+}
+
 /* ********** */
 /* User Point */
 /* ********** */

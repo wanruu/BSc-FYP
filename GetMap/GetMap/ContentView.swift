@@ -65,7 +65,7 @@ struct ContentView: View {
             
             /* showing current location point */
             UserPoint(offset: $offset, locationGetter: locationGetter)
-            
+            BuildingPoints(offset: $offset, locationGetter: locationGetter)
             VStack {
                 HStack {
                     TextField( "Name of the building", text: $buildingName)
