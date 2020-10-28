@@ -30,56 +30,65 @@ struct ContentView: View {
     /* panned offset */
     @State var lastOffset: CGPoint = CGPoint(x: 0, y: 0)
     @State var offset: CGPoint = CGPoint(x: 0, y: 0)
-    /* for animation of current location point */
-    
-    
+
     /* add building function */
     @State var buildingName: String = ""
 
+    @State var showBuildingList: Bool = false
     var body: some View {
         /* render */
-        return ZStack(alignment: .bottomLeading) {
-            // BuildingList()
-            GestureControlLayer { pan in
-                if(pan.moving) {
-                    offset.x = lastOffset.x + pan.offset.x
-                    offset.y = lastOffset.y + pan.offset.y
-                } else {
-                    lastOffset = offset
-                }
-            }.background(Color.white)
-            
-            Path { path in
-                /* draw paths of point list */
-                for location in locationGetter.paths {
-                    /* 1m = 2 (of screen) = 1/111000(latitude) = 1/85390(longitude) */
-                    let x = centerX + CGFloat((location.coordinate.longitude - locationGetter.current.coordinate.longitude)*85390*2) + offset.x
-                    let y = centerY + CGFloat((locationGetter.current.coordinate.latitude - location.coordinate.latitude)*111000*2) + offset.y
-                    if(location == locationGetter.paths[0]) {
-                        path.move(to: CGPoint(x: x, y: y))
+        NavigationView {
+            ZStack(alignment: .bottomLeading) {
+                GestureControlLayer { pan in
+                    if(pan.moving) {
+                        offset.x = lastOffset.x + pan.offset.x
+                        offset.y = lastOffset.y + pan.offset.y
                     } else {
-                        path.addLine(to: CGPoint(x: x, y: y))
+                        lastOffset = offset
                     }
-                }
-            }.stroke(Color.black, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
-            
-            /* showing current location point */
-            UserPoint(offset: $offset, locationGetter: locationGetter)
-            BuildingPoints(offset: $offset, locationGetter: locationGetter)
-            VStack {
-                HStack {
-                    TextField( "Name of the building", text: $buildingName)
-                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                    Button(action: {
-                        guard buildingName != "" else { return }
-                        addBuilding()
-                        buildingName = ""
-                    } ){ Text("Add") }
-                        .padding()
-                }
-                 
+                }.background(Color.white)
+                
+                Path { path in
+                    /* draw paths of point list */
+                    for location in locationGetter.paths {
+                        /* 1m = 2 (of screen) = 1/111000(latitude) = 1/85390(longitude) */
+                        let x = centerX + CGFloat((location.coordinate.longitude - locationGetter.current.coordinate.longitude)*85390*2) + offset.x
+                        let y = centerY + CGFloat((locationGetter.current.coordinate.latitude - location.coordinate.latitude)*111000*2) + offset.y
+                        if(location == locationGetter.paths[0]) {
+                            path.move(to: CGPoint(x: x, y: y))
+                        } else {
+                            path.addLine(to: CGPoint(x: x, y: y))
+                        }
+                    }
+                }.stroke(Color.black, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+                
+                /* show current location point */
+                UserPoint(offset: $offset, locationGetter: locationGetter)
+                /* show building location point */
+                BuildingPoints(offset: $offset, locationGetter: locationGetter)
+                
+                VStack {
+                    HStack {
+                        TextField( "Name of the building", text: $buildingName)
+                             .textFieldStyle(RoundedBorderTextFieldStyle())
+                        Button(action: {
+                            guard buildingName != "" else { return }
+                            addBuilding()
+                            buildingName = ""
+                        } ){ Text("Add") }
+                            .padding()
+                    }
+                     
+                }.padding()
             }
-                .padding()
+            .navigationBarItems(trailing: Button(action: {
+                showBuildingList = true
+            }) {
+                Text("Buildings")
+            })
+            .sheet(isPresented: $showBuildingList) {
+                Text("hi")
+            }
         }
     }
     /* add current location to building list */
@@ -117,14 +126,6 @@ struct ContentView: View {
         }
     }
 }
-
-/* ?? */
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
