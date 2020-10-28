@@ -26,6 +26,7 @@ struct InnerPoint: Shape {
         return p
     }
 }
+
 /* translucent blue */
 /* the size of it will change from time to time,
  to show location is updating */

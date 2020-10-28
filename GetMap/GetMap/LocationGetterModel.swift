@@ -10,15 +10,14 @@
 import Foundation
 import CoreLocation
 
+/* manager for updating location */
 var manager: CLLocationManager = CLLocationManager()
 
 class LocationGetterModel: NSObject, ObservableObject {
     /* current location information */
-    @Published var latitude: Double = 0
-    @Published var longitude: Double = 0
-    @Published var altitude: Double = 0
+    @Published var current: CLLocation = CLLocation(latitude: 0, longitude: 0)
     /* list of points/locations */
-    @Published var paths: [Point] = []
+    @Published var paths: [CLLocation] = []
     /* direction of user */
     @Published var heading: Double = 0
 
@@ -57,19 +56,23 @@ class LocationGetterModel: NSObject, ObservableObject {
 extension LocationGetterModel: CLLocationManagerDelegate {
     /* successfully update location */
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.last else { return }
-        latitude = location.coordinate.latitude
-        longitude = location.coordinate.longitude
-        altitude = location.altitude
-        let p = Point(latitude: latitude, longitude: longitude, altitude: altitude)
-        if(paths.count == 0 || p != paths[paths.count - 1]) {
-            paths.append(p)
+        /* ensure able to get location info */
+        guard let newLocation = locations.last else { return }
+        current = newLocation
+        /* only append to current if location changes */
+        if(paths.count == 0) {
+            paths.append(current)
+        } else {
+            let lastLocation = paths[paths.count - 1]
+            if(lastLocation.coordinate.latitude != newLocation.coordinate.latitude && lastLocation.coordinate.longitude != newLocation.coordinate.longitude) {
+                paths.append(current)
+            }
         }
+        print(paths)
     }
     /* successfully update heading */
-    internal func locationManager(_ manager: CLLocationManager, didUpdateHeading heading: CLHeading) {
-        self.heading = heading.trueHeading
-        print(heading.trueHeading)
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        self.heading = newHeading.trueHeading
     }
     /* fail */
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

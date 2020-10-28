@@ -22,7 +22,7 @@ struct ContentView: View {
     /* panned offset */
     @State var lastOffset: CGPoint = CGPoint(x: 0, y: 0)
     @State var offset: CGPoint = CGPoint(x: 0, y: 0)
-    /* for updating radius of user location point: animation */
+    /* for animation */
     let timer = Timer.publish(every: 0.08, on: .main, in: .common).autoconnect()
     @State var animationRadius: CGFloat = 8
     @State var up: Bool = true // animationRadius is becoming larger or not
@@ -31,7 +31,7 @@ struct ContentView: View {
         /* user location point: at the center by default; panned with offset */
         let center = CGPoint(x: centerX + offset.x, y: centerY + offset.y)
         /* render */
-        return ZStack(alignment: .topLeading) {
+        return ZStack(alignment: .bottomLeading) {
             GestureControlLayer { pan in
                 if(pan.moving) {
                     offset.x = lastOffset.x + pan.offset.x
@@ -43,11 +43,11 @@ struct ContentView: View {
             
             Path { path in
                 /* draw paths of point list */
-                for point in locationView.paths {
+                for location in locationView.paths {
                     /* 1m = 2 (of screen) = 1/111000(latitude) = 1/85390(longitude) */
-                    let x = centerX + CGFloat((point.longitude - locationView.longitude)*85390*2) + offset.x
-                    let y = centerY + CGFloat((locationView.latitude - point.latitude)*111000*2) + offset.y
-                    if(point == locationView.paths[0]) {
+                    let x = centerX + CGFloat((location.coordinate.longitude - locationView.current.coordinate.longitude)*85390*2) + offset.x
+                    let y = centerY + CGFloat((locationView.current.coordinate.latitude - location.coordinate.latitude)*111000*2) + offset.y
+                    if(location == locationView.paths[0]) {
                         path.move(to: CGPoint(x: x, y: y))
                     } else {
                         path.addLine(to: CGPoint(x: x, y: y))
@@ -71,6 +71,20 @@ struct ContentView: View {
             InnerPoint(center: center)
                 .fill(Color.blue)
             /* ******************************* */
+            /* VStack {
+                HStack {
+                    Button(action: { } ){ Text("start recording") }
+                        .padding()
+                        .border(Color.gray, width: 0.5)
+                    Button(action: { } ){ Text("stop recording") }
+                        .padding()
+                        .border(Color.gray, width: 0.5)
+                }.padding()
+                
+                Button(action: { } ){ Text("This is a building.") }
+                    .padding()
+                    .border(Color.gray, width: 0.5)
+            }*/
         }
     }
 }

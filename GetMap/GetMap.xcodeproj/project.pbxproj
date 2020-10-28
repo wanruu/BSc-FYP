@@ -13,7 +13,6 @@
 		B472F662254336CD0022437F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B472F661254336CD0022437F /* Preview Assets.xcassets */; };
 		B472F66D254336CD0022437F /* GetMapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B472F66C254336CD0022437F /* GetMapTests.swift */; };
 		B472F678254336CD0022437F /* GetMapUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B472F677254336CD0022437F /* GetMapUITests.swift */; };
-		B472F6892544A8440022437F /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = B472F6882544A8440022437F /* Point.swift */; };
 		B4E212B72545759600485056 /* GestureControlLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E212B62545759600485056 /* GestureControlLayer.swift */; };
 		B4E500A12545F126001A7582 /* LocationPointViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E500A02545F126001A7582 /* LocationPointViewModel.swift */; };
 		B4E500A92545F170001A7582 /* LocationGetterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E500A82545F170001A7582 /* LocationGetterModel.swift */; };
@@ -49,7 +48,6 @@
 		B472F673254336CD0022437F /* GetMapUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GetMapUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B472F677254336CD0022437F /* GetMapUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetMapUITests.swift; sourceTree = "<group>"; };
 		B472F679254336CD0022437F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B472F6882544A8440022437F /* Point.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Point.swift; sourceTree = "<group>"; };
 		B4E212B62545759600485056 /* GestureControlLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestureControlLayer.swift; sourceTree = "<group>"; };
 		B4E500A02545F126001A7582 /* LocationPointViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPointViewModel.swift; sourceTree = "<group>"; };
 		B4E500A82545F170001A7582 /* LocationGetterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationGetterModel.swift; sourceTree = "<group>"; };
@@ -108,7 +106,6 @@
 				B4E500A02545F126001A7582 /* LocationPointViewModel.swift */,
 				B4E212B62545759600485056 /* GestureControlLayer.swift */,
 				B4E500A82545F170001A7582 /* LocationGetterModel.swift */,
-				B472F6882544A8440022437F /* Point.swift */,
 				B472F65E254336CD0022437F /* Assets.xcassets */,
 				B472F663254336CD0022437F /* Info.plist */,
 				B472F660254336CD0022437F /* Preview Content */,
@@ -276,7 +273,6 @@
 				B4E500A12545F126001A7582 /* LocationPointViewModel.swift in Sources */,
 				B4E500A92545F170001A7582 /* LocationGetterModel.swift in Sources */,
 				B472F65B254336CC0022437F /* GetMapApp.swift in Sources */,
-				B472F6892544A8440022437F /* Point.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
