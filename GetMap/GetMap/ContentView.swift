@@ -59,8 +59,9 @@ struct ContentView: View {
                 /* show current location point */
                 UserPoint(offset: $offset, locationGetter: locationGetter, scale: $scale)
                 /* show building location point */
-                BuildingPoints(offset: $offset, locationGetter: locationGetter, buildings: buildings, scale: $scale)
-                
+                ForEach(buildings) { building in
+                    BuildingPoint(building: building, locationGetter: locationGetter, offset: $offset, scale: $scale)
+                }
                 VStack {
                     HStack {
                         TextField( "Name of the building", text: $buildingName)
