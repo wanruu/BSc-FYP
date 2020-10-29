@@ -18,6 +18,7 @@ struct BuildingPoints: View {
     @Binding var offset: CGPoint
     @ObservedObject var locationGetter: LocationGetterModel
     @State var buildings: FetchedResults<Building>
+    @Binding var scale: CGFloat
     
     var body: some View {
         ForEach(buildings) { building in
@@ -40,6 +41,8 @@ struct UserPoint: View {
     let timer = Timer.publish(every: 0.08, on: .main, in: .common).autoconnect()
     @State var animationRadius: CGFloat = 8
     @State var up: Bool = true // animationRadius is becoming larger or not
+    
+    @Binding var scale: CGFloat
     
     var body: some View {
         let center = CGPoint(x: centerX + offset.x, y: centerY + offset.y)

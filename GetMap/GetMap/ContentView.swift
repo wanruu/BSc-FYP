@@ -26,28 +26,22 @@ struct ContentView: View {
     
     /* location getter */
     @ObservedObject var locationGetter = LocationGetterModel()
-    /* panned offset */
+    /* gesture */
     @State var lastOffset: CGPoint = CGPoint(x: 0, y: 0)
     @State var offset: CGPoint = CGPoint(x: 0, y: 0)
-
+    @State var lastScale = CGFloat(1.0)
+    @State var scale = CGFloat(1.0)
+    @GestureState var magnifyBy = CGFloat(1.0)
+    
     /* add building function */
     @State var buildingName: String = ""
 
     @State var showBuildingList: Bool = false
     
     var body: some View {
-        /* render */
         NavigationView {
+            /* TODO: ZStack necessary? */
             ZStack(alignment: .bottomLeading) {
-                GestureControlLayer { pan in
-                    if(pan.moving) {
-                        offset.x = lastOffset.x + pan.offset.x
-                        offset.y = lastOffset.y + pan.offset.y
-                    } else {
-                        lastOffset = offset
-                    }
-                }.background(Color.white)
-                
                 Path { path in
                     /* draw paths of point list */
                     for location in locationGetter.paths {
@@ -63,9 +57,9 @@ struct ContentView: View {
                 }.stroke(Color.black, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
                 
                 /* show current location point */
-                UserPoint(offset: $offset, locationGetter: locationGetter)
+                UserPoint(offset: $offset, locationGetter: locationGetter, scale: $scale)
                 /* show building location point */
-                BuildingPoints(offset: $offset, locationGetter: locationGetter, buildings: buildings)
+                BuildingPoints(offset: $offset, locationGetter: locationGetter, buildings: buildings, scale: $scale)
                 
                 VStack {
                     HStack {
@@ -89,6 +83,27 @@ struct ContentView: View {
             .sheet(isPresented: $showBuildingList) {
                 BuildingListSheet(buildings: buildings)
             }
+            .contentShape(Rectangle())
+            .gesture(
+                SimultaneousGesture(
+                    MagnificationGesture()
+                        .updating($magnifyBy) { currentState, gestureState, transaction in
+                            gestureState = currentState
+                            scale = lastScale * magnifyBy
+                        }
+                        .onEnded{ _ in
+                            lastScale = scale
+                        },
+                    DragGesture()
+                        .onChanged{ value in
+                            let changeX = value.location.x - value.startLocation.x
+                            let changeY = value.location.y - value.startLocation.y
+                            offset.x = lastOffset.x + changeX
+                            offset.y = lastOffset.y + changeY
+                        }
+                        .onEnded{ _ in lastOffset = offset}
+                )
+            )
         }
     }
     /* add current location to building list */

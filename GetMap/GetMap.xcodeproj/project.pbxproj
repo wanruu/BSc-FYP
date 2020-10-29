@@ -15,7 +15,6 @@
 		B4E500D52549DF0B001A7582 /* GetMap.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B4E500D32549DF0B001A7582 /* GetMap.xcdatamodeld */; };
 		B4E500E02549DF0B001A7582 /* GetMapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E500DF2549DF0B001A7582 /* GetMapTests.swift */; };
 		B4E500EB2549DF0B001A7582 /* GetMapUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E500EA2549DF0B001A7582 /* GetMapUITests.swift */; };
-		B4E500FC2549E003001A7582 /* GestureControlLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E500FB2549E003001A7582 /* GestureControlLayer.swift */; };
 		B4E501012549E024001A7582 /* LocationPointViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E501002549E024001A7582 /* LocationPointViewModel.swift */; };
 		B4E501062549E03B001A7582 /* LocationGetterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E501052549E03B001A7582 /* LocationGetterModel.swift */; };
 		B4E501292549F16E001A7582 /* Building+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E501272549F16E001A7582 /* Building+CoreDataClass.swift */; };
@@ -55,7 +54,6 @@
 		B4E500E62549DF0B001A7582 /* GetMapUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GetMapUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4E500EA2549DF0B001A7582 /* GetMapUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetMapUITests.swift; sourceTree = "<group>"; };
 		B4E500EC2549DF0B001A7582 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B4E500FB2549E003001A7582 /* GestureControlLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestureControlLayer.swift; sourceTree = "<group>"; };
 		B4E501002549E024001A7582 /* LocationPointViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPointViewModel.swift; sourceTree = "<group>"; };
 		B4E501052549E03B001A7582 /* LocationGetterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationGetterModel.swift; sourceTree = "<group>"; };
 		B4E5010D2549E5AB001A7582 /* GetMap.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GetMap.entitlements; sourceTree = "<group>"; };
@@ -116,7 +114,6 @@
 			children = (
 				B4E5010D2549E5AB001A7582 /* GetMap.entitlements */,
 				B4E500C82549DF08001A7582 /* GetMapApp.swift */,
-				B4E500FB2549E003001A7582 /* GestureControlLayer.swift */,
 				B4E501002549E024001A7582 /* LocationPointViewModel.swift */,
 				B4E501052549E03B001A7582 /* LocationGetterModel.swift */,
 				B4E500CA2549DF08001A7582 /* ContentView.swift */,
@@ -285,7 +282,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B4E500FC2549E003001A7582 /* GestureControlLayer.swift in Sources */,
 				B4E501292549F16E001A7582 /* Building+CoreDataClass.swift in Sources */,
 				B4E500D22549DF0B001A7582 /* Persistence.swift in Sources */,
 				B4E501012549E024001A7582 /* LocationPointViewModel.swift in Sources */,
