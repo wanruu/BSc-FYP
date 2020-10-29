@@ -6,7 +6,14 @@
         <attribute name="name_en" optional="YES" attributeType="String"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
+    <entity name="PathUnit" representedClassName="PathUnit" syncable="YES">
+        <attribute name="distance" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="end_point" optional="YES" attributeType="Transformable"/>
+        <attribute name="slope" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="start_point" optional="YES" attributeType="Transformable"/>
+    </entity>
     <elements>
         <element name="Building" positionX="-390.640625" positionY="67.7421875" width="128" height="28"/>
+        <element name="PathUnit" positionX="-360" positionY="90" width="128" height="103"/>
     </elements>
 </model>

@@ -15,14 +15,20 @@ let SCHeight = UIScreen.main.bounds.height
 
 /* center */
 let centerX = SCWidth/2
-let centerY = SCHeight/2
+let centerY = SCHeight/2 - 100
 
 struct ContentView: View {
+    /* Core data */
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Building.name_en, ascending: true)],
         animation: .default)
     var buildings: FetchedResults<Building>
+    
+    @FetchRequest(
+        sortDescriptors: [],
+        animation: .default)
+    var pathUnits: FetchedResults<PathUnit>
     
     /* location getter */
     @ObservedObject var locationGetter = LocationGetterModel()
@@ -39,10 +45,12 @@ struct ContentView: View {
     @State var showBuildingList: Bool = false
     
     var body: some View {
-        NavigationView {
+        print(pathUnits)
+        return NavigationView {
             /* TODO: ZStack necessary? */
             ZStack(alignment: .bottomLeading) {
-                Path { path in
+                /* recording user paths */
+                /* Path { path in
                     /* draw paths of point list */
                     for location in locationGetter.paths {
                         /* 1m = 2 (of screen) = 1/111000(latitude) = 1/85390(longitude) */
@@ -54,30 +62,37 @@ struct ContentView: View {
                             path.addLine(to: CGPoint(x: x, y: y))
                         }
                     }
-                }.stroke(Color.black, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+                }.stroke(Color.gray, style: StrokeStyle(lineWidth: 3, lineJoin: .round))*/
+                
+                /* show existing paths */
+                ForEach(pathUnits) { pathUnit in
+                    StraightPath(pathUnit: pathUnit, locationGetter: locationGetter, offset: $offset, scale: $scale)
+                }
                 
                 /* show current location point */
                 UserPoint(offset: $offset, locationGetter: locationGetter, scale: $scale)
+                
                 /* show building location point */
                 ForEach(buildings) { building in
                     BuildingPoint(building: building, locationGetter: locationGetter, offset: $offset, scale: $scale)
                 }
                 
-                HStack {
-                    TextField( "Name of the building", text: $buildingName)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                    Button(action: {
-                        guard buildingName != "" else { return }
-                        addBuilding()
-                        buildingName = ""
-                    } ){ Text("Add") }
-                        .padding()
-                }.padding()
+                VStack {
+                    Text("(\(locationGetter.current.coordinate.latitude), \(locationGetter.current.coordinate.longitude))")
+                    HStack {
+                        TextField( "Name of the building", text: $buildingName).textFieldStyle(RoundedBorderTextFieldStyle())
+                        Button(action: {
+                            guard buildingName != "" else { return }
+                            addBuilding()
+                            buildingName = ""
+                        } ){ Text("Add") }.padding()
+                    }.padding()
+                }
             }
-            .navigationBarItems(trailing: Button(action: {
-                showBuildingList = true
-            }) {
-                Text("Buildings")
+            .navigationBarItems(trailing: VStack {
+                Button(action: { showBuildingList = true }) { Text("Buildings") }
+                Button(action: { addPathUnit() }) { Text("Add Path Unit") }
+                Button(action: { deletePathUnit(offsets: IndexSet(integer: 0)) }) { Text("Delete first path unit") }
             })
             .sheet(isPresented: $showBuildingList) {
                 BuildingListSheet(buildings: buildings)
@@ -103,6 +118,35 @@ struct ContentView: View {
                         .onEnded{ _ in lastOffset = offset}
                 )
             )
+        }
+    }
+    /* add a unit path */
+    private func addPathUnit() {
+        withAnimation {
+            let newPathUnit = PathUnit(context: viewContext)
+            /* PathUnit information */
+            newPathUnit.start_point = [37, -122, 0]
+            newPathUnit.end_point = [38, -122, 2]
+            newPathUnit.distance = 0
+            newPathUnit.slope = 0
+            do {
+                try viewContext.save()
+                print("New Path saved.")
+            } catch {
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
+        }
+    }
+    private func deletePathUnit(offsets: IndexSet) {
+        withAnimation {
+            offsets.map { pathUnits[$0] }.forEach(viewContext.delete)
+            do {
+                try viewContext.save()
+            } catch {
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
         }
     }
     /* add current location to building list */
