@@ -62,18 +62,16 @@ struct ContentView: View {
                 ForEach(buildings) { building in
                     BuildingPoint(building: building, locationGetter: locationGetter, offset: $offset, scale: $scale)
                 }
-                VStack {
-                    HStack {
-                        TextField( "Name of the building", text: $buildingName)
-                             .textFieldStyle(RoundedBorderTextFieldStyle())
-                        Button(action: {
-                            guard buildingName != "" else { return }
-                            addBuilding()
-                            buildingName = ""
-                        } ){ Text("Add") }
-                            .padding()
-                    }
-                     
+                
+                HStack {
+                    TextField( "Name of the building", text: $buildingName)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                    Button(action: {
+                        guard buildingName != "" else { return }
+                        addBuilding()
+                        buildingName = ""
+                    } ){ Text("Add") }
+                        .padding()
                 }.padding()
             }
             .navigationBarItems(trailing: Button(action: {

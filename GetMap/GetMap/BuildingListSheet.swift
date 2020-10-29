@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 struct BuildingListSheet: View {
+    @Environment(\.managedObjectContext) private var viewContext
     @State var buildings: FetchedResults<Building>
     var body: some View {
         VStack {
@@ -20,10 +21,16 @@ struct BuildingListSheet: View {
                         Text("(\(building.latitude), \(building.longitude))").font(.subheadline)
                     }
                 }
+                .onDelete{ indexSet in
+                    for index in indexSet {
+                        viewContext.delete(buildings[index])
+                    }
+                    do {
+                        try viewContext.save()
+                    } catch {
+                        print(error.localizedDescription)
+                    }}
             }
-            
         }
-        
-        
     }
 }
