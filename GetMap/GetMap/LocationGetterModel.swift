@@ -26,24 +26,15 @@ class LocationGetterModel: NSObject, ObservableObject {
         /* delegate */
         manager.delegate = self
         /* the minimum distance (m) a device must move horizontally before an update event is generated */
-        manager.distanceFilter = 10;
+        manager.distanceFilter = 3;
         /* the accuracy of the location data our app wants to receive */
-        manager.desiredAccuracy = 10;
-        
-        /* only update location when using app */
-        // manager.allowsBackgroundLocationUpdates = true
-        // manager.requestWhenInUseAuthorization()
+        manager.desiredAccuracy = kCLLocationAccuracyBest;
         
         /* always update location */
         manager.requestAlwaysAuthorization()
-        
-        /* authorization check */
-        /* see if needed later*/
-        //if(manager.authorizationStatus.rawValue == 0) {
-        //    print("No authorization")
-        //} else {
-        //    print("Authorization OK")
-        //}
+        if #available(iOS 9.0, *) {
+            manager.allowsBackgroundLocationUpdates = true
+        }
         
         /* start updating location */
         manager.startUpdatingLocation()

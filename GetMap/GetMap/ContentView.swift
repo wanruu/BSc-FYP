@@ -50,7 +50,7 @@ struct ContentView: View {
             /* TODO: ZStack necessary? */
             ZStack(alignment: .bottomLeading) {
                 /* recording user paths */
-                /* Path { path in
+                Path { path in
                     /* draw paths of point list */
                     for location in locationGetter.paths {
                         /* 1m = 2 (of screen) = 1/111000(latitude) = 1/85390(longitude) */
@@ -62,7 +62,7 @@ struct ContentView: View {
                             path.addLine(to: CGPoint(x: x, y: y))
                         }
                     }
-                }.stroke(Color.gray, style: StrokeStyle(lineWidth: 3, lineJoin: .round))*/
+                }.stroke(Color.gray, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
                 
                 /* show existing paths */
                 ForEach(pathUnits) { pathUnit in
@@ -131,13 +131,14 @@ struct ContentView: View {
             newPathUnit.slope = 0
             do {
                 try viewContext.save()
-                print("New Path saved.")
+                print("New Path unit saved.")
             } catch {
                 let nsError = error as NSError
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
         }
     }
+    /* delete unit path */
     private func deletePathUnit(offsets: IndexSet) {
         withAnimation {
             offsets.map { pathUnits[$0] }.forEach(viewContext.delete)
@@ -162,8 +163,6 @@ struct ContentView: View {
                 try viewContext.save()
                 print("New Building saved.")
             } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
                 let nsError = error as NSError
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
