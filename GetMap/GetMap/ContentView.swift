@@ -38,17 +38,12 @@ struct ContentView: View {
     @State var lastScale = CGFloat(1.0)
     @State var scale = CGFloat(1.0)
     @GestureState var magnifyBy = CGFloat(1.0)
-    
-    /* add building function */
-    @State var buildingName: String = ""
 
-    @State var showBuildingList: Bool = false
-    
+    @State var showFunctionSheet: Bool = false
     var body: some View {
-        print(pathUnits)
-        return NavigationView {
+        NavigationView {
             /* TODO: ZStack necessary? */
-            ZStack(alignment: .bottomLeading) {
+            ZStack(alignment: .bottom) {
                 /* recording user paths */
                 Path { path in
                     /* draw paths of point list */
@@ -68,7 +63,6 @@ struct ContentView: View {
                 ForEach(pathUnits) { pathUnit in
                     StraightPath(pathUnit: pathUnit, locationGetter: locationGetter, offset: $offset, scale: $scale)
                 }
-                
                 /* show current location point */
                 UserPoint(offset: $offset, locationGetter: locationGetter, scale: $scale)
                 
@@ -76,26 +70,31 @@ struct ContentView: View {
                 ForEach(buildings) { building in
                     BuildingPoint(building: building, locationGetter: locationGetter, offset: $offset, scale: $scale)
                 }
-                
                 VStack {
-                    Text("(\(locationGetter.current.coordinate.latitude), \(locationGetter.current.coordinate.longitude))")
-                    HStack {
-                        TextField( "Name of the building", text: $buildingName).textFieldStyle(RoundedBorderTextFieldStyle())
-                        Button(action: {
-                            guard buildingName != "" else { return }
-                            addBuilding()
-                            buildingName = ""
-                        } ){ Text("Add") }.padding()
-                    }.padding()
+                    Divider()
+                    Button(action: {
+                        showFunctionSheet = true
+                    }) {
+                        VStack {
+                            Text("^^^")
+                            Text("(\(locationGetter.current.coordinate.latitude), \(locationGetter.current.coordinate.longitude))")
+                        }
+                    }
                 }
+                .contentShape(Rectangle())
             }
-            .navigationBarItems(trailing: VStack {
-                Button(action: { showBuildingList = true }) { Text("Buildings") }
-                Button(action: { addPathUnit() }) { Text("Add Path Unit") }
-                Button(action: { deletePathUnit(offsets: IndexSet(integer: 0)) }) { Text("Delete first path unit") }
+            .navigationBarItems(trailing: HStack {
+                // Button(action: { addPathUnit() }) { Text("Add Path Unit") }
+                // Button(action: { deletePathUnit(offsets: IndexSet(integer: 0)) }) { Text("Delete first path unit") }
+                Button(action: { }) { Text("Upload")}
+                Text(" / ")
+                Button(action: {
+                    locationGetter.paths = []
+                    locationGetter.paths.append(locationGetter.current)
+                }) { Text("Discard") }
             })
-            .sheet(isPresented: $showBuildingList) {
-                BuildingListSheet(buildings: buildings)
+            .sheet(isPresented: $showFunctionSheet) {
+                FunctionSheet(locationGetter: locationGetter, buildings: buildings)
             }
             .contentShape(Rectangle())
             .gesture(
@@ -120,6 +119,7 @@ struct ContentView: View {
             )
         }
     }
+    /*
     /* add a unit path */
     private func addPathUnit() {
         withAnimation {
@@ -149,39 +149,7 @@ struct ContentView: View {
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
         }
-    }
-    /* add current location to building list */
-    private func addBuilding() {
-        withAnimation {
-            let newBuilding = Building(context: viewContext)
-            /* building information */
-            newBuilding.timestamp = Date()
-            newBuilding.name_en = buildingName
-            newBuilding.latitude = locationGetter.current.coordinate.latitude
-            newBuilding.longitude = locationGetter.current.coordinate.longitude
-            do {
-                try viewContext.save()
-                print("New Building saved.")
-            } catch {
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
-    /* TODO: modify it */
-    private func deleteBuildings(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { buildings[$0] }.forEach(viewContext.delete)
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
+    } */
 }
 
 struct ContentView_Previews: PreviewProvider {
