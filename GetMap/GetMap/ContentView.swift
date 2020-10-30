@@ -89,7 +89,10 @@ struct ContentView: View {
             .navigationBarItems(trailing: HStack {
                 Button(action: { deletePathUnit(offsets: IndexSet(integer: 0)) }) { Text("Delete first path unit") }
                 Text(" / ")
-                Button(action: { uploadPath() }) { Text("Upload")}
+                Button(action: {
+                    partition()
+                    // cleanPaths()
+                }) { Text("Upload")}
                 Text(" / ")
                 Button(action: {
                     cleanPaths()
@@ -120,18 +123,6 @@ struct ContentView: View {
                 )
             )
         }
-    }
-    private func uploadPath() {
-        /* test data */
-        locationGetter.paths = [[
-            CLLocation(latitude: 0, longitude: 0),
-            CLLocation(latitude: 0.00002, longitude: 0.00008),
-            CLLocation(latitude: 0.00001, longitude: 0.00013),
-            CLLocation(latitude: -0.00002, longitude: 0.00016),
-            CLLocation(latitude: 0, longitude: 0.00026),
-        ]]
-        partition()
-        // cleanPaths()
     }
     /* process paths, to path unit */
     private func partition() {
@@ -173,6 +164,7 @@ struct ContentView: View {
     /* remove all data in locationGetter.paths */
     private func cleanPaths() {
         locationGetter.paths = []
+        locationGetter.paths.append([])
         locationGetter.pathCount = 0
         locationGetter.paths[0].append(locationGetter.current)
     }
