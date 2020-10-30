@@ -17,12 +17,14 @@ class LocationGetterModel: NSObject, ObservableObject {
     /* current location information */
     @Published var current: CLLocation = CLLocation(latitude: 0, longitude: 0)
     /* list of points/locations */
-    @Published var paths: [CLLocation] = []
+    @Published var paths: [[CLLocation]] = []
+    @Published var pathCount: Int = 0
     /* direction of user */
     @Published var heading: Double = 0
 
     override init() {
         super.init()
+        paths.append([])
         /* delegate */
         manager.delegate = self
         /* the minimum distance (m) a device must move horizontally before an update event is generated */
@@ -50,13 +52,21 @@ extension LocationGetterModel: CLLocationManagerDelegate {
         /* ensure able to get location info */
         guard let newLocation = locations.last else { return }
         current = newLocation
+        /* if not accurate, don't update this path anymore */
+        if(newLocation.horizontalAccuracy > 10) {
+            if(paths[pathCount].count != 0) {
+                pathCount += 1
+                paths.append([])
+            }
+            return
+        }
         /* only append to current if location changes */
-        if(paths.count == 0) {
-            paths.append(current)
+        if(paths[pathCount].count == 0) {
+            paths[pathCount].append(current)
         } else {
-            let lastLocation = paths[paths.count - 1]
+            let lastLocation = paths[pathCount][paths[pathCount].count - 1]
             if(lastLocation.coordinate.latitude != newLocation.coordinate.latitude && lastLocation.coordinate.longitude != newLocation.coordinate.longitude) {
-                paths.append(current)
+                paths[pathCount].append(current)
             }
         }
     }
