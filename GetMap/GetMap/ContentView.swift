@@ -87,8 +87,8 @@ struct ContentView: View {
                 .contentShape(Rectangle())
             }
             .navigationBarItems(trailing: HStack {
-                // Button(action: { addPathUnit() }) { Text("Add Path Unit") }
-                // Button(action: { deletePathUnit(offsets: IndexSet(integer: 0)) }) { Text("Delete first path unit") }
+                Button(action: { deletePathUnit(offsets: IndexSet(integer: 0)) }) { Text("Delete first path unit") }
+                Text(" / ")
                 Button(action: { uploadPath() }) { Text("Upload")}
                 Text(" / ")
                 Button(action: {
@@ -162,6 +162,12 @@ struct ContentView: View {
             /* add ending point to cp */
             cp.append(path[path.count - 1])
             print(cp)
+            
+            /* TODO: modify after test */
+            /* upload cp to database */
+            for i in 0...(cp.count-2) {
+                addPathUnit(start: cp[i], end: cp[i+1])
+            }
         }
     }
     /* remove all data in locationGetter.paths */
@@ -171,14 +177,14 @@ struct ContentView: View {
         locationGetter.paths[0].append(locationGetter.current)
     }
     /* add a unit path */
-    private func addPathUnit() {
+    private func addPathUnit(start: CLLocation, end: CLLocation) {
         withAnimation {
             let newPathUnit = PathUnit(context: viewContext)
             /* PathUnit information */
-            newPathUnit.start_point = [37, -122, 0]
-            newPathUnit.end_point = [38, -122, 2]
-            newPathUnit.distance = 0
-            newPathUnit.slope = 0
+            newPathUnit.start_point = [start.coordinate.latitude, start.coordinate.longitude, start.altitude]
+            newPathUnit.end_point = [end.coordinate.latitude, end.coordinate.longitude, end.altitude]
+            newPathUnit.distance = start.distance(from: end)
+            newPathUnit.slope = end.altitude - start.altitude
             do {
                 try viewContext.save()
                 print("New Path unit saved.")
@@ -191,6 +197,9 @@ struct ContentView: View {
     /* delete unit path */
     private func deletePathUnit(offsets: IndexSet) {
         withAnimation {
+            if(pathUnits.count == 0) {
+                return
+            }
             offsets.map { pathUnits[$0] }.forEach(viewContext.delete)
             do {
                 try viewContext.save()
