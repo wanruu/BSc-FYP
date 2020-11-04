@@ -15,7 +15,11 @@ let SCHeight = UIScreen.main.bounds.height
 
 /* center */
 let centerX = SCWidth/2
-let centerY = SCHeight/2 - 100
+let centerY = SCHeight/2 - 150
+
+/* zoom in/out limit */
+let maxZoomIn: CGFloat = 10.0
+let minZoomOut: CGFloat = 0.1
 
 struct ContentView: View {
     /* Core data */
@@ -100,9 +104,15 @@ struct ContentView: View {
                     MagnificationGesture()
                         .updating($magnifyBy) { currentState, gestureState, transaction in
                             gestureState = currentState
-                            scale = lastScale * magnifyBy
-                            offset.x = lastOffset.x * scale
-                            offset.y = lastOffset.y * scale
+                            var tmpScale = lastScale * magnifyBy
+                            if(tmpScale < minZoomOut) {
+                                tmpScale = minZoomOut
+                            } else if(tmpScale > maxZoomIn) {
+                                tmpScale = maxZoomIn
+                            }
+                            scale = tmpScale
+                            offset.x = lastOffset.x * tmpScale / lastScale
+                            offset.y = lastOffset.y * tmpScale / lastScale
                         }
                         .onEnded{ _ in
                             lastScale = scale
@@ -110,12 +120,10 @@ struct ContentView: View {
                         },
                     DragGesture()
                         .onChanged{ value in
-                            let changeX = scale * (value.location.x - value.startLocation.x)
-                            let changeY = scale * (value.location.y - value.startLocation.y)
-                            offset.x = lastOffset.x + changeX
-                            offset.y = lastOffset.y + changeY
+                            offset.x = lastOffset.x + value.location.x - value.startLocation.x
+                            offset.y = lastOffset.y + value.location.y - value.startLocation.y
                         }
-                        .onEnded{ _ in lastOffset = offset}
+                        .onEnded{ _ in lastOffset = offset }
                 )
             )
         }
