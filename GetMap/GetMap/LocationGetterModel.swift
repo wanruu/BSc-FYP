@@ -53,7 +53,7 @@ extension LocationGetterModel: CLLocationManagerDelegate {
         guard let newLocation = locations.last else { return }
         current = newLocation
         /* if not accurate, don't update this path anymore */
-        if(newLocation.horizontalAccuracy > 10) {
+        if(newLocation.horizontalAccuracy > 20) {
             if(paths[pathCount].count != 0) {
                 pathCount += 1
                 paths.append([])
