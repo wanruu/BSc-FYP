@@ -20,15 +20,8 @@ let centerY = SCHeight/2 - 100
 struct ContentView: View {
     /* Core data */
     @Environment(\.managedObjectContext) private var viewContext
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Building.name_en, ascending: true)],
-        animation: .default)
-    var buildings: FetchedResults<Building>
-    
-    @FetchRequest(
-        sortDescriptors: [],
-        animation: .default)
-    var pathUnits: FetchedResults<PathUnit>
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Building.name_en, ascending: true)], animation: .default) var buildings: FetchedResults<Building>
+    @FetchRequest(sortDescriptors: [], animation: .default) var pathUnits: FetchedResults<PathUnit>
     
     /* location getter */
     @ObservedObject var locationGetter = LocationGetterModel()
@@ -44,7 +37,7 @@ struct ContentView: View {
         NavigationView {
             /* TODO: ZStack necessary? */
             ZStack(alignment: .bottom) {
-                /* recording user paths */
+                /* show user paths */
                 Path { p in
                     /* draw paths of point list */
                     for path in locationGetter.paths {
@@ -108,14 +101,17 @@ struct ContentView: View {
                         .updating($magnifyBy) { currentState, gestureState, transaction in
                             gestureState = currentState
                             scale = lastScale * magnifyBy
+                            offset.x = lastOffset.x * scale
+                            offset.y = lastOffset.y * scale
                         }
                         .onEnded{ _ in
                             lastScale = scale
+                            lastOffset = offset
                         },
                     DragGesture()
                         .onChanged{ value in
-                            let changeX = value.location.x - value.startLocation.x
-                            let changeY = value.location.y - value.startLocation.y
+                            let changeX = scale * (value.location.x - value.startLocation.x)
+                            let changeY = scale * (value.location.y - value.startLocation.y)
                             offset.x = lastOffset.x + changeX
                             offset.y = lastOffset.y + changeY
                         }
