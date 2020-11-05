@@ -138,7 +138,6 @@ struct ContentView: View {
             /* add ending point to cp */
             cp.append(path[path.count - 1])
             
-            /* TODO: modify after test */
             /* upload cp to database */
             for i in 0...(cp.count-2) {
                 addPathUnit(start: cp[i], end: cp[i+1])
@@ -158,8 +157,6 @@ struct ContentView: View {
         /* PathUnit information */
         newPathUnit.start_point = [start.coordinate.latitude, start.coordinate.longitude, start.altitude]
         newPathUnit.end_point = [end.coordinate.latitude, end.coordinate.longitude, end.altitude]
-        newPathUnit.distance = start.distance(from: end)
-        newPathUnit.height = end.altitude - start.altitude
         do { try viewContext.save() }
         catch { fatalError("Error in addPathUnit.") }
     }
