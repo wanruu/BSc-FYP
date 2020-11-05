@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 /* screen info */
 let SCWidth = UIScreen.main.bounds.width

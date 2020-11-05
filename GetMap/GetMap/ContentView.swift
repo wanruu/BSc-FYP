@@ -59,12 +59,15 @@ struct ContentView: View {
                 .contentShape(Rectangle())
             }
             .navigationBarItems(trailing: HStack {
-                Button(action: { deletePathUnit(offsets: IndexSet(integer: 0)) }) { Text("Delete first path unit") }
+                Button(action: {
+                    let indexSet = IndexSet(0..<pathUnits.count)
+                    deletePathUnit(offsets: indexSet)
+                }) { Text("Delete All") }
                 Text(" / ")
                 Button(action: {
                     partition()
                     // cleanPaths()
-                }) { Text("Upload")}
+                }) { Text("Upload") }
                 Text(" / ")
                 Button(action: {
                     cleanPaths()
@@ -149,36 +152,21 @@ struct ContentView: View {
     }
     /* add a unit path */
     private func addPathUnit(start: CLLocation, end: CLLocation) {
-        withAnimation {
-            let newPathUnit = PathUnit(context: viewContext)
-            /* PathUnit information */
-            newPathUnit.start_point = [start.coordinate.latitude, start.coordinate.longitude, start.altitude]
-            newPathUnit.end_point = [end.coordinate.latitude, end.coordinate.longitude, end.altitude]
-            newPathUnit.distance = start.distance(from: end)
-            newPathUnit.slope = end.altitude - start.altitude
-            do {
-                try viewContext.save()
-                print("New Path unit saved.")
-            } catch {
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
+        let newPathUnit = PathUnit(context: viewContext)
+        /* PathUnit information */
+        newPathUnit.start_point = [start.coordinate.latitude, start.coordinate.longitude, start.altitude]
+        newPathUnit.end_point = [end.coordinate.latitude, end.coordinate.longitude, end.altitude]
+        newPathUnit.distance = start.distance(from: end)
+        newPathUnit.slope = end.altitude - start.altitude
+        do { try viewContext.save() }
+        catch { fatalError("Error in addPathUnit.") }
     }
     /* delete unit path */
     private func deletePathUnit(offsets: IndexSet) {
-        withAnimation {
-            if(pathUnits.count == 0) {
-                return
-            }
-            offsets.map { pathUnits[$0] }.forEach(viewContext.delete)
-            do {
-                try viewContext.save()
-            } catch {
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
+        if(pathUnits.count == 0) { return }
+        offsets.map { pathUnits[$0] }.forEach(viewContext.delete)
+        do { try viewContext.save() }
+        catch { fatalError("Error in deletePathUnit.") }
     }
 }
 
