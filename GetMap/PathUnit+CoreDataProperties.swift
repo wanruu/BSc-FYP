@@ -17,7 +17,7 @@ extension PathUnit {
     }
 
     @NSManaged public var distance: Double
-    @NSManaged public var slope: Double
+    @NSManaged public var height: Double
     @NSManaged public var start_point: [Double]
     @NSManaged public var end_point: [Double]
 

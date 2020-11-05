@@ -157,7 +157,7 @@ struct ContentView: View {
         newPathUnit.start_point = [start.coordinate.latitude, start.coordinate.longitude, start.altitude]
         newPathUnit.end_point = [end.coordinate.latitude, end.coordinate.longitude, end.altitude]
         newPathUnit.distance = start.distance(from: end)
-        newPathUnit.slope = end.altitude - start.altitude
+        newPathUnit.height = end.altitude - start.altitude
         do { try viewContext.save() }
         catch { fatalError("Error in addPathUnit.") }
     }

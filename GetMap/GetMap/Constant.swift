@@ -17,5 +17,5 @@ let centerX = SCWidth/2
 let centerY = SCHeight/2 - 150
 
 /* zoom in/out limit */
-let maxZoomIn: CGFloat = 10.0
+let maxZoomIn: CGFloat = 8.0
 let minZoomOut: CGFloat = 0.1
