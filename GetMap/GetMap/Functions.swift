@@ -43,12 +43,10 @@ func MDLPar(path: [CLLocation], startIndex: Int, endIndex: Int) -> Double {
     /* distance between two charateristic points */
     var angleSum = 0.0
     var perpSum = 0.0
-    let x1: Double = path[startIndex].coordinate.latitude
-    let y1: Double = path[startIndex].coordinate.longitude
-    let z1: Double = path[startIndex].altitude
-    let x2: Double = path[endIndex].coordinate.latitude
-    let y2: Double = path[endIndex].coordinate.longitude
-    let z2: Double = path[endIndex].altitude
+
+    let diffX = (path[startIndex].coordinate.latitude - path[endIndex].coordinate.latitude) * laScale
+    let diffY = (path[startIndex].coordinate.longitude - path[endIndex].coordinate.longitude) * lgScale
+    let diffZ = path[startIndex].altitude - path[endIndex].altitude
 
     for index in startIndex...(endIndex - 1) {
         let dist = computDistance(locations: [path[startIndex], path[endIndex], path[index], path[index+1]])
@@ -57,7 +55,7 @@ func MDLPar(path: [CLLocation], startIndex: Int, endIndex: Int) -> Double {
         /* angle distance */
         angleSum += dist.angle
     }
-    let LH: Double = log2(pow((x1-x2)*(x1-x2)*111000 + (y1-y2)*(y1-y2)*85390 + (z1-z2)*(z1-z2), 0.5))
+    let LH: Double = log2( pow( diffX * diffX + diffY * diffY + diffZ * diffZ, 0.5 ) )
     let LH_D = log2(angleSum) + log2(perpSum)
     return LH + LH_D
 }
@@ -66,10 +64,10 @@ func MDLNotPar(path: [CLLocation], startIndex: Int, endIndex: Int) -> Double {
     var LH: Double = 0
     // LH_D = 0 under this situation
     for index in startIndex...(endIndex - 1) {
-        let diffX: Double = (path[index].coordinate.latitude - path[index+1].coordinate.latitude) * 111000
-        let diffY: Double = (path[index].coordinate.longitude - path[index+1].coordinate.longitude) * 85390
+        let diffX: Double = (path[index].coordinate.latitude - path[index+1].coordinate.latitude) * laScale
+        let diffY: Double = (path[index].coordinate.longitude - path[index+1].coordinate.longitude) * lgScale
         let diffZ: Double = path[index].altitude - path[index+1].altitude
-        LH += log2( pow( diffX*diffX+diffY*diffY+diffZ*diffZ, 0.5 ) )
+        LH += log2( pow( diffX * diffX + diffY * diffY + diffZ * diffZ, 0.5 ) )
     }
     return LH
 }
@@ -94,8 +92,8 @@ func computDistance(locations: [CLLocation]) -> Distance {
     points.append(Point(x: 0, y: 0, z: 0)) // regard points[0] as origin
     for index in 1...3 {
         let point = Point(
-            x: (locations[index].coordinate.latitude - locations[0].coordinate.latitude) * 111000,
-            y: (locations[index].coordinate.longitude - locations[0].coordinate.longitude) * 85390,
+            x: (locations[index].coordinate.latitude - locations[0].coordinate.latitude) * laScale,
+            y: (locations[index].coordinate.longitude - locations[0].coordinate.longitude) * lgScale,
             z: locations[index].altitude - locations[0].altitude)
         points.append(point)
     }

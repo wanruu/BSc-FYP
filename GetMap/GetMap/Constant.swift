@@ -19,3 +19,7 @@ let centerY = SCHeight/2 - 150
 /* zoom in/out limit */
 let maxZoomIn: CGFloat = 8.0
 let minZoomOut: CGFloat = 0.1
+
+/* 1 degree of latitude & longitude: how many meters in real world? */
+let laScale = 111000.0
+let lgScale = 85390.0
