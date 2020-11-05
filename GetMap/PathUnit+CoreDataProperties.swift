@@ -8,7 +8,7 @@
 
 import Foundation
 import CoreData
-
+import SwiftUI
 
 extension PathUnit {
 
@@ -16,8 +16,8 @@ extension PathUnit {
         return NSFetchRequest<PathUnit>(entityName: "PathUnit")
     }
 
-    @NSManaged public var start_point: [Double]
-    @NSManaged public var end_point: [Double]
+    @NSManaged public var start_point: CLLocation
+    @NSManaged public var end_point: CLLocation
 
 }
 

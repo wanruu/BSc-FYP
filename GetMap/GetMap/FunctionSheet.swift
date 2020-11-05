@@ -46,10 +46,10 @@ struct FunctionSheet: View {
     private func addBuilding() {
         let newBuilding = Building(context: viewContext)
         /* building information */
-        newBuilding.timestamp = Date()
         newBuilding.name_en = buildingName
         newBuilding.latitude = locationGetter.current.coordinate.latitude
         newBuilding.longitude = locationGetter.current.coordinate.longitude
+        newBuilding.altitude = locationGetter.current.altitude
         do { try viewContext.save() }
         catch { fatalError("Error in addBuilding.") }
     }

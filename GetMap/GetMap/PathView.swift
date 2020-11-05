@@ -41,12 +41,12 @@ struct StraightPath: View {
     var body: some View {
         Path { path in
             let p1 = CGPoint(
-                x: centerX + CGFloat((pathUnit.start_point[1] - locationGetter.current.coordinate.longitude)*85390*2) * scale + offset.x,
-                y: centerY + CGFloat((locationGetter.current.coordinate.latitude - pathUnit.start_point[0])*111000*2) * scale + offset.y
+                x: centerX + CGFloat((pathUnit.start_point.coordinate.longitude - locationGetter.current.coordinate.longitude)*85390*2) * scale + offset.x,
+                y: centerY + CGFloat((locationGetter.current.coordinate.latitude - pathUnit.start_point.coordinate.latitude)*111000*2) * scale + offset.y
             )
             let p2 = CGPoint(
-                x: centerX + CGFloat((pathUnit.end_point[1] - locationGetter.current.coordinate.longitude)*85390*2) * scale + offset.x,
-                y: centerY + CGFloat((locationGetter.current.coordinate.latitude - pathUnit.end_point[0])*111000*2) * scale + offset.y
+                x: centerX + CGFloat((pathUnit.end_point.coordinate.longitude - locationGetter.current.coordinate.longitude)*85390*2) * scale + offset.x,
+                y: centerY + CGFloat((locationGetter.current.coordinate.latitude - pathUnit.end_point.coordinate.latitude)*111000*2) * scale + offset.y
             )
             path.move(to: p1)
             path.addLine(to: p2)

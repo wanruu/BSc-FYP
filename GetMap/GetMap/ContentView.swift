@@ -155,8 +155,8 @@ struct ContentView: View {
     private func addPathUnit(start: CLLocation, end: CLLocation) {
         let newPathUnit = PathUnit(context: viewContext)
         /* PathUnit information */
-        newPathUnit.start_point = [start.coordinate.latitude, start.coordinate.longitude, start.altitude]
-        newPathUnit.end_point = [end.coordinate.latitude, end.coordinate.longitude, end.altitude]
+        newPathUnit.start_point = start
+        newPathUnit.end_point = end
         do { try viewContext.save() }
         catch { fatalError("Error in addPathUnit.") }
     }

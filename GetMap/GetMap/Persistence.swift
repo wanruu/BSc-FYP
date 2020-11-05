@@ -17,7 +17,6 @@ struct PersistenceController {
         let viewContext = result.container.viewContext
         for _ in 0..<10 {
             let newBuilding = Building(context: viewContext)
-            newBuilding.timestamp = Date()
             newBuilding.name_en = "test"
             newBuilding.latitude = 0
             newBuilding.longitude = 0
