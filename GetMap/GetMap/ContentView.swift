@@ -9,18 +9,6 @@ import SwiftUI
 import CoreData
 import Foundation
 
-/* screen info */
-let SCWidth = UIScreen.main.bounds.width
-let SCHeight = UIScreen.main.bounds.height
-
-/* center */
-let centerX = SCWidth/2
-let centerY = SCHeight/2 - 150
-
-/* zoom in/out limit */
-let maxZoomIn: CGFloat = 10.0
-let minZoomOut: CGFloat = 0.1
-
 struct ContentView: View {
     /* Core data */
     @Environment(\.managedObjectContext) private var viewContext
@@ -41,34 +29,21 @@ struct ContentView: View {
         NavigationView {
             /* TODO: ZStack necessary? */
             ZStack(alignment: .bottom) {
-                /* show user paths */
-                Path { p in
-                    /* draw paths of point list */
-                    for path in locationGetter.paths {
-                        for location in path {
-                            /* 1m = 2 (of screen) = 1/111000(latitude) = 1/85390(longitude) */
-                            let x = centerX + CGFloat((location.coordinate.longitude - locationGetter.current.coordinate.longitude)*85390*2) + offset.x
-                            let y = centerY + CGFloat((locationGetter.current.coordinate.latitude - location.coordinate.latitude)*111000*2) + offset.y
-                            if(location == path[0]) {
-                                p.move(to: CGPoint(x: x, y: y))
-                            } else {
-                                p.addLine(to: CGPoint(x: x, y: y))
-                            }
-                        }
-                    }
-                }.stroke(Color.gray, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+                /* user paths */
+                UserPath(locationGetter: locationGetter, offset: $offset, scale: $scale)
                 
-                /* show existing paths */
+                /* existing paths */
                 ForEach(pathUnits) { pathUnit in
                     StraightPath(pathUnit: pathUnit, locationGetter: locationGetter, offset: $offset, scale: $scale)
                 }
-                /* show current location point */
+                /* current location point */
                 UserPoint(offset: $offset, locationGetter: locationGetter, scale: $scale)
                 
-                /* show building location point */
+                /* building location point */
                 ForEach(buildings) { building in
                     BuildingPoint(building: building, locationGetter: locationGetter, offset: $offset, scale: $scale)
                 }
+                
                 VStack {
                     Divider()
                     Button(action: {

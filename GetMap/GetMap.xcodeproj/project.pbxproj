@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B415086D2553E5BB005460A3 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = B415086C2553E5BB005460A3 /* Constant.swift */; };
 		B4E500C92549DF08001A7582 /* GetMapApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E500C82549DF08001A7582 /* GetMapApp.swift */; };
 		B4E500CB2549DF08001A7582 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E500CA2549DF08001A7582 /* ContentView.swift */; };
 		B4E500CD2549DF0B001A7582 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B4E500CC2549DF0B001A7582 /* Assets.xcassets */; };
@@ -15,13 +16,13 @@
 		B4E500D52549DF0B001A7582 /* GetMap.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B4E500D32549DF0B001A7582 /* GetMap.xcdatamodeld */; };
 		B4E500E02549DF0B001A7582 /* GetMapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E500DF2549DF0B001A7582 /* GetMapTests.swift */; };
 		B4E500EB2549DF0B001A7582 /* GetMapUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E500EA2549DF0B001A7582 /* GetMapUITests.swift */; };
-		B4E501012549E024001A7582 /* LocationPointViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E501002549E024001A7582 /* LocationPointViewModel.swift */; };
+		B4E501012549E024001A7582 /* LocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E501002549E024001A7582 /* LocationView.swift */; };
 		B4E501062549E03B001A7582 /* LocationGetterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E501052549E03B001A7582 /* LocationGetterModel.swift */; };
 		B4E501292549F16E001A7582 /* Building+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E501272549F16E001A7582 /* Building+CoreDataClass.swift */; };
 		B4E5012A2549F16E001A7582 /* Building+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E501282549F16E001A7582 /* Building+CoreDataProperties.swift */; };
 		B4E50140254AA4E1001A7582 /* PathUnit+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E5013E254AA4E1001A7582 /* PathUnit+CoreDataClass.swift */; };
 		B4E50141254AA4E1001A7582 /* PathUnit+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E5013F254AA4E1001A7582 /* PathUnit+CoreDataProperties.swift */; };
-		B4E50146254AAD4B001A7582 /* PathViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E50145254AAD4B001A7582 /* PathViewModel.swift */; };
+		B4E50146254AAD4B001A7582 /* PathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E50145254AAD4B001A7582 /* PathView.swift */; };
 		B4E50151254AE6DD001A7582 /* FunctionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E50150254AE6DD001A7582 /* FunctionSheet.swift */; };
 		B4E5015C254CC287001A7582 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E5015B254CC287001A7582 /* Functions.swift */; };
 /* End PBXBuildFile section */
@@ -44,6 +45,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B415086C2553E5BB005460A3 /* Constant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
 		B4E500C52549DF08001A7582 /* GetMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GetMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4E500C82549DF08001A7582 /* GetMapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetMapApp.swift; sourceTree = "<group>"; };
 		B4E500CA2549DF08001A7582 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -58,14 +60,14 @@
 		B4E500E62549DF0B001A7582 /* GetMapUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GetMapUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4E500EA2549DF0B001A7582 /* GetMapUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetMapUITests.swift; sourceTree = "<group>"; };
 		B4E500EC2549DF0B001A7582 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B4E501002549E024001A7582 /* LocationPointViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPointViewModel.swift; sourceTree = "<group>"; };
+		B4E501002549E024001A7582 /* LocationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationView.swift; sourceTree = "<group>"; };
 		B4E501052549E03B001A7582 /* LocationGetterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationGetterModel.swift; sourceTree = "<group>"; };
 		B4E5010D2549E5AB001A7582 /* GetMap.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GetMap.entitlements; sourceTree = "<group>"; };
 		B4E501272549F16E001A7582 /* Building+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Building+CoreDataClass.swift"; sourceTree = "<group>"; };
 		B4E501282549F16E001A7582 /* Building+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Building+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		B4E5013E254AA4E1001A7582 /* PathUnit+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PathUnit+CoreDataClass.swift"; sourceTree = "<group>"; };
 		B4E5013F254AA4E1001A7582 /* PathUnit+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PathUnit+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		B4E50145254AAD4B001A7582 /* PathViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathViewModel.swift; sourceTree = "<group>"; };
+		B4E50145254AAD4B001A7582 /* PathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathView.swift; sourceTree = "<group>"; };
 		B4E50150254AE6DD001A7582 /* FunctionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionSheet.swift; sourceTree = "<group>"; };
 		B4E5015B254CC287001A7582 /* Functions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -124,12 +126,13 @@
 			children = (
 				B4E5010D2549E5AB001A7582 /* GetMap.entitlements */,
 				B4E500C82549DF08001A7582 /* GetMapApp.swift */,
-				B4E501002549E024001A7582 /* LocationPointViewModel.swift */,
+				B4E501002549E024001A7582 /* LocationView.swift */,
 				B4E501052549E03B001A7582 /* LocationGetterModel.swift */,
 				B4E500CA2549DF08001A7582 /* ContentView.swift */,
+				B415086C2553E5BB005460A3 /* Constant.swift */,
 				B4E5015B254CC287001A7582 /* Functions.swift */,
 				B4E50150254AE6DD001A7582 /* FunctionSheet.swift */,
-				B4E50145254AAD4B001A7582 /* PathViewModel.swift */,
+				B4E50145254AAD4B001A7582 /* PathView.swift */,
 				B4E500CC2549DF0B001A7582 /* Assets.xcassets */,
 				B4E500D12549DF0B001A7582 /* Persistence.swift */,
 				B4E500D62549DF0B001A7582 /* Info.plist */,
@@ -294,16 +297,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B415086D2553E5BB005460A3 /* Constant.swift in Sources */,
 				B4E501292549F16E001A7582 /* Building+CoreDataClass.swift in Sources */,
 				B4E500D22549DF0B001A7582 /* Persistence.swift in Sources */,
-				B4E501012549E024001A7582 /* LocationPointViewModel.swift in Sources */,
+				B4E501012549E024001A7582 /* LocationView.swift in Sources */,
 				B4E5012A2549F16E001A7582 /* Building+CoreDataProperties.swift in Sources */,
 				B4E501062549E03B001A7582 /* LocationGetterModel.swift in Sources */,
 				B4E5015C254CC287001A7582 /* Functions.swift in Sources */,
 				B4E500D52549DF0B001A7582 /* GetMap.xcdatamodeld in Sources */,
 				B4E50151254AE6DD001A7582 /* FunctionSheet.swift in Sources */,
 				B4E50140254AA4E1001A7582 /* PathUnit+CoreDataClass.swift in Sources */,
-				B4E50146254AAD4B001A7582 /* PathViewModel.swift in Sources */,
+				B4E50146254AAD4B001A7582 /* PathView.swift in Sources */,
 				B4E50141254AA4E1001A7582 /* PathUnit+CoreDataProperties.swift in Sources */,
 				B4E500CB2549DF08001A7582 /* ContentView.swift in Sources */,
 				B4E500C92549DF08001A7582 /* GetMapApp.swift in Sources */,
