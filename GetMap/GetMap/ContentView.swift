@@ -110,6 +110,9 @@ struct ContentView: View {
     private func partition() {
         /* for every path in locationGetter.paths, deal with it */
         for path in locationGetter.paths {
+            if(path.count <= 2) {
+                continue
+            }
             /* characteristic points */
             var cp: [CLLocation] = []
             /* add starting point to cp */
@@ -134,7 +137,6 @@ struct ContentView: View {
             }
             /* add ending point to cp */
             cp.append(path[path.count - 1])
-            print(cp)
             
             /* TODO: modify after test */
             /* upload cp to database */

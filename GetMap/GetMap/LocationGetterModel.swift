@@ -24,7 +24,6 @@ class LocationGetterModel: NSObject, ObservableObject {
 
     override init() {
         super.init()
-        paths.append([])
         /* delegate */
         manager.delegate = self
         /* the minimum distance (m) a device must move horizontally before an update event is generated */
@@ -51,23 +50,25 @@ extension LocationGetterModel: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         /* ensure able to get location info */
         guard let newLocation = locations.last else { return }
+        /* ensure within index*/
+        if(paths.count == pathCount) {
+            paths.append([])
+        }
+        /* update current location */
         current = newLocation
-        /* if not accurate, don't update this path anymore */
+        
+        /* if not accurate, don't record it & switch to next empty path */
         if(newLocation.horizontalAccuracy > 20) {
-            if(paths[pathCount].count != 0) {
+            if(paths[pathCount].count == 1) { // if only 1 point in the path, it should be cleared; continue update this path
+                paths[pathCount] = []
+            } else if(paths[pathCount].count > 1) { // more than 1 point in the path, update next path
                 pathCount += 1
                 paths.append([])
             }
-            return
         }
-        /* only append to current if location changes */
-        if(paths[pathCount].count == 0) {
-            paths[pathCount].append(current)
-        } else {
-            let lastLocation = paths[pathCount][paths[pathCount].count - 1]
-            if(lastLocation.coordinate.latitude != newLocation.coordinate.latitude && lastLocation.coordinate.longitude != newLocation.coordinate.longitude) {
-                paths[pathCount].append(current)
-            }
+        /* if accurate, record it */
+        else {
+            paths[pathCount].append(newLocation)
         }
     }
     /* successfully update heading */
