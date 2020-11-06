@@ -26,7 +26,7 @@
 		B4E50141254AA4E1001A7582 /* PathUnit+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E5013F254AA4E1001A7582 /* PathUnit+CoreDataProperties.swift */; };
 		B4E50146254AAD4B001A7582 /* PathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E50145254AAD4B001A7582 /* PathView.swift */; };
 		B4E50151254AE6DD001A7582 /* FunctionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E50150254AE6DD001A7582 /* FunctionSheet.swift */; };
-		B4E5015C254CC287001A7582 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E5015B254CC287001A7582 /* Functions.swift */; };
+		B4E5015C254CC287001A7582 /* Algorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E5015B254CC287001A7582 /* Algorithm.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,7 +73,7 @@
 		B4E5013F254AA4E1001A7582 /* PathUnit+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PathUnit+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		B4E50145254AAD4B001A7582 /* PathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathView.swift; sourceTree = "<group>"; };
 		B4E50150254AE6DD001A7582 /* FunctionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionSheet.swift; sourceTree = "<group>"; };
-		B4E5015B254CC287001A7582 /* Functions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
+		B4E5015B254CC287001A7582 /* Algorithm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Algorithm.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,7 +136,7 @@
 				B4E501052549E03B001A7582 /* LocationGetterModel.swift */,
 				B4E500CA2549DF08001A7582 /* ContentView.swift */,
 				B415086C2553E5BB005460A3 /* Constant.swift */,
-				B4E5015B254CC287001A7582 /* Functions.swift */,
+				B4E5015B254CC287001A7582 /* Algorithm.swift */,
 				B4E50150254AE6DD001A7582 /* FunctionSheet.swift */,
 				B4E50145254AAD4B001A7582 /* PathView.swift */,
 				B4E500CC2549DF0B001A7582 /* Assets.xcassets */,
@@ -310,7 +310,7 @@
 				B47BB3B42555C3BF00454833 /* RawPath+CoreDataClass.swift in Sources */,
 				B4E5012A2549F16E001A7582 /* Building+CoreDataProperties.swift in Sources */,
 				B4E501062549E03B001A7582 /* LocationGetterModel.swift in Sources */,
-				B4E5015C254CC287001A7582 /* Functions.swift in Sources */,
+				B4E5015C254CC287001A7582 /* Algorithm.swift in Sources */,
 				B4E500D52549DF0B001A7582 /* GetMap.xcdatamodeld in Sources */,
 				B4E50151254AE6DD001A7582 /* FunctionSheet.swift in Sources */,
 				B47BB3B52555C3BF00454833 /* RawPath+CoreDataProperties.swift in Sources */,

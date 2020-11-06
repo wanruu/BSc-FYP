@@ -113,4 +113,31 @@ func computDistance(locations: [CLLocation]) -> Distance {
     return Distance(perpendicular: perp, parallel: 0, angle: angle)
 }
 
+func partition(path: [CLLocation]) -> [CLLocation] {
+    /* characteristic points */
+    var cp: [CLLocation] = []
+    /* add starting point to cp */
+    cp.append(path[0])
+    var startIndex = 0
+    var length = 1
+    while (startIndex + length <= path.count - 1) {
+        let currIndex = startIndex + length
+        /* cost if regard current point as charateristic point */
+        let costPar = MDLPar(path: path, startIndex: startIndex, endIndex: currIndex)
+        /* cost if not regard current point as charateristic point */
+        let costNotPar = MDLNotPar(path: path, startIndex: startIndex, endIndex: currIndex)
+        print(startIndex, currIndex, costPar, costNotPar)
+        if(costPar > costNotPar) {
+            /* add previous point to cp */
+            cp.append(path[currIndex - 1])
+            startIndex = currIndex - 1
+            length = 1
+        } else {
+            length += 1
+        }
+    }
+    /* add ending point to cp */
+    cp.append(path[path.count - 1])
+    return cp
+}
 // MARK: - trajectory clustering

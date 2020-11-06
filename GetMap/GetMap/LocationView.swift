@@ -11,9 +11,7 @@
 import Foundation
 import SwiftUI
 
-/* ************** */
-/* Building Point */
-/* ************** */
+// MARK: - Building Point
 struct BuildingPoint: View {
     @State var building: Building
     @ObservedObject var locationGetter: LocationGetterModel
@@ -27,10 +25,7 @@ struct BuildingPoint: View {
     }
 }
 
-/* ********** */
-/* User Point */
-/* ********** */
-
+// MARK: - User Point
 let innerRadius: CGFloat = 8
 struct UserPoint: View {
     @Binding var offset: CGPoint

@@ -13,8 +13,10 @@ struct ContentView: View {
     /* Core data */
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Building.name_en, ascending: true)], animation: .default) var buildings: FetchedResults<Building>
-    @FetchRequest(sortDescriptors: [], animation: .default) var pathUnits: FetchedResults<PathUnit>
+    // @FetchRequest(sortDescriptors: [], animation: .default) var pathUnits: FetchedResults<PathUnit>
     @FetchRequest(sortDescriptors: [], animation: .default) var rawPaths: FetchedResults<RawPath>
+    
+    @State var pathUnits: [PathUnit] = []
     
     /* location getter */
     @ObservedObject var locationGetter = LocationGetterModel()
@@ -24,23 +26,24 @@ struct ContentView: View {
     @State var lastScale = CGFloat(1.0)
     @State var scale = CGFloat(1.0)
     @GestureState var magnifyBy = CGFloat(1.0)
-
+    /* setting */
     @State var showFunctionSheet: Bool = false
     var body: some View {
         NavigationView {
             /* TODO: ZStack necessary? */
             ZStack(alignment: .bottom) {
+                /* user paths */
+                UserPath(locationGetter: locationGetter, offset: $offset, scale: $scale)
+                
                 /* existing raw path */
                 ForEach(rawPaths) { rawPath in
                     PathView(rawPath: rawPath, locationGetter: locationGetter, offset: $offset, scale: $scale)
                 }
-                /* user paths */
-                UserPath(locationGetter: locationGetter, offset: $offset, scale: $scale)
                 
                 /* existing path Units */
-                /* ForEach(pathUnits) { pathUnit in
+                ForEach(pathUnits) { pathUnit in
                     StraightPath(pathUnit: pathUnit, locationGetter: locationGetter, offset: $offset, scale: $scale)
-                }*/
+                }
                 
                 /* current location point */
                 UserPoint(offset: $offset, locationGetter: locationGetter, scale: $scale)
@@ -75,6 +78,19 @@ struct ContentView: View {
                 Button(action: {
                     cleanPaths()
                 }) { Text("Discard") }
+                Text(" / ")
+                Button(action: {
+                    for rawPath in rawPaths {
+                        let cp = partition(path: rawPath.locations)
+                        for index in 0...cp.count-2 {
+                            let newPathUnit = PathUnit(context: viewContext)
+                            newPathUnit.start_point = cp[index]
+                            newPathUnit.end_point = cp[index+1]
+                            pathUnits.append(newPathUnit)
+                        }
+                    }
+                    print(pathUnits.count)
+                }) { Text("Partition") }
             })
             .sheet(isPresented: $showFunctionSheet) {
                 FunctionSheet(locationGetter: locationGetter, buildings: buildings)
@@ -110,44 +126,6 @@ struct ContentView: View {
         }
     }
     
-    /* process paths, to path unit */
-    private func partition() {
-        /* for every path in locationGetter.paths, deal with it */
-        for path in locationGetter.paths {
-            if(path.count <= 2) {
-                continue
-            }
-            /* characteristic points */
-            var cp: [CLLocation] = []
-            /* add starting point to cp */
-            cp.append(path[0])
-            var startIndex = 0
-            var length = 1
-            while (startIndex + length <= path.count - 1) {
-                let currIndex = startIndex + length
-                /* cost if regard current point as charateristic point */
-                let costPar = MDLPar(path: path, startIndex: startIndex, endIndex: currIndex)
-                /* cost if not regard current point as charateristic point */
-                let costNotPar = MDLNotPar(path: path, startIndex: startIndex, endIndex: currIndex)
-                print(startIndex, currIndex, costPar, costNotPar)
-                if(costPar > costNotPar) {
-                    /* add previous point to cp */
-                    cp.append(path[currIndex - 1])
-                    startIndex = currIndex - 1
-                    length = 1
-                } else {
-                    length += 1
-                }
-            }
-            /* add ending point to cp */
-            cp.append(path[path.count - 1])
-            
-            /* upload cp to database */
-            for i in 0...(cp.count-2) {
-                addPathUnit(start: cp[i], end: cp[i+1])
-            }
-        }
-    }
     /* remove all data in locationGetter.paths */
     private func cleanPaths() {
         locationGetter.paths = []
@@ -176,7 +154,7 @@ struct ContentView: View {
         newRawPath.locations = locations
         do { try viewContext.save() }
         catch { fatalError("Error in addRawPath.") }
-    } 
+    }
 }
 
 struct ContentView_Previews: PreviewProvider {
