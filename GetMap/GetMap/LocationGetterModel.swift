@@ -9,6 +9,7 @@
  including current latitude, longitude, altitude, heading and a list of location points*/
 import Foundation
 import CoreLocation
+import CoreData
 
 /* manager for updating location */
 var manager: CLLocationManager = CLLocationManager()
@@ -24,6 +25,9 @@ class LocationGetterModel: NSObject, ObservableObject {
 
     override init() {
         super.init()
+        setup()
+    }
+    func setup() {
         /* delegate */
         manager.delegate = self
         /* the minimum distance (m) a device must move horizontally before an update event is generated */
@@ -36,7 +40,6 @@ class LocationGetterModel: NSObject, ObservableObject {
         if #available(iOS 9.0, *) {
             manager.allowsBackgroundLocationUpdates = true
         }
-        
         /* start updating location */
         manager.startUpdatingLocation()
         /* start updating heading */
@@ -59,9 +62,12 @@ extension LocationGetterModel: CLLocationManagerDelegate {
         
         /* if not accurate, don't record it & switch to next empty path */
         if(newLocation.horizontalAccuracy > 20) {
-            if(paths[pathCount].count == 1) { // if only 1 point in the path, it should be cleared; continue update this path
+            // if only 1 point in the path, it should be cleared; continue update this path
+            if(paths[pathCount].count == 1) {
                 paths[pathCount] = []
-            } else if(paths[pathCount].count > 1) { // more than 1 point in the path, update next path
+            }
+            // more than 1 point in the path, update next path
+            else if(paths[pathCount].count > 1) {
                 pathCount += 1
                 paths.append([])
             }

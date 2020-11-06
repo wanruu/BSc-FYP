@@ -8,6 +8,7 @@
 import Foundation
 import CoreLocation
 
+// MARK: - trajectory partitioning
 /* three types of distance result */
 struct Distance {
     var perpendicular: Double
@@ -37,7 +38,6 @@ extension Point {
     }
 }
 
-/* trajectory partitioning */
 func MDLPar(path: [CLLocation], startIndex: Int, endIndex: Int) -> Double {
     /* only two cp in this trajectory */
     /* distance between two charateristic points */
@@ -112,3 +112,5 @@ func computDistance(locations: [CLLocation]) -> Distance {
     let angle = length1 * sin(theta)
     return Distance(perpendicular: perp, parallel: 0, angle: angle)
 }
+
+// MARK: - trajectory clustering

@@ -11,11 +11,11 @@
         <attribute name="start_point" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData"/>
     </entity>
     <entity name="RawPath" representedClassName="RawPath" syncable="YES">
-        <attribute name="locations" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData"/>
+        <attribute name="locations" optional="YES" attributeType="Transformable"/>
     </entity>
     <elements>
         <element name="Building" positionX="-390.640625" positionY="67.7421875" width="128" height="103"/>
         <element name="PathUnit" positionX="-360" positionY="90" width="128" height="73"/>
-        <element name="RawPath" positionX="-369" positionY="99" width="128" height="58"/>
+        <element name="RawPath" positionX="-378" positionY="99" width="128" height="58"/>
     </elements>
 </model>

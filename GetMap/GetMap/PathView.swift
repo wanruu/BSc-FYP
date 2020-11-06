@@ -8,7 +8,30 @@
 import Foundation
 import SwiftUI
 
-/* draw user path */
+// MARK: - draw raw path : gray
+struct PathView: View {
+    @State var rawPath: RawPath
+    @ObservedObject var locationGetter: LocationGetterModel
+    @Binding var offset: CGPoint
+    @Binding var scale: CGFloat
+    var body: some View {
+        Path { p in
+            for location in rawPath.locations {
+                /* 1m = 2 (of screen) = 1/111000(latitude) = 1/85390(longitude) */
+                let point = CGPoint(
+                    x: centerX + CGFloat((location.coordinate.longitude - locationGetter.current.coordinate.longitude)*lgScale*2) * scale + offset.x,
+                    y: centerY + CGFloat((locationGetter.current.coordinate.latitude - location.coordinate.latitude)*laScale*2) * scale + offset.y
+                )
+                if(location == rawPath.locations[0]) {
+                    p.move(to: point)
+                } else {
+                    p.addLine(to: point)
+                }
+            }
+        }.stroke(Color.gray, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+    }
+}
+// MARK: - draw user path : blue
 struct UserPath: View {
     @ObservedObject var locationGetter: LocationGetterModel
     @Binding var offset: CGPoint
@@ -19,19 +42,21 @@ struct UserPath: View {
             for path in locationGetter.paths {
                 for location in path {
                     /* 1m = 2 (of screen) = 1/111000(latitude) = 1/85390(longitude) */
-                    let x = centerX + CGFloat((location.coordinate.longitude - locationGetter.current.coordinate.longitude)*85390*2) + offset.x
-                    let y = centerY + CGFloat((locationGetter.current.coordinate.latitude - location.coordinate.latitude)*111000*2) + offset.y
+                    let point = CGPoint(
+                        x: centerX + CGFloat((location.coordinate.longitude - locationGetter.current.coordinate.longitude)*lgScale*2) * scale + offset.x,
+                        y: centerY + CGFloat((locationGetter.current.coordinate.latitude - location.coordinate.latitude)*laScale*2) * scale + offset.y
+                    )
                     if(location == path[0]) {
-                        p.move(to: CGPoint(x: x, y: y))
+                        p.move(to: point)
                     } else {
-                        p.addLine(to: CGPoint(x: x, y: y))
+                        p.addLine(to: point)
                     }
                 }
             }
-        }.stroke(Color.gray, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+        }.stroke(Color.blue, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
     }
 }
-/* draw path unit */
+// MARK: - draw path unit : black
 struct StraightPath: View {
     @State var pathUnit: PathUnit
     @ObservedObject var locationGetter: LocationGetterModel
@@ -54,4 +79,4 @@ struct StraightPath: View {
     }
 }
 
-/* draw representative path */
+// MARK: - draw representative path

@@ -2,13 +2,13 @@
 //  RawPath+CoreDataProperties.swift
 //  GetMap
 //
-//  Created by wanruuu on 5/11/2020.
+//  Created by wanruuu on 7/11/2020.
 //
 //
 
 import Foundation
 import CoreData
-import SwiftUI
+import CoreLocation
 
 extension RawPath {
 

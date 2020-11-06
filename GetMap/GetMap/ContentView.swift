@@ -14,6 +14,7 @@ struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Building.name_en, ascending: true)], animation: .default) var buildings: FetchedResults<Building>
     @FetchRequest(sortDescriptors: [], animation: .default) var pathUnits: FetchedResults<PathUnit>
+    @FetchRequest(sortDescriptors: [], animation: .default) var rawPaths: FetchedResults<RawPath>
     
     /* location getter */
     @ObservedObject var locationGetter = LocationGetterModel()
@@ -29,13 +30,18 @@ struct ContentView: View {
         NavigationView {
             /* TODO: ZStack necessary? */
             ZStack(alignment: .bottom) {
+                /* existing raw path */
+                ForEach(rawPaths) { rawPath in
+                    PathView(rawPath: rawPath, locationGetter: locationGetter, offset: $offset, scale: $scale)
+                }
                 /* user paths */
                 UserPath(locationGetter: locationGetter, offset: $offset, scale: $scale)
                 
-                /* existing paths */
-                ForEach(pathUnits) { pathUnit in
+                /* existing path Units */
+                /* ForEach(pathUnits) { pathUnit in
                     StraightPath(pathUnit: pathUnit, locationGetter: locationGetter, offset: $offset, scale: $scale)
-                }
+                }*/
+                
                 /* current location point */
                 UserPoint(offset: $offset, locationGetter: locationGetter, scale: $scale)
                 
@@ -43,15 +49,14 @@ struct ContentView: View {
                 ForEach(buildings) { building in
                     BuildingPoint(building: building, locationGetter: locationGetter, offset: $offset, scale: $scale)
                 }
-                
                 VStack {
                     Divider()
                     Button(action: {
                         showFunctionSheet = true
                     }) {
                         VStack {
-                            Text("^^^")
                             Text("Location: (\(locationGetter.current.coordinate.latitude), \(locationGetter.current.coordinate.longitude))")
+                            Text("Altitude: \(locationGetter.current.altitude)")
                             Text("Accuracy: \(locationGetter.current.horizontalAccuracy)")
                         }
                     }
@@ -60,13 +65,11 @@ struct ContentView: View {
             }
             .navigationBarItems(trailing: HStack {
                 Button(action: {
-                    let indexSet = IndexSet(0..<pathUnits.count)
-                    deletePathUnit(offsets: indexSet)
-                }) { Text("Delete All") }
-                Text(" / ")
-                Button(action: {
-                    partition()
-                    // cleanPaths()
+                    for rawPath in locationGetter.paths {
+                        if(rawPath.count >= 2) {
+                            addRawPath(locations: rawPath)
+                        }
+                    }
                 }) { Text("Upload") }
                 Text(" / ")
                 Button(action: {
@@ -106,6 +109,7 @@ struct ContentView: View {
             )
         }
     }
+    
     /* process paths, to path unit */
     private func partition() {
         /* for every path in locationGetter.paths, deal with it */
@@ -151,7 +155,8 @@ struct ContentView: View {
         locationGetter.pathCount = 0
         locationGetter.paths[0].append(locationGetter.current)
     }
-    /* add a unit path */
+    
+    // MARK: - Core Data function
     private func addPathUnit(start: CLLocation, end: CLLocation) {
         let newPathUnit = PathUnit(context: viewContext)
         /* PathUnit information */
@@ -160,13 +165,18 @@ struct ContentView: View {
         do { try viewContext.save() }
         catch { fatalError("Error in addPathUnit.") }
     }
-    /* delete unit path */
     private func deletePathUnit(offsets: IndexSet) {
         if(pathUnits.count == 0) { return }
         offsets.map { pathUnits[$0] }.forEach(viewContext.delete)
         do { try viewContext.save() }
         catch { fatalError("Error in deletePathUnit.") }
     }
+    private func addRawPath(locations: [CLLocation]) {
+        let newRawPath = RawPath(context: viewContext)
+        newRawPath.locations = locations
+        do { try viewContext.save() }
+        catch { fatalError("Error in addRawPath.") }
+    } 
 }
 
 struct ContentView_Previews: PreviewProvider {
