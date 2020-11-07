@@ -190,7 +190,7 @@ func neighbor(pathUnits: [PathUnit]) -> [[Int]] {
     }
     return result
 }
-func cluster(pathUnits: [PathUnit]) {
+func cluster(pathUnits: [PathUnit]) -> [Int] {
     var clusterId = 1
     /* 0: unclassfied, -1: noise, others: clusterId */
     var cluster = [Int](repeating: 0, count: pathUnits.count)
@@ -204,6 +204,7 @@ func cluster(pathUnits: [PathUnit]) {
             /* core line segment */
             if(neighbors.count >= MinLns) {
                 /* assgin clusterId to each neighbor */
+                cluster[index] = clusterId
                 for neighbor in neighbors {
                     cluster[neighbor] = clusterId
                 }
@@ -233,6 +234,6 @@ func cluster(pathUnits: [PathUnit]) {
         }
     }
     /* TODO: check trajectory cardinality */
-    // return cluster
+    return cluster
 }
 

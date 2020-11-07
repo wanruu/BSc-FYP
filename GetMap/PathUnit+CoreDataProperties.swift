@@ -17,6 +17,7 @@ extension PathUnit {
 
     @NSManaged public var start_point: CLLocation
     @NSManaged public var end_point: CLLocation
+    @NSManaged public var clusterId: Int
 
 }
 

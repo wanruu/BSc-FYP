@@ -9,6 +9,7 @@ import SwiftUI
 import CoreData
 import Foundation
 
+let colors = [Color.gray, Color.blue, Color.yellow, Color.green, Color.purple, Color.pink, Color.orange, Color.red]
 struct ContentView: View {
     /* Core data */
     @Environment(\.managedObjectContext) private var viewContext
@@ -17,9 +18,6 @@ struct ContentView: View {
     @FetchRequest(sortDescriptors: [], animation: .default) var rawPaths: FetchedResults<RawPath>
     
     @State var pathUnits: [PathUnit] = []
-    
-    /* for test neighbor*/
-    @State var core: [PathUnit] = []
     
     /* location getter */
     @ObservedObject var locationGetter = LocationGetterModel()
@@ -31,6 +29,10 @@ struct ContentView: View {
     @GestureState var magnifyBy = CGFloat(1.0)
     /* setting */
     @State var showFunctionSheet: Bool = false
+    @State var showCurrentLocation: Bool = true
+    @State var showRawPaths: Bool = true
+    @State var showBuildings: Bool = true
+    
     var body: some View {
         /* let p1 = CLLocation(coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0), altitude: 0, horizontalAccuracy: 5, verticalAccuracy: 5, timestamp: Date())
         let p2 = CLLocation(coordinate: CLLocationCoordinate2D(latitude: 0.00008, longitude: 0.00002), altitude: 0, horizontalAccuracy: 5, verticalAccuracy: 5, timestamp: Date())
@@ -47,28 +49,29 @@ struct ContentView: View {
                 UserPath(locationGetter: locationGetter, offset: $offset, scale: $scale)
                 
                 /* existing raw path */
+                showRawPaths ?
                 ForEach(rawPaths) { rawPath in
                     PathView(rawPath: rawPath, locationGetter: locationGetter, offset: $offset, scale: $scale, color: Color.gray)
-                }
+                } : nil
                 
-                /* existing path Units */
+                /* FOR TEST: existing path Units */
                 ForEach(pathUnits) { pathUnit in
-                    StraightPath(pathUnit: pathUnit, locationGetter: locationGetter, offset: $offset, scale: $scale, color: Color.black)
+                    pathUnit.clusterId == -1 ? nil :
+                    StraightPath(pathUnit: pathUnit, locationGetter: locationGetter, offset: $offset, scale: $scale, color: colors[pathUnit.clusterId % colors.count])
                 }
-                
-                /* neighbor: for test */
-                ForEach(core) { c in
-                    StraightPath(pathUnit: c, locationGetter: locationGetter, offset: $offset, scale: $scale, color: Color.pink)
-                }
-                
                 
                 /* current location point */
-                UserPoint(offset: $offset, locationGetter: locationGetter, scale: $scale)
+                showCurrentLocation ?
+                    UserPoint(offset: $offset, locationGetter: locationGetter, scale: $scale) : nil
                 
                 /* building location point */
+                showBuildings ?
                 ForEach(buildings) { building in
                     BuildingPoint(building: building, locationGetter: locationGetter, offset: $offset, scale: $scale)
-                }
+                } : nil
+                
+                Text("+").position(x: centerX, y: centerY)
+                
                 VStack {
                     Divider()
                     Button(action: {
@@ -97,6 +100,7 @@ struct ContentView: View {
                 }) { Text("Discard") }
                 Text(" / ")
                 Button(action: {
+                    /* partition */
                     for rawPath in rawPaths {
                         let cp = partition(path: rawPath.locations)
                         for index in 0...cp.count-2 {
@@ -106,18 +110,16 @@ struct ContentView: View {
                             pathUnits.append(newPathUnit)
                         }
                     }
-                    let nei = neighbor(pathUnits: pathUnits)
-                    for i in 0..<nei.count {
-                        if(nei[i].count >= MinLns) {
-                            core.append(pathUnits[i])
-                        }
+                    /* cluster */
+                    let clusters = cluster(pathUnits: pathUnits)
+                    for i in 0..<clusters.count {
+                        print(clusters[i])
+                        pathUnits[i].clusterId = clusters[i]
                     }
-                    // print(neighbor(pathUnits: pathUnits))
-                    
-                }) { Text("Partition") }
+                }) { Text("Process") }
             })
             .sheet(isPresented: $showFunctionSheet) {
-                FunctionSheet(locationGetter: locationGetter, buildings: buildings)
+                FunctionSheet(locationGetter: locationGetter, buildings: buildings, showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showBuildings: $showBuildings)
             }
             .contentShape(Rectangle())
             .gesture(

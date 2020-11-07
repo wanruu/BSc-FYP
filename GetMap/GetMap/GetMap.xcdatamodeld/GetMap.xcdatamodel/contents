@@ -7,6 +7,7 @@
         <attribute name="name_en" optional="YES" attributeType="String"/>
     </entity>
     <entity name="PathUnit" representedClassName="PathUnit" syncable="YES">
+        <attribute name="clusterId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="end_point" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData"/>
         <attribute name="start_point" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData"/>
     </entity>
@@ -15,7 +16,7 @@
     </entity>
     <elements>
         <element name="Building" positionX="-390.640625" positionY="67.7421875" width="128" height="103"/>
-        <element name="PathUnit" positionX="-360" positionY="90" width="128" height="73"/>
+        <element name="PathUnit" positionX="-360" positionY="90" width="128" height="88"/>
         <element name="RawPath" positionX="-378" positionY="99" width="128" height="58"/>
     </elements>
 </model>

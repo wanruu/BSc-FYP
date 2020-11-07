@@ -14,8 +14,16 @@ struct FunctionSheet: View {
     @ObservedObject var locationGetter: LocationGetterModel
     @State var buildings: FetchedResults<Building>
     
+    @Binding var showCurrentLocation: Bool
+    @Binding var showRawPaths: Bool
+    @Binding var showBuildings: Bool
+    
     var body: some View {
         VStack(alignment: .leading) {
+            Toggle(isOn: $showCurrentLocation, label: {Text("Show Current Location")})
+            Toggle(isOn: $showRawPaths, label: {Text("Show Raw Paths")})
+            Toggle(isOn: $showBuildings, label: {Text("Show Buildings")})
+            Divider()
             /* add building function */
             Text("Mark current location as a building")
             HStack {
