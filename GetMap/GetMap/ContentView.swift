@@ -10,6 +10,19 @@ import CoreData
 import Foundation
 
 let colors = [Color.gray, Color.blue, Color.yellow, Color.green, Color.purple, Color.pink, Color.orange, Color.red]
+
+struct Offset {
+    var x: CGFloat
+    var y: CGFloat
+}
+extension Offset {
+    static func * (offset: Offset, para: CGFloat) -> Offset {
+        return Offset(x: offset.x * para, y: offset.y * para)
+    }
+    static func / (offset: Offset, para: CGFloat) -> Offset {
+        return Offset(x: offset.x / para, y: offset.y / para)
+    }
+}
 struct ContentView: View {
     /* Core data */
     @Environment(\.managedObjectContext) private var viewContext
@@ -22,8 +35,8 @@ struct ContentView: View {
     /* location getter */
     @ObservedObject var locationGetter = LocationGetterModel()
     /* gesture */
-    @State var lastOffset: CGPoint = CGPoint(x: 0, y: 0)
-    @State var offset: CGPoint = CGPoint(x: 0, y: 0)
+    @State var lastOffset = Offset(x: 0, y: 0)
+    @State var offset = Offset(x: 0, y: 0)
     @State var lastScale = CGFloat(1.0)
     @State var scale = CGFloat(1.0)
     @GestureState var magnifyBy = CGFloat(1.0)
@@ -62,7 +75,7 @@ struct ContentView: View {
                 
                 /* current location point */
                 showCurrentLocation ?
-                    UserPoint(offset: $offset, locationGetter: locationGetter, scale: $scale) : nil
+                    UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale) : nil
                 
                 /* building location point */
                 showBuildings ?
@@ -134,19 +147,24 @@ struct ContentView: View {
                                 tmpScale = maxZoomIn
                             }
                             scale = tmpScale
-                            offset.x = lastOffset.x * tmpScale / lastScale
-                            offset.y = lastOffset.y * tmpScale / lastScale
+                            // offset.x = lastOffset.x * tmpScale / lastScale
+                            // offset.y = lastOffset.y * tmpScale / lastScale
+                            offset = lastOffset * tmpScale / lastScale
                         }
                         .onEnded{ _ in
                             lastScale = scale
-                            lastOffset = offset
+                            lastOffset.x = offset.x
+                            lastOffset.y = offset.y
                         },
                     DragGesture()
                         .onChanged{ value in
                             offset.x = lastOffset.x + value.location.x - value.startLocation.x
                             offset.y = lastOffset.y + value.location.y - value.startLocation.y
                         }
-                        .onEnded{ _ in lastOffset = offset }
+                        .onEnded{ _ in
+                            lastOffset.x = offset.x
+                            lastOffset.y = offset.y
+                        }
                 )
             )
         }

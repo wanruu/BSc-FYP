@@ -15,7 +15,7 @@ import SwiftUI
 struct BuildingPoint: View {
     @State var building: Building
     @ObservedObject var locationGetter: LocationGetterModel
-    @Binding var offset: CGPoint
+    @Binding var offset: Offset
     @Binding var scale: CGFloat
     
     var body: some View {
@@ -28,16 +28,17 @@ struct BuildingPoint: View {
 // MARK: - User Point
 let innerRadius: CGFloat = 8
 struct UserPoint: View {
-    @Binding var offset: CGPoint
     @ObservedObject var locationGetter: LocationGetterModel
+    @Binding var offset: Offset
+    @Binding var scale: CGFloat
+    
     
     let timer = Timer.publish(every: 0.08, on: .main, in: .common).autoconnect()
     @State var animationRadius: CGFloat = 8
     @State var up: Bool = true // animationRadius is becoming larger or not
-    
-    @Binding var scale: CGFloat
-    
+
     var body: some View {
+        // print(offset.x, offset.y)
         let center = CGPoint(x: centerX + offset.x, y: centerY + offset.y)
         return
             ZStack {

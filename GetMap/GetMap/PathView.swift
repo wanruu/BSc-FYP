@@ -12,7 +12,7 @@ import SwiftUI
 struct PathView: View {
     @State var rawPath: RawPath
     @ObservedObject var locationGetter: LocationGetterModel
-    @Binding var offset: CGPoint
+    @Binding var offset: Offset
     @Binding var scale: CGFloat
     @State var color: Color
     var body: some View {
@@ -35,7 +35,7 @@ struct PathView: View {
 // MARK: - draw user path : blue
 struct UserPath: View {
     @ObservedObject var locationGetter: LocationGetterModel
-    @Binding var offset: CGPoint
+    @Binding var offset: Offset
     @Binding var scale: CGFloat
     var body: some View {
         Path { p in
@@ -61,7 +61,7 @@ struct UserPath: View {
 struct StraightPath: View {
     @State var pathUnit: PathUnit
     @ObservedObject var locationGetter: LocationGetterModel
-    @Binding var offset: CGPoint
+    @Binding var offset: Offset
     @Binding var scale: CGFloat
     @State var color: Color
     
