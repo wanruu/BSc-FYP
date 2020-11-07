@@ -173,8 +173,8 @@ func weightedDistance(locations: [CLLocation]) -> Double {
     return dist.perpendicular + dist.parallel + dist.angle
 }
 
-let e: Double = 5
-let MinLns: Int = 2
+let e: Double = 10
+let MinLns: Int = 3
 
 /* calculate e-neighborhood for every path unit */
 func neighbor(pathUnits: [PathUnit]) -> [[Int]] {
@@ -202,7 +202,7 @@ func cluster(pathUnits: [PathUnit]) -> [Int] {
         if(cluster[index] == 0) { // not classfied
             let neighbors = neighborList[index]
             /* core line segment */
-            if(neighbors.count >= MinLns) {
+            if(neighbors.count + 1 >= MinLns) {
                 /* assgin clusterId to each neighbor */
                 cluster[index] = clusterId
                 for neighbor in neighbors {
@@ -212,7 +212,7 @@ func cluster(pathUnits: [PathUnit]) -> [Int] {
                 var queue = neighbors
                 while(queue.count != 0) {
                     let first = queue[0] // first is the first path unit in queue
-                    let firstNeighbors = neighborList[first] // get neighbor of first
+                    let firstNeighbors = neighborList[first] // get neighbor of first, first not included
                     if(firstNeighbors.count >= MinLns) {
                         for neighbor in firstNeighbors {
                             if(cluster[neighbor] == 0 || cluster[neighbor] == -1) {
@@ -233,7 +233,18 @@ func cluster(pathUnits: [PathUnit]) -> [Int] {
             }
         }
     }
-    /* TODO: check trajectory cardinality */
+    /* check trajectory cardinality */
+    var cardinality = [Int](repeating: 0, count: clusterId)
+    for c in cluster {
+        if(c != -1) {
+            cardinality[c] += 1
+        }
+    }
+    for i in 0..<cluster.count-1 {
+        if(cluster[i] != -1 && cardinality[cluster[i]] < MinLns) {
+            cluster[i] = -1
+        }
+    }
     return cluster
 }
 

@@ -9,7 +9,7 @@ import SwiftUI
 import CoreData
 import Foundation
 
-let colors = [Color.gray, Color.blue, Color.yellow, Color.green, Color.purple, Color.pink, Color.orange, Color.red]
+let colors = [Color.blue, Color.yellow, Color.green, Color.purple, Color.pink, Color.orange, Color.red]
 
 struct Offset {
     var x: CGFloat
@@ -44,17 +44,9 @@ struct ContentView: View {
     @State var showFunctionSheet: Bool = false
     @State var showCurrentLocation: Bool = true
     @State var showRawPaths: Bool = true
-    @State var showBuildings: Bool = true
+    @State var showBuildings: Bool = false
     
     var body: some View {
-        /* let p1 = CLLocation(coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0), altitude: 0, horizontalAccuracy: 5, verticalAccuracy: 5, timestamp: Date())
-        let p2 = CLLocation(coordinate: CLLocationCoordinate2D(latitude: 0.00008, longitude: 0.00002), altitude: 0, horizontalAccuracy: 5, verticalAccuracy: 5, timestamp: Date())
-        let p3 = CLLocation(coordinate: CLLocationCoordinate2D(latitude: 0.00013, longitude: 0.00001), altitude: 0, horizontalAccuracy: 5, verticalAccuracy: 5, timestamp: Date())
-        let p4 = CLLocation(coordinate: CLLocationCoordinate2D(latitude: 0.00016, longitude: -0.00002), altitude: 0, horizontalAccuracy: 5, verticalAccuracy: 5, timestamp: Date())
-        let p5 = CLLocation(coordinate: CLLocationCoordinate2D(latitude: 0.00026, longitude: 0), altitude: 0, horizontalAccuracy: 5, verticalAccuracy: 5, timestamp: Date())
-        let cp = partition(path: [p1, p2, p3, p4, p5])
-        print(cp)
-        return */
         NavigationView {
             /* TODO: ZStack necessary? */
             ZStack(alignment: .bottom) {
@@ -67,7 +59,7 @@ struct ContentView: View {
                     PathView(rawPath: rawPath, locationGetter: locationGetter, offset: $offset, scale: $scale, color: Color.gray)
                 } : nil
                 
-                /* FOR TEST: existing path Units */
+                /* FOR TEST: existing path Units: after cluster */
                 ForEach(pathUnits) { pathUnit in
                     pathUnit.clusterId == -1 ? nil :
                     StraightPath(pathUnit: pathUnit, locationGetter: locationGetter, offset: $offset, scale: $scale, color: colors[pathUnit.clusterId % colors.count])
@@ -126,7 +118,6 @@ struct ContentView: View {
                     /* cluster */
                     let clusters = cluster(pathUnits: pathUnits)
                     for i in 0..<clusters.count {
-                        print(clusters[i])
                         pathUnits[i].clusterId = clusters[i]
                     }
                 }) { Text("Process") }
