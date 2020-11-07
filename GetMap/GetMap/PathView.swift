@@ -7,23 +7,24 @@
 
 import Foundation
 import SwiftUI
+import CoreLocation
 
 // MARK: - draw raw path : gray
 struct PathView: View {
-    @State var rawPath: RawPath
+    @State var locations: [CLLocation]
     @ObservedObject var locationGetter: LocationGetterModel
     @Binding var offset: Offset
     @Binding var scale: CGFloat
     @State var color: Color
     var body: some View {
         Path { p in
-            for location in rawPath.locations {
+            for location in locations {
                 /* 1m = 2 (of screen) = 1/111000(latitude) = 1/85390(longitude) */
                 let point = CGPoint(
                     x: centerX + CGFloat((location.coordinate.longitude - locationGetter.current.coordinate.longitude)*lgScale*2) * scale + offset.x,
                     y: centerY + CGFloat((locationGetter.current.coordinate.latitude - location.coordinate.latitude)*laScale*2) * scale + offset.y
                 )
-                if(location == rawPath.locations[0]) {
+                if(location == locations[0]) {
                     p.move(to: point)
                 } else {
                     p.addLine(to: point)
@@ -82,3 +83,27 @@ struct StraightPath: View {
 }
 
 // MARK: - draw representative path
+struct RepresentativePath: View {
+    @State var representativePaths: [[CLLocation]]
+    @ObservedObject var locationGetter: LocationGetterModel
+    @Binding var offset: Offset
+    @Binding var scale: CGFloat
+    
+    var body: some View {
+        Path { p in
+            for representativePath in representativePaths {
+                for location in representativePath {
+                    let point = CGPoint(
+                        x: centerX + CGFloat((location.coordinate.longitude - locationGetter.current.coordinate.longitude)*lgScale*2) * scale + offset.x,
+                        y: centerY + CGFloat((locationGetter.current.coordinate.latitude - location.coordinate.latitude)*laScale*2) * scale + offset.y
+                    )
+                    if(location == representativePath[0]) {
+                        p.move(to: point)
+                    } else {
+                        p.addLine(to: point)
+                    }
+                }
+            }
+        }.stroke(Color.black, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+    }
+}

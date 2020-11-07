@@ -30,7 +30,9 @@ struct ContentView: View {
     // @FetchRequest(sortDescriptors: [], animation: .default) var pathUnits: FetchedResults<PathUnit>
     @FetchRequest(sortDescriptors: [], animation: .default) var rawPaths: FetchedResults<RawPath>
     
+    /* FOR TEST: pathUnits with different cluster id*/
     @State var pathUnits: [PathUnit] = []
+    @State var representativePaths: [[CLLocation]] = []
     
     /* location getter */
     @ObservedObject var locationGetter = LocationGetterModel()
@@ -45,6 +47,8 @@ struct ContentView: View {
     @State var showCurrentLocation: Bool = true
     @State var showRawPaths: Bool = true
     @State var showBuildings: Bool = false
+    @State var showClusters: Bool = false
+    @State var showRepresentatives: Bool = false
     
     var body: some View {
         NavigationView {
@@ -55,15 +59,19 @@ struct ContentView: View {
                 
                 /* existing raw path */
                 showRawPaths ?
-                ForEach(rawPaths) { rawPath in
-                    PathView(rawPath: rawPath, locationGetter: locationGetter, offset: $offset, scale: $scale, color: Color.gray)
-                } : nil
+                    ForEach(rawPaths) { rawPath in
+                        PathView(locations: rawPath.locations, locationGetter: locationGetter, offset: $offset, scale: $scale, color: Color.gray)
+                    } : nil
                 
                 /* FOR TEST: existing path Units: after cluster */
-                ForEach(pathUnits) { pathUnit in
-                    pathUnit.clusterId == -1 ? nil :
-                    StraightPath(pathUnit: pathUnit, locationGetter: locationGetter, offset: $offset, scale: $scale, color: colors[pathUnit.clusterId % colors.count])
-                }
+                showClusters ?
+                    ForEach(pathUnits) { pathUnit in
+                        pathUnit.clusterId == -1 ? nil :
+                        StraightPath(pathUnit: pathUnit, locationGetter: locationGetter, offset: $offset, scale: $scale, color: colors[pathUnit.clusterId % colors.count])
+                    } : nil
+                /* FOR TEST: Representative path */
+                showRepresentatives ?
+                    RepresentativePath(representativePaths: representativePaths, locationGetter: locationGetter, offset: $offset, scale: $scale) : nil
                 
                 /* current location point */
                 showCurrentLocation ?
@@ -71,9 +79,9 @@ struct ContentView: View {
                 
                 /* building location point */
                 showBuildings ?
-                ForEach(buildings) { building in
-                    BuildingPoint(building: building, locationGetter: locationGetter, offset: $offset, scale: $scale)
-                } : nil
+                    ForEach(buildings) { building in
+                        BuildingPoint(building: building, locationGetter: locationGetter, offset: $offset, scale: $scale)
+                    } : nil
                 
                 Text("+").position(x: centerX, y: centerY)
                 
@@ -117,13 +125,27 @@ struct ContentView: View {
                     }
                     /* cluster */
                     let clusters = cluster(pathUnits: pathUnits)
-                    for i in 0..<clusters.count {
+                    var clusterNum = 0
+                    for i in 0..<pathUnits.count-1 {
                         pathUnits[i].clusterId = clusters[i]
+                        clusterNum = max(clusterNum, clusters[i])
                     }
+                    var C = [[PathUnit]](repeating: [], count: clusterNum)
+                    for i in 0..<pathUnits.count-1 {
+                        if(clusters[i] != -1) {
+                            C[clusters[i] - 1].append(pathUnits[i])
+                        }
+                    }
+                    /* representative trajectory */
+                    for c in C {
+                        let represent = generateRepresent(pathUnits: c)
+                        representativePaths.append(represent)
+                    }
+                    
                 }) { Text("Process") }
             })
             .sheet(isPresented: $showFunctionSheet) {
-                FunctionSheet(locationGetter: locationGetter, buildings: buildings, showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showBuildings: $showBuildings)
+                FunctionSheet(locationGetter: locationGetter, buildings: buildings, showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showBuildings: $showBuildings, showClusters: $showClusters, showRepresentatives: $showRepresentatives)
             }
             .contentShape(Rectangle())
             .gesture(
