@@ -29,6 +29,14 @@ struct ContentView: View {
     /* setting */
     @State var showFunctionSheet: Bool = false
     var body: some View {
+        /* let p1 = CLLocation(coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0), altitude: 0, horizontalAccuracy: 5, verticalAccuracy: 5, timestamp: Date())
+        let p2 = CLLocation(coordinate: CLLocationCoordinate2D(latitude: 0.00008, longitude: 0.00002), altitude: 0, horizontalAccuracy: 5, verticalAccuracy: 5, timestamp: Date())
+        let p3 = CLLocation(coordinate: CLLocationCoordinate2D(latitude: 0.00013, longitude: 0.00001), altitude: 0, horizontalAccuracy: 5, verticalAccuracy: 5, timestamp: Date())
+        let p4 = CLLocation(coordinate: CLLocationCoordinate2D(latitude: 0.00016, longitude: -0.00002), altitude: 0, horizontalAccuracy: 5, verticalAccuracy: 5, timestamp: Date())
+        let p5 = CLLocation(coordinate: CLLocationCoordinate2D(latitude: 0.00026, longitude: 0), altitude: 0, horizontalAccuracy: 5, verticalAccuracy: 5, timestamp: Date())
+        let cp = partition(path: [p1, p2, p3, p4, p5])
+        print(cp)
+        return */
         NavigationView {
             /* TODO: ZStack necessary? */
             ZStack(alignment: .bottom) {

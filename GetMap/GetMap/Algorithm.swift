@@ -67,9 +67,9 @@ func MDLNotPar(path: [CLLocation], startIndex: Int, endIndex: Int) -> Double {
         let diffX: Double = (path[index].coordinate.latitude - path[index+1].coordinate.latitude) * laScale
         let diffY: Double = (path[index].coordinate.longitude - path[index+1].coordinate.longitude) * lgScale
         let diffZ: Double = path[index].altitude - path[index+1].altitude
-        LH += log2( pow( diffX * diffX + diffY * diffY + diffZ * diffZ, 0.5 ) )
+        LH += pow( diffX * diffX + diffY * diffY + diffZ * diffZ, 0.5 )
     }
-    return LH
+    return log2(LH)
 }
 
 /* calculate distance of 2 points */
@@ -100,8 +100,8 @@ func computDistance(locations: [CLLocation]) -> Distance {
     /* calculate something for later computing */
     let length1 = length(start: points[0], end: points[1]) // length of p1p2
     let length2 = length(start: points[2], end: points[3]) // length of p3p4
-    let proj_p3 = ((points[2] * points[1]) / length1) * points[1] // projection point of p3 onto p1p2
-    let proj_p4 = ((points[3] * points[1]) / length1) * points[1] // projection point of p4 onto p1p2
+    let proj_p3 = ((points[2] * points[1]) / length1 / length1) * points[1] // projection point of p3 onto p1p2
+    let proj_p4 = ((points[3] * points[1]) / length1 / length1) * points[1] // projection point of p4 onto p1p2
     let theta = acos(points[1] * (points[3] - points[2]) / length1 / length2)
     /* perpendicular distance */
     let l1 = length(start: proj_p3, end: points[2])
@@ -109,7 +109,7 @@ func computDistance(locations: [CLLocation]) -> Distance {
     let perp = (l1 * l1 + l2 * l2) / (l1 + l2)
     /* parallel distance */
     /* angle distance: no direction */
-    let angle = length1 * sin(theta)
+    let angle = length2 * sin(theta)
     return Distance(perpendicular: perp, parallel: 0, angle: angle)
 }
 
