@@ -18,6 +18,9 @@ struct ContentView: View {
     
     @State var pathUnits: [PathUnit] = []
     
+    /* for test neighbor*/
+    @State var core: [PathUnit] = []
+    
     /* location getter */
     @ObservedObject var locationGetter = LocationGetterModel()
     /* gesture */
@@ -45,13 +48,19 @@ struct ContentView: View {
                 
                 /* existing raw path */
                 ForEach(rawPaths) { rawPath in
-                    PathView(rawPath: rawPath, locationGetter: locationGetter, offset: $offset, scale: $scale)
+                    PathView(rawPath: rawPath, locationGetter: locationGetter, offset: $offset, scale: $scale, color: Color.gray)
                 }
                 
                 /* existing path Units */
                 ForEach(pathUnits) { pathUnit in
-                    StraightPath(pathUnit: pathUnit, locationGetter: locationGetter, offset: $offset, scale: $scale)
+                    StraightPath(pathUnit: pathUnit, locationGetter: locationGetter, offset: $offset, scale: $scale, color: Color.black)
                 }
+                
+                /* neighbor: for test */
+                ForEach(core) { c in
+                    StraightPath(pathUnit: c, locationGetter: locationGetter, offset: $offset, scale: $scale, color: Color.pink)
+                }
+                
                 
                 /* current location point */
                 UserPoint(offset: $offset, locationGetter: locationGetter, scale: $scale)
@@ -97,7 +106,14 @@ struct ContentView: View {
                             pathUnits.append(newPathUnit)
                         }
                     }
-                    print(pathUnits.count)
+                    let nei = neighbor(pathUnits: pathUnits)
+                    for i in 0..<nei.count {
+                        if(nei[i].count >= MinLns) {
+                            core.append(pathUnits[i])
+                        }
+                    }
+                    // print(neighbor(pathUnits: pathUnits))
+                    
                 }) { Text("Partition") }
             })
             .sheet(isPresented: $showFunctionSheet) {

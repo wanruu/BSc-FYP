@@ -14,6 +14,7 @@ struct PathView: View {
     @ObservedObject var locationGetter: LocationGetterModel
     @Binding var offset: CGPoint
     @Binding var scale: CGFloat
+    @State var color: Color
     var body: some View {
         Path { p in
             for location in rawPath.locations {
@@ -28,7 +29,7 @@ struct PathView: View {
                     p.addLine(to: point)
                 }
             }
-        }.stroke(Color.gray, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+        }.stroke(color, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
     }
 }
 // MARK: - draw user path : blue
@@ -62,6 +63,7 @@ struct StraightPath: View {
     @ObservedObject var locationGetter: LocationGetterModel
     @Binding var offset: CGPoint
     @Binding var scale: CGFloat
+    @State var color: Color
     
     var body: some View {
         Path { path in
@@ -75,7 +77,7 @@ struct StraightPath: View {
             )
             path.move(to: p1)
             path.addLine(to: p2)
-        }.stroke(Color.black, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+        }.stroke(color, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
     }
 }
 
