@@ -253,110 +253,117 @@ func cluster(pathUnits: [PathUnit]) -> [Int] {
 
 // MARK: - generate representative trajectory
 let r = 1.0
+
+/* convert location to point */
+func locationsToPoints(pathUnits: [PathUnit]) -> [Point] {
+    var points: [Point] = []
+    // assume pathUnits[0].start_point as origin point
+    for pathUnit in pathUnits {
+        points.append(Point(
+            x: (pathUnit.start_point.coordinate.latitude - pathUnits[0].start_point.coordinate.latitude) * laScale,
+            y: (pathUnit.start_point.coordinate.longitude - pathUnits[0].start_point.coordinate.longitude) * lgScale,
+            z: pathUnit.start_point.altitude - pathUnits[0].start_point.altitude))
+        points.append(Point(
+            x: (pathUnit.end_point.coordinate.latitude - pathUnits[0].start_point.coordinate.latitude) * laScale,
+            y: (pathUnit.end_point.coordinate.longitude - pathUnits[0].start_point.coordinate.longitude) * lgScale,
+            z: pathUnit.end_point.altitude - pathUnits[0].start_point.altitude))
+    }
+    return points
+}
+
+/* convert pathUnits to vectors: [v1, v2, ..., vn] */
+func pointsToVectors(points: [Point]) -> [Point] {
+    var vectors: [Point] = []
+    var index = 0
+    while(index <= points.count - 2) {
+        vectors.append(points[index+1] - points[index])
+        index += 2
+    }
+    return vectors
+}
+
+/* compute average direction vector */
+func computeAverVector(vectors: [Point]) -> Point {
+    var averVector = Point(x: 0, y: 0, z: 0)
+    /* find axis in which vector change most */
+    var x = 0.0
+    var y = 0.0
+    var z = 0.0
+    for vector in vectors {
+        x += abs(vector.x)
+        y += abs(vector.y)
+        z += abs(vector.z)
+    }
+    if(x > y && x > z) { // x: max
+        for index in 0..<vectors.count-1 {
+            if(vectors[index].x * vectors[0].x < 0) {
+                averVector = averVector - vectors[index]
+            } else {
+                averVector = averVector + vectors[index]
+            }
+        }
+    } else if(y > x && y > z) { // y: max
+        for index in 0..<vectors.count-1 {
+            if(vectors[index].y * vectors[0].y < 0) {
+                averVector = averVector - vectors[index]
+            } else {
+                averVector = averVector + vectors[index]
+            }
+        }
+    } else { // z: max
+        for index in 0..<vectors.count-1 {
+            if(vectors[index].z * vectors[0].z < 0) {
+                averVector = averVector - vectors[index]
+            } else {
+                averVector = averVector + vectors[index]
+            }
+        }
+    }
+    averVector = averVector / Double(vectors.count)
+    return averVector
+}
+/* rotate */
+func rotate(point: Point, alpha: Double, beta: Double) -> Point {
+    var newPoint = Point(x: point.x, y: point.y, z: point.z)
+    newPoint.x = newPoint.x * cos(alpha) - newPoint.y * sin(alpha)
+    newPoint.y = newPoint.y * cos(alpha) + newPoint.x * sin(alpha)
+    newPoint.x = newPoint.x * cos(beta) + newPoint.z * sin(beta)
+    newPoint.z = -newPoint.x * sin(beta) + newPoint.z * cos(beta)
+    return newPoint
+}
+
 func generateRepresent(pathUnits: [PathUnit]) -> [CLLocation] {
     var representLocations: [CLLocation] = []
     if(pathUnits.count == 0) {
         return representLocations
     }
-    /* convert location to point */
-    var points: [Point] = []
-    let origin = pathUnits[0].start_point
-    for pathUnit in pathUnits {
-        let start = pathUnit.start_point
-        let end = pathUnit.end_point
-        let p1 = Point(
-            x: (start.coordinate.latitude - origin.coordinate.latitude) * laScale,
-            y: (start.coordinate.longitude - origin.coordinate.longitude) * lgScale,
-            z: start.altitude - origin.altitude)
-        let p2 = Point(
-            x: (end.coordinate.latitude - origin.coordinate.latitude) * laScale,
-            y: (end.coordinate.longitude - origin.coordinate.longitude) * lgScale,
-            z: end.altitude - origin.altitude)
-        points.append(p1)
-        points.append(p2)
-    }
+    /* convert pathUnits to points: [p1, p2, ..., p2n-1, p2n] where p1, p2 are start and end point of pathUnit[0] */
+    var points = locationsToPoints(pathUnits: pathUnits)
     
-    /* convert pathUnits to vectors */
-    var vectors: [Point] = []
-    for pathUnit in pathUnits {
-        let start = pathUnit.start_point
-        let end = pathUnit.end_point
-        let x = (end.coordinate.latitude - start.coordinate.latitude) * laScale
-        let y = (end.coordinate.longitude - start.coordinate.longitude) * lgScale
-        let z = end.altitude - start.altitude
-        vectors.append(Point(x: x, y: y, z: z))
-    }
-    /* ensure vectors are in same direction */
-    var direction = Point(x: 0, y: 0, z: 0)
-    for vector in vectors {
-        direction.x += abs(vector.x)
-        direction.y += abs(vector.y)
-        direction.z += abs(vector.z)
-    }
-    if(direction.x == max(direction.x, direction.y, direction.z)) {
-        for index in 1..<vectors.count {
-            if(vectors[index].x * vectors[0].x < 0) {
-                vectors[index].x = -vectors[index].x
-                vectors[index].y = -vectors[index].y
-                vectors[index].z = -vectors[index].z
-            }
-        }
-    } else if (direction.y == max(direction.x, direction.y, direction.z)) {
-        for index in 1..<vectors.count {
-            if(vectors[index].y * vectors[0].y < 0) {
-                vectors[index].x = -vectors[index].x
-                vectors[index].y = -vectors[index].y
-                vectors[index].z = -vectors[index].z
-            }
-        }
-    } else {
-        for index in 1..<vectors.count-1 {
-            if(vectors[index].z * vectors[0].z < 0) {
-                vectors[index].x = -vectors[index].x
-                vectors[index].y = -vectors[index].y
-                vectors[index].z = -vectors[index].z
-            }
-        }
-    }
+    /* convert pathUnits to vectors: [v1, v2, ..., vn] */
+    let vectors = pointsToVectors(points: points)
+    
     /* compute average direction vector */
-    var averVector = Point(x: 0, y: 0, z: 0)
-    for vector in vectors {
-        averVector = averVector + vector
-    }
-    averVector = averVector / Double(vectors.count)
+    let averVector = computeAverVector(vectors: vectors)
     
     /* rotate axes so that X axis is parallel to averVector */
-    let alpha = atan(averVector.x / averVector.y) + .pi * 3 / 2
-    let beta = atan(averVector.z / pow(averVector.x * averVector.x + averVector.y + averVector.y, 0.5))
-    for index in 0..<points.count-1 {
-        let x = points[index].x
-        let y = points[index].y
-        points[index].x = x * cos(alpha) - y * sin(alpha)
-        points[index].y = y * cos(alpha) + x * sin(alpha)
+    let alpha = atan(averVector.x / averVector.y) + .pi * 3 / 2 // 绕z
+    
+    let beta = atan(averVector.z / pow(averVector.x * averVector.x + averVector.y * averVector.y, 0.5)) // 绕y
+    
+    var rotatedPoints: [Point] = []
+    for point in points {
+        rotatedPoints.append(rotate(point: point, alpha: alpha, beta: beta))
     }
-    for index in 0..<points.count-1 {
-        let x = points[index].x
-        let z = points[index].z
-        points[index].x = x * cos(beta) + z * sin(beta)
-        points[index].z = -x * sin(beta) + z * cos(beta)
-    }
-    /* var x = averVector.x
-    let y = averVector.y
-    averVector.x = x * cos(alpha) - y * sin(alpha)
-    averVector.y = y * cos(alpha) + x * sin(alpha)
-    x = averVector.x
-    let z = averVector.z
-    averVector.x = x * cos(beta) + z * sin(beta)
-    averVector.z = -x * sin(beta) + z * cos(beta) */
     
     /* lines for sweeping */
-    var lines: [[Point]] = []
+    var rotatedLines: [[Point]] = []
     var index = 0
     while(index <= points.count - 2) {
         if(points[index].x > points[index+1].x) {
-            lines.append([points[index+1], points[index]])
+            rotatedLines.append([points[index+1], points[index]])
         } else {
-            lines.append([points[index], points[index+1]])
+            rotatedLines.append([points[index], points[index+1]])
         }
         index += 2
     }
@@ -365,31 +372,24 @@ func generateRepresent(pathUnits: [PathUnit]) -> [CLLocation] {
     points.sort { (p1: Point, p2: Point) -> Bool in
         return p1.x < p2.x
     }
-    lines.sort { (l1: [Point], l2: [Point]) -> Bool in
+    rotatedLines.sort { (l1: [Point], l2: [Point]) -> Bool in
         return l1[0].x < l2[0].x
     }
     
-    var lastXValue = 0.0
+    var lastXValue = points[0].x
     for point in points {
-        let values = pathUnitXValue(sweepPlane: point.x, lines: lines)
+        let values = pathUnitXValue(sweepPlane: point.x, lines: rotatedLines)
         if(values.count >= MinLns) {
             let diff = point.x - lastXValue
             lastXValue = point.x
             if(diff >= r) {
-                var averPoint = Point(x: 0, y: 0, z: 0)
+                var rotatedAverPoint = Point(x: 0, y: 0, z: 0)
                 for value in values {
-                    averPoint = averPoint + value
+                    rotatedAverPoint = rotatedAverPoint + value
                 }
-                averPoint = averPoint / Double(values.count)
+                rotatedAverPoint = rotatedAverPoint / Double(values.count)
                 /* undo rotation */
-                var x = averPoint.x
-                let y = averPoint.y
-                averPoint.x = x * cos(.pi * 2 - alpha) - y * sin(.pi * 2 - alpha)
-                averPoint.y = y * cos(.pi * 2 - alpha) + x * sin(.pi * 2 - alpha)
-                x = averPoint.x
-                let z = averPoint.z
-                averPoint.x = x * cos(.pi * 2 - beta) + z * sin(.pi * 2 - beta)
-                averPoint.z = -x * sin(.pi * 2 - beta) + z * cos(.pi * 2 - beta)
+                let averPoint = rotate(point: rotatedAverPoint, alpha: .pi * 2 - alpha, beta: .pi * 2 - beta)
                 
                 let representLocation = CLLocation(
                     coordinate: CLLocationCoordinate2D(
@@ -409,9 +409,7 @@ func generateRepresent(pathUnits: [PathUnit]) -> [CLLocation] {
 func pathUnitXValue(sweepPlane: Double, lines: [[Point]]) -> [Point] {
     var values: [Point] = []
     for line in lines {
-        if(line[0].x > sweepPlane) {
-            break
-        } else if (line[1].x < sweepPlane){
+        if(line[0].x <= sweepPlane && line[1].x >= sweepPlane) {
             let p = Point(
                 x: sweepPlane,
                 y: (sweepPlane - line[0].x) / (line[1].x - line[0].x) * (line[1].y - line[0].y) + line[0].y,

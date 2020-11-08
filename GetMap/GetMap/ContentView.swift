@@ -9,8 +9,6 @@ import SwiftUI
 import CoreData
 import Foundation
 
-let colors = [Color.blue, Color.yellow, Color.green, Color.purple, Color.pink, Color.orange, Color.red]
-
 struct Offset {
     var x: CGFloat
     var y: CGFloat
@@ -45,9 +43,9 @@ struct ContentView: View {
     /* setting */
     @State var showFunctionSheet: Bool = false
     @State var showCurrentLocation: Bool = true
-    @State var showRawPaths: Bool = true
+    @State var showRawPaths: Bool = false
     @State var showBuildings: Bool = false
-    @State var showClusters: Bool = false
+    @State var showClusters: Bool = true
     @State var showRepresentatives: Bool = false
     
     var body: some View {
@@ -123,6 +121,7 @@ struct ContentView: View {
                             pathUnits.append(newPathUnit)
                         }
                     }
+                    
                     /* cluster */
                     let clusters = cluster(pathUnits: pathUnits)
                     var clusterNum = 0
@@ -132,15 +131,23 @@ struct ContentView: View {
                     }
                     var C = [[PathUnit]](repeating: [], count: clusterNum)
                     for i in 0..<pathUnits.count-1 {
-                        if(clusters[i] != -1) {
+                        if(clusters[i] != -1 && clusters[i] != 0) {
                             C[clusters[i] - 1].append(pathUnits[i])
                         }
                     }
                     /* representative trajectory */
                     for c in C {
                         let represent = generateRepresent(pathUnits: c)
-                        representativePaths.append(represent)
+                        if(represent.count >= 2) {
+                            representativePaths.append(represent)
+                        }
                     }
+                    /* for i in representativePaths {
+                        for j in i {
+                            print(j.coordinate)
+                        }
+                        print("------")
+                    } */
                     
                 }) { Text("Process") }
             })
@@ -160,8 +167,6 @@ struct ContentView: View {
                                 tmpScale = maxZoomIn
                             }
                             scale = tmpScale
-                            // offset.x = lastOffset.x * tmpScale / lastScale
-                            // offset.y = lastOffset.y * tmpScale / lastScale
                             offset = lastOffset * tmpScale / lastScale
                         }
                         .onEnded{ _ in
