@@ -94,7 +94,7 @@ func generateRepresent(pathUnits: [PathUnit]) -> [CLLocation] {
         return representLocations
     }
     /* convert pathUnits to points: [p1, p2, ..., p2n-1, p2n] where p1, p2 are start and end point of pathUnit[0] */
-    var points = locationsToPoints(pathUnits: pathUnits)
+    let points = locationsToPoints(pathUnits: pathUnits)
     
     /* convert pathUnits to vectors: [v1, v2, ..., vn] */
     let vectors = pointsToVectors(points: points)

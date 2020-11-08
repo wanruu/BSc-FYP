@@ -21,6 +21,7 @@
 		B47BB436255868C800454833 /* RepresentPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47BB435255868C800454833 /* RepresentPath.swift */; };
 		B47BB44125586B0B00454833 /* UserPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47BB44025586B0B00454833 /* UserPath.swift */; };
 		B47BB44625586BB900454833 /* ClusteredPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47BB44525586BB900454833 /* ClusteredPath.swift */; };
+		B47BB4592558770F00454833 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47BB4582558770F00454833 /* Location.swift */; };
 		B4E500C92549DF08001A7582 /* GetMapApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E500C82549DF08001A7582 /* GetMapApp.swift */; };
 		B4E500CB2549DF08001A7582 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E500CA2549DF08001A7582 /* ContentView.swift */; };
 		B4E500CD2549DF0B001A7582 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B4E500CC2549DF0B001A7582 /* Assets.xcassets */; };
@@ -71,6 +72,7 @@
 		B47BB435255868C800454833 /* RepresentPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepresentPath.swift; sourceTree = "<group>"; };
 		B47BB44025586B0B00454833 /* UserPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPath.swift; sourceTree = "<group>"; };
 		B47BB44525586BB900454833 /* ClusteredPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusteredPath.swift; sourceTree = "<group>"; };
+		B47BB4582558770F00454833 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		B4E500C52549DF08001A7582 /* GetMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GetMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4E500C82549DF08001A7582 /* GetMapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetMapApp.swift; sourceTree = "<group>"; };
 		B4E500CA2549DF08001A7582 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -127,6 +129,7 @@
 				B47BB3EE255862AA00454833 /* Point.swift */,
 				B47BB3F3255862D100454833 /* Distance.swift */,
 				B47BB41F255865BA00454833 /* Offset.swift */,
+				B47BB4582558770F00454833 /* Location.swift */,
 			);
 			name = "Data Structure";
 			sourceTree = "<group>";
@@ -402,6 +405,7 @@
 				B47BB44125586B0B00454833 /* UserPath.swift in Sources */,
 				B47BB3EF255862AA00454833 /* Point.swift in Sources */,
 				B47BB4152558649E00454833 /* RepresentFunc.swift in Sources */,
+				B47BB4592558770F00454833 /* Location.swift in Sources */,
 				B4E500D52549DF0B001A7582 /* GetMap.xcdatamodeld in Sources */,
 				B4E50151254AE6DD001A7582 /* FunctionSheet.swift in Sources */,
 				B47BB3B52555C3BF00454833 /* RawPath+CoreDataProperties.swift in Sources */,
