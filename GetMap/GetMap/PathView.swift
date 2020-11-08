@@ -104,6 +104,6 @@ struct RepresentativePath: View {
                     }
                 }
             }
-        }.stroke(Color.black, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+        }.stroke(Color.pink.opacity(0.3), style: StrokeStyle(lineWidth: 6, lineJoin: .round))
     }
 }

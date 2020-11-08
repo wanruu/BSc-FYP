@@ -176,7 +176,7 @@ func weightedDistance(locations: [CLLocation]) -> Double {
     return dist.perpendicular + dist.parallel + dist.angle
 }
 
-let e: Double = 10
+let e: Double = 14
 let MinLns: Int = 3
 
 /* calculate e-neighborhood for every path unit */
@@ -252,7 +252,7 @@ func cluster(pathUnits: [PathUnit]) -> [Int] {
 }
 
 // MARK: - generate representative trajectory
-let r = 1.0
+let r = 0.3
 
 /* convert location to point */
 func locationsToPoints(pathUnits: [PathUnit]) -> [Point] {
@@ -288,13 +288,11 @@ func computeAverVector(vectors: [Point]) -> Point {
     /* find axis in which vector change most */
     var x = 0.0
     var y = 0.0
-    var z = 0.0
     for vector in vectors {
         x += abs(vector.x)
         y += abs(vector.y)
-        z += abs(vector.z)
     }
-    if(x > y && x > z) { // x: max
+    if(x > y) {
         for index in 0..<vectors.count-1 {
             if(vectors[index].x * vectors[0].x < 0) {
                 averVector = averVector - vectors[index]
@@ -302,17 +300,9 @@ func computeAverVector(vectors: [Point]) -> Point {
                 averVector = averVector + vectors[index]
             }
         }
-    } else if(y > x && y > z) { // y: max
+    } else { 
         for index in 0..<vectors.count-1 {
             if(vectors[index].y * vectors[0].y < 0) {
-                averVector = averVector - vectors[index]
-            } else {
-                averVector = averVector + vectors[index]
-            }
-        }
-    } else { // z: max
-        for index in 0..<vectors.count-1 {
-            if(vectors[index].z * vectors[0].z < 0) {
                 averVector = averVector - vectors[index]
             } else {
                 averVector = averVector + vectors[index]
@@ -323,15 +313,28 @@ func computeAverVector(vectors: [Point]) -> Point {
     return averVector
 }
 /* rotate */
-func rotate(point: Point, alpha: Double, beta: Double) -> Point {
-    var newPoint = Point(x: point.x, y: point.y, z: point.z)
-    newPoint.x = newPoint.x * cos(alpha) - newPoint.y * sin(alpha)
-    newPoint.y = newPoint.y * cos(alpha) + newPoint.x * sin(alpha)
-    newPoint.x = newPoint.x * cos(beta) + newPoint.z * sin(beta)
-    newPoint.z = -newPoint.x * sin(beta) + newPoint.z * cos(beta)
+func rotateByZ(point: Point, angle: Double) -> Point { // clockwise
+    let newPoint = Point(x: point.x * cos(angle) + point.y * sin(angle),
+                         y: point.y * cos(angle) - point.x * sin(angle),
+                         z: point.z)
     return newPoint
 }
-
+func rotateByY(point: Point, angle: Double) -> Point { // anti-clockwise
+    let newPoint = Point(x: point.x * cos(angle) + point.z * sin(angle),
+                         y: point.y,
+                         z: point.z * cos(angle) - point.x * sin(angle))
+    return newPoint
+}
+func rotate(point: Point, alpha: Double, beta: Double) -> Point {
+    let p1 = rotateByZ(point: point, angle: alpha)
+    let p2 = rotateByY(point: p1, angle: beta)
+    return p2
+}
+func unrotate(point: Point, alpha: Double, beta: Double) -> Point {
+    let p1 = rotateByY(point: point, angle: -beta)
+    let p2 = rotateByZ(point: p1, angle: -alpha)
+    return p2
+}
 func generateRepresent(pathUnits: [PathUnit]) -> [CLLocation] {
     var representLocations: [CLLocation] = []
     if(pathUnits.count == 0) {
@@ -346,24 +349,47 @@ func generateRepresent(pathUnits: [PathUnit]) -> [CLLocation] {
     /* compute average direction vector */
     let averVector = computeAverVector(vectors: vectors)
     
-    /* rotate axes so that X axis is parallel to averVector */
-    let alpha = atan(averVector.x / averVector.y) + .pi * 3 / 2 // 绕z
+    /* TEST: averVector */
+    /* representLocations.append(pathUnits[0].start_point)
+    let l = CLLocation(
+        coordinate: CLLocationCoordinate2D(
+            latitude: averVector.x / laScale + pathUnits[0].start_point.coordinate.latitude,
+            longitude: averVector.y / lgScale + pathUnits[0].start_point.coordinate.longitude),
+        altitude: averVector.z + pathUnits[0].start_point.altitude,
+        horizontalAccuracy: -1, verticalAccuracy: -1, timestamp: Date(timeIntervalSince1970: 1))
+    representLocations.append(l)
+    return representLocations */
     
-    let beta = atan(averVector.z / pow(averVector.x * averVector.x + averVector.y * averVector.y, 0.5)) // 绕y
+    /* rotate axes so that X axis is parallel to averVector */
+    let alpha = atan(averVector.y / averVector.x) // rotate by z
+    
+    let beta = atan(averVector.z / pow(averVector.x * averVector.x + averVector.y * averVector.y, 0.5)) // rotate by y
     
     var rotatedPoints: [Point] = []
     for point in points {
         rotatedPoints.append(rotate(point: point, alpha: alpha, beta: beta))
     }
     
+    /* TEST: rotate function */
+    /* for _ in 1...40 {
+        let P = Point(x: .random(in: 0...40), y: .random(in: 0...40), z: .random(in: 0...40))
+        let a: Double = -.random(in: 0...0.5) * .pi
+        let b: Double = -.random(in: 0...0.5) * .pi
+        let rotatedP = rotate(point: P, alpha: a, beta: b)
+        let unrotatedP = unrotate(point: rotatedP, alpha: a, beta: b)
+        print("--------")
+        print(P)
+        print(unrotatedP)
+    } */
+    
     /* lines for sweeping */
     var rotatedLines: [[Point]] = []
     var index = 0
-    while(index <= points.count - 2) {
-        if(points[index].x > points[index+1].x) {
-            rotatedLines.append([points[index+1], points[index]])
+    while(index <= rotatedPoints.count - 2) {
+        if(rotatedPoints[index].x > rotatedPoints[index+1].x) {
+            rotatedLines.append([rotatedPoints[index+1], rotatedPoints[index]])
         } else {
-            rotatedLines.append([points[index], points[index+1]])
+            rotatedLines.append([rotatedPoints[index], rotatedPoints[index+1]])
         }
         index += 2
     }
@@ -372,11 +398,12 @@ func generateRepresent(pathUnits: [PathUnit]) -> [CLLocation] {
     points.sort { (p1: Point, p2: Point) -> Bool in
         return p1.x < p2.x
     }
+
     rotatedLines.sort { (l1: [Point], l2: [Point]) -> Bool in
         return l1[0].x < l2[0].x
     }
     
-    var lastXValue = points[0].x
+    var lastXValue = points[0].x - r
     for point in points {
         let values = pathUnitXValue(sweepPlane: point.x, lines: rotatedLines)
         if(values.count >= MinLns) {
@@ -389,8 +416,7 @@ func generateRepresent(pathUnits: [PathUnit]) -> [CLLocation] {
                 }
                 rotatedAverPoint = rotatedAverPoint / Double(values.count)
                 /* undo rotation */
-                let averPoint = rotate(point: rotatedAverPoint, alpha: .pi * 2 - alpha, beta: .pi * 2 - beta)
-                
+                let averPoint = unrotate(point: rotatedAverPoint, alpha: alpha, beta: beta)
                 let representLocation = CLLocation(
                     coordinate: CLLocationCoordinate2D(
                         latitude: averPoint.x / laScale + pathUnits[0].start_point.coordinate.latitude,
@@ -409,7 +435,16 @@ func generateRepresent(pathUnits: [PathUnit]) -> [CLLocation] {
 func pathUnitXValue(sweepPlane: Double, lines: [[Point]]) -> [Point] {
     var values: [Point] = []
     for line in lines {
-        if(line[0].x <= sweepPlane && line[1].x >= sweepPlane) {
+        if(line[0].x == sweepPlane) {
+            values.append(line[0])
+            break
+        } else if(line[1].x == sweepPlane) {
+            values.append(line[1])
+            break
+        }
+    }
+    for line in lines {
+        if(line[0].x < sweepPlane && line[1].x > sweepPlane) {
             let p = Point(
                 x: sweepPlane,
                 y: (sweepPlane - line[0].x) / (line[1].x - line[0].x) * (line[1].y - line[0].y) + line[0].y,

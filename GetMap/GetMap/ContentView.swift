@@ -111,6 +111,10 @@ struct ContentView: View {
                 }) { Text("Discard") }
                 Text(" / ")
                 Button(action: {
+                    /* clear */
+                    pathUnits = []
+                    representativePaths = []
+                    
                     /* partition */
                     for rawPath in rawPaths {
                         let cp = partition(path: rawPath.locations)
