@@ -124,16 +124,17 @@ func generateRepresent(pathUnits: [PathUnit]) -> [CLLocation] {
         index += 2
     }
     
-    /* sort points by x value */
-    points.sort { (p1: Point, p2: Point) -> Bool in
+    /* sort rotatedPoints by x value */
+    rotatedPoints.sort { (p1: Point, p2: Point) -> Bool in
         return p1.x < p2.x
     }
     rotatedLines.sort { (l1: [Point], l2: [Point]) -> Bool in
         return l1[0].x < l2[0].x
     }
     
+    /* start sweeping */
     var lastXValue = points[0].x - r
-    for point in points {
+    for point in rotatedPoints {
         let values = pathUnitXValue(sweepPlane: point.x, lines: rotatedLines)
         if(values.count >= MinLns) {
             let diff = point.x - lastXValue
