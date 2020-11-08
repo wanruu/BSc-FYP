@@ -191,15 +191,22 @@
 			name = Process;
 			sourceTree = "<group>";
 		};
-		B4E500BC2549DF08001A7582 = {
+		B47BB4752558839800454833 /* Core Data */ = {
 			isa = PBXGroup;
 			children = (
 				B47BB3B22555C3BF00454833 /* RawPath+CoreDataClass.swift */,
 				B47BB3B32555C3BF00454833 /* RawPath+CoreDataProperties.swift */,
-				B4E5013E254AA4E1001A7582 /* PathUnit+CoreDataClass.swift */,
-				B4E5013F254AA4E1001A7582 /* PathUnit+CoreDataProperties.swift */,
 				B4E501272549F16E001A7582 /* Building+CoreDataClass.swift */,
 				B4E501282549F16E001A7582 /* Building+CoreDataProperties.swift */,
+				B4E5013E254AA4E1001A7582 /* PathUnit+CoreDataClass.swift */,
+				B4E5013F254AA4E1001A7582 /* PathUnit+CoreDataProperties.swift */,
+			);
+			name = "Core Data";
+			sourceTree = "<group>";
+		};
+		B4E500BC2549DF08001A7582 = {
+			isa = PBXGroup;
+			children = (
 				B4E500C72549DF08001A7582 /* GetMap */,
 				B4E500DE2549DF0B001A7582 /* GetMapTests */,
 				B4E500E92549DF0B001A7582 /* GetMapUITests */,
@@ -229,6 +236,7 @@
 				B47BB3F82558630500454833 /* Function */,
 				B47BB3ED2558628D00454833 /* Data Structure */,
 				B4E500CC2549DF0B001A7582 /* Assets.xcassets */,
+				B47BB4752558839800454833 /* Core Data */,
 				B4E500D12549DF0B001A7582 /* Persistence.swift */,
 				B4E500D62549DF0B001A7582 /* Info.plist */,
 				B4E500D32549DF0B001A7582 /* GetMap.xcdatamodeld */,
