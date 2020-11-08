@@ -1,12 +1,8 @@
-//
-//  LocationGetterModel.swift
-//  GetMap
-//
-//  Created by wanruuu on 26/10/2020.
-//
+/* MARK: Model for Collecting User Location Data */
 
 /* This is a model for getting location information of user,
- including current latitude, longitude, altitude, heading and a list of location points*/
+ including current latitude, longitude, altitude, heading and a list of location points */
+
 import Foundation
 import CoreLocation
 import CoreData
@@ -25,9 +21,6 @@ class LocationGetterModel: NSObject, ObservableObject {
 
     override init() {
         super.init()
-        setup()
-    }
-    func setup() {
         /* delegate */
         manager.delegate = self
         /* the minimum distance (m) a device must move horizontally before an update event is generated */

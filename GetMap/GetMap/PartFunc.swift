@@ -1,10 +1,4 @@
-//
-//  PartFunction.swift
-//  GetMap
-//
-//  Created by wanruuu on 9/11/2020.
-//
-/*  trajectory partitioning */
+/* MARK: Trajectory Partitioning */
 
 import Foundation
 import CoreLocation

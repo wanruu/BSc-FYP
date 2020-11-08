@@ -1,17 +1,11 @@
-//
-//  RepresentFunc.swift
-//  GetMap
-//
-//  Created by wanruuu on 9/11/2020.
-//
-/* generate representative trajectory */
+/* MARK: Representative Trajectory Generation */
 
 import Foundation
 import CoreLocation
 
 let r = 0.3
 
-/* convert location to point */
+/* convert locations to points */
 func locationsToPoints(pathUnits: [PathUnit]) -> [Point] {
     var points: [Point] = []
     // assume pathUnits[0].start_point as origin point
@@ -28,7 +22,7 @@ func locationsToPoints(pathUnits: [PathUnit]) -> [Point] {
     return points
 }
 
-/* convert pathUnits to vectors: [v1, v2, ..., vn] */
+/* convert points to vectors: [v1, v2, ..., vn] */
 func pointsToVectors(points: [Point]) -> [Point] {
     var vectors: [Point] = []
     var index = 0

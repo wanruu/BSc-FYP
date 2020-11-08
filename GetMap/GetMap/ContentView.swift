@@ -9,18 +9,6 @@ import SwiftUI
 import CoreData
 import Foundation
 
-struct Offset {
-    var x: CGFloat
-    var y: CGFloat
-}
-extension Offset {
-    static func * (offset: Offset, para: CGFloat) -> Offset {
-        return Offset(x: offset.x * para, y: offset.y * para)
-    }
-    static func / (offset: Offset, para: CGFloat) -> Offset {
-        return Offset(x: offset.x / para, y: offset.y / para)
-    }
-}
 struct ContentView: View {
     /* Core data */
     @Environment(\.managedObjectContext) private var viewContext
@@ -30,7 +18,7 @@ struct ContentView: View {
     
     /* FOR TEST: pathUnits with different cluster id*/
     @State var pathUnits: [PathUnit] = []
-    @State var representativePaths: [[CLLocation]] = []
+    @State var representPaths: [[CLLocation]] = []
     
     /* location getter */
     @ObservedObject var locationGetter = LocationGetterModel()
@@ -46,30 +34,29 @@ struct ContentView: View {
     @State var showRawPaths: Bool = false
     @State var showBuildings: Bool = false
     @State var showClusters: Bool = true
-    @State var showRepresentatives: Bool = false
+    @State var showRepresentPaths: Bool = false
     
     var body: some View {
         NavigationView {
             /* TODO: ZStack necessary? */
             ZStack(alignment: .bottom) {
                 /* user paths */
-                UserPath(locationGetter: locationGetter, offset: $offset, scale: $scale)
+                UserPathsView(locationGetter: locationGetter, offset: $offset, scale: $scale)
                 
                 /* existing raw path */
                 showRawPaths ?
                     ForEach(rawPaths) { rawPath in
-                        PathView(locations: rawPath.locations, locationGetter: locationGetter, offset: $offset, scale: $scale, color: Color.gray)
+                        RawPathView(locations: rawPath.locations, locationGetter: locationGetter, offset: $offset, scale: $scale)
                     } : nil
                 
                 /* FOR TEST: existing path Units: after cluster */
                 showClusters ?
                     ForEach(pathUnits) { pathUnit in
-                        pathUnit.clusterId == -1 ? nil :
-                        StraightPath(pathUnit: pathUnit, locationGetter: locationGetter, offset: $offset, scale: $scale, color: colors[pathUnit.clusterId % colors.count])
+                        pathUnit.clusterId == -1 ? nil : ClusteredPathView(pathUnit: pathUnit, locationGetter: locationGetter, offset: $offset, scale: $scale, color: colors[pathUnit.clusterId % colors.count])
                     } : nil
                 /* FOR TEST: Representative path */
-                showRepresentatives ?
-                    RepresentativePath(representativePaths: representativePaths, locationGetter: locationGetter, offset: $offset, scale: $scale) : nil
+                showRepresentPaths ?
+                    RepresentPathsView(representPaths: representPaths, locationGetter: locationGetter, offset: $offset, scale: $scale) : nil
                 
                 /* current location point */
                 showCurrentLocation ?
@@ -113,7 +100,7 @@ struct ContentView: View {
                 Button(action: {
                     /* clear */
                     pathUnits = []
-                    representativePaths = []
+                    representPaths = []
                     
                     /* partition */
                     for rawPath in rawPaths {
@@ -129,12 +116,12 @@ struct ContentView: View {
                     /* cluster */
                     let clusters = cluster(pathUnits: pathUnits)
                     var clusterNum = 0
-                    for i in 0..<pathUnits.count-1 {
+                    for i in 0..<pathUnits.count {
                         pathUnits[i].clusterId = clusters[i]
                         clusterNum = max(clusterNum, clusters[i])
                     }
                     var C = [[PathUnit]](repeating: [], count: clusterNum)
-                    for i in 0..<pathUnits.count-1 {
+                    for i in 0..<pathUnits.count {
                         if(clusters[i] != -1 && clusters[i] != 0) {
                             C[clusters[i] - 1].append(pathUnits[i])
                         }
@@ -143,20 +130,14 @@ struct ContentView: View {
                     for c in C {
                         let represent = generateRepresent(pathUnits: c)
                         if(represent.count >= 2) {
-                            representativePaths.append(represent)
+                            representPaths.append(represent)
                         }
                     }
-                    /* for i in representativePaths {
-                        for j in i {
-                            print(j.coordinate)
-                        }
-                        print("------")
-                    } */
-                    
+
                 }) { Text("Process") }
             })
             .sheet(isPresented: $showFunctionSheet) {
-                FunctionSheet(locationGetter: locationGetter, buildings: buildings, showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showBuildings: $showBuildings, showClusters: $showClusters, showRepresentatives: $showRepresentatives)
+                FunctionSheet(locationGetter: locationGetter, buildings: buildings, showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showBuildings: $showBuildings, showClusters: $showClusters, showRepresentatives: $showRepresentPaths)
             }
             .contentShape(Rectangle())
             .gesture(

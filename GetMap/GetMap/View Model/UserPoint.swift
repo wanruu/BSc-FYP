@@ -1,48 +1,24 @@
-//
-//  LocationPointViewModel.swift
-//  GetMap
-//
-//  Created by wanruuu on 26/10/2020.
-//
-
-/* This is for showing user location point view,
- given location information */
+/* MARK: User Point */
 
 import Foundation
 import SwiftUI
 
-// MARK: - Building Point
-struct BuildingPoint: View {
-    @State var building: Building
-    @ObservedObject var locationGetter: LocationGetterModel
-    @Binding var offset: Offset
-    @Binding var scale: CGFloat
-    
-    var body: some View {
-        let x = centerX + CGFloat((building.longitude - locationGetter.current.coordinate.longitude)*lgScale*2) * scale + offset.x
-        let y = centerY + CGFloat((locationGetter.current.coordinate.latitude - building.latitude)*laScale*2) * scale + offset.y
-        Text(building.name_en).position(x: x, y: y)
-    }
-}
-
-// MARK: - User Point
 let innerRadius: CGFloat = 8
+let timer = Timer.publish(every: 0.08, on: .main, in: .common).autoconnect()
+
 struct UserPoint: View {
     @ObservedObject var locationGetter: LocationGetterModel
     @Binding var offset: Offset
     @Binding var scale: CGFloat
     
-    
-    let timer = Timer.publish(every: 0.08, on: .main, in: .common).autoconnect()
     @State var animationRadius: CGFloat = 8
     @State var up: Bool = true // animationRadius is becoming larger or not
 
     var body: some View {
-        // print(offset.x, offset.y)
         let center = CGPoint(x: centerX + offset.x, y: centerY + offset.y)
         return
             ZStack {
-                Animation(center: center, radius: animationRadius)
+                AnimationCircle(center: center, radius: animationRadius)
                     .fill(Color.blue.opacity(0.2))
                     .onReceive(timer) { _ in
                         if(up) { animationRadius += 0.4 }
@@ -50,11 +26,11 @@ struct UserPoint: View {
                         if(animationRadius > 17) { up = false }
                         else if(animationRadius < 11) { up = true }
                     }
-                UserDirection(center: center, heading: locationGetter.heading)
+                DirectionTriangle(center: center, heading: locationGetter.heading)
                     .fill(Color.blue)
-                OuterPoint(center: center)
+                OuterCircle(center: center)
                     .fill(Color.white)
-                InnerPoint(center: center)
+                InnerCircle(center: center)
                     .fill(Color.blue)
             }
     }
@@ -62,7 +38,7 @@ struct UserPoint: View {
 
 /* blue */
 /* inner part of point */
-struct InnerPoint: Shape {
+struct InnerCircle: Shape {
     @State var center: CGPoint
     func path(in rect: CGRect) -> Path {
         var p = Path()
@@ -74,7 +50,7 @@ struct InnerPoint: Shape {
 /* translucent blue */
 /* the size of it will change from time to time,
  to show location is updating */
-struct Animation: Shape {
+struct AnimationCircle: Shape {
     @State var center: CGPoint
     @State var radius: CGFloat
     func path(in rect: CGRect) -> Path {
@@ -86,7 +62,7 @@ struct Animation: Shape {
 
 /* blue */
 /* show direction of user */
-struct UserDirection: Shape {
+struct DirectionTriangle: Shape {
     @State var center: CGPoint
     @State var heading: Double
     func path(in rect: CGRect) -> Path {
@@ -108,7 +84,7 @@ struct UserDirection: Shape {
 
 /* outer part of point */
 /* white layer between CorePoint and direction */
-struct OuterPoint: Shape {
+struct OuterCircle: Shape {
     @State var center: CGPoint
     func path(in rect: CGRect) -> Path {
         var p = Path()

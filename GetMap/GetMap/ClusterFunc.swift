@@ -1,10 +1,4 @@
-//
-//  clusterFunction.swift
-//  GetMap
-//
-//  Created by wanruuu on 9/11/2020.
-//
-/* trajectory clustering */
+/* MARK: Trajectory Clustering */
 
 import Foundation
 import CoreLocation
