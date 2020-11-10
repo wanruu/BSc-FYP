@@ -9,6 +9,12 @@ import SwiftUI
 import CoreData
 import Foundation
 
+func formatter(date: Date) -> String {
+    let df = DateFormatter()
+    df.dateFormat = "yyyy-MM-dd hh:mm:ss"
+    return df.string(from: date)
+}
+
 struct ContentView: View {
     /* Core data */
     @Environment(\.managedObjectContext) private var viewContext
@@ -87,10 +93,11 @@ struct ContentView: View {
             .navigationBarItems(trailing: HStack {
                 Button(action: {
                     for rawPath in locationGetter.paths {
-                        if(rawPath.count >= 2) {
+                        if(rawPath.count >= 5) {
                             addRawPath(locations: rawPath)
                         }
                     }
+                    cleanPaths()
                 }) { Text("Upload") }
                 Text(" / ")
                 Button(action: {
@@ -137,7 +144,7 @@ struct ContentView: View {
                 }) { Text("Process") }
             })
             .sheet(isPresented: $showFunctionSheet) {
-                FunctionSheet(locationGetter: locationGetter, buildings: buildings, showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showBuildings: $showBuildings, showClusters: $showClusters, showRepresentatives: $showRepresentPaths)
+                FunctionSheet(locationGetter: locationGetter, buildings: buildings, rawPaths: rawPaths, showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showBuildings: $showBuildings, showClusters: $showClusters, showRepresentatives: $showRepresentPaths)
             }
             .contentShape(Rectangle())
             .gesture(

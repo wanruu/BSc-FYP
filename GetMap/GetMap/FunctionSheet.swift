@@ -8,6 +8,7 @@ struct FunctionSheet: View {
     @State var buildingName: String = ""
     @ObservedObject var locationGetter: LocationGetterModel
     @State var buildings: FetchedResults<Building>
+    @State var rawPaths: FetchedResults<RawPath>
     
     @Binding var showCurrentLocation: Bool
     @Binding var showRawPaths: Bool
@@ -16,15 +17,13 @@ struct FunctionSheet: View {
     @Binding var showRepresentatives: Bool
     
     var body: some View {
-        VStack(alignment: .leading) {
+        List {
             Toggle(isOn: $showCurrentLocation, label: { Text("Show Current Location") })
             Toggle(isOn: $showRawPaths, label: { Text("Show Raw Paths") })
-            // Toggle(isOn: $showBuildings, label: { Text("Show Buildings") })
+            Toggle(isOn: $showBuildings, label: { Text("Show Buildings") })
             Toggle(isOn: $showClusters, label: { Text("Show Clusters") })
             Toggle(isOn: $showRepresentatives, label: { Text("Show Representatives") })
-            Divider()
             /* add building function */
-            Text("Mark current location as a building")
             HStack {
                 TextField( "Name of the building", text: $buildingName).textFieldStyle(RoundedBorderTextFieldStyle())
                 Button(action: {
@@ -33,21 +32,32 @@ struct FunctionSheet: View {
                     buildingName = ""
                 } ){ Text("Add") }
             } .padding(.bottom)
-            /* show building list */
-            Text("Building List")
-            List {
-                ForEach(buildings) { building in
-                    VStack(alignment: .leading) {
-                        Text(building.name_en).font(.headline)
-                        Text("(\(building.latitude), \(building.longitude))").font(.subheadline)
-                    }
-                }
-                .onDelete{ indexSet in
-                    deleteBuildings(offsets: indexSet)
+            Divider()
+            /* building list */
+            ForEach(buildings) { building in
+                VStack(alignment: .leading) {
+                    Text(building.name_en).font(.headline)
+                    Text("(\(building.latitude), \(building.longitude))").font(.subheadline)
                 }
             }
-            Spacer()
-        }.padding()
+            .onDelete { indexSet in
+                deleteBuildings(offsets: indexSet)
+            }
+            Divider()
+            /* rawPath list */
+            ForEach(rawPaths) { rawPath in
+                let locations = rawPath.locations
+                locations.count == 0 ? nil :
+                VStack(alignment: .leading) {
+                    Text("(\(locations[0].coordinate.latitude), \(locations[0].coordinate.longitude)), \(formatter(date: locations[0].timestamp))")
+                    Text("(\(locations[locations.count - 1].coordinate.latitude), \(locations[locations.count - 1].coordinate.longitude)), \(formatter(date: locations[locations.count - 1].timestamp))")
+                    Text("\(locations.count)")
+                }
+            }.onDelete {
+                indexSet in
+                    deleteRawPaths(offsets: indexSet)
+            }
+        }
     }
     /* add current location to building list */
     private func addBuilding() {
@@ -64,6 +74,11 @@ struct FunctionSheet: View {
         offsets.map { buildings[$0] }.forEach(viewContext.delete)
         do { try viewContext.save() }
         catch { fatalError("Error in deleteBuildings.") }
+    }
+    private func deleteRawPaths(offsets: IndexSet) {
+        offsets.map { rawPaths[$0] }.forEach(viewContext.delete)
+        do { try viewContext.save() }
+        catch { fatalError("Error in deleteRawPaths.") }
     }
 }
 

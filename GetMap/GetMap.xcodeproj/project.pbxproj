@@ -194,6 +194,8 @@
 		B47BB4752558839800454833 /* Core Data */ = {
 			isa = PBXGroup;
 			children = (
+				B4E500D32549DF0B001A7582 /* GetMap.xcdatamodeld */,
+				B4E500D12549DF0B001A7582 /* Persistence.swift */,
 				B47BB3B22555C3BF00454833 /* RawPath+CoreDataClass.swift */,
 				B47BB3B32555C3BF00454833 /* RawPath+CoreDataProperties.swift */,
 				B4E501272549F16E001A7582 /* Building+CoreDataClass.swift */,
@@ -235,11 +237,9 @@
 				B47BB4242558662E00454833 /* View Model */,
 				B47BB3F82558630500454833 /* Function */,
 				B47BB3ED2558628D00454833 /* Data Structure */,
-				B4E500CC2549DF0B001A7582 /* Assets.xcassets */,
 				B47BB4752558839800454833 /* Core Data */,
-				B4E500D12549DF0B001A7582 /* Persistence.swift */,
 				B4E500D62549DF0B001A7582 /* Info.plist */,
-				B4E500D32549DF0B001A7582 /* GetMap.xcdatamodeld */,
+				B4E500CC2549DF0B001A7582 /* Assets.xcassets */,
 				B4E500CE2549DF0B001A7582 /* Preview Content */,
 			);
 			path = GetMap;
