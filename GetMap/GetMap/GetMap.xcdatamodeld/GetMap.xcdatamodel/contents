@@ -6,6 +6,13 @@
         <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="name_en" optional="YES" attributeType="String"/>
     </entity>
+    <entity name="Location" representedClassName="Location" syncable="YES">
+        <attribute name="altitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="name_en" optional="YES" attributeType="String"/>
+        <attribute name="type" optional="YES" attributeType="Integer 64" valueTransformerName="NSSecureUnarchiveFromData" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
     <entity name="PathUnit" representedClassName="PathUnit" syncable="YES">
         <attribute name="clusterId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="end_point" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData"/>
@@ -18,5 +25,6 @@
         <element name="Building" positionX="-390.640625" positionY="67.7421875" width="128" height="103"/>
         <element name="PathUnit" positionX="-360" positionY="90" width="128" height="88"/>
         <element name="RawPath" positionX="-378" positionY="99" width="128" height="58"/>
+        <element name="Location" positionX="-378" positionY="99" width="128" height="118"/>
     </elements>
 </model>

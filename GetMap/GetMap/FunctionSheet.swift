@@ -3,16 +3,31 @@
 import Foundation
 import SwiftUI
 
+let LocationTypes = ["Bus stop", "Building"]
+
+func StringToInt(string: String) -> Int {
+    return Int(string) ?? -1
+}
+func isValidType(string: String) -> Bool {
+    let index = StringToInt(string: string)
+    if(index >= 0 && index < LocationTypes.count) {
+        return true
+    }
+    return false
+}
+
 struct FunctionSheet: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @State var buildingName: String = ""
+    @State var locationName: String = ""
+    @State var locationType: String = ""
+    
     @ObservedObject var locationGetter: LocationGetterModel
-    @State var buildings: FetchedResults<Building>
+    @State var locations: FetchedResults<Location>
     @State var rawPaths: FetchedResults<RawPath>
     
     @Binding var showCurrentLocation: Bool
     @Binding var showRawPaths: Bool
-    @Binding var showBuildings: Bool
+    @Binding var showLocations: Bool
     @Binding var showClusters: Bool
     @Binding var showRepresentatives: Bool
     
@@ -20,28 +35,35 @@ struct FunctionSheet: View {
         List {
             Toggle(isOn: $showCurrentLocation, label: { Text("Show Current Location") })
             Toggle(isOn: $showRawPaths, label: { Text("Show Raw Paths") })
-            Toggle(isOn: $showBuildings, label: { Text("Show Buildings") })
+            Toggle(isOn: $showLocations, label: { Text("Show Locations") })
             Toggle(isOn: $showClusters, label: { Text("Show Clusters") })
             Toggle(isOn: $showRepresentatives, label: { Text("Show Representatives") })
-            /* add building function */
-            HStack {
-                TextField( "Name of the building", text: $buildingName).textFieldStyle(RoundedBorderTextFieldStyle())
+            
+            /* add location function */
+            VStack {
+                Text("Add a location")
+                TextField( "Location Name", text: $locationName).textFieldStyle(RoundedBorderTextFieldStyle())
+                HStack {
+                    TextField( "Location Type", text: $locationType).textFieldStyle(RoundedBorderTextFieldStyle())
+                    isValidType(string: locationType) ? Text("\(LocationTypes[StringToInt(string: locationType)])") : Text("Invalid")
+                }
                 Button(action: {
-                    guard buildingName != "" else { return }
-                    addBuilding()
-                    buildingName = ""
+                    guard locationName != "" && isValidType(string: locationType) else { return }
+                    addLocation()
+                    locationName = ""
+                    locationType = ""
                 } ){ Text("Add") }
-            } .padding(.bottom)
-            Divider()
-            /* building list */
-            ForEach(buildings) { building in
+            }
+            
+            /* location list */
+            ForEach(locations) { (location: Location) in
                 VStack(alignment: .leading) {
-                    Text(building.name_en).font(.headline)
-                    Text("(\(building.latitude), \(building.longitude))").font(.subheadline)
+                    Text("\(location.name_en) (\(LocationTypes[location.type]))").font(.headline)
+                    Text("(\(location.latitude), \(location.longitude))").font(.subheadline)
                 }
             }
             .onDelete { indexSet in
-                deleteBuildings(offsets: indexSet)
+                deleteLocations(offsets: indexSet)
             }
             Divider()
             /* rawPath list */
@@ -59,21 +81,22 @@ struct FunctionSheet: View {
             }
         }
     }
-    /* add current location to building list */
-    private func addBuilding() {
-        let newBuilding = Building(context: viewContext)
-        /* building information */
-        newBuilding.name_en = buildingName
-        newBuilding.latitude = locationGetter.current.coordinate.latitude
-        newBuilding.longitude = locationGetter.current.coordinate.longitude
-        newBuilding.altitude = locationGetter.current.altitude
+    /* add current location to location list */
+    private func addLocation() {
+        let newLocation = Location(context: viewContext)
+        /* location information */
+        newLocation.name_en = locationName
+        newLocation.latitude = locationGetter.current.coordinate.latitude
+        newLocation.longitude = locationGetter.current.coordinate.longitude
+        newLocation.altitude = locationGetter.current.altitude
+        newLocation.type = StringToInt(string: locationType)
         do { try viewContext.save() }
-        catch { fatalError("Error in addBuilding.") }
+        catch { fatalError("Error in addLocation.") }
     }
-    private func deleteBuildings(offsets: IndexSet) {
-        offsets.map { buildings[$0] }.forEach(viewContext.delete)
+    private func deleteLocations(offsets: IndexSet) {
+        offsets.map { locations[$0] }.forEach(viewContext.delete)
         do { try viewContext.save() }
-        catch { fatalError("Error in deleteBuildings.") }
+        catch { fatalError("Error in deleteLocations.") }
     }
     private func deleteRawPaths(offsets: IndexSet) {
         offsets.map { rawPaths[$0] }.forEach(viewContext.delete)
