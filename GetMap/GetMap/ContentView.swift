@@ -18,7 +18,7 @@ func formatter(date: Date) -> String {
 struct ContentView: View {
     /* Core data */
     @Environment(\.managedObjectContext) private var viewContext
-    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Location.name_en, ascending: true)], animation: .default) var locations: FetchedResults<Location>
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Building.name_en, ascending: true)], animation: .default) var buildings: FetchedResults<Building>
     // @FetchRequest(sortDescriptors: [], animation: .default) var pathUnits: FetchedResults<PathUnit>
     @FetchRequest(sortDescriptors: [], animation: .default) var rawPaths: FetchedResults<RawPath>
     
@@ -38,7 +38,7 @@ struct ContentView: View {
     @State var showFunctionSheet: Bool = false
     @State var showCurrentLocation: Bool = true
     @State var showRawPaths: Bool = false
-    @State var showLocations: Bool = false
+    @State var showBuildings: Bool = false
     @State var showClusters: Bool = true
     @State var showRepresentPaths: Bool = false
     
@@ -68,10 +68,10 @@ struct ContentView: View {
                 showCurrentLocation ?
                     UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale) : nil
                 
-                /* location point */
-                showLocations ?
-                    ForEach(locations) { location in
-                        LocationPoint(location: location, locationGetter: locationGetter, offset: $offset, scale: $scale)
+                /* building location point */
+                showBuildings ?
+                    ForEach(buildings) { building in
+                        BuildingPoint(building: building, locationGetter: locationGetter, offset: $offset, scale: $scale)
                     } : nil
                 
                 Text("+").position(x: centerX, y: centerY)
@@ -144,7 +144,7 @@ struct ContentView: View {
                 }) { Text("Process") }
             })
             .sheet(isPresented: $showFunctionSheet) {
-                FunctionSheet(locationGetter: locationGetter, locations: locations, rawPaths: rawPaths, showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showLocations: $showLocations, showClusters: $showClusters, showRepresentatives: $showRepresentPaths)
+                FunctionSheet(locationGetter: locationGetter, buildings: buildings, rawPaths: rawPaths, showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showBuildings: $showBuildings, showClusters: $showClusters, showRepresentatives: $showRepresentPaths)
             }
             .contentShape(Rectangle())
             .gesture(
@@ -208,15 +208,6 @@ struct ContentView: View {
         newRawPath.locations = locations
         do { try viewContext.save() }
         catch { fatalError("Error in addRawPath.") }
-    }
-    private func addLocation(name: String, latitude: Double, longitude: Double, altitude: Double, type: Int) {
-        let newLocation = Location(context: viewContext)
-        newLocation.name_en = name
-        newLocation.latitude = latitude
-        newLocation.longitude = longitude
-        newLocation.type = type
-        do { try viewContext.save() }
-        catch { fatalError("Error in addLocation.") }
     }
 }
 
