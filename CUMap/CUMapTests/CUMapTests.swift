@@ -1,14 +1,14 @@
 //
-//  GetMapTests.swift
-//  GetMapTests
+//  CUMapTests.swift
+//  CUMapTests
 //
 //  Created by wanruuu on 27/11/2020.
 //
 
 import XCTest
-@testable import GetMap
+@testable import CUMap
 
-class GetMapTests: XCTestCase {
+class CUMapTests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

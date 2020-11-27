@@ -27,6 +27,6 @@ struct RepresentPathsView: View {
                     }
                 }
             }
-        }.stroke(Color.pink.opacity(0.3), style: StrokeStyle(lineWidth: 6, lineJoin: .round))
+        }.stroke(Color.pink.opacity(0.3), style: StrokeStyle(lineWidth: 2, lineJoin: .round))
     }
 }

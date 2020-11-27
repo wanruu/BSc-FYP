@@ -18,27 +18,32 @@ func formatter(date: Date) -> String {
 struct ContentView: View {
     /* Core data */
     @Environment(\.managedObjectContext) private var viewContext
-    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Building.name_en, ascending: true)], animation: .default) var buildings: FetchedResults<Building>
     // @FetchRequest(sortDescriptors: [], animation: .default) var pathUnits: FetchedResults<PathUnit>
-    @FetchRequest(sortDescriptors: [], animation: .default) var rawPaths: FetchedResults<RawPath>
+    @FetchRequest(sortDescriptors: [], animation: .default)
+    var rawPaths: FetchedResults<RawPath>
     
-    /* FOR TEST: pathUnits with different cluster id*/
+    /* from server */
+    @State var locations: [Location] = []
+    
+    /* FOR TEST: pathUnits with different cluster id */
     @State var pathUnits: [PathUnit] = []
     @State var representPaths: [[CLLocation]] = []
     
     /* location getter */
     @ObservedObject var locationGetter = LocationGetterModel()
+    
     /* gesture */
     @State var lastOffset = Offset(x: 0, y: 0)
     @State var offset = Offset(x: 0, y: 0)
     @State var lastScale = CGFloat(1.0)
     @State var scale = CGFloat(1.0)
     @GestureState var magnifyBy = CGFloat(1.0)
+    
     /* setting */
     @State var showFunctionSheet: Bool = false
     @State var showCurrentLocation: Bool = true
     @State var showRawPaths: Bool = false
-    @State var showBuildings: Bool = false
+    @State var showLocations: Bool = false
     @State var showClusters: Bool = true
     @State var showRepresentPaths: Bool = false
     
@@ -68,13 +73,11 @@ struct ContentView: View {
                 showCurrentLocation ?
                     UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale) : nil
                 
-                /* building location point */
-                showBuildings ?
+                /* location point */
+                /* showLocations ?
                     ForEach(buildings) { building in
                         BuildingPoint(building: building, locationGetter: locationGetter, offset: $offset, scale: $scale)
-                    } : nil
-                
-                Text("+").position(x: centerX, y: centerY)
+                    } : nil*/
                 
                 VStack {
                     Divider()
@@ -144,7 +147,7 @@ struct ContentView: View {
                 }) { Text("Process") }
             })
             .sheet(isPresented: $showFunctionSheet) {
-                FunctionSheet(locationGetter: locationGetter, buildings: buildings, rawPaths: rawPaths, showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showBuildings: $showBuildings, showClusters: $showClusters, showRepresentatives: $showRepresentPaths)
+                FunctionSheet(locationGetter: locationGetter, locations: locations, rawPaths: rawPaths, showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showLocations: $showLocations, showClusters: $showClusters, showRepresentatives: $showRepresentPaths)
             }
             .contentShape(Rectangle())
             .gesture(
