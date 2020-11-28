@@ -215,10 +215,10 @@ struct FuncSheet: View {
                 do {
                     let res = try JSONDecoder().decode(Response.self, from: data)
                     if(res.success) {
-                        locationName = ""
-                        locationType = ""
                         let newLocation = Location(name_en: locationName, latitude: latitude, longitude: longitude, altitude: altitude, type: type)
                         locations.append(newLocation)
+                        locationName = ""
+                        locationType = ""
                     } else {
                         print("error")
                     }
