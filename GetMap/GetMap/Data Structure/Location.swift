@@ -3,7 +3,7 @@
 
 import Foundation
 
-struct Location {
+struct Location: Codable {
     var name_en: String
     var latitude: Double
     var longitude: Double

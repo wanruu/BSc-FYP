@@ -18,14 +18,13 @@ func formatter(date: Date) -> String {
 struct ContentView: View {
     /* Core data */
     @Environment(\.managedObjectContext) private var viewContext
-    // @FetchRequest(sortDescriptors: [], animation: .default) var pathUnits: FetchedResults<PathUnit>
     @FetchRequest(sortDescriptors: [], animation: .default)
     var rawPaths: FetchedResults<RawPath>
     
     /* from server */
     @State var locations: [Location] = []
     
-    /* FOR TEST: pathUnits with different cluster id */
+    /* pathUnits with different cluster id */
     @State var pathUnits: [PathUnit] = []
     @State var representPaths: [[CLLocation]] = []
     
@@ -49,7 +48,6 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
-            /* TODO: ZStack necessary? */
             ZStack(alignment: .bottom) {
                 /* user paths */
                 UserPathsView(locationGetter: locationGetter, offset: $offset, scale: $scale)
@@ -60,12 +58,12 @@ struct ContentView: View {
                         RawPathView(locations: rawPath.locations, locationGetter: locationGetter, offset: $offset, scale: $scale)
                     } : nil
                 
-                /* FOR TEST: existing path Units: after cluster */
+                /* existing path Units: after cluster */
                 showClusters ?
                     ForEach(pathUnits) { pathUnit in
                         pathUnit.clusterId == -1 ? nil : ClusteredPathView(pathUnit: pathUnit, locationGetter: locationGetter, offset: $offset, scale: $scale, color: colors[pathUnit.clusterId % colors.count])
                     } : nil
-                /* FOR TEST: Representative path */
+                /* Representative path */
                 showRepresentPaths ?
                     RepresentPathsView(representPaths: representPaths, locationGetter: locationGetter, offset: $offset, scale: $scale) : nil
                 
@@ -74,11 +72,10 @@ struct ContentView: View {
                     UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale) : nil
                 
                 /* location point */
-                /* showLocations ?
-                    ForEach(buildings) { building in
-                        BuildingPoint(building: building, locationGetter: locationGetter, offset: $offset, scale: $scale)
-                    } : nil*/
-                
+                showLocations ?
+                    ForEach(0..<locations.count) { i in
+                        LocationPoint(location: locations[i], locationGetter: locationGetter, offset: $offset, scale: $scale)
+                    } : nil
                 VStack {
                     Divider()
                     Button(action: {
@@ -92,6 +89,7 @@ struct ContentView: View {
                     }
                 }
                 .contentShape(Rectangle())
+                LoadingPage(locations: $locations)
             }
             .navigationBarItems(trailing: HStack {
                 Button(action: {
@@ -143,7 +141,6 @@ struct ContentView: View {
                             representPaths.append(represent)
                         }
                     }
-
                 }) { Text("Process") }
             })
             .sheet(isPresented: $showFunctionSheet) {

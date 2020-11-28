@@ -6,7 +6,7 @@
         <attribute name="start_point" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData"/>
     </entity>
     <entity name="RawPath" representedClassName="RawPath" syncable="YES">
-        <attribute name="locations" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData"/>
+        <attribute name="locations" optional="YES" attributeType="Transformable" valueTransformerName=""/>
     </entity>
     <elements>
         <element name="PathUnit" positionX="-63" positionY="-18" width="128" height="88"/>
