@@ -10,3 +10,10 @@ struct Location: Codable {
     var altitude: Double
     var type: Int
 }
+
+extension Location: Identifiable {
+    public var id: String {
+        self.name_en
+    }
+    
+}
