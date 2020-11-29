@@ -40,6 +40,39 @@ struct ContentView: View {
             }
         }.resume()
     }
+    private func uploadRawPath(locations: [CLLocation]) {
+        /* data */
+        var items: [[String: Any]] = []
+        for location in locations {
+            let item: [String: Any] = ["latitude": location.coordinate.latitude, "longitude": location.coordinate.longitude, "altitude": location.altitude]
+            items.append(item)
+        }
+        let json: [String: Any] = ["points": items]
+        let jsonData = try? JSONSerialization.data(withJSONObject: json)
+        
+        let url = URL(string: server + "/trajectory")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.httpBody = jsonData
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if(error != nil) {
+                print("error")
+            } else {
+                guard let data = data else { return }
+                do {
+                    let res = try JSONDecoder().decode(Response.self, from: data)
+                    if(res.success) {
+                        print("success")
+                    } else {
+                        print("error")
+                    }
+                } catch let error {
+                    print(error)
+                }
+            }
+        }.resume()
+    }
 }
 
 struct ContentView_Previews: PreviewProvider {

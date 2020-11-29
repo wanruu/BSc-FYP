@@ -28,14 +28,13 @@ struct LocationPage: View {
         /* data */
         let dataStr = "name_en=" + location.name_en + "&type=" + String(location.type)
         
-        let url = NSURL(string: server + "/location")
-        let request = NSMutableURLRequest(url: url! as URL)
+        let url = URL(string: server + "/location")!
+        var request = URLRequest(url: url)
         request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "DELETE"
         request.httpBody = dataStr.data(using: String.Encoding.utf8)
-        let session = URLSession(configuration: URLSessionConfiguration.default, delegate: nil, delegateQueue: nil)
         
-        session.dataTask(with: request as URLRequest) { data, response, error in
+        URLSession.shared.dataTask(with: request as URLRequest) { data, response, error in
             if(error != nil) {
                 print("error")
             } else {

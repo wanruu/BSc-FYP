@@ -197,17 +197,15 @@ struct FuncSheet: View {
         let longitude = locationGetter.current.coordinate.longitude
         let altitude = locationGetter.current.altitude
         let type = Int(locationType)!
-
         let dataStr = "name_en=" + String(locationName) + "&latitude=" + String(latitude)  + "&longitude=" + String(longitude) + "&altitude=" + String(altitude) + "&type=" + String(type)
         
-        let url = NSURL(string: server + "/location")
-        let request = NSMutableURLRequest(url: url! as URL)
+        let url = URL(string: server + "/location")!
+        var request = URLRequest(url: url)
         request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "PUT"
         request.httpBody = dataStr.data(using: String.Encoding.utf8)
-        let session = URLSession(configuration: URLSessionConfiguration.default, delegate: nil, delegateQueue: nil)
-        
-        session.dataTask(with: request as URLRequest) { data, response, error in
+
+        URLSession.shared.dataTask(with: request as URLRequest) { data, response, error in
             if(error != nil) {
                 print("error")
             } else {
