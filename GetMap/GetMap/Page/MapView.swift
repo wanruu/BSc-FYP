@@ -4,15 +4,16 @@ import Foundation
 import SwiftUI
 import CoreLocation
 
+
 struct MapView: View {
     @ObservedObject var locationGetter: LocationGetterModel
-    @State var rawPaths: FetchedResults<RawPath>
+    @Binding var trajectories: [[Coor3D]]
     @Binding var locations: [Location]
+    
     /* display control */
     @Binding var showCurrentLocation: Bool
     @Binding var showRawPaths: Bool
     @Binding var showLocations: Bool
-    @Binding var showClusters: Bool
     @Binding var showRepresentPaths: Bool
     
     @Binding var offset: Offset
@@ -28,17 +29,9 @@ struct MapView: View {
             /* user paths */
             UserPathsView(locationGetter: locationGetter, offset: $offset, scale: $scale)
             
-            /* existing raw path */
-            showRawPaths ?
-                ForEach(rawPaths) { rawPath in
-                    RawPathView(locations: rawPath.locations, locationGetter: locationGetter, offset: $offset, scale: $scale)
-                } : nil
+            /* raw trajectories */
+            showRawPaths ? TrajsView(trajectories: $trajectories, locationGetter: locationGetter, offset: $offset, scale: $scale) : nil
             
-            /* existing path Units: after cluster */
-            showClusters ?
-                ForEach(pathUnits) { pathUnit in
-                    pathUnit.clusterId == -1 ? nil : ClusteredPathView(pathUnit: pathUnit, locationGetter: locationGetter, offset: $offset, scale: $scale, color: colors[pathUnit.clusterId % colors.count])
-                } : nil
             /* Representative path */
             showRepresentPaths ?
                 RepresentPathsView(representPaths: representPaths, locationGetter: locationGetter, offset: $offset, scale: $scale) : nil
@@ -53,5 +46,30 @@ struct MapView: View {
                     LocationPoint(location: locations[i], locationGetter: locationGetter, offset: $offset, scale: $scale)
                 } : nil
         }
+    }
+}
+
+struct TrajsView: View {
+    @Binding var trajectories: [[Coor3D]]
+    @ObservedObject var locationGetter: LocationGetterModel
+    @Binding var offset: Offset
+    @Binding var scale: CGFloat
+    
+    var body: some View {
+        Path { p in
+            for i in 0..<trajectories.count {
+                for j in 0..<trajectories[i].count {
+                    let point = CGPoint(
+                        x: centerX + CGFloat((trajectories[i][j].longitude - locationGetter.current.coordinate.longitude)*lgScale*2) * scale + offset.x,
+                        y: centerY + CGFloat((locationGetter.current.coordinate.latitude - trajectories[i][j].latitude)*laScale*2) * scale + offset.y
+                    )
+                    if(j == 0) {
+                        p.move(to: point)
+                    } else {
+                        p.addLine(to: point)
+                    }
+                }
+            }
+        }.stroke(Color.gray, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
     }
 }

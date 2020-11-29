@@ -23,7 +23,6 @@
 		B437787A2571580A00918432 /* LocationPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778792571580A00918432 /* LocationPoint.swift */; };
 		B43778822571581B00918432 /* UserPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778812571581B00918432 /* UserPoint.swift */; };
 		B43778872571583200918432 /* ClusteredPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778862571583200918432 /* ClusteredPath.swift */; };
-		B437788C2571584100918432 /* RawPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437788B2571584100918432 /* RawPath.swift */; };
 		B43778912571585100918432 /* RepresentPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778902571585100918432 /* RepresentPath.swift */; };
 		B43778962571586100918432 /* UserPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778952571586100918432 /* UserPath.swift */; };
 		B43778A4257158D800918432 /* LocationGetterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778A3257158D800918432 /* LocationGetterModel.swift */; };
@@ -82,7 +81,6 @@
 		B43778792571580A00918432 /* LocationPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPoint.swift; sourceTree = "<group>"; };
 		B43778812571581B00918432 /* UserPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPoint.swift; sourceTree = "<group>"; };
 		B43778862571583200918432 /* ClusteredPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusteredPath.swift; sourceTree = "<group>"; };
-		B437788B2571584100918432 /* RawPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawPath.swift; sourceTree = "<group>"; };
 		B43778902571585100918432 /* RepresentPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepresentPath.swift; sourceTree = "<group>"; };
 		B43778952571586100918432 /* UserPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPath.swift; sourceTree = "<group>"; };
 		B43778A3257158D800918432 /* LocationGetterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationGetterModel.swift; sourceTree = "<group>"; };
@@ -245,7 +243,6 @@
 			isa = PBXGroup;
 			children = (
 				B43778862571583200918432 /* ClusteredPath.swift */,
-				B437788B2571584100918432 /* RawPath.swift */,
 				B43778902571585100918432 /* RepresentPath.swift */,
 				B43778952571586100918432 /* UserPath.swift */,
 			);
@@ -441,7 +438,6 @@
 				B43778A4257158D800918432 /* LocationGetterModel.swift in Sources */,
 				B43778CE25715A7E00918432 /* PathUnit+CoreDataClass.swift in Sources */,
 				B43779132572D9AC00918432 /* MainPage.swift in Sources */,
-				B437788C2571584100918432 /* RawPath.swift in Sources */,
 				B43778D025715A7E00918432 /* RawPath+CoreDataClass.swift in Sources */,
 				B437781E257155C100918432 /* ContentView.swift in Sources */,
 				B437781C257155C100918432 /* GetMapApp.swift in Sources */,

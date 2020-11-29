@@ -9,14 +9,15 @@ import Foundation
 import SwiftUI
 
 struct MainPage: View {
-    @State var rawPaths: FetchedResults<RawPath>
+    @Binding var trajectories: [[Coor3D]]
     @Binding var locations: [Location]
+    
     @ObservedObject var locationGetter = LocationGetterModel()
     
     var body: some View {
         NavigationView {
             List {
-                NavigationLink(destination: MapPage(rawPaths: rawPaths, locations: $locations, locationGetter: locationGetter)) {
+                NavigationLink(destination: MapPage(trajectories: $trajectories, locations: $locations, locationGetter: locationGetter)) {
                     Text("Map").bold().font(.system(size: 30))
                 }
                 NavigationLink(destination: LocationPage(locations: $locations)) {

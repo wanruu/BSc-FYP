@@ -5,7 +5,8 @@ import SwiftUI
 import CoreLocation
 
 struct MapPage: View {
-    @State var rawPaths: FetchedResults<RawPath>
+    // @State var rawPaths: FetchedResults<RawPath>
+    @Binding var trajectories: [[Coor3D]]
     @Binding var locations: [Location]
     @ObservedObject var locationGetter: LocationGetterModel
     
@@ -13,7 +14,6 @@ struct MapPage: View {
     @State var showCurrentLocation: Bool = true
     @State var showRawPaths: Bool = false
     @State var showLocations: Bool = false
-    @State var showClusters: Bool = true
     @State var showRepresentPaths: Bool = false
     @State var showSheet: Bool = false
     
@@ -30,7 +30,7 @@ struct MapPage: View {
     
     var body: some View {
         VStack {
-            MapView(locationGetter: locationGetter, rawPaths: rawPaths, locations: $locations, showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showLocations: $showLocations, showClusters: $showClusters, showRepresentPaths: $showRepresentPaths, offset: $offset, scale: $scale, pathUnits: $pathUnits, representPaths: $representPaths)
+            MapView(locationGetter: locationGetter, trajectories: $trajectories, locations: $locations, showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showLocations: $showLocations, showRepresentPaths: $showRepresentPaths, offset: $offset, scale: $scale, pathUnits: $pathUnits, representPaths: $representPaths)
             HStack {
                 Button(action: {
                     for rawPath in locationGetter.paths {
@@ -51,7 +51,7 @@ struct MapPage: View {
                     representPaths = []
                     
                     /* partition */
-                    for rawPath in rawPaths {
+                    /*for rawPath in rawPaths {
                         let cp = partition(path: rawPath.locations)
                         for index in 0...cp.count-2 {
                             let newPathUnit = PathUnit(context: viewContext)
@@ -59,7 +59,7 @@ struct MapPage: View {
                             newPathUnit.end_point = cp[index+1]
                             pathUnits.append(newPathUnit)
                         }
-                    }
+                    }*/
                     
                     /* cluster */
                     let clusters = cluster(pathUnits: pathUnits)
@@ -88,7 +88,7 @@ struct MapPage: View {
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(trailing: Button(action: { showSheet = true }) { Text("Setting") } )
             .sheet(isPresented: $showSheet) {
-                FuncSheet(showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showLocations: $showLocations, showClusters: $showClusters, showRepresentPaths: $showRepresentPaths, locations: $locations, locationGetter: locationGetter)
+                FuncSheet(showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showLocations: $showLocations, showRepresentPaths: $showRepresentPaths, locations: $locations, locationGetter: locationGetter)
             }
             .contentShape(Rectangle())
             .gesture(
@@ -156,7 +156,6 @@ struct FuncSheet: View {
     @Binding var showCurrentLocation: Bool
     @Binding var showRawPaths: Bool
     @Binding var showLocations: Bool
-    @Binding var showClusters: Bool
     @Binding var showRepresentPaths: Bool
     
     @Binding var locations: [Location]
@@ -172,7 +171,6 @@ struct FuncSheet: View {
                 Toggle(isOn: $showCurrentLocation) { Text("Show Current Location") }
                 Toggle(isOn: $showRawPaths) { Text("Show Raw Paths") }
                 Toggle(isOn: $showLocations) { Text("Show Locations") }
-                Toggle(isOn: $showClusters) { Text("Show Clusters") }
                 Toggle(isOn: $showRepresentPaths) { Text("Show Representatives") }
             }.padding()
             VStack {

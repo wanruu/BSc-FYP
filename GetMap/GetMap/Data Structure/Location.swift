@@ -17,3 +17,9 @@ extension Location: Identifiable {
     }
     
 }
+
+struct Coor3D: Codable {
+    var latitude: Double
+    var longitude: Double
+    var altitude: Double
+}

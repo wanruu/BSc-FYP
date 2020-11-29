@@ -8,9 +8,9 @@
 import Foundation
 import SwiftUI
 
-let server = "http://10.13.115.254:8000" /* CUHK1x */
+// let server = "http://10.13.115.254:8000" /* CUHK1x */
 // let server = "http://10.6.32.127:8000" /* CUHK */
-// let server = "http://169.254.161.175:8000" /* laptop */
+let server = "http://169.254.161.175:8000" /* laptop */
 
 let url = NSURL(string: "/location")
 /* screen info */
