@@ -7,20 +7,20 @@ import SwiftUI
 import CoreLocation
 
 struct RepresentPathsView: View {
-    @State var representPaths: [[CLLocation]]
+    @Binding var representatives: [[Coor3D]]
     @ObservedObject var locationGetter: LocationGetterModel
     @Binding var offset: Offset
     @Binding var scale: CGFloat
     
     var body: some View {
         Path { p in
-            for representPath in representPaths {
-                for location in representPath {
+            for i in 0..<representatives.count {
+                for j in 0..<representatives[i].count {
                     let point = CGPoint(
-                        x: centerX + CGFloat((location.coordinate.longitude - locationGetter.current.coordinate.longitude)*lgScale*2) * scale + offset.x,
-                        y: centerY + CGFloat((locationGetter.current.coordinate.latitude - location.coordinate.latitude)*laScale*2) * scale + offset.y
+                        x: centerX + CGFloat((representatives[i][j].longitude - locationGetter.current.coordinate.longitude)*lgScale*2) * scale + offset.x,
+                        y: centerY + CGFloat((locationGetter.current.coordinate.latitude - representatives[i][j].latitude)*laScale*2) * scale + offset.y
                     )
-                    if(location == representPath[0]) {
+                    if(j == 0) {
                         p.move(to: point)
                     } else {
                         p.addLine(to: point)

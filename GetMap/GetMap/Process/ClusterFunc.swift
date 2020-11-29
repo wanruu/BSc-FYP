@@ -1,17 +1,16 @@
 /* MARK: Trajectory Clustering */
 
 import Foundation
-import CoreLocation
 
 let e: Double = 13
 let MinLns: Int = 3
 
-/* calculate e-neighborhood for every path unit */
-func neighbor(pathUnits: [PathUnit]) -> [[Int]] {
-    var result = [[Int]](repeating: [], count: pathUnits.count)
-    for i in 0..<pathUnits.count {
-        for j in (i+1)..<pathUnits.count {
-            let dist = weightedDistance(locations: [pathUnits[i].start_point, pathUnits[i].end_point, pathUnits[j].start_point, pathUnits[j].end_point])
+/* calculate e-neighborhood for every line segment */
+func neighbor(lineSegs: [LineSeg]) -> [[Int]] {
+    var result = [[Int]](repeating: [], count: lineSegs.count)
+    for i in 0..<lineSegs.count {
+        for j in (i+1)..<lineSegs.count {
+            let dist = weightedDistance(locations: [lineSegs[i].start, lineSegs[i].end, lineSegs[j].start, lineSegs[j].end])
             if(dist <= e) {
                 result[i].append(j)
                 result[j].append(i)
@@ -20,15 +19,15 @@ func neighbor(pathUnits: [PathUnit]) -> [[Int]] {
     }
     return result
 }
-func cluster(pathUnits: [PathUnit]) -> [Int] {
+func cluster(lineSegs: [LineSeg]) -> [Int] {
     var clusterId = 1
     /* 0: unclassfied, -1: noise, others: clusterId */
-    var cluster = [Int](repeating: 0, count: pathUnits.count)
+    var cluster = [Int](repeating: 0, count: lineSegs.count)
     /* compute neighbor array */
-    let neighborList = neighbor(pathUnits: pathUnits)
+    let neighborList = neighbor(lineSegs: lineSegs)
     
     /* for each path unit */
-    for index in 0..<pathUnits.count {
+    for index in 0..<lineSegs.count {
         if(cluster[index] == 0) { // not classfied
             let neighbors = neighborList[index]
             /* core line segment */

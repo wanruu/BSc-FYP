@@ -1,23 +1,19 @@
-//
-//  MainPage.swift
-//  GetMap
-//
-//  Created by wanruuu on 29/11/2020.
-//
+/* MARK: Main Page, navigation to Map Page & Location Page */
 
 import Foundation
 import SwiftUI
 
 struct MainPage: View {
-    @Binding var trajectories: [[Coor3D]]
     @Binding var locations: [Location]
+    @Binding var trajectories: [[Coor3D]]
+    @Binding var representatives: [[Coor3D]]
     
     @ObservedObject var locationGetter = LocationGetterModel()
     
     var body: some View {
         NavigationView {
             List {
-                NavigationLink(destination: MapPage(trajectories: $trajectories, locations: $locations, locationGetter: locationGetter)) {
+                NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, representatives: $representatives, locationGetter: locationGetter)) {
                     Text("Map").bold().font(.system(size: 30))
                 }
                 NavigationLink(destination: LocationPage(locations: $locations)) {

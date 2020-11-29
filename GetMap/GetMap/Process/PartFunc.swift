@@ -1,20 +1,19 @@
 /* MARK: Trajectory Partitioning */
 
 import Foundation
-import CoreLocation
 
-func MDLPar(path: [CLLocation], startIndex: Int, endIndex: Int) -> Double {
+func MDLPar(traj: [Coor3D], startIndex: Int, endIndex: Int) -> Double {
     /* only two cp in this trajectory */
     /* distance between two charateristic points */
     var angleSum = 0.0
     var perpSum = 0.0
 
-    let diffX = (path[startIndex].coordinate.latitude - path[endIndex].coordinate.latitude) * laScale
-    let diffY = (path[startIndex].coordinate.longitude - path[endIndex].coordinate.longitude) * lgScale
-    let diffZ = path[startIndex].altitude - path[endIndex].altitude
+    let diffX = (traj[startIndex].latitude - traj[endIndex].latitude) * laScale
+    let diffY = (traj[startIndex].longitude - traj[endIndex].longitude) * lgScale
+    let diffZ = traj[startIndex].altitude - traj[endIndex].altitude
 
     for index in startIndex...(endIndex - 1) {
-        let dist = computDistance(locations: [path[startIndex], path[endIndex], path[index], path[index+1]])
+        let dist = computeDistance(locations: [traj[startIndex], traj[endIndex], traj[index], traj[index+1]])
         /* perpendicular distance */
         perpSum += dist.perpendicular
         /* angle distance */
@@ -25,35 +24,35 @@ func MDLPar(path: [CLLocation], startIndex: Int, endIndex: Int) -> Double {
     return LH + LH_D
 }
 
-func MDLNotPar(path: [CLLocation], startIndex: Int, endIndex: Int) -> Double {
+func MDLNotPar(traj: [Coor3D], startIndex: Int, endIndex: Int) -> Double {
     var LH: Double = 0
     // LH_D = 0 under this situation
     for index in startIndex...(endIndex - 1) {
-        let diffX: Double = (path[index].coordinate.latitude - path[index+1].coordinate.latitude) * laScale
-        let diffY: Double = (path[index].coordinate.longitude - path[index+1].coordinate.longitude) * lgScale
-        let diffZ: Double = path[index].altitude - path[index+1].altitude
+        let diffX: Double = (traj[index].latitude - traj[index+1].latitude) * laScale
+        let diffY: Double = (traj[index].longitude - traj[index+1].longitude) * lgScale
+        let diffZ: Double = traj[index].altitude - traj[index+1].altitude
         LH += pow( diffX * diffX + diffY * diffY + diffZ * diffZ, 0.5 )
     }
     return log2(LH)
 }
 
-func partition(path: [CLLocation]) -> [CLLocation] {
+func partition(traj: [Coor3D]) -> [Coor3D] {
     /* characteristic points */
-    var cp: [CLLocation] = []
+    var cp: [Coor3D] = []
     /* add starting point to cp */
-    cp.append(path[0])
+    cp.append(traj[0])
     var startIndex = 0
     var length = 1
-    while (startIndex + length <= path.count - 1) {
+    while (startIndex + length <= traj.count - 1) {
         let currIndex = startIndex + length
         /* cost if regard current point as charateristic point */
-        let costPar = MDLPar(path: path, startIndex: startIndex, endIndex: currIndex)
+        let costPar = MDLPar(traj: traj, startIndex: startIndex, endIndex: currIndex)
         /* cost if not regard current point as charateristic point */
-        let costNotPar = MDLNotPar(path: path, startIndex: startIndex, endIndex: currIndex)
+        let costNotPar = MDLNotPar(traj: traj, startIndex: startIndex, endIndex: currIndex)
         // print(startIndex, currIndex, costPar, costNotPar)
         if(costPar > costNotPar) {
             /* add previous point to cp */
-            cp.append(path[currIndex - 1])
+            cp.append(traj[currIndex - 1])
             startIndex = currIndex - 1
             length = 1
         } else {
@@ -61,6 +60,7 @@ func partition(path: [CLLocation]) -> [CLLocation] {
         }
     }
     /* add ending point to cp */
-    cp.append(path[path.count - 1])
+    cp.append(traj[traj.count - 1])
     return cp
 }
+

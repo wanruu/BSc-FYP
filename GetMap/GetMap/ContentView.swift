@@ -10,30 +10,25 @@ import CoreData
 import Foundation
 
 struct ContentView: View {
-    /* core data */
-    @Environment(\.managedObjectContext) private var viewContext
-    @FetchRequest(sortDescriptors: [], animation: .default)
-    var rawPaths: FetchedResults<RawPath>
-    
     /* from server */
     @State var locations: [Location] = []
     @State var trajectories: [[Coor3D]] = []
+    @State var representatives: [[Coor3D]] = []
     
     var body: some View {
-        MainPage(trajectories: $trajectories, locations: $locations)
+        MainPage(locations: $locations, trajectories: $trajectories, representatives: $representatives)
             .onAppear {
-                loadLocationData()
-                loadTrajData()
+                loadLocations()
+                loadTrajs()
             }
     }
-    
-    // MARK: - Request to Server
-    private func loadLocationData() {
+    // MARK: - Load data from Server
+    private func loadLocations() {
         let url = URL(string: server + "/locations")!
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data else { return }
             do {
-                let res = try JSONDecoder().decode(Response.self, from: data)
+                let res = try JSONDecoder().decode(LocResponse.self, from: data)
                 if(res.success) {
                     locations =  res.data
                 }
@@ -42,7 +37,7 @@ struct ContentView: View {
             }
         }.resume()
     }
-    private func loadTrajData() {
+    private func loadTrajs() {
         let url = URL(string: server + "/trajectories")!
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data else { return }
@@ -56,15 +51,13 @@ struct ContentView: View {
             }
         }.resume()
     }
-    
-    private func uploadRawPath(locations: [CLLocation]) {
-        /* data */
+    // MARK: - Upload data to Server
+    private func uploadTraj(traj: [Coor3D]) {
         var items: [[String: Any]] = []
-        for location in locations {
-            let item: [String: Any] = ["latitude": location.coordinate.latitude, "longitude": location.coordinate.longitude, "altitude": location.altitude]
-            items.append(item)
+        for point in traj {
+            items.append(["latitude": point.latitude, "longitude": point.longitude, "altitude": point.altitude])
         }
-        let json: [String: Any] = ["points": items]
+        let json = ["points": items]
         let jsonData = try? JSONSerialization.data(withJSONObject: json)
         let url = URL(string: server + "/trajectory")!
         var request = URLRequest(url: url)
@@ -78,7 +71,7 @@ struct ContentView: View {
             } else {
                 guard let data = data else { return }
                 do {
-                    let res = try JSONDecoder().decode(Response.self, from: data)
+                    let res = try JSONDecoder().decode(TrajResponse.self, from: data)
                     if(res.success) {
                         print("success")
                     } else {
@@ -98,7 +91,7 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
-struct Response: Codable {
+struct LocResponse: Codable {
     let operation: String
     let target: String
     let success: Bool

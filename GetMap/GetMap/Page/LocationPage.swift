@@ -40,7 +40,7 @@ struct LocationPage: View {
             } else {
                 guard let data = data else { return }
                 do {
-                    let res = try JSONDecoder().decode(Response.self, from: data)
+                    let res = try JSONDecoder().decode(LocResponse.self, from: data)
                     if(res.success) {
                         locations.remove(at: index)
                     } else {

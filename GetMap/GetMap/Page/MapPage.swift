@@ -5,14 +5,14 @@ import SwiftUI
 import CoreLocation
 
 struct MapPage: View {
-    // @State var rawPaths: FetchedResults<RawPath>
-    @Binding var trajectories: [[Coor3D]]
     @Binding var locations: [Location]
+    @Binding var trajectories: [[Coor3D]]
+    @Binding var representatives: [[Coor3D]]
     @ObservedObject var locationGetter: LocationGetterModel
-    
+
     /* sheet */
     @State var showCurrentLocation: Bool = true
-    @State var showRawPaths: Bool = false
+    @State var showRawPaths: Bool = true
     @State var showLocations: Bool = false
     @State var showRepresentPaths: Bool = false
     @State var showSheet: Bool = false
@@ -24,65 +24,9 @@ struct MapPage: View {
     @State var scale = CGFloat(1.0)
     @GestureState var magnifyBy = CGFloat(1.0)
     
-    @Environment(\.managedObjectContext) private var viewContext
-    @State var pathUnits: [PathUnit] = []
-    @State var representPaths: [[CLLocation]] = []
-    
     var body: some View {
         VStack {
-            MapView(locationGetter: locationGetter, trajectories: $trajectories, locations: $locations, showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showLocations: $showLocations, showRepresentPaths: $showRepresentPaths, offset: $offset, scale: $scale, pathUnits: $pathUnits, representPaths: $representPaths)
-            HStack {
-                Button(action: {
-                    for rawPath in locationGetter.paths {
-                        if(rawPath.count >= 5) {
-                            addRawPath(locations: rawPath)
-                        }
-                    }
-                    cleanPaths()
-                }) { Text("Upload") }
-                Text(" / ")
-                Button(action: {
-                    cleanPaths()
-                }) { Text("Discard") }
-                Text(" / ")
-                Button(action: {
-                    /* clear */
-                    pathUnits = []
-                    representPaths = []
-                    
-                    /* partition */
-                    /*for rawPath in rawPaths {
-                        let cp = partition(path: rawPath.locations)
-                        for index in 0...cp.count-2 {
-                            let newPathUnit = PathUnit(context: viewContext)
-                            newPathUnit.start_point = cp[index]
-                            newPathUnit.end_point = cp[index+1]
-                            pathUnits.append(newPathUnit)
-                        }
-                    }*/
-                    
-                    /* cluster */
-                    let clusters = cluster(pathUnits: pathUnits)
-                    var clusterNum = 0
-                    for i in 0..<pathUnits.count {
-                        pathUnits[i].clusterId = clusters[i]
-                        clusterNum = max(clusterNum, clusters[i])
-                    }
-                    var C = [[PathUnit]](repeating: [], count: clusterNum)
-                    for i in 0..<pathUnits.count {
-                        if(clusters[i] != -1 && clusters[i] != 0) {
-                            C[clusters[i] - 1].append(pathUnits[i])
-                        }
-                    }
-                    /* representative trajectory */
-                    for c in C {
-                        let represent = generateRepresent(pathUnits: c)
-                        if(represent.count >= 2) {
-                            representPaths.append(represent)
-                        }
-                    }
-                }) { Text("Process") }
-            }
+            MapView(locations: $locations, trajectories: $trajectories, representatives: $representatives, locationGetter: locationGetter, showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showLocations: $showLocations, showRepresentPaths: $showRepresentPaths, offset: $offset, scale: $scale)
         }
             .navigationTitle("Map")
             .navigationBarTitleDisplayMode(.inline)
@@ -128,27 +72,6 @@ struct MapPage: View {
         locationGetter.paths.append([])
         locationGetter.pathCount = 0
         locationGetter.paths[0].append(locationGetter.current)
-    }
-    
-    // MARK: - Core Data function
-    private func addPathUnit(start: CLLocation, end: CLLocation) {
-        let newPathUnit = PathUnit(context: viewContext)
-        newPathUnit.start_point = start
-        newPathUnit.end_point = end
-        do { try viewContext.save() }
-        catch { fatalError("Error in addPathUnit.") }
-    }
-    private func deletePathUnit(offsets: IndexSet) {
-        if(pathUnits.count == 0) { return }
-        offsets.map { pathUnits[$0] }.forEach(viewContext.delete)
-        do { try viewContext.save() }
-        catch { fatalError("Error in deletePathUnit.") }
-    }
-    private func addRawPath(locations: [CLLocation]) {
-        let newRawPath = RawPath(context: viewContext)
-        newRawPath.locations = locations
-        do { try viewContext.save() }
-        catch { fatalError("Error in addRawPath.") }
     }
 }
 
@@ -209,7 +132,7 @@ struct FuncSheet: View {
             } else {
                 guard let data = data else { return }
                 do {
-                    let res = try JSONDecoder().decode(Response.self, from: data)
+                    let res = try JSONDecoder().decode(LocResponse.self, from: data)
                     if(res.success) {
                         let newLocation = Location(name_en: locationName, latitude: latitude, longitude: longitude, altitude: altitude, type: type)
                         locations.append(newLocation)

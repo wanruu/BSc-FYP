@@ -1,15 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17511" systemVersion="19H15" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="PathUnit" representedClassName="PathUnit" syncable="YES">
-        <attribute name="clusterId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="end_point" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData"/>
-        <attribute name="start_point" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData"/>
-    </entity>
-    <entity name="RawPath" representedClassName="RawPath" syncable="YES">
-        <attribute name="locations" optional="YES" attributeType="Transformable" valueTransformerName=""/>
-    </entity>
-    <elements>
-        <element name="PathUnit" positionX="-63" positionY="-18" width="128" height="88"/>
-        <element name="RawPath" positionX="-54" positionY="18" width="128" height="58"/>
-    </elements>
+    <elements/>
 </model>

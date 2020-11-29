@@ -5,7 +5,6 @@
 
 import Foundation
 import CoreLocation
-import CoreData
 
 /* manager for updating location */
 var manager: CLLocationManager = CLLocationManager()
@@ -79,3 +78,4 @@ extension LocationGetterModel: CLLocationManagerDelegate {
         print(error)
     }
 }
+

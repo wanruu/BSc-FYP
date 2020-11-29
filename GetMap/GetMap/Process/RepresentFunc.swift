@@ -1,39 +1,10 @@
 /* MARK: Representative Trajectory Generation */
 
 import Foundation
-import CoreLocation
 
 let r: Double = 1
 
-/* convert locations to points */
-func locationsToPoints(pathUnits: [PathUnit]) -> [Point] {
-    var points: [Point] = []
-    // assume pathUnits[0].start_point as origin point
-    for pathUnit in pathUnits {
-        points.append(Point(
-            x: (pathUnit.start_point.coordinate.latitude - pathUnits[0].start_point.coordinate.latitude) * laScale,
-            y: (pathUnit.start_point.coordinate.longitude - pathUnits[0].start_point.coordinate.longitude) * lgScale,
-            z: pathUnit.start_point.altitude - pathUnits[0].start_point.altitude))
-        points.append(Point(
-            x: (pathUnit.end_point.coordinate.latitude - pathUnits[0].start_point.coordinate.latitude) * laScale,
-            y: (pathUnit.end_point.coordinate.longitude - pathUnits[0].start_point.coordinate.longitude) * lgScale,
-            z: pathUnit.end_point.altitude - pathUnits[0].start_point.altitude))
-    }
-    return points
-}
-
-/* convert points to vectors: [v1, v2, ..., vn] */
-func pointsToVectors(points: [Point]) -> [Point] {
-    var vectors: [Point] = []
-    var index = 0
-    while(index <= points.count - 2) {
-        vectors.append(points[index+1] - points[index])
-        index += 2
-    }
-    return vectors
-}
-
-/* compute average direction vector */
+// MARK: - compute average direction vector
 func computeAverVector(vectors: [Point]) -> Point {
     var averVector = Point(x: 0, y: 0, z: 0)
     /* find axis in which vector change most */
@@ -63,38 +34,16 @@ func computeAverVector(vectors: [Point]) -> Point {
     averVector = averVector / Double(vectors.count)
     return averVector
 }
-/* rotate */
-func rotateByZ(point: Point, angle: Double) -> Point { // clockwise
-    let newPoint = Point(
-        x: point.x * cos(angle) + point.y * sin(angle),
-        y: point.y * cos(angle) - point.x * sin(angle),
-        z: point.z)
-    return newPoint
-}
-func rotateByY(point: Point, angle: Double) -> Point { // anti-clockwise
-    let newPoint = Point(
-        x: point.x * cos(angle) + point.z * sin(angle),
-        y: point.y,
-        z: point.z * cos(angle) - point.x * sin(angle))
-    return newPoint
-}
-func rotate(point: Point, alpha: Double, beta: Double) -> Point {
-    let p1 = rotateByZ(point: point, angle: alpha)
-    let p2 = rotateByY(point: p1, angle: beta)
-    return p2
-}
-func unrotate(point: Point, alpha: Double, beta: Double) -> Point {
-    let p1 = rotateByY(point: point, angle: -beta)
-    let p2 = rotateByZ(point: p1, angle: -alpha)
-    return p2
-}
-func generateRepresent(pathUnits: [PathUnit]) -> [CLLocation] {
-    var representLocations: [CLLocation] = []
-    if(pathUnits.count == 0) {
-        return representLocations
+
+// MARK: - generate representative trajectory
+func generateRepresent(lineSegs: [LineSeg]) -> [Coor3D] {
+    guard lineSegs.count > 0 else {
+        return []
     }
+    var represent: [Coor3D] = []
+    
     /* convert pathUnits to points: [p1, p2, ..., p2n-1, p2n] where p1, p2 are start and end point of pathUnit[0] */
-    let points = locationsToPoints(pathUnits: pathUnits)
+    let points = locationsToPoints(lineSegs: lineSegs)
     
     /* convert pathUnits to vectors: [v1, v2, ..., vn] */
     let vectors = pointsToVectors(points: points)
@@ -147,19 +96,19 @@ func generateRepresent(pathUnits: [PathUnit]) -> [CLLocation] {
                 rotatedAverPoint = rotatedAverPoint / Double(values.count)
                 /* undo rotation */
                 let averPoint = unrotate(point: rotatedAverPoint, alpha: alpha, beta: beta)
-                let representLocation = CLLocation(
-                    coordinate: CLLocationCoordinate2D(
-                        latitude: averPoint.x / laScale + pathUnits[0].start_point.coordinate.latitude,
-                        longitude: averPoint.y / lgScale + pathUnits[0].start_point.coordinate.longitude),
-                    altitude: averPoint.z + pathUnits[0].start_point.altitude,
-                    horizontalAccuracy: -1, verticalAccuracy: -1, timestamp: Date(timeIntervalSince1970: 1))
-                representLocations.append(representLocation)
+                let representCoor3D = Coor3D(
+                    latitude: averPoint.x / laScale + lineSegs[0].start.latitude,
+                    longitude: averPoint.y / lgScale + lineSegs[0].start.longitude,
+                    altitude: averPoint.z + lineSegs[0].start.altitude)
+                represent.append(representCoor3D)
             }
         }
     }
-    // printRepresent(represent: representLocations)
-    return representLocations
+    return represent
 }
+
+
+
 
 func pathUnitXValue(sweepPlane: Double, lines: [[Point]]) -> [Point] {
     var values: [Point] = []
@@ -183,3 +132,64 @@ func pathUnitXValue(sweepPlane: Double, lines: [[Point]]) -> [Point] {
     }
     return values
 }
+
+// MARK: - type translate
+func locationsToPoints(lineSegs: [LineSeg]) -> [Point] {
+    guard lineSegs.count > 0 else {
+        return []
+    }
+    var points: [Point] = []
+    // assume pathUnits[0].start_point as origin point
+    let la = lineSegs[0].start.latitude
+    let lg = lineSegs[0].start.longitude
+    let al = lineSegs[0].start.altitude
+    for lineSeg in lineSegs {
+        points.append(Point(
+            x: (lineSeg.start.latitude - la) * laScale,
+            y: (lineSeg.start.longitude - lg) * lgScale,
+            z: lineSeg.start.altitude - al))
+        points.append(Point(
+            x: (lineSeg.end.latitude - la) * laScale,
+            y: (lineSeg.end.longitude - lg) * lgScale,
+            z: lineSeg.end.altitude - al))
+    }
+    return points
+}
+
+/* convert points to vectors: [v1, v2, ..., vn] */
+func pointsToVectors(points: [Point]) -> [Point] {
+    var vectors: [Point] = []
+    var index = 0
+    while(index <= points.count - 2) {
+        vectors.append(points[index+1] - points[index])
+        index += 2
+    }
+    return vectors
+}
+
+// MARK: - rotate & unrotate
+func rotate(point: Point, alpha: Double, beta: Double) -> Point {
+    let p1 = rotateByZ(point: point, angle: alpha)
+    let p2 = rotateByY(point: p1, angle: beta)
+    return p2
+}
+func unrotate(point: Point, alpha: Double, beta: Double) -> Point {
+    let p1 = rotateByY(point: point, angle: -beta)
+    let p2 = rotateByZ(point: p1, angle: -alpha)
+    return p2
+}
+func rotateByZ(point: Point, angle: Double) -> Point { // clockwise
+    let newPoint = Point(
+        x: point.x * cos(angle) + point.y * sin(angle),
+        y: point.y * cos(angle) - point.x * sin(angle),
+        z: point.z)
+    return newPoint
+}
+func rotateByY(point: Point, angle: Double) -> Point { // anti-clockwise
+    let newPoint = Point(
+        x: point.x * cos(angle) + point.z * sin(angle),
+        y: point.y,
+        z: point.z * cos(angle) - point.x * sin(angle))
+    return newPoint
+}
+

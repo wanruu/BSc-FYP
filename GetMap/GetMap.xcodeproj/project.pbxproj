@@ -16,29 +16,21 @@
 		B4377833257155C300918432 /* GetMapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4377832257155C300918432 /* GetMapTests.swift */; };
 		B437783E257155C300918432 /* GetMapUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437783D257155C300918432 /* GetMapUITests.swift */; };
 		B437784F257155F700918432 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437784E257155F700918432 /* Constant.swift */; };
-		B43778612571579E00918432 /* Distance.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778602571579E00918432 /* Distance.swift */; };
 		B4377869257157AD00918432 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4377868257157AD00918432 /* Location.swift */; };
 		B437786E257157C100918432 /* Offset.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437786D257157C100918432 /* Offset.swift */; };
-		B4377873257157D500918432 /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4377872257157D500918432 /* Point.swift */; };
-		B437787A2571580A00918432 /* LocationPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778792571580A00918432 /* LocationPoint.swift */; };
 		B43778822571581B00918432 /* UserPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778812571581B00918432 /* UserPoint.swift */; };
-		B43778872571583200918432 /* ClusteredPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778862571583200918432 /* ClusteredPath.swift */; };
 		B43778912571585100918432 /* RepresentPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778902571585100918432 /* RepresentPath.swift */; };
 		B43778962571586100918432 /* UserPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778952571586100918432 /* UserPath.swift */; };
-		B43778A4257158D800918432 /* LocationGetterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778A3257158D800918432 /* LocationGetterModel.swift */; };
-		B43778A9257158F600918432 /* OutputPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778A8257158F600918432 /* OutputPath.swift */; };
 		B43778AE2571590C00918432 /* ClusterFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778AD2571590C00918432 /* ClusterFunc.swift */; };
 		B43778B32571591B00918432 /* DistFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778B22571591B00918432 /* DistFunc.swift */; };
 		B43778B82571593000918432 /* PartFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778B72571593000918432 /* PartFunc.swift */; };
 		B43778BD2571594400918432 /* RepresentFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778BC2571594400918432 /* RepresentFunc.swift */; };
-		B43778CE25715A7E00918432 /* PathUnit+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778CA25715A7E00918432 /* PathUnit+CoreDataClass.swift */; };
-		B43778CF25715A7E00918432 /* PathUnit+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778CB25715A7E00918432 /* PathUnit+CoreDataProperties.swift */; };
-		B43778D025715A7E00918432 /* RawPath+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778CC25715A7E00918432 /* RawPath+CoreDataClass.swift */; };
-		B43778D125715A7E00918432 /* RawPath+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778CD25715A7E00918432 /* RawPath+CoreDataProperties.swift */; };
 		B43778F12572C71B00918432 /* MapPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778F02572C71B00918432 /* MapPage.swift */; };
 		B43778F92572C80200918432 /* LocationPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778F82572C80200918432 /* LocationPage.swift */; };
 		B43779132572D9AC00918432 /* MainPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43779122572D9AC00918432 /* MainPage.swift */; };
 		B43779262572E3F900918432 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43779252572E3F900918432 /* MapView.swift */; };
+		B437793425743F7B00918432 /* Process.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437793325743F7B00918432 /* Process.swift */; };
+		B437794E2574530000918432 /* LocationGetterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437794D2574530000918432 /* LocationGetterModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,29 +66,21 @@
 		B437783D257155C300918432 /* GetMapUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetMapUITests.swift; sourceTree = "<group>"; };
 		B437783F257155C300918432 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B437784E257155F700918432 /* Constant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
-		B43778602571579E00918432 /* Distance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Distance.swift; sourceTree = "<group>"; };
 		B4377868257157AD00918432 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		B437786D257157C100918432 /* Offset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Offset.swift; sourceTree = "<group>"; };
-		B4377872257157D500918432 /* Point.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Point.swift; sourceTree = "<group>"; };
-		B43778792571580A00918432 /* LocationPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPoint.swift; sourceTree = "<group>"; };
 		B43778812571581B00918432 /* UserPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPoint.swift; sourceTree = "<group>"; };
-		B43778862571583200918432 /* ClusteredPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusteredPath.swift; sourceTree = "<group>"; };
 		B43778902571585100918432 /* RepresentPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepresentPath.swift; sourceTree = "<group>"; };
 		B43778952571586100918432 /* UserPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPath.swift; sourceTree = "<group>"; };
-		B43778A3257158D800918432 /* LocationGetterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationGetterModel.swift; sourceTree = "<group>"; };
-		B43778A8257158F600918432 /* OutputPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputPath.swift; sourceTree = "<group>"; };
 		B43778AD2571590C00918432 /* ClusterFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterFunc.swift; sourceTree = "<group>"; };
 		B43778B22571591B00918432 /* DistFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistFunc.swift; sourceTree = "<group>"; };
 		B43778B72571593000918432 /* PartFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PartFunc.swift; sourceTree = "<group>"; };
 		B43778BC2571594400918432 /* RepresentFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepresentFunc.swift; sourceTree = "<group>"; };
-		B43778CA25715A7E00918432 /* PathUnit+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PathUnit+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
-		B43778CB25715A7E00918432 /* PathUnit+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PathUnit+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
-		B43778CC25715A7E00918432 /* RawPath+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RawPath+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
-		B43778CD25715A7E00918432 /* RawPath+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RawPath+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
 		B43778F02572C71B00918432 /* MapPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPage.swift; sourceTree = "<group>"; };
 		B43778F82572C80200918432 /* LocationPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPage.swift; sourceTree = "<group>"; };
 		B43779122572D9AC00918432 /* MainPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPage.swift; sourceTree = "<group>"; };
 		B43779252572E3F900918432 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		B437793325743F7B00918432 /* Process.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Process.swift; sourceTree = "<group>"; };
+		B437794D2574530000918432 /* LocationGetterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationGetterModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,13 +131,13 @@
 		B437781A257155C100918432 /* GetMap */ = {
 			isa = PBXGroup;
 			children = (
+				B437794D2574530000918432 /* LocationGetterModel.swift */,
 				B437781D257155C100918432 /* ContentView.swift */,
+				B437784E257155F700918432 /* Constant.swift */,
+				B437789D2571589800918432 /* Process */,
 				B43778EF2572C70400918432 /* Page */,
-				B437785F2571577700918432 /* Function */,
-				B437785E2571576C00918432 /* Core Data */,
 				B437785D2571576000918432 /* Data Structure */,
 				B437781B257155C100918432 /* GetMapApp.swift */,
-				B437784E257155F700918432 /* Constant.swift */,
 				B437781F257155C300918432 /* Assets.xcassets */,
 				B4377824257155C300918432 /* Persistence.swift */,
 				B4377829257155C300918432 /* Info.plist */,
@@ -189,51 +173,27 @@
 			path = GetMapUITests;
 			sourceTree = "<group>";
 		};
-		B437785C2571575500918432 /* View Model */ = {
+		B437785C2571575500918432 /* Model */ = {
 			isa = PBXGroup;
 			children = (
 				B4377878257157F100918432 /* PathView */,
 				B4377877257157E500918432 /* PointView */,
 			);
-			path = "View Model";
+			path = Model;
 			sourceTree = "<group>";
 		};
 		B437785D2571576000918432 /* Data Structure */ = {
 			isa = PBXGroup;
 			children = (
-				B43778602571579E00918432 /* Distance.swift */,
 				B4377868257157AD00918432 /* Location.swift */,
 				B437786D257157C100918432 /* Offset.swift */,
-				B4377872257157D500918432 /* Point.swift */,
 			);
 			path = "Data Structure";
-			sourceTree = "<group>";
-		};
-		B437785E2571576C00918432 /* Core Data */ = {
-			isa = PBXGroup;
-			children = (
-				B43778CA25715A7E00918432 /* PathUnit+CoreDataClass.swift */,
-				B43778CB25715A7E00918432 /* PathUnit+CoreDataProperties.swift */,
-				B43778CC25715A7E00918432 /* RawPath+CoreDataClass.swift */,
-				B43778CD25715A7E00918432 /* RawPath+CoreDataProperties.swift */,
-			);
-			path = "Core Data";
-			sourceTree = "<group>";
-		};
-		B437785F2571577700918432 /* Function */ = {
-			isa = PBXGroup;
-			children = (
-				B437789D2571589800918432 /* Process */,
-				B437789C2571589100918432 /* Output */,
-				B437789B2571588A00918432 /* Collect */,
-			);
-			path = Function;
 			sourceTree = "<group>";
 		};
 		B4377877257157E500918432 /* PointView */ = {
 			isa = PBXGroup;
 			children = (
-				B43778792571580A00918432 /* LocationPoint.swift */,
 				B43778812571581B00918432 /* UserPoint.swift */,
 			);
 			path = PointView;
@@ -242,35 +202,19 @@
 		B4377878257157F100918432 /* PathView */ = {
 			isa = PBXGroup;
 			children = (
-				B43778862571583200918432 /* ClusteredPath.swift */,
 				B43778902571585100918432 /* RepresentPath.swift */,
 				B43778952571586100918432 /* UserPath.swift */,
 			);
 			path = PathView;
 			sourceTree = "<group>";
 		};
-		B437789B2571588A00918432 /* Collect */ = {
-			isa = PBXGroup;
-			children = (
-				B43778A3257158D800918432 /* LocationGetterModel.swift */,
-			);
-			path = Collect;
-			sourceTree = "<group>";
-		};
-		B437789C2571589100918432 /* Output */ = {
-			isa = PBXGroup;
-			children = (
-				B43778A8257158F600918432 /* OutputPath.swift */,
-			);
-			path = Output;
-			sourceTree = "<group>";
-		};
 		B437789D2571589800918432 /* Process */ = {
 			isa = PBXGroup;
 			children = (
-				B43778AD2571590C00918432 /* ClusterFunc.swift */,
+				B437793325743F7B00918432 /* Process.swift */,
 				B43778B22571591B00918432 /* DistFunc.swift */,
 				B43778B72571593000918432 /* PartFunc.swift */,
+				B43778AD2571590C00918432 /* ClusterFunc.swift */,
 				B43778BC2571594400918432 /* RepresentFunc.swift */,
 			);
 			path = Process;
@@ -279,7 +223,7 @@
 		B43778EF2572C70400918432 /* Page */ = {
 			isa = PBXGroup;
 			children = (
-				B437785C2571575500918432 /* View Model */,
+				B437785C2571575500918432 /* Model */,
 				B43779122572D9AC00918432 /* MainPage.swift */,
 				B43779252572E3F900918432 /* MapView.swift */,
 				B43778F82572C80200918432 /* LocationPage.swift */,
@@ -422,29 +366,21 @@
 				B437786E257157C100918432 /* Offset.swift in Sources */,
 				B43778AE2571590C00918432 /* ClusterFunc.swift in Sources */,
 				B4377828257155C300918432 /* GetMap.xcdatamodeld in Sources */,
-				B43778872571583200918432 /* ClusteredPath.swift in Sources */,
-				B43778CF25715A7E00918432 /* PathUnit+CoreDataProperties.swift in Sources */,
 				B43778F12572C71B00918432 /* MapPage.swift in Sources */,
-				B437787A2571580A00918432 /* LocationPoint.swift in Sources */,
 				B43778B82571593000918432 /* PartFunc.swift in Sources */,
 				B43778962571586100918432 /* UserPath.swift in Sources */,
+				B437794E2574530000918432 /* LocationGetterModel.swift in Sources */,
 				B43778B32571591B00918432 /* DistFunc.swift in Sources */,
 				B4377869257157AD00918432 /* Location.swift in Sources */,
-				B43778D125715A7E00918432 /* RawPath+CoreDataProperties.swift in Sources */,
 				B43779262572E3F900918432 /* MapView.swift in Sources */,
-				B43778612571579E00918432 /* Distance.swift in Sources */,
 				B437784F257155F700918432 /* Constant.swift in Sources */,
-				B4377873257157D500918432 /* Point.swift in Sources */,
-				B43778A4257158D800918432 /* LocationGetterModel.swift in Sources */,
-				B43778CE25715A7E00918432 /* PathUnit+CoreDataClass.swift in Sources */,
 				B43779132572D9AC00918432 /* MainPage.swift in Sources */,
-				B43778D025715A7E00918432 /* RawPath+CoreDataClass.swift in Sources */,
 				B437781E257155C100918432 /* ContentView.swift in Sources */,
 				B437781C257155C100918432 /* GetMapApp.swift in Sources */,
 				B43778822571581B00918432 /* UserPoint.swift in Sources */,
 				B43778F92572C80200918432 /* LocationPage.swift in Sources */,
-				B43778A9257158F600918432 /* OutputPath.swift in Sources */,
 				B43778912571585100918432 /* RepresentPath.swift in Sources */,
+				B437793425743F7B00918432 /* Process.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
