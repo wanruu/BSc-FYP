@@ -2,7 +2,6 @@
 
 import Foundation
 import SwiftUI
-import CoreLocation
 
 struct MapPage: View {
     @Binding var locations: [Location]
@@ -22,11 +21,13 @@ struct MapPage: View {
     @State var offset = Offset(x: 0, y: 0)
     @State var lastScale = CGFloat(1.0)
     @State var scale = CGFloat(1.0)
-    @GestureState var magnifyBy = CGFloat(1.0)
     
     var body: some View {
         VStack {
             MapView(locations: $locations, trajectories: $trajectories, representatives: $representatives, locationGetter: locationGetter, showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showLocations: $showLocations, showRepresentPaths: $showRepresentPaths, offset: $offset, scale: $scale)
+            Button(action: {
+                representatives = process(trajs: trajectories)
+            } ) {Text("Process")}
         }
             .navigationTitle("Map")
             .navigationBarTitleDisplayMode(.inline)
@@ -38,9 +39,8 @@ struct MapPage: View {
             .gesture(
                 SimultaneousGesture(
                     MagnificationGesture()
-                        .updating($magnifyBy) { currentState, gestureState, transaction in
-                            gestureState = currentState
-                            var tmpScale = lastScale * magnifyBy
+                        .onChanged { value in
+                            var tmpScale = lastScale * value.magnitude
                             if(tmpScale < minZoomOut) {
                                 tmpScale = minZoomOut
                             } else if(tmpScale > maxZoomIn) {
@@ -49,7 +49,7 @@ struct MapPage: View {
                             scale = tmpScale
                             offset = lastOffset * tmpScale / lastScale
                         }
-                        .onEnded{ _ in
+                        .onEnded { _ in
                             lastScale = scale
                             lastOffset.x = offset.x
                             lastOffset.y = offset.y

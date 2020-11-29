@@ -1,6 +1,5 @@
 /* MARK: Data Structure (Location) */
 
-
 import Foundation
 
 struct Location: Codable {

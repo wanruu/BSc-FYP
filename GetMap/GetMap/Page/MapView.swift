@@ -2,7 +2,6 @@
 
 import Foundation
 import SwiftUI
-import CoreLocation
 
 // MARK: - overall map, containning raw trajectories, processed path, user location, locations, user path
 struct MapView: View {
@@ -11,7 +10,6 @@ struct MapView: View {
     @Binding var representatives: [[Coor3D]]
     @ObservedObject var locationGetter: LocationGetterModel
     
-    /* display control */
     @Binding var showCurrentLocation: Bool
     @Binding var showRawPaths: Bool
     @Binding var showLocations: Bool
@@ -66,6 +64,32 @@ struct TrajsView: View {
     }
 }
 
+// MARK: - display representative trajectory
+struct RepresentPathsView: View {
+    @Binding var representatives: [[Coor3D]]
+    @ObservedObject var locationGetter: LocationGetterModel
+    @Binding var offset: Offset
+    @Binding var scale: CGFloat
+    
+    var body: some View {
+        Path { p in
+            for i in 0..<representatives.count {
+                for j in 0..<representatives[i].count {
+                    let point = CGPoint(
+                        x: centerX + CGFloat((representatives[i][j].longitude - locationGetter.current.coordinate.longitude)*lgScale*2) * scale + offset.x,
+                        y: centerY + CGFloat((locationGetter.current.coordinate.latitude - representatives[i][j].latitude)*laScale*2) * scale + offset.y
+                    )
+                    if(j == 0) {
+                        p.move(to: point)
+                    } else {
+                        p.addLine(to: point)
+                    }
+                }
+            }
+        }.stroke(Color.pink.opacity(0.3), style: StrokeStyle(lineWidth: 2, lineJoin: .round))
+    }
+}
+
 // MARK: - display locations
 struct LocationsView: View {
     @Binding var locations: [Location]
@@ -79,5 +103,30 @@ struct LocationsView: View {
             let y = centerY + CGFloat((locationGetter.current.coordinate.latitude - location.latitude)*laScale*2) * scale + offset.y
             Text(location.name_en).position(x: x, y: y)
         }
+    }
+}
+
+// MARK: - display user path
+struct UserPathsView: View {
+    @ObservedObject var locationGetter: LocationGetterModel
+    @Binding var offset: Offset
+    @Binding var scale: CGFloat
+    var body: some View {
+        Path { p in
+            /* draw paths of point list */
+            for path in locationGetter.paths {
+                for location in path {
+                    let point = CGPoint(
+                        x: centerX + CGFloat((location.coordinate.longitude - locationGetter.current.coordinate.longitude)*lgScale*2) * scale + offset.x,
+                        y: centerY + CGFloat((locationGetter.current.coordinate.latitude - location.coordinate.latitude)*laScale*2) * scale + offset.y
+                    )
+                    if(location == path[0]) {
+                        p.move(to: point)
+                    } else {
+                        p.addLine(to: point)
+                    }
+                }
+            }
+        }.stroke(Color.blue, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
     }
 }
