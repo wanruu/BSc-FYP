@@ -17,12 +17,11 @@ struct ContentView: View {
     
     @State var value = 0
     @State var total = 2
-    
     @State var loadTasks = [Bool](repeating: false, count: 2)
     @State var showAlert = false
     var body: some View {
         ZStack {
-            value != total ? LoadPage(value: $value, total: $total) : nil
+            value != total ? LoadPage(tasks: $loadTasks) : nil
             value != total ? nil : MainPage(locations: $locations, trajectories: $trajectories, representatives: $representatives)
         }
             .alert(isPresented: $showAlert) {

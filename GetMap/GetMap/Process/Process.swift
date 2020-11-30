@@ -38,7 +38,7 @@ func process(trajs: [[Coor3D]]) -> [[Coor3D]] {
         }
     }
     
-    /* Step 3: representative trajectory */
+    /* Step 3: generate representative trajectory */
     var repTrajs: [[Coor3D]] = []
     for cluster in clusters {
         let repTraj = generateRepresent(lineSegs: cluster)
@@ -47,4 +47,6 @@ func process(trajs: [[Coor3D]]) -> [[Coor3D]] {
         }
     }
     return repTrajs
+    
+    /* Step 4: */
 }

@@ -10,15 +10,15 @@ import SwiftUI
 
 let loadtimer = Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()
 let dots = [".", "..", "..."]
-struct LoadPage: View {
-    @Binding var value: Int
-    @Binding var total: Int
 
-    @State var index = 0
+struct LoadPage: View {
+    @Binding var tasks: [Bool]
+
+    @State var index = 0 // index for dots
     var body: some View {
         VStack {
             Image("getmap").resizable().frame(width: 300, height: 150, alignment: .center)
-            ProgressView("LOADING\(dots[index])", value: Double(value), total: Double(total))
+            ProgressView("LOADING\(dots[index])", value: Double(tasks.filter{$0 == true}.count), total: Double(tasks.count))
                 .padding(.horizontal, 50)
                 .padding(.top)
         }
