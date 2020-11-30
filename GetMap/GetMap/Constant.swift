@@ -27,8 +27,12 @@ let centerLa = 22.419915 // +: down
 let centerLg = 114.20774 // +: left
 
 /* zoom in/out limit */
-let maxZoomIn: CGFloat = 2.0
+let maxZoomIn: CGFloat = 0.8
 let minZoomOut: CGFloat = 0.2
+
+/* map border */
+let borderX = [CGFloat(200), CGFloat(1600)]
+let borderY = [CGFloat(1200), CGFloat(2200)]
 
 /* 1 degree of latitude & longitude: how many meters in real world? */
 let laScale = 111000.0

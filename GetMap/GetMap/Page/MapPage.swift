@@ -19,8 +19,8 @@ struct MapPage: View {
     /* gesture */
     @State var lastOffset = Offset(x: 0, y: 0)
     @State var offset = Offset(x: 0, y: 0)
-    @State var lastScale = CGFloat(1.0)
-    @State var scale = CGFloat(1.0)
+    @State var lastScale = minZoomOut // = CGFloat(1.0)
+    @State var scale = minZoomOut //  = CGFloat(1.0)
     
     var body: some View {
         VStack {
@@ -51,6 +51,19 @@ struct MapPage: View {
                             }
                             scale = tmpScale
                             offset = lastOffset * tmpScale / lastScale
+                            
+                            /* border */
+                            if((offset.x + centerX) / scale < borderX[0]) {
+                                offset.x = borderX[0] * scale - centerX
+                            } else if((offset.x + centerX) / scale > borderX[1]) {
+                                offset.x = borderX[1] * scale - centerX
+                            }
+                            if((offset.y + centerY) / scale < borderY[0]) {
+                                offset.y = borderY[0] * scale - centerY
+                            } else if((offset.y + centerY) / scale > borderY[1]) {
+                                offset.y = borderY[1] * scale - centerY
+                            }
+                            
                         }
                         .onEnded { _ in
                             lastScale = scale
@@ -61,6 +74,18 @@ struct MapPage: View {
                         .onChanged{ value in
                             offset.x = lastOffset.x + value.location.x - value.startLocation.x
                             offset.y = lastOffset.y + value.location.y - value.startLocation.y
+                            
+                            /* border */
+                            if((offset.x + centerX) / scale < borderX[0]) {
+                                offset.x = borderX[0] * scale - centerX
+                            } else if((offset.x + centerX) / scale > borderX[1]) {
+                                offset.x = borderX[1] * scale - centerX
+                            }
+                            if((offset.y + centerY) / scale < borderY[0]) {
+                                offset.y = borderY[0] * scale - centerY
+                            } else if((offset.y + centerY) / scale > borderY[1]) {
+                                offset.y = borderY[1] * scale - centerY
+                            }
                         }
                         .onEnded{ _ in
                             lastOffset.x = offset.x

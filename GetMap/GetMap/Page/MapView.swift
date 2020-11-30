@@ -29,10 +29,10 @@ struct MapView: View {
             UserPathsView(locationGetter: locationGetter, offset: $offset, scale: $scale)
             
             /* raw trajectories */
-            showRawPaths ? TrajsView(trajectories: $trajectories, offset: $offset, scale: $scale) : nil
+            showRawPaths ? TrajsView(trajectories: $trajectories, color: Color.gray, offset: $offset, scale: $scale) : nil
             
             /* Representative path */
-            showRepresentPaths ? RepresentPathsView(representatives: $representatives, offset: $offset, scale: $scale) : nil
+            showRepresentPaths ? TrajsView(trajectories: $trajectories, color: Color.black, offset: $offset, scale: $scale) : nil
             
             /* user location */
             showCurrentLocation ? UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale) : nil
@@ -46,6 +46,7 @@ struct MapView: View {
 // MARK: - display raw trajectories
 struct TrajsView: View {
     @Binding var trajectories: [[Coor3D]]
+    @State var color: Color
     @Binding var offset: Offset
     @Binding var scale: CGFloat
     
@@ -64,32 +65,7 @@ struct TrajsView: View {
                     }
                 }
             }
-        }.stroke(Color.gray, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
-    }
-}
-
-// MARK: - display representative trajectory
-struct RepresentPathsView: View {
-    @Binding var representatives: [[Coor3D]]
-    @Binding var offset: Offset
-    @Binding var scale: CGFloat
-    
-    var body: some View {
-        Path { p in
-            for i in 0..<representatives.count {
-                for j in 0..<representatives[i].count {
-                    let point = CGPoint(
-                        x: centerX + CGFloat((representatives[i][j].longitude - centerLg)*lgScale*2) * scale + offset.x,
-                        y: centerY + CGFloat((centerLa - representatives[i][j].latitude)*laScale*2) * scale + offset.y
-                    )
-                    if(j == 0) {
-                        p.move(to: point)
-                    } else {
-                        p.addLine(to: point)
-                    }
-                }
-            }
-        }.stroke(Color.pink.opacity(0.3), style: StrokeStyle(lineWidth: 2, lineJoin: .round))
+        }.stroke(color, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
     }
 }
 

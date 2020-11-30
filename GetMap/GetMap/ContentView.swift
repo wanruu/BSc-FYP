@@ -15,14 +15,12 @@ struct ContentView: View {
     @State var trajectories: [[Coor3D]] = []
     @State var representatives: [[Coor3D]] = []
     
-    @State var value = 0
-    @State var total = 2
     @State var loadTasks = [Bool](repeating: false, count: 2)
     @State var showAlert = false
     var body: some View {
         ZStack {
-            value != total ? LoadPage(tasks: $loadTasks) : nil
-            value != total ? nil : MainPage(locations: $locations, trajectories: $trajectories, representatives: $representatives)
+            loadTasks.filter{$0 == true}.count != loadTasks.count ? LoadPage(tasks: $loadTasks) : nil
+            loadTasks.filter{$0 == true}.count != loadTasks.count ? nil : MainPage(locations: $locations, trajectories: $trajectories, representatives: $representatives)
         }
             .alert(isPresented: $showAlert) {
                 Alert(
@@ -42,12 +40,9 @@ struct ContentView: View {
         for i in 0..<tasks.count {
             if(!tasks[i]) {
                 switch i {
-                    case 0:
-                        loadLocations()
-                    case 1:
-                        loadTrajs()
-                    default:
-                        loadLocations()
+                    case 0: loadLocations()
+                    case 1: loadTrajs()
+                    default: loadLocations()
                 }
             }
         }
@@ -64,7 +59,6 @@ struct ContentView: View {
                 if(res.success) {
                     locations =  res.data
                     loadTasks[0] = true
-                    value += 1
                 } else {
                     showAlert = true
                 }
@@ -86,7 +80,6 @@ struct ContentView: View {
                 if(res.success) {
                     trajectories =  res.data
                     loadTasks[1] = true
-                    value += 1
                 } else {
                     showAlert = true
                 }
