@@ -15,38 +15,84 @@ struct ContentView: View {
     @State var trajectories: [[Coor3D]] = []
     @State var representatives: [[Coor3D]] = []
     
+    @State var value = 0
+    @State var total = 2
+    
+    @State var loadTasks = [Bool](repeating: false, count: 2)
+    @State var showAlert = false
     var body: some View {
-        MainPage(locations: $locations, trajectories: $trajectories, representatives: $representatives)
-            .onAppear {
-                loadLocations()
-                loadTrajs()
+        ZStack {
+            value != total ? LoadPage(value: $value, total: $total) : nil
+            value != total ? nil : MainPage(locations: $locations, trajectories: $trajectories, representatives: $representatives)
+        }
+            .alert(isPresented: $showAlert) {
+                Alert(
+                    title: Text("Error"),
+                    message: Text("Can not connect to server."),
+                    dismissButton: Alert.Button.default(Text("Try again")) {
+                        load(tasks: loadTasks)
+                    }
+                )
             }
+            .onAppear {
+                load(tasks: loadTasks)
+           }
     }
     // MARK: - Load data from Server
-    private func loadLocations() {
+    private func load(tasks: [Bool]) {
+        for i in 0..<tasks.count {
+            if(!tasks[i]) {
+                switch i {
+                    case 0:
+                        loadLocations()
+                    case 1:
+                        loadTrajs()
+                    default:
+                        loadLocations()
+                }
+            }
+        }
+    }
+    private func loadLocations() { // load task #0
         let url = URL(string: server + "/locations")!
         URLSession.shared.dataTask(with: url) { data, response, error in
+            if(error != nil) {
+                showAlert = true
+            }
             guard let data = data else { return }
             do {
                 let res = try JSONDecoder().decode(LocResponse.self, from: data)
                 if(res.success) {
                     locations =  res.data
+                    loadTasks[0] = true
+                    value += 1
+                } else {
+                    showAlert = true
                 }
             } catch let error {
+                showAlert = true
                 print(error)
             }
         }.resume()
     }
-    private func loadTrajs() {
+    private func loadTrajs() { // load task #1
         let url = URL(string: server + "/trajectories")!
         URLSession.shared.dataTask(with: url) { data, response, error in
+            if(error != nil) {
+                showAlert = true
+            }
             guard let data = data else { return }
             do {
                 let res = try JSONDecoder().decode(TrajResponse.self, from: data)
                 if(res.success) {
                     trajectories =  res.data
+                    loadTasks[1] = true
+                    value += 1
+                } else {
+                    showAlert = true
                 }
             } catch let error {
+                showAlert = true
                 print(error)
             }
         }.resume()
