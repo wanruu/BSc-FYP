@@ -24,7 +24,10 @@ struct MapPage: View {
     
     var body: some View {
         VStack {
-            MapView(locations: $locations, trajectories: $trajectories, representatives: $representatives, locationGetter: locationGetter, showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showLocations: $showLocations, showRepresentPaths: $showRepresentPaths, offset: $offset, scale: $scale)
+            ZStack {
+                MapView(locations: $locations, trajectories: $trajectories, representatives: $representatives, locationGetter: locationGetter, showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showLocations: $showLocations, showRepresentPaths: $showRepresentPaths, offset: $offset, scale: $scale)
+                    .contentShape(Rectangle())
+            }
             Button(action: {
                 representatives = process(trajs: trajectories)
             } ) {Text("Process")}

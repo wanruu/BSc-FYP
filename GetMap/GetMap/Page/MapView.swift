@@ -20,6 +20,8 @@ struct MapView: View {
     
     var body: some View {
         ZStack(alignment: .bottom) {
+            BackgroundMap(offset: $offset, scale: $scale)
+            
             /* user paths */
             UserPathsView(locationGetter: locationGetter, offset: $offset, scale: $scale)
             
@@ -128,5 +130,19 @@ struct UserPathsView: View {
                 }
             }
         }.stroke(Color.blue, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+    }
+}
+
+// MARK: - background map image
+struct BackgroundMap: View {
+    var img = UIImage(data: try! Data(contentsOf: URL(string: server + "/map")!))!
+    
+    @Binding var offset: Offset
+    @Binding var scale: CGFloat
+    var body: some View {
+        Image(uiImage: img)
+            .resizable()
+            .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
+            .position(x: centerX + offset.x, y: centerY + offset.y)
     }
 }
