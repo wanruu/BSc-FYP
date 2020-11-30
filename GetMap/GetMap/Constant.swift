@@ -21,11 +21,12 @@ let SCHeight = UIScreen.main.bounds.height
 /* center */
 let centerX = SCWidth/2
 let centerY = SCHeight/2 - 150
-var centerLa = 22.420021
-var centerLg = 114.208190
+
+let centerLa = 22.419915 // +: down
+let centerLg = 114.20774 // +: left
 
 /* zoom in/out limit */
-let maxZoomIn: CGFloat = 6.0
+let maxZoomIn: CGFloat = 2.0
 let minZoomOut: CGFloat = 0.2
 
 /* 1 degree of latitude & longitude: how many meters in real world? */

@@ -194,10 +194,10 @@
 			isa = PBXGroup;
 			children = (
 				B43779122572D9AC00918432 /* MainPage.swift */,
+				B43778F02572C71B00918432 /* MapPage.swift */,
 				B43778812571581B00918432 /* UserPoint.swift */,
 				B43779252572E3F900918432 /* MapView.swift */,
 				B43778F82572C80200918432 /* LocationPage.swift */,
-				B43778F02572C71B00918432 /* MapPage.swift */,
 			);
 			path = Page;
 			sourceTree = "<group>";

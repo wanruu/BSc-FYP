@@ -15,7 +15,10 @@ struct UserPoint: View {
     @State var up: Bool = true // animationRadius is becoming larger or not
 
     var body: some View {
-        let center = CGPoint(x: centerX + offset.x, y: centerY + offset.y)
+        let center = CGPoint(
+            x: centerX + CGFloat((locationGetter.current.coordinate.longitude - centerLg)*lgScale*2) * scale + offset.x,
+            y: centerY + CGFloat((centerLa - locationGetter.current.coordinate.latitude)*laScale*2) * scale + offset.y
+        )
         return
             ZStack {
                 AnimationCircle(center: center, radius: animationRadius)
