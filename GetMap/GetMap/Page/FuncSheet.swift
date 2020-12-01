@@ -8,14 +8,19 @@
 import Foundation
 import SwiftUI
 
+var clusterNum: Int = 0
+
 struct FuncSheet: View {
     @Binding var showCurrentLocation: Bool
-    @Binding var showRawPaths: Bool
     @Binding var showLocations: Bool
-    @Binding var showRepresentPaths: Bool
+    @Binding var showTrajs: Bool
+    @Binding var showLineSegs: Bool
+    @Binding var showRepresents: Bool
+    @Binding var showMap: Bool
     
     @Binding var locations: [Location]
     @Binding var trajectories: [[Coor3D]]
+    @Binding var lineSegments: [LineSeg]
     @Binding var representatives: [[Coor3D]]
     @ObservedObject var locationGetter: LocationGetterModel
     
@@ -37,14 +42,55 @@ struct FuncSheet: View {
             }.padding()
             List {
                 Toggle(isOn: $showCurrentLocation) { Text("Show Current Location") }
-                Toggle(isOn: $showRawPaths) { Text("Show Raw Paths") }
                 Toggle(isOn: $showLocations) { Text("Show Locations") }
-                Toggle(isOn: $showRepresentPaths) { Text("Show Representatives") }
-            }
-            List {
+                Toggle(isOn: $showTrajs) { Text("Show Raw Trajectories") }
+                Toggle(isOn: $showLineSegs) { Text("Show Line Segments")}
+                Toggle(isOn: $showRepresents) { Text("Show Representative path") }
+                Toggle(isOn: $showMap) { Text("Show Background map")}
                 Button(action: {
-                    representatives = process(trajs: trajectories)
+                    /* Step 1: partition */
+                    lineSegments = []
+                    for traj in trajectories {
+                        let cp = partition(traj: traj)
+                        for index in 0...cp.count-2 {
+                            let newLineSeg = LineSeg(start: cp[index], end: cp[index+1], clusterId: 0)
+                            lineSegments.append(newLineSeg)
+                        }
+                    }
+                }) { Text("Partition") }
+                Button(action: {
+                    /* Step 2: cluster */
+                    let clusterIds = cluster(lineSegs: lineSegments)
+                    clusterNum = 0
+                    for i in 0..<lineSegments.count {
+                        lineSegments[i].clusterId = clusterIds[i]
+                        clusterNum = max(clusterNum, clusterIds[i])
+                    }
+                }) { Text("Cluster") }
+                Button(action: {
+                    /* Step 3: generate representative trajectory */
+                    representatives = []
+                    var clusters = [[LineSeg]](repeating: [], count: clusterNum)
+                    for lineSeg in lineSegments {
+                        if(lineSeg.clusterId != -1 && lineSeg.clusterId != 0) {
+                            clusters[lineSeg.clusterId - 1].append(lineSeg)
+                        }
+                    }
+                    for cluster in clusters {
+                        let repTraj = generateRepresent(lineSegs: cluster)
+                        if(repTraj.count >= 2) {
+                            representatives.append(repTraj)
+                        }
+                    }
                 }) { Text("Generate representative path") }
+                Button(action: {
+                    /* Step 4: smooth */
+                    var newRepresents: [[Coor3D]] = []
+                    for traj in representatives {
+                        newRepresents.append(partition(traj: traj))
+                    }
+                    representatives = newRepresents
+                }) { Text("Smooth representative path")}
             }
         }
     }

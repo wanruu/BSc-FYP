@@ -2,7 +2,7 @@
 
 import Foundation
 
-let r: Double = 1
+let r: Double = 1.5
 
 // MARK: - compute average direction vector
 func computeAverVector(vectors: [Point]) -> Point {

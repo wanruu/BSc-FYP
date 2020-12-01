@@ -6,6 +6,7 @@ import SwiftUI
 struct MainPage: View {
     @Binding var locations: [Location]
     @Binding var trajectories: [[Coor3D]]
+    @Binding var lineSegments: [LineSeg]
     @Binding var representatives: [[Coor3D]]
     
     @ObservedObject var locationGetter = LocationGetterModel()
@@ -13,7 +14,7 @@ struct MainPage: View {
     var body: some View {
         NavigationView {
             List {
-                NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, representatives: $representatives, locationGetter: locationGetter)) {
+                NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, locationGetter: locationGetter)) {
                     Text("Map").bold()
                 }
                 NavigationLink(destination: LocationPage(locations: $locations)) {

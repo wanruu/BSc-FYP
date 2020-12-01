@@ -19,19 +19,19 @@ func MDLPar(traj: [Coor3D], startIndex: Int, endIndex: Int) -> Double {
         /* angle distance */
         angleSum += dist.angle
     }
-    let LH: Double = log2( pow( diffX * diffX + diffY * diffY + diffZ * diffZ, 0.5 ) )
+    let LH = log2(pow(diffX * diffX + diffY * diffY + diffZ * diffZ, 0.5))
     let LH_D = log2(angleSum) + log2(perpSum)
-    return LH + LH_D
+    return LH + 0.08*LH_D
 }
 
 func MDLNotPar(traj: [Coor3D], startIndex: Int, endIndex: Int) -> Double {
-    var LH: Double = 0
+    var LH = 0.0
     // LH_D = 0 under this situation
     for index in startIndex...(endIndex - 1) {
         let diffX: Double = (traj[index].latitude - traj[index+1].latitude) * laScale
         let diffY: Double = (traj[index].longitude - traj[index+1].longitude) * lgScale
         let diffZ: Double = traj[index].altitude - traj[index+1].altitude
-        LH += pow( diffX * diffX + diffY * diffY + diffZ * diffZ, 0.5 )
+        LH += pow(diffX * diffX + diffY * diffY + diffZ * diffZ, 0.5)
     }
     return log2(LH)
 }

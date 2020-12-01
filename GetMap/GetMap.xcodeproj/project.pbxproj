@@ -16,8 +16,6 @@
 		B4377833257155C300918432 /* GetMapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4377832257155C300918432 /* GetMapTests.swift */; };
 		B437783E257155C300918432 /* GetMapUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437783D257155C300918432 /* GetMapUITests.swift */; };
 		B437784F257155F700918432 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437784E257155F700918432 /* Constant.swift */; };
-		B4377869257157AD00918432 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4377868257157AD00918432 /* Location.swift */; };
-		B437786E257157C100918432 /* Offset.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437786D257157C100918432 /* Offset.swift */; };
 		B43778822571581B00918432 /* UserPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778812571581B00918432 /* UserPoint.swift */; };
 		B43778AE2571590C00918432 /* ClusterFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778AD2571590C00918432 /* ClusterFunc.swift */; };
 		B43778B32571591B00918432 /* DistFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778B22571591B00918432 /* DistFunc.swift */; };
@@ -27,10 +25,10 @@
 		B43778F92572C80200918432 /* LocationPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778F82572C80200918432 /* LocationPage.swift */; };
 		B43779132572D9AC00918432 /* MainPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43779122572D9AC00918432 /* MainPage.swift */; };
 		B43779262572E3F900918432 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43779252572E3F900918432 /* MapView.swift */; };
-		B437793425743F7B00918432 /* Process.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437793325743F7B00918432 /* Process.swift */; };
 		B437794E2574530000918432 /* LocationGetterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437794D2574530000918432 /* LocationGetterModel.swift */; };
 		B437797525752A0600918432 /* LoadPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437797425752A0600918432 /* LoadPage.swift */; };
 		B437797A2576098100918432 /* FuncSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43779792576098100918432 /* FuncSheet.swift */; };
+		B43779932576517400918432 /* DataStruct.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43779922576517400918432 /* DataStruct.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,8 +64,6 @@
 		B437783D257155C300918432 /* GetMapUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetMapUITests.swift; sourceTree = "<group>"; };
 		B437783F257155C300918432 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B437784E257155F700918432 /* Constant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
-		B4377868257157AD00918432 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
-		B437786D257157C100918432 /* Offset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Offset.swift; sourceTree = "<group>"; };
 		B43778812571581B00918432 /* UserPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPoint.swift; sourceTree = "<group>"; };
 		B43778AD2571590C00918432 /* ClusterFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterFunc.swift; sourceTree = "<group>"; };
 		B43778B22571591B00918432 /* DistFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistFunc.swift; sourceTree = "<group>"; };
@@ -77,10 +73,10 @@
 		B43778F82572C80200918432 /* LocationPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPage.swift; sourceTree = "<group>"; };
 		B43779122572D9AC00918432 /* MainPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPage.swift; sourceTree = "<group>"; };
 		B43779252572E3F900918432 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
-		B437793325743F7B00918432 /* Process.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Process.swift; sourceTree = "<group>"; };
 		B437794D2574530000918432 /* LocationGetterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationGetterModel.swift; sourceTree = "<group>"; };
 		B437797425752A0600918432 /* LoadPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadPage.swift; sourceTree = "<group>"; };
 		B43779792576098100918432 /* FuncSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuncSheet.swift; sourceTree = "<group>"; };
+		B43779922576517400918432 /* DataStruct.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStruct.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,9 +130,9 @@
 				B437794D2574530000918432 /* LocationGetterModel.swift */,
 				B437781D257155C100918432 /* ContentView.swift */,
 				B437784E257155F700918432 /* Constant.swift */,
+				B43779922576517400918432 /* DataStruct.swift */,
 				B437789D2571589800918432 /* Process */,
 				B43778EF2572C70400918432 /* Page */,
-				B437785D2571576000918432 /* Data Structure */,
 				B437781B257155C100918432 /* GetMapApp.swift */,
 				B437781F257155C300918432 /* Assets.xcassets */,
 				B4377824257155C300918432 /* Persistence.swift */,
@@ -173,19 +169,9 @@
 			path = GetMapUITests;
 			sourceTree = "<group>";
 		};
-		B437785D2571576000918432 /* Data Structure */ = {
-			isa = PBXGroup;
-			children = (
-				B4377868257157AD00918432 /* Location.swift */,
-				B437786D257157C100918432 /* Offset.swift */,
-			);
-			path = "Data Structure";
-			sourceTree = "<group>";
-		};
 		B437789D2571589800918432 /* Process */ = {
 			isa = PBXGroup;
 			children = (
-				B437793325743F7B00918432 /* Process.swift */,
 				B43778B22571591B00918432 /* DistFunc.swift */,
 				B43778B72571593000918432 /* PartFunc.swift */,
 				B43778AD2571590C00918432 /* ClusterFunc.swift */,
@@ -339,16 +325,15 @@
 			files = (
 				B43778BD2571594400918432 /* RepresentFunc.swift in Sources */,
 				B4377825257155C300918432 /* Persistence.swift in Sources */,
-				B437786E257157C100918432 /* Offset.swift in Sources */,
 				B437797A2576098100918432 /* FuncSheet.swift in Sources */,
 				B43778AE2571590C00918432 /* ClusterFunc.swift in Sources */,
 				B437797525752A0600918432 /* LoadPage.swift in Sources */,
 				B4377828257155C300918432 /* GetMap.xcdatamodeld in Sources */,
 				B43778F12572C71B00918432 /* MapPage.swift in Sources */,
 				B43778B82571593000918432 /* PartFunc.swift in Sources */,
+				B43779932576517400918432 /* DataStruct.swift in Sources */,
 				B437794E2574530000918432 /* LocationGetterModel.swift in Sources */,
 				B43778B32571591B00918432 /* DistFunc.swift in Sources */,
-				B4377869257157AD00918432 /* Location.swift in Sources */,
 				B43779262572E3F900918432 /* MapView.swift in Sources */,
 				B437784F257155F700918432 /* Constant.swift in Sources */,
 				B43779132572D9AC00918432 /* MainPage.swift in Sources */,
@@ -356,7 +341,6 @@
 				B437781C257155C100918432 /* GetMapApp.swift in Sources */,
 				B43778822571581B00918432 /* UserPoint.swift in Sources */,
 				B43778F92572C80200918432 /* LocationPage.swift in Sources */,
-				B437793425743F7B00918432 /* Process.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

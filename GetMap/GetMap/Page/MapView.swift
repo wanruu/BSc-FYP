@@ -7,38 +7,32 @@ import SwiftUI
 struct MapView: View {
     @Binding var locations: [Location]
     @Binding var trajectories: [[Coor3D]]
+    @Binding var lineSegments: [LineSeg]
     @Binding var representatives: [[Coor3D]]
     @ObservedObject var locationGetter: LocationGetterModel
     
     @Binding var showCurrentLocation: Bool
-    @Binding var showRawPaths: Bool
     @Binding var showLocations: Bool
-    @Binding var showRepresentPaths: Bool
+    @Binding var showTrajs: Bool
+    @Binding var showLineSegs: Bool
+    @Binding var showRepresents: Bool
+    @Binding var showMap: Bool
     
     @Binding var offset: Offset
     @Binding var scale: CGFloat
     
     var body: some View {
         ZStack(alignment: .bottom) {
-            Image("cuhk-campus-map")
+            showMap ? Image("cuhk-campus-map")
                 .resizable()
                 .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
-                .position(x: centerX + offset.x, y: centerY + offset.y)
-            
-            /* user paths */
-            UserPathsView(locationGetter: locationGetter, offset: $offset, scale: $scale)
-            
-            /* raw trajectories */
-            showRawPaths ? TrajsView(trajectories: $trajectories, color: Color.gray, offset: $offset, scale: $scale) : nil
-            
-            /* Representative path */
-            showRepresentPaths ? TrajsView(trajectories: $trajectories, color: Color.black, offset: $offset, scale: $scale) : nil
-            
-            /* user location */
-            showCurrentLocation ? UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale) : nil
-            
-            /* location point */
-            showLocations ? LocationsView(locations: $locations, offset: $offset, scale: $scale) : nil
+                .position(x: centerX + offset.x, y: centerY + offset.y) : nil
+            UserPathsView(locationGetter: locationGetter, offset: $offset, scale: $scale) // user paths
+            showTrajs ? TrajsView(trajectories: $trajectories, color: Color.gray, offset: $offset, scale: $scale) : nil // raw trajectories
+            showLineSegs ? LineSegsView(lineSegments: $lineSegments, offset: $offset, scale: $scale) : nil
+            showRepresents ? TrajsView(trajectories: $representatives, color: Color.black, offset: $offset, scale: $scale) : nil // representative path
+            showCurrentLocation ? UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale) : nil // user location
+            showLocations ? LocationsView(locations: $locations, offset: $offset, scale: $scale) : nil // locations
         }
     }
 }
@@ -66,6 +60,36 @@ struct TrajsView: View {
                 }
             }
         }.stroke(color, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+    }
+}
+struct LineSegView: View {
+    @State var lineSeg: LineSeg
+    @Binding var offset: Offset
+    @Binding var scale: CGFloat
+    var body: some View {
+        Path { p in
+            let start = CGPoint(
+                x: centerX + CGFloat((lineSeg.start.longitude - centerLg)*lgScale*2) * scale + offset.x,
+                y: centerY + CGFloat((centerLa - lineSeg.start.latitude)*laScale*2) * scale + offset.y
+            )
+            let end = CGPoint(
+                x: centerX + CGFloat((lineSeg.end.longitude - centerLg)*lgScale*2) * scale + offset.x,
+                y: centerY + CGFloat((centerLa - lineSeg.end.latitude)*laScale*2) * scale + offset.y
+            )
+            p.move(to: start)
+            p.addLine(to: end)
+        }.stroke(colors[lineSeg.clusterId % colors.count], style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+    }
+}
+
+struct LineSegsView: View {
+    @Binding var lineSegments: [LineSeg]
+    @Binding var offset: Offset
+    @Binding var scale: CGFloat
+    var body: some View {
+        ForEach(lineSegments) { lineSeg in
+            lineSeg.clusterId >= 0 ? LineSegView(lineSeg: lineSeg, offset: $offset, scale: $scale) : nil
+        }
     }
 }
 
