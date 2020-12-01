@@ -14,10 +14,10 @@ struct MainPage: View {
         NavigationView {
             List {
                 NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, representatives: $representatives, locationGetter: locationGetter)) {
-                    Text("Map").bold().font(.system(size: 30))
+                    Text("Map").bold()
                 }
                 NavigationLink(destination: LocationPage(locations: $locations)) {
-                    Text("Location List").bold().font(.system(size: 30))
+                    Text("Location List").bold()
                 }
             }
                 .navigationTitle("Home")

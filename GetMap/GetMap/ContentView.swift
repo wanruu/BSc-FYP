@@ -15,7 +15,7 @@ struct ContentView: View {
     @State var trajectories: [[Coor3D]] = []
     @State var representatives: [[Coor3D]] = []
     
-    @State var loadTasks = [Bool](repeating: true, count: 2)
+    @State var loadTasks = [Bool](repeating: false, count: 2)
     @State var showAlert = false
     var body: some View {
         ZStack {
@@ -32,7 +32,7 @@ struct ContentView: View {
                 )
             }
             .onAppear {
-                //load(tasks: loadTasks)
+                load(tasks: loadTasks)
            }
     }
     // MARK: - Load data from Server
