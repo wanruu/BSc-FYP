@@ -2,6 +2,7 @@
 
 import Foundation
 import SwiftUI
+import CoreLocation
 
 struct MapPage: View {
     @Binding var locations: [Location]
@@ -19,8 +20,11 @@ struct MapPage: View {
     /* gesture */
     @State var lastOffset = Offset(x: 0, y: 0)
     @State var offset = Offset(x: 0, y: 0)
-    @State var lastScale = minZoomOut // = CGFloat(1.0)
-    @State var scale = minZoomOut //  = CGFloat(1.0)
+    @State var lastScale = minZoomOut
+    @State var scale = minZoomOut
+    
+    @State var uploadTasks: [Bool] = []
+    @State var showAlert = false
     
     var body: some View {
         VStack {
@@ -29,14 +33,35 @@ struct MapPage: View {
                     .contentShape(Rectangle())
             }
             Button(action: {
-                representatives = process(trajs: trajectories)
-            } ) {Text("Process")}
+                uploadTasks = [Bool](repeating: false, count: locationGetter.paths.count)
+                for i in 0..<locationGetter.paths.count {
+                    uploadTraj(index: i)
+                }
+            } ) {Text("Upload")}
         }
             .navigationTitle("Map")
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(trailing: Button(action: { showSheet = true }) { Text("Setting") } )
             .sheet(isPresented: $showSheet) {
-                FuncSheet(showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showLocations: $showLocations, showRepresentPaths: $showRepresentPaths, locations: $locations, locationGetter: locationGetter)
+                NavigationView {
+                    FuncSheet(showCurrentLocation: $showCurrentLocation, showRawPaths: $showRawPaths, showLocations: $showLocations, showRepresentPaths: $showRepresentPaths, locations: $locations, trajectories: $trajectories, representatives: $representatives, locationGetter: locationGetter)
+                        .navigationTitle("Setting")
+                        .navigationBarTitleDisplayMode(.inline)
+                        .navigationBarItems(trailing: Button(action: {showSheet = false}) { Text("Cancel")})
+                }
+            }
+            .alert(isPresented: $showAlert) {
+                Alert(
+                    title: Text("Error"),
+                    message: Text("Can not connect to server."),
+                    dismissButton: Alert.Button.default(Text("Try again")) {
+                        for i in 0..<locationGetter.paths.count {
+                            if(!uploadTasks[i]) {
+                                uploadTraj(index: i)
+                            }
+                        }
+                    }
+                )
             }
             .contentShape(Rectangle())
             .gesture(
@@ -77,71 +102,37 @@ struct MapPage: View {
         locationGetter.pathCount = 0
         locationGetter.paths[0].append(locationGetter.current)
     }
-}
-
-struct FuncSheet: View {
-    @Binding var showCurrentLocation: Bool
-    @Binding var showRawPaths: Bool
-    @Binding var showLocations: Bool
-    @Binding var showRepresentPaths: Bool
     
-    @Binding var locations: [Location]
-    @ObservedObject var locationGetter: LocationGetterModel
-    
-    @State var locationName: String = ""
-    @State var locationType: String = ""
-    var body: some View {
-       VStack {
-            VStack {
-                Text("Setting").font(.headline)
-                Divider()
-                Toggle(isOn: $showCurrentLocation) { Text("Show Current Location") }
-                Toggle(isOn: $showRawPaths) { Text("Show Raw Paths") }
-                Toggle(isOn: $showLocations) { Text("Show Locations") }
-                Toggle(isOn: $showRepresentPaths) { Text("Show Representatives") }
-            }.padding()
-            VStack {
-                Text("New Location").font(.headline)
-                Divider()
-                TextField("Type of the building", text: $locationType)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                TextField( "Name of the building", text: $locationName)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                Button(action: {
-                    guard locationName != "" else { return }
-                    guard Int(locationType) != nil else { return }
-                    addLocation()
-                }) { Text("Add") }
-            }.padding()
-            Spacer()
+    // MARK: - Upload a trajectory to Server
+    private func uploadTraj(index: Int) {
+        // [CLLocation] -> [Coor3D]
+        var traj: [Coor3D] = []
+        for point in locationGetter.paths[index] {
+            traj.append(Coor3D(latitude: point.coordinate.latitude, longitude: point.coordinate.longitude, altitude: point.altitude))
         }
-    }
-    private func addLocation() {
-        /* data */
-        let latitude = locationGetter.current.coordinate.latitude
-        let longitude = locationGetter.current.coordinate.longitude
-        let altitude = locationGetter.current.altitude
-        let type = Int(locationType)!
-        let dataStr = "name_en=" + String(locationName) + "&latitude=" + String(latitude)  + "&longitude=" + String(longitude) + "&altitude=" + String(altitude) + "&type=" + String(type)
         
-        let url = URL(string: server + "/location")!
+        var items: [[String: Any]] = []
+        for point in traj {
+            items.append(["latitude": point.latitude, "longitude": point.longitude, "altitude": point.altitude])
+        }
+        let json = ["points": items]
+        let jsonData = try? JSONSerialization.data(withJSONObject: json)
+        let url = URL(string: server + "/trajectory")!
         var request = URLRequest(url: url)
-        request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        request.httpMethod = "PUT"
-        request.httpBody = dataStr.data(using: String.Encoding.utf8)
-
-        URLSession.shared.dataTask(with: request as URLRequest) { data, response, error in
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpMethod = "POST"
+        request.httpBody = jsonData
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
             if(error != nil) {
                 print("error")
             } else {
                 guard let data = data else { return }
                 do {
-                    let res = try JSONDecoder().decode(LocResponse.self, from: data)
+                    let res = try JSONDecoder().decode(TrajResponse.self, from: data)
                     if(res.success) {
-                        let newLocation = Location(name_en: locationName, latitude: latitude, longitude: longitude, altitude: altitude, type: type)
-                        locations.append(newLocation)
-                        locationName = ""
-                        locationType = ""
+                        trajectories.append(traj)
+                        uploadTasks[index] = true
                     } else {
                         print("error")
                     }

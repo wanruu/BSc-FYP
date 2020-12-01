@@ -15,7 +15,7 @@ struct ContentView: View {
     @State var trajectories: [[Coor3D]] = []
     @State var representatives: [[Coor3D]] = []
     
-    @State var loadTasks = [Bool](repeating: false, count: 2)
+    @State var loadTasks = [Bool](repeating: true, count: 2)
     @State var showAlert = false
     var body: some View {
         ZStack {
@@ -32,7 +32,7 @@ struct ContentView: View {
                 )
             }
             .onAppear {
-                load(tasks: loadTasks)
+                //load(tasks: loadTasks)
            }
     }
     // MARK: - Load data from Server
@@ -86,38 +86,6 @@ struct ContentView: View {
             } catch let error {
                 showAlert = true
                 print(error)
-            }
-        }.resume()
-    }
-    // MARK: - Upload data to Server
-    private func uploadTraj(traj: [Coor3D]) {
-        var items: [[String: Any]] = []
-        for point in traj {
-            items.append(["latitude": point.latitude, "longitude": point.longitude, "altitude": point.altitude])
-        }
-        let json = ["points": items]
-        let jsonData = try? JSONSerialization.data(withJSONObject: json)
-        let url = URL(string: server + "/trajectory")!
-        var request = URLRequest(url: url)
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpMethod = "POST"
-        request.httpBody = jsonData
-        
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            if(error != nil) {
-                print("error")
-            } else {
-                guard let data = data else { return }
-                do {
-                    let res = try JSONDecoder().decode(TrajResponse.self, from: data)
-                    if(res.success) {
-                        print("success")
-                    } else {
-                        print("error")
-                    }
-                } catch let error {
-                    print(error)
-                }
             }
         }.resume()
     }
