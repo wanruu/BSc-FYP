@@ -45,14 +45,12 @@ struct MainPage: View {
                                     .foregroundColor(Color.white).shadow(color: Color.black, radius: 3, x: 3, y: 3)
                                     .font(.system(size: 55, weight: .bold, design: .rounded))
                                    
-                            }
-                            .offset(x: -10, y: 80)
-                        }
-                        .frame(alignment: .center).padding(.trailing, 30)
-                        .navigationTitle("Home")
-
-                    }
+                            }.offset(x: -10, y: 80)
+                        }.frame(alignment: .center).padding(.trailing, 30)
+                    }.padding(.leading, 30)
                 }
+                .padding(.top, 20)
+                .navigationTitle("Home")
             }
         }
     }
