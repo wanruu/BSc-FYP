@@ -9,6 +9,7 @@ struct MapView: View {
     @Binding var trajectories: [[Coor3D]]
     @Binding var lineSegments: [LineSeg]
     @Binding var representatives: [[Coor3D]]
+    @Binding var p: [Location]
     @ObservedObject var locationGetter: LocationGetterModel
     
     @Binding var showCurrentLocation: Bool
@@ -33,6 +34,8 @@ struct MapView: View {
             showRepresents ? TrajsView(trajectories: $representatives, color: Color.black, offset: $offset, scale: $scale) : nil // representative path
             showCurrentLocation ? UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale) : nil // user location
             showLocations ? LocationsView(locations: $locations, offset: $offset, scale: $scale) : nil // locations
+            
+            LocationsView(locations: $p, offset: $offset, scale: $scale)
         }
     }
 }

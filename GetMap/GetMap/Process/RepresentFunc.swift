@@ -108,8 +108,6 @@ func generateRepresent(lineSegs: [LineSeg]) -> [Coor3D] {
 }
 
 
-
-
 func pathUnitXValue(sweepPlane: Double, lines: [[Point]]) -> [Point] {
     var values: [Point] = []
     for line in lines {

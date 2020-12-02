@@ -15,13 +15,14 @@ struct ContentView: View {
     @State var trajectories: [[Coor3D]] = []
     @State var lineSegments: [LineSeg] = []
     @State var representatives: [[Coor3D]] = []
+    @State var p: [Location] = []
     
     @State var loadTasks = [Bool](repeating: false, count: 2)
     @State var showAlert = false
     var body: some View {
         ZStack {
             loadTasks.filter{$0 == true}.count != loadTasks.count ? LoadPage(tasks: $loadTasks) : nil
-            loadTasks.filter{$0 == true}.count != loadTasks.count ? nil : MainPage(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives)
+            loadTasks.filter{$0 == true}.count != loadTasks.count ? nil : MainPage(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, p: $p)
         }
             .alert(isPresented: $showAlert) {
                 Alert(

@@ -8,15 +8,15 @@ struct MainPage: View {
     @Binding var trajectories: [[Coor3D]]
     @Binding var lineSegments: [LineSeg]
     @Binding var representatives: [[Coor3D]]
+    @Binding var p: [Location]
     
     @ObservedObject var locationGetter = LocationGetterModel()
     
     var body: some View {
         NavigationView {
-            
-              ScrollView (.horizontal, showsIndicators: false) {
+            ScrollView (.horizontal, showsIndicators: false) {
                 HStack (spacing: 10) {
-                    NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, locationGetter: locationGetter)) {
+                    NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, p: $p, locationGetter: locationGetter)) {
                         ZStack {
                             Image("map")
                                 .resizable()
@@ -47,20 +47,13 @@ struct MainPage: View {
                                    
                             }
                             .offset(x: -10, y: 80)
-                        }.frame(alignment: .center).padding(.trailing, 30)
-           
+                        }
+                        .frame(alignment: .center).padding(.trailing, 30)
+                        .navigationTitle("Home")
 
+                    }
                 }
-                .padding(.leading, 30)
-             }
-              .padding(.top, 20)
-            
-              
-                .navigationTitle("Home")
-
+            }
         }
-             
-    } 
-  
-}
+    }
 }

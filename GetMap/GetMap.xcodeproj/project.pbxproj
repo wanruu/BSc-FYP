@@ -29,6 +29,8 @@
 		B437797525752A0600918432 /* LoadPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437797425752A0600918432 /* LoadPage.swift */; };
 		B437797A2576098100918432 /* FuncSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43779792576098100918432 /* FuncSheet.swift */; };
 		B43779932576517400918432 /* DataStruct.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43779922576517400918432 /* DataStruct.swift */; };
+		B437799B257693EF00918432 /* ConnectFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437799A257693EF00918432 /* ConnectFunc.swift */; };
+		B43779A02577114100918432 /* MapSysFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437799F2577114100918432 /* MapSysFunc.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,6 +79,8 @@
 		B437797425752A0600918432 /* LoadPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadPage.swift; sourceTree = "<group>"; };
 		B43779792576098100918432 /* FuncSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuncSheet.swift; sourceTree = "<group>"; };
 		B43779922576517400918432 /* DataStruct.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStruct.swift; sourceTree = "<group>"; };
+		B437799A257693EF00918432 /* ConnectFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectFunc.swift; sourceTree = "<group>"; };
+		B437799F2577114100918432 /* MapSysFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapSysFunc.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -176,6 +180,8 @@
 				B43778B72571593000918432 /* PartFunc.swift */,
 				B43778AD2571590C00918432 /* ClusterFunc.swift */,
 				B43778BC2571594400918432 /* RepresentFunc.swift */,
+				B437799A257693EF00918432 /* ConnectFunc.swift */,
+				B437799F2577114100918432 /* MapSysFunc.swift */,
 			);
 			path = Process;
 			sourceTree = "<group>";
@@ -331,9 +337,11 @@
 				B4377828257155C300918432 /* GetMap.xcdatamodeld in Sources */,
 				B43778F12572C71B00918432 /* MapPage.swift in Sources */,
 				B43778B82571593000918432 /* PartFunc.swift in Sources */,
+				B437799B257693EF00918432 /* ConnectFunc.swift in Sources */,
 				B43779932576517400918432 /* DataStruct.swift in Sources */,
 				B437794E2574530000918432 /* LocationGetterModel.swift in Sources */,
 				B43778B32571591B00918432 /* DistFunc.swift in Sources */,
+				B43779A02577114100918432 /* MapSysFunc.swift in Sources */,
 				B43779262572E3F900918432 /* MapView.swift in Sources */,
 				B437784F257155F700918432 /* Constant.swift in Sources */,
 				B43779132572D9AC00918432 /* MainPage.swift in Sources */,

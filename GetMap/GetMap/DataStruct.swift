@@ -1,8 +1,7 @@
-/* MARK: Data Structure (Location) */
-
 import Foundation
 import SwiftUI
 
+/* MARK: - Location */
 struct Location: Codable {
     var name_en: String
     var latitude: Double
@@ -10,20 +9,37 @@ struct Location: Codable {
     var altitude: Double
     var type: Int
 }
-
 extension Location: Identifiable {
     public var id: String {
         self.name_en
     }
     
 }
-
+/* MARK: - Coor3D */
 struct Coor3D: Codable {
     var latitude: Double
     var longitude: Double
     var altitude: Double
 }
-
+extension Coor3D: Identifiable {
+    public var id: String {
+        "\(self.latitude)\(self.longitude)"
+    }
+}
+extension Coor3D {
+    static func + (p1: Coor3D, p2: Coor3D) -> Coor3D {
+        return Coor3D(latitude: p1.latitude + p2.latitude, longitude: p1.longitude + p2.longitude, altitude: p1.altitude + p2.altitude)
+    }
+    static func / (point: Coor3D, para: Int) -> Coor3D {
+        return Coor3D(latitude: point.latitude / Double(para), longitude: point.longitude / Double(para), altitude: point.altitude / Double(para))
+    }
+}
+extension Coor3D: Equatable {
+    static func == (p1: Coor3D, p2: Coor3D) -> Bool {
+        return p1.latitude == p2.latitude && p1.longitude == p2.longitude && p1.altitude == p2.altitude
+    }
+}
+/* MARK: - LineSeg */
 struct LineSeg {
     var start: Coor3D
     var end: Coor3D
@@ -34,16 +50,11 @@ extension LineSeg: Identifiable {
         "\(self.start.latitude)\(self.end.latitude)"
     }
 }
-
-/* MARK: Data Structure (Offset) */
-
-/* Created to fix the bug of zoom in/out function */
-
+/* MARK: - Offset, Created to fix the bug of zoom in/out function */
 struct Offset {
     var x: CGFloat
     var y: CGFloat
 }
-
 extension Offset {
     static func * (offset: Offset, para: CGFloat) -> Offset {
         return Offset(x: offset.x * para, y: offset.y * para)
@@ -52,4 +63,17 @@ extension Offset {
         return Offset(x: offset.x / para, y: offset.y / para)
     }
 }
+/* MARK: - distance function */
+func distance(start: Coor3D, end: Coor3D) -> Double {
+    let diffX = (start.latitude - end.latitude) * laScale
+    let diffY = (start.longitude - end.longitude) * lgScale
+    let diffZ = start.altitude - end.altitude
+    return pow(diffX * diffX + diffY * diffY + diffZ * diffZ, 0.5)
+}
 
+func distance(location: Location, point: Coor3D) -> Double {
+    let diffX = (location.latitude - point.latitude) * laScale
+    let diffY = (location.longitude - point.longitude) * lgScale
+    let diffZ = location.altitude - point.altitude
+    return pow(diffX * diffX + diffY * diffY + diffZ * diffZ, 0.5)
+}

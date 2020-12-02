@@ -22,10 +22,12 @@ struct FuncSheet: View {
     @Binding var trajectories: [[Coor3D]]
     @Binding var lineSegments: [LineSeg]
     @Binding var representatives: [[Coor3D]]
+    @Binding var p: [Location]
     @ObservedObject var locationGetter: LocationGetterModel
     
     @State var locationName: String = ""
     @State var locationType: String = ""
+    
     var body: some View {
         VStack {
             VStack {
@@ -84,13 +86,15 @@ struct FuncSheet: View {
                     }
                 }) { Text("Generate representative path") }
                 Button(action: {
-                    /* Step 4: smooth */
-                    var newRepresents: [[Coor3D]] = []
-                    for traj in representatives {
-                        newRepresents.append(partition(traj: traj))
-                    }
-                    representatives = newRepresents
-                }) { Text("Smooth representative path")}
+                    /* Step 4: connect */
+                    /* p = []
+                    let xs = connect(trajs: representatives)
+                    print(xs.count)
+                    for x in xs {
+                        p.append(Location(name_en: "O", latitude: x.latitude, longitude: x.longitude, altitude: x.altitude, type: 9))
+                    }*/
+                    representatives = connect(trajs: representatives)
+                }) { Text("Connect representative path")}
             }
         }
     }
