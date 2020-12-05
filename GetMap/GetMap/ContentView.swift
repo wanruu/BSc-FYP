@@ -18,7 +18,7 @@ struct ContentView: View {
     @State var p: [[Coor3D]] = []
     @State var mapSys: [PathBtwn] = []
     
-    @State var loadTasks = [Bool](repeating: true, count: 2)
+    @State var loadTasks = [Bool](repeating: false, count: 2)
     @State var showAlert = false
     var body: some View {
         ZStack {
@@ -35,7 +35,7 @@ struct ContentView: View {
                 )
             }
             .onAppear {
-                //load(tasks: loadTasks)
+                load(tasks: loadTasks)
            }
     }
     // MARK: - Load data from Server
