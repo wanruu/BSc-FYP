@@ -29,6 +29,8 @@ struct FuncSheet: View {
     @State var locationName: String = ""
     @State var locationType: String = ""
     
+    @State var uploadTasks: [Bool] = []
+    
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             Group {
@@ -109,31 +111,31 @@ struct FuncSheet: View {
                     Divider()
                     Button(action: {
                         /* Step 5: upload map system */
-                        uploadMapSys()
+                        uploadTasks = [Bool](repeating: false, count: mapSys.count)
+                        for i in 0..<mapSys.count {
+                            uploadPath(path: mapSys[i], index: i)
+                        }
+                        
                     }) { Text("Upload map system") }
                 }
             }.padding()
         }
     }
-    private func uploadMapSys() {
-        var paths: [[String: Any]] = []
-        for path in mapSys {
-            var points: [[String: Any]] = []
-            for point in path.points {
-                points.append(["latitude": point.latitude, "longitude": point.longitude, "altitude": point.altitude])
-            }
-            let start: [String: Any] = ["name_en": locations[path.startIndex].name_en, "type": locations[path.startIndex].type]
-            let end: [String: Any] = ["name_en": locations[path.endIndex].name_en, "type": locations[path.endIndex].type]
-            paths.append(["start": start, "end": end, "path": points, "dist": path.dist, "type": 0])
+    private func uploadPath(path: PathBtwn, index: Int) {
+        /* data */
+        let start: [String: Any] = ["name_en": locations[path.startIndex].name_en, "type": locations[path.startIndex].type]
+        let end: [String: Any] = ["name_en": locations[path.endIndex].name_en, "type": locations[path.endIndex].type]
+        var points: [[String: Any]] = []
+        for point in path.points {
+            points.append(["latitude": point.latitude, "longitude": point.longitude, "altitude": point.altitude])
         }
-        let json = ["data": paths]
+        let json: [String: Any] = ["data": ["start": start, "end": end, "path": points, "dist": path.dist, "type": path.type]]
         let jsonData = try? JSONSerialization.data(withJSONObject: json)
-        let url = URL(string: server + "/paths")!
+        let url = URL(string: server + "/path")!
         var request = URLRequest(url: url)
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "POST"
         request.httpBody = jsonData
-        
         URLSession.shared.dataTask(with: request) { data, response, error in
             if(error != nil) {
                 print("error")
@@ -143,6 +145,7 @@ struct FuncSheet: View {
                     let res = try JSONDecoder().decode(TrajResponse.self, from: data)
                     if(res.success) {
                         print("success")
+                        uploadTasks[index] = true
                     } else {
                         print("error")
                     }

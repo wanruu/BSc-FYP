@@ -14,7 +14,6 @@ import SwiftUI
 // let server = "http://169.254.161.175:8000" /* laptop */
 let server = "http://42.194.159.158:8000" /* tencent server */
 
-let url = NSURL(string: "/location")
 /* screen info */
 let SCWidth = UIScreen.main.bounds.width
 let SCHeight = UIScreen.main.bounds.height
