@@ -9,7 +9,8 @@ struct MapView: View {
     @Binding var trajectories: [[Coor3D]]
     @Binding var lineSegments: [LineSeg]
     @Binding var representatives: [[Coor3D]]
-    @Binding var p: [Location]
+    @Binding var p: [[Coor3D]]
+    @Binding var mapSys: [PathBtwn]
     @ObservedObject var locationGetter: LocationGetterModel
     
     @Binding var showCurrentLocation: Bool
@@ -35,12 +36,34 @@ struct MapView: View {
             showCurrentLocation ? UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale) : nil // user location
             showLocations ? LocationsView(locations: $locations, offset: $offset, scale: $scale) : nil // locations
             
-            LocationsView(locations: $p, offset: $offset, scale: $scale)
+            TrajsView(trajectories: $p, color: Color.blue, offset: $offset, scale: $scale)
         }
     }
 }
 
 // MARK: - display raw trajectories
+struct TrajView: View {
+    @Binding var trajectory: [Coor3D]
+    @State var color: Color
+    @Binding var offset: Offset
+    @Binding var scale: CGFloat
+    
+    var body: some View {
+        Path { p in
+            for i in 0..<trajectory.count {
+                let point = CGPoint(
+                    x: centerX + CGFloat((trajectory[i].longitude - centerLg)*lgScale*2) * scale + offset.x,
+                    y: centerY + CGFloat((centerLa - trajectory[i].latitude)*laScale*2) * scale + offset.y
+                )
+                if(i == 0) {
+                    p.move(to: point)
+                } else {
+                    p.addLine(to: point)
+                }
+            }
+        }.stroke(color, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+    }
+}
 struct TrajsView: View {
     @Binding var trajectories: [[Coor3D]]
     @State var color: Color

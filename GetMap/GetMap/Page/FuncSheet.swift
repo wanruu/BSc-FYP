@@ -22,81 +22,135 @@ struct FuncSheet: View {
     @Binding var trajectories: [[Coor3D]]
     @Binding var lineSegments: [LineSeg]
     @Binding var representatives: [[Coor3D]]
-    @Binding var p: [Location]
+    @Binding var p: [[Coor3D]]
+    @Binding var mapSys: [PathBtwn]
     @ObservedObject var locationGetter: LocationGetterModel
     
     @State var locationName: String = ""
     @State var locationType: String = ""
     
     var body: some View {
-        VStack {
-            VStack {
-                Text("New Location")
-                TextField("Type of the building", text: $locationType)
+        ScrollView(.vertical, showsIndicators: false) {
+            Group {
+                VStack {
+                    Text("New Location")
+                    TextField("Type of the building", text: $locationType)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                    TextField( "Name of the building", text: $locationName)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                TextField( "Name of the building", text: $locationName)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                Button(action: {
-                    guard locationName != "" else { return }
-                    guard Int(locationType) != nil else { return }
-                    addLocation()
-                }) { Text("Add") }
+                    Button(action: {
+                        guard locationName != "" else { return }
+                        guard Int(locationType) != nil else { return }
+                        addLocation()
+                    }) { Text("Add") }
+                }
             }.padding()
-            List {
-                Toggle(isOn: $showCurrentLocation) { Text("Show Current Location") }
-                Toggle(isOn: $showLocations) { Text("Show Locations") }
-                Toggle(isOn: $showTrajs) { Text("Show Raw Trajectories") }
-                Toggle(isOn: $showLineSegs) { Text("Show Line Segments")}
-                Toggle(isOn: $showRepresents) { Text("Show Representative path") }
-                Toggle(isOn: $showMap) { Text("Show Background map")}
-                Button(action: {
-                    /* Step 1: partition */
-                    lineSegments = []
-                    for traj in trajectories {
-                        let cp = partition(traj: traj)
-                        for index in 0...cp.count-2 {
-                            let newLineSeg = LineSeg(start: cp[index], end: cp[index+1], clusterId: 0)
-                            lineSegments.append(newLineSeg)
+            Divider()
+            Group {
+                VStack {
+                    Toggle(isOn: $showCurrentLocation) { Text("Show Current Location") }
+                    Toggle(isOn: $showLocations) { Text("Show Locations") }
+                    Toggle(isOn: $showTrajs) { Text("Show Raw Trajectories") }
+                    Toggle(isOn: $showLineSegs) { Text("Show Line Segments")}
+                    Toggle(isOn: $showRepresents) { Text("Show Representative path") }
+                    Toggle(isOn: $showMap) { Text("Show Background map")}
+                }
+            }.padding()
+            Divider()
+            Group {
+                VStack {
+                    Button(action: {
+                        /* Step 1: partition */
+                        lineSegments = []
+                        for traj in trajectories {
+                            let cp = partition(traj: traj)
+                            for index in 0...cp.count-2 {
+                                let newLineSeg = LineSeg(start: cp[index], end: cp[index+1], clusterId: 0)
+                                lineSegments.append(newLineSeg)
+                            }
                         }
-                    }
-                }) { Text("Partition") }
-                Button(action: {
-                    /* Step 2: cluster */
-                    let clusterIds = cluster(lineSegs: lineSegments)
-                    clusterNum = 0
-                    for i in 0..<lineSegments.count {
-                        lineSegments[i].clusterId = clusterIds[i]
-                        clusterNum = max(clusterNum, clusterIds[i])
-                    }
-                }) { Text("Cluster") }
-                Button(action: {
-                    /* Step 3: generate representative trajectory */
-                    representatives = []
-                    var clusters = [[LineSeg]](repeating: [], count: clusterNum)
-                    for lineSeg in lineSegments {
-                        if(lineSeg.clusterId != -1 && lineSeg.clusterId != 0) {
-                            clusters[lineSeg.clusterId - 1].append(lineSeg)
+                    }) { Text("Partition") }
+                    Divider()
+                    Button(action: {
+                        /* Step 2: cluster */
+                        let clusterIds = cluster(lineSegs: lineSegments)
+                        clusterNum = 0
+                        for i in 0..<lineSegments.count {
+                            lineSegments[i].clusterId = clusterIds[i]
+                            clusterNum = max(clusterNum, clusterIds[i])
                         }
-                    }
-                    for cluster in clusters {
-                        let repTraj = generateRepresent(lineSegs: cluster)
-                        if(repTraj.count >= 2) {
-                            representatives.append(repTraj)
+                    }) { Text("Cluster") }
+                    Divider()
+                    Button(action: {
+                        /* Step 3: generate representative trajectory */
+                        representatives = []
+                        var clusters = [[LineSeg]](repeating: [], count: clusterNum)
+                        for lineSeg in lineSegments {
+                            if(lineSeg.clusterId != -1 && lineSeg.clusterId != 0) {
+                                clusters[lineSeg.clusterId - 1].append(lineSeg)
+                            }
                         }
-                    }
-                }) { Text("Generate representative path") }
-                Button(action: {
-                    /* Step 4: connect */
-                    /* p = []
-                    let xs = connect(trajs: representatives)
-                    print(xs.count)
-                    for x in xs {
-                        p.append(Location(name_en: "O", latitude: x.latitude, longitude: x.longitude, altitude: x.altitude, type: 9))
-                    }*/
-                    representatives = connect(trajs: representatives)
-                }) { Text("Connect representative path")}
-            }
+                        for cluster in clusters {
+                            let repTraj = generateRepresent(lineSegs: cluster)
+                            if(repTraj.count >= 2) {
+                                representatives.append(repTraj)
+                            }
+                        }
+                        representatives = connect(trajs: representatives)
+                    }) { Text("Generate representative path") }
+                    Divider()
+                    Button(action: {
+                        /* Step 4: generate map system */
+                        let paths = GenerateMapSys(trajs: representatives, locations: locations)
+                        for path in paths {
+                            mapSys.append(path)
+                        }
+                    }) { Text("Generate map system") }
+                    Divider()
+                    Button(action: {
+                        /* Step 5: upload map system */
+                        uploadMapSys()
+                    }) { Text("Upload map system") }
+                }
+            }.padding()
         }
+    }
+    private func uploadMapSys() {
+        var paths: [[String: Any]] = []
+        for path in mapSys {
+            var points: [[String: Any]] = []
+            for point in path.points {
+                points.append(["latitude": point.latitude, "longitude": point.longitude, "altitude": point.altitude])
+            }
+            let start: [String: Any] = ["name_en": locations[path.startIndex].name_en, "type": locations[path.startIndex].type]
+            let end: [String: Any] = ["name_en": locations[path.endIndex].name_en, "type": locations[path.endIndex].type]
+            paths.append(["start": start, "end": end, "path": points, "dist": path.dist, "type": 0])
+        }
+        let json = ["data": paths]
+        let jsonData = try? JSONSerialization.data(withJSONObject: json)
+        let url = URL(string: server + "/paths")!
+        var request = URLRequest(url: url)
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpMethod = "POST"
+        request.httpBody = jsonData
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if(error != nil) {
+                print("error")
+            } else {
+                guard let data = data else { return }
+                do {
+                    let res = try JSONDecoder().decode(TrajResponse.self, from: data)
+                    if(res.success) {
+                        print("success")
+                    } else {
+                        print("error")
+                    }
+                } catch let error {
+                    print(error)
+                }
+            }
+        }.resume()
     }
     
     private func addLocation() {

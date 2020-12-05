@@ -13,7 +13,11 @@ extension Location: Identifiable {
     public var id: String {
         self.name_en
     }
-    
+}
+extension Location: Equatable {
+    static func == (l1: Location, l2: Location) -> Bool {
+        return l1.name_en == l2.name_en && l1.type == l2.type
+    }
 }
 /* MARK: - Coor3D */
 struct Coor3D: Codable {

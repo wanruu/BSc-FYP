@@ -8,7 +8,8 @@ struct MainPage: View {
     @Binding var trajectories: [[Coor3D]]
     @Binding var lineSegments: [LineSeg]
     @Binding var representatives: [[Coor3D]]
-    @Binding var p: [Location]
+    @Binding var p: [[Coor3D]]
+    @Binding var mapSys: [PathBtwn]
     
     @ObservedObject var locationGetter = LocationGetterModel()
     
@@ -16,40 +17,40 @@ struct MainPage: View {
         NavigationView {
             ScrollView (.horizontal, showsIndicators: false) {
                 HStack (spacing: 10) {
-                    NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, p: $p, locationGetter: locationGetter)) {
+                    NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, p: $p, mapSys: $mapSys, locationGetter: locationGetter)) {
                         ZStack {
                             Image("map")
                                 .resizable()
-                                .frame(width: 250, height: 250)
-                                .cornerRadius(20)
+                                .frame(width: SCWidth * 0.25, height: SCWidth * 0.25) // 1 = SCWidth * 0.001
+                                .cornerRadius(SCWidth * 0.02)
                             
                             VStack(alignment: .leading) {
                                 Text("Map")
-                                    .foregroundColor(Color.white) .shadow(color: Color.black, radius: 3, x: 3, y: 3)
-                                    .font(.system(size: 60, weight: .bold, design: .rounded))
+                                    .foregroundColor(Color.white) .shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
+                                    .font(.system(size: SCWidth * 0.06, weight: .bold, design: .rounded))
                                  
-                            }.offset(x: -30, y: 80)
+                            }.offset(x: -SCWidth * 0.03, y: SCWidth * 0.08)
                             
-                        }.frame(alignment: .center) .padding(.leading, 30)
+                        }.frame(alignment: .center) .padding(.leading, SCWidth * 0.03)
                     }
                 
                     NavigationLink(destination: LocationPage(locations: $locations)) {
                         ZStack {
                             Image("building")
                                 .resizable()
-                                .frame(width: 250, height: 250)
-                                .cornerRadius(20)
+                                .frame(width: SCWidth * 0.25, height: SCWidth * 0.25)
+                                .cornerRadius(SCWidth * 0.02)
                             
                             VStack(alignment: .leading) {
-                                Text("Building")
-                                    .foregroundColor(Color.white).shadow(color: Color.black, radius: 3, x: 3, y: 3)
-                                    .font(.system(size: 55, weight: .bold, design: .rounded))
+                                Text("Location")
+                                    .foregroundColor(Color.white).shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
+                                    .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
                                    
-                            }.offset(x: -10, y: 80)
-                        }.frame(alignment: .center).padding(.trailing, 30)
-                    }.padding(.leading, 30)
+                            }.offset(x: -SCWidth * 0.01, y: SCWidth * 0.08)
+                        }.frame(alignment: .center).padding(.trailing, SCWidth * 0.03)
+                    }.padding(.leading, SCWidth * 0.03)
                 }
-                .padding(.top, 20)
+                .padding(.top, SCWidth * 0.02)
                 .navigationTitle("Home")
             }
         }
