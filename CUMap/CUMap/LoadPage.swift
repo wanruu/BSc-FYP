@@ -17,7 +17,7 @@ struct LoadPage: View {
     @State var index = 0 // index for dots
     var body: some View {
         VStack {
-            // Image("getmap").resizable().frame(width: 300, height: 150, alignment: .center)
+            Image("cumap").resizable().frame(width: 300, height: 150, alignment: .center)
             ProgressView("LOADING\(dots[index])", value: Double(tasks.filter{$0 == true}.count), total: Double(tasks.count))
                 .padding(.horizontal, 50)
                 .padding(.top)
