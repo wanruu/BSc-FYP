@@ -13,12 +13,6 @@ struct MapPage: View {
     @Binding var paths: [PathBtwn]
     @ObservedObject var locationGetter: LocationGetterModel
     
-    /* gesture */
-    @State var lastOffset = Offset(x: 0, y: 0)
-    @State var offset = Offset(x: 0, y: 0)
-    @State var lastScale = minZoomOut
-    @State var scale = minZoomOut
-    
     /* search keyword */
     @State var start: String = ""
     @State var end: String = ""
@@ -30,33 +24,44 @@ struct MapPage: View {
     
     var body: some View {
         ZStack(alignment: .bottom) {
-            MapView(result: $result, offset: $offset, scale: $scale)
+            MapView(result: $result)
             VStack {
                 // search input area
                 HStack {
                     VStack {
-                        showEndSearch ? nil : TextField("From", text: $start, onEditingChanged: { _ in })
-                            .onTapGesture {
-                                start = ""
-                                showStartSearch = true
-                                showEndSearch = false
-                            }.textFieldStyle(RoundedBorderTextFieldStyle())
-                        
-                        showStartSearch ? nil : TextField("To", text: $end, onEditingChanged: { _ in })
-                            .onTapGesture {
-                                end = ""
-                                showEndSearch = true
+                        HStack {
+                            showEndSearch ? nil : TextField("From", text: $start, onEditingChanged: { _ in })
+                                .onTapGesture {
+                                    start = ""
+                                    showStartSearch = true
+                                    showEndSearch = false
+                                }.textFieldStyle(RoundedBorderTextFieldStyle())
+                            showStartSearch ? Button(action: {
                                 showStartSearch = false
-                            }.textFieldStyle(RoundedBorderTextFieldStyle())
+                                hideKeyboard()
+                            }) { Text("Cancel")}.background(Color.white) : nil
+                        }
+                        HStack {
+                            showStartSearch ? nil : TextField("To", text: $end, onEditingChanged: { _ in })
+                                .onTapGesture {
+                                    end = ""
+                                    showEndSearch = true
+                                    showStartSearch = false
+                                }.textFieldStyle(RoundedBorderTextFieldStyle())
+                            showEndSearch ? Button(action: {
+                                showEndSearch = false
+                                hideKeyboard()
+                            }) { Text("Cancel")}.background(Color.white) : nil
+                        }
                         
                     }
-                    (showStartSearch || showEndSearch) ? nil : Button(action: {
+                    showStartSearch || showEndSearch ? nil : Button(action: {
                         for path in paths {
                             if((path.start.name_en == start && path.end.name_en == end) || (path.start.name_en == end && path.end.name_en == start)) {
                                 result = path.path
                             }
                         }
-                    }){Text("Search")}
+                    }) {Text("Search")}.background(Color.white)
                 }
                 // search result
                 showStartSearch ? List {
@@ -82,6 +87,26 @@ struct MapPage: View {
                 
                 Spacer()
             }.padding()
+        }
+    }
+}
+
+struct MapView: View {
+    @Binding var result: [Coor3D]
+    
+    /* gesture */
+    @State var lastOffset = Offset(x: 0, y: 0)
+    @State var offset = Offset(x: 0, y: 0)
+    @State var lastScale = minZoomOut
+    @State var scale = minZoomOut
+    
+    var body: some View {
+        ZStack {
+            Image("cuhk-campus-map")
+                .resizable()
+                .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
+                .position(x: centerX + offset.x, y: centerY + offset.y)
+            ResultView(path: $result, offset: $offset, scale: $scale)
         }
         .contentShape(Rectangle())
         .gesture(
@@ -114,22 +139,6 @@ struct MapPage: View {
                     }
             )
         )
-    }
-}
-
-struct MapView: View {
-    @Binding var result: [Coor3D]
-    @Binding var offset: Offset
-    @Binding var scale: CGFloat
-    
-    var body: some View {
-        ZStack {
-            Image("cuhk-campus-map")
-                .resizable()
-                .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
-                .position(x: centerX + offset.x, y: centerY + offset.y)
-            ResultView(path: $result, offset: $offset, scale: $scale)
-        }
     }
 }
 
