@@ -12,47 +12,49 @@ struct MainPage: View {
     @Binding var mapSys: [PathBtwn]
     
     @ObservedObject var locationGetter = LocationGetterModel()
-    
-    var body: some View {
+     var body: some View {
         NavigationView {
-            ScrollView (.horizontal, showsIndicators: false) {
-                HStack (spacing: 10) {
-                    NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, p: $p, mapSys: $mapSys, locationGetter: locationGetter)) {
+         
+                HStack () {
+                   
+                    NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, p: $p, locationGetter: locationGetter)) {
                         ZStack {
+                            
                             Image("map")
                                 .resizable()
-                                .frame(width: SCWidth * 0.25, height: SCWidth * 0.25) // 1 = SCWidth * 0.001
-                                .cornerRadius(SCWidth * 0.02)
+                                .cornerRadius(20)
                             
                             VStack(alignment: .leading) {
                                 Text("Map")
-                                    .foregroundColor(Color.white) .shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
-                                    .font(.system(size: SCWidth * 0.06, weight: .bold, design: .rounded))
+                                    .foregroundColor(Color.white) .shadow(color: Color.black, radius: 3, x: 3, y: 3)
+                                    .font(.system(size: UIScreen.main.bounds.width * 0.08, weight: .bold, design: .rounded)).offset(x:-UIScreen.main.bounds.width * 0.045,y:UIScreen.main.bounds.width * 0.12)
                                  
-                            }.offset(x: -SCWidth * 0.03, y: SCWidth * 0.08)
-                            
-                        }.frame(alignment: .center) .padding(.leading, SCWidth * 0.03)
-                    }
-                
+                            }
+                        }.frame(width: UIScreen.main.bounds.width * 0.40, height:  UIScreen.main.bounds.width * 0.40)
+                        }.padding(.leading, UIScreen.main.bounds.width * 0.05)
+                       
                     NavigationLink(destination: LocationPage(locations: $locations)) {
+                       
                         ZStack {
                             Image("building")
                                 .resizable()
-                                .frame(width: SCWidth * 0.25, height: SCWidth * 0.25)
-                                .cornerRadius(SCWidth * 0.02)
+                                .cornerRadius(20)
                             
                             VStack(alignment: .leading) {
-                                Text("Location")
-                                    .foregroundColor(Color.white).shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
-                                    .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
+                                Text("Building")
+                                    .foregroundColor(Color.white).shadow(color: Color.black, radius: 3, x: 3, y: 3)
+                                    .font(.system(size: UIScreen.main.bounds.width * 0.08, weight: .bold, design: .rounded)).offset(x:-UIScreen.main.bounds.width * 0.015,y:UIScreen.main.bounds.width * 0.12)
                                    
-                            }.offset(x: -SCWidth * 0.01, y: SCWidth * 0.08)
-                        }.frame(alignment: .center).padding(.trailing, SCWidth * 0.03)
-                    }.padding(.leading, SCWidth * 0.03)
-                }
-                .padding(.top, SCWidth * 0.02)
-                .navigationTitle("Home")
-            }
+                            }
+                        }.frame(width: UIScreen.main.bounds.width * 0.40, height:  UIScreen.main.bounds.width * 0.40)
+                        
+                }.padding(.trailing, UIScreen.main.bounds.width * 0.05 ).padding(.leading, UIScreen.main.bounds.width * 0.03 )
+         
+              
+            
         }
+                .navigationTitle("Home")
     }
+      
 }
+    }
