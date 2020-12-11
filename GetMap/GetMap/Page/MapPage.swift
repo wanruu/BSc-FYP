@@ -37,13 +37,21 @@ struct MapPage: View {
             ZStack {
                 MapView(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, p: $p, mapSys: $mapSys, locationGetter: locationGetter, showCurrentLocation: $showCurrentLocation, showLocations: $showLocations, showTrajs: $showTrajs, showLineSegs: $showLineSegs, showRepresents: $showRepresents, showMap: $showMap, offset: $offset, scale: $scale)
             }
-            Button(action: {
-                uploadTasks = [Bool](repeating: false, count: locationGetter.paths.count)
-                for i in 0..<locationGetter.paths.count {
-                    uploadTraj(index: i)
-                }
-            } ) {Text("Upload")}
+            HStack {
+                Button(action: {
+                    uploadTasks = [Bool](repeating: false, count: locationGetter.paths.count)
+                    for i in 0..<locationGetter.paths.count {
+                        uploadTraj(index: i)
+                    }
+                    
+                } ) {Text("Upload")}
+                Text(" / ")
+                Button(action: {
+                    cleanPaths()
+                } ) {Text("Clear")}
+            }
         }
+            .padding()
             .navigationTitle("Map")
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(trailing: Button(action: { showSheet = true }) { Text("Setting") } )

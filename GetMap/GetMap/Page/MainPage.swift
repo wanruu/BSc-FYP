@@ -12,6 +12,24 @@ struct MainPage: View {
     @Binding var mapSys: [PathBtwn]
     
     @ObservedObject var locationGetter = LocationGetterModel()
+    var body: some View {
+        UIDevice.current.localizedModel == "iPad" ?
+            MainPagePad(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, p: $p, mapSys: $mapSys) : nil
+        UIDevice.current.localizedModel == "iPhone" ?
+            MainPagePhone(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, p: $p, mapSys: $mapSys) : nil
+    }
+    
+}
+
+struct MainPagePhone: View {
+    @Binding var locations: [Location]
+    @Binding var trajectories: [[Coor3D]]
+    @Binding var lineSegments: [LineSeg]
+    @Binding var representatives: [[Coor3D]]
+    @Binding var p: [[Coor3D]]
+    @Binding var mapSys: [PathBtwn]
+    
+    @ObservedObject var locationGetter = LocationGetterModel()
     
     // 1 = SCWidth * 0.001
     var body: some View {
@@ -43,8 +61,26 @@ struct MainPage: View {
                     }
                 }.padding()
             }
-            .navigationTitle("Home")
-            .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+}
+
+struct MainPagePad: View {
+    @Binding var locations: [Location]
+    @Binding var trajectories: [[Coor3D]]
+    @Binding var lineSegments: [LineSeg]
+    @Binding var representatives: [[Coor3D]]
+    @Binding var p: [[Coor3D]]
+    @Binding var mapSys: [PathBtwn]
+    
+    @ObservedObject var locationGetter = LocationGetterModel()
+    
+    var body: some View {
+        NavigationView {
+            List {
+                NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, p: $p, mapSys: $mapSys, locationGetter: locationGetter)) { Text("Map") }
+                NavigationLink(destination: LocationPage(locations: $locations)) { Text("Location") }
+            }
         }
     }
 }
