@@ -18,7 +18,7 @@ struct Location: Codable {
 }
 extension Location: Identifiable {
     public var id: String {
-        self.name_en
+        "\(self.name_en)_\(self.type)"
     }
 }
 extension Location: Equatable {
@@ -28,13 +28,10 @@ extension Location: Equatable {
 }
 
 // MARK: - path between
-struct TmpLocation: Codable {
-    var name_en: String
-    var type: Int
-}
+
 struct PathBtwn: Codable {
-    var start: TmpLocation
-    var end: TmpLocation
+    var start: LocationBasic
+    var end: LocationBasic
     var path: [Coor3D]
     var dist: Double
     var type: Int
@@ -104,4 +101,30 @@ func distance(location: Location, point: Coor3D) -> Double {
     return pow(diffX * diffX + diffY * diffY + diffZ * diffZ, 0.5)
 }
 
+
+// MARK: - response
+struct LocResponse: Codable {
+    let operation: String
+    let target: String
+    let success: Bool
+    let data: [Location]
+}
+
+struct PathResponse: Codable {
+    let operation: String
+    let target: String
+    let success: Bool
+    let data: [PathBtwn]
+}
+struct LocationBasic: Codable {
+    var name_en: String
+    var type: Int
+}
+
+struct VersionResponse: Codable {
+    let operation: String
+    let target: String
+    let success: Bool
+    let data: [Version]
+}
 

@@ -26,6 +26,7 @@ let centerLa = 22.419915 // +: down
 let centerLg = 114.20774 // +: left
 
 /* zoom in/out limit */
+let initialZoom: CGFloat = 0.3
 let maxZoomIn: CGFloat = 0.8
 let minZoomOut: CGFloat = 0.2
 

@@ -13,13 +13,14 @@ struct ContentView: View {
     @Environment(\.managedObjectContext) var context
     @FetchRequest(sortDescriptors: []) var CDLocations: FetchedResults<CDLocation>
     @FetchRequest(sortDescriptors: []) var CDPaths: FetchedResults<CDPath>
-    @FetchRequest(sortDescriptors: []) var versions: FetchedResults<CDVersion>
+    @FetchRequest(sortDescriptors: []) var CDversions: FetchedResults<CDVersion>
     
     @State var locations: [Location] = []
     @State var paths: [PathBtwn] = []
     @ObservedObject var locationGetter = LocationGetterModel()
     
     @State var loadTasks: [Bool] = [false, false]
+    @State var newVersion: [Bool] = [false, false]
     @State var showAlert = false
     
     var body: some View {
@@ -51,7 +52,7 @@ struct ContentView: View {
     
     // MARK: - Load data
     private func load(tasks: [Bool]) {
-        // check new version
+        // check version
         /* let url = URL(string: server + "/versions")!
         URLSession.shared.dataTask(with: url) { data, response, error in
             if(error != nil) { showAlert = true }
@@ -59,13 +60,12 @@ struct ContentView: View {
             do {
                 let res = try JSONDecoder().decode(VersionResponse.self, from: data)
                 if(res.success) {
-                    for version in res.data {
-                        if(version.database == "locations") {
-                            locVersion = version.
+                    for newVersion in res.data {
+                        for currentVersion in CDversions {
+                            
                         }
                     }
-                    
-                    
+                    loadTasks[0] = true
                 } else { showAlert = true }
             } catch let error { showAlert = true }
         }.resume()*/
@@ -126,25 +126,3 @@ struct ContentView_Previews: PreviewProvider {
         ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }
-
-struct LocResponse: Codable {
-    let operation: String
-    let target: String
-    let success: Bool
-    let data: [Location]
-}
-
-struct PathResponse: Codable {
-    let operation: String
-    let target: String
-    let success: Bool
-    let data: [PathBtwn]
-}
-
-struct VersionResponse: Codable {
-    let operation: String
-    let target: String
-    let success: Bool
-    let data: [Version]
-}
-
