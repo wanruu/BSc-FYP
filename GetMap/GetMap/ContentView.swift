@@ -15,7 +15,6 @@ struct ContentView: View {
     @State var trajectories: [[Coor3D]] = []
     @State var lineSegments: [LineSeg] = []
     @State var representatives: [[Coor3D]] = []
-    @State var p: [[Coor3D]] = []
     @State var mapSys: [PathBtwn] = []
     
     @State var loadTasks = [Bool](repeating: false, count: 2)
@@ -23,7 +22,7 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             loadTasks.filter{$0 == true}.count != loadTasks.count ? LoadPage(tasks: $loadTasks) : nil
-            loadTasks.filter{$0 == true}.count != loadTasks.count ? nil : MainPage(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, p: $p, mapSys: $mapSys)
+            loadTasks.filter{$0 == true}.count != loadTasks.count ? nil : MainPage(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, mapSys: $mapSys)
         }
             .alert(isPresented: $showAlert) {
                 Alert(
@@ -96,7 +95,7 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        ContentView()
     }
 }
 

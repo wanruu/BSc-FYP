@@ -1,9 +1,4 @@
-//
-//  LoadPage.swift
-//  GetMap
-//
-//  Created by wanruuu on 30/11/2020.
-//
+/* MARK: Shows that data are being loaded from server */
 
 import Foundation
 import SwiftUI
@@ -15,6 +10,7 @@ struct LoadPage: View {
     @Binding var tasks: [Bool]
 
     @State var index = 0 // index for dots
+    
     var body: some View {
         VStack {
             Image("getmap").resizable().frame(width: 300, height: 150, alignment: .center)

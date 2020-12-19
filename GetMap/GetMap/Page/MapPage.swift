@@ -9,7 +9,6 @@ struct MapPage: View {
     @Binding var trajectories: [[Coor3D]]
     @Binding var lineSegments: [LineSeg]
     @Binding var representatives: [[Coor3D]]
-    @Binding var p: [[Coor3D]]
     @Binding var mapSys: [PathBtwn]
     @ObservedObject var locationGetter: LocationGetterModel
 
@@ -35,7 +34,7 @@ struct MapPage: View {
     var body: some View {
         VStack {
             ZStack {
-                MapView(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, p: $p, mapSys: $mapSys, locationGetter: locationGetter, showCurrentLocation: $showCurrentLocation, showLocations: $showLocations, showTrajs: $showTrajs, showLineSegs: $showLineSegs, showRepresents: $showRepresents, showMap: $showMap, offset: $offset, scale: $scale)
+                MapView(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, mapSys: $mapSys, locationGetter: locationGetter, showCurrentLocation: $showCurrentLocation, showLocations: $showLocations, showTrajs: $showTrajs, showLineSegs: $showLineSegs, showRepresents: $showRepresents, showMap: $showMap, offset: $offset, scale: $scale)
             }
             HStack {
                 Button(action: {
@@ -57,7 +56,7 @@ struct MapPage: View {
             .navigationBarItems(trailing: Button(action: { showSheet = true }) { Text("Setting") } )
             .sheet(isPresented: $showSheet) {
                 NavigationView {
-                    FuncSheet(showCurrentLocation: $showCurrentLocation, showLocations: $showLocations, showTrajs: $showTrajs, showLineSegs: $showLineSegs, showRepresents: $showRepresents, showMap: $showMap, locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, p: $p, mapSys: $mapSys, locationGetter: locationGetter)
+                    FuncSheet(showCurrentLocation: $showCurrentLocation, showLocations: $showLocations, showTrajs: $showTrajs, showLineSegs: $showLineSegs, showRepresents: $showRepresents, showMap: $showMap, locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, mapSys: $mapSys, locationGetter: locationGetter)
                         .navigationTitle("Setting")
                         .navigationBarTitleDisplayMode(.inline)
                         .navigationBarItems(trailing: Button(action: {showSheet = false}) { Text("Cancel")})

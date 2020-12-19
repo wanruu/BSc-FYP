@@ -22,7 +22,6 @@ struct FuncSheet: View {
     @Binding var trajectories: [[Coor3D]]
     @Binding var lineSegments: [LineSeg]
     @Binding var representatives: [[Coor3D]]
-    @Binding var p: [[Coor3D]]
     @Binding var mapSys: [PathBtwn]
     @ObservedObject var locationGetter: LocationGetterModel
     
@@ -65,6 +64,9 @@ struct FuncSheet: View {
                         /* Step 1: partition */
                         lineSegments = []
                         for traj in trajectories {
+                            if(traj.count < 2) {
+                                continue
+                            }
                             let cp = partition(traj: traj)
                             for index in 0...cp.count-2 {
                                 let newLineSeg = LineSeg(start: cp[index], end: cp[index+1], clusterId: 0)

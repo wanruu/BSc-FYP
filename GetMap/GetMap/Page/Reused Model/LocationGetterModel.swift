@@ -20,31 +20,37 @@ class LocationGetterModel: NSObject, ObservableObject {
 
     override init() {
         super.init()
-        /* delegate */
+        // delegate
         manager.delegate = self
-        /* the minimum distance (m) a device must move horizontally before an update event is generated */
+        
+        // minimum distance (m) a device must move horizontally before an update event is generated
         manager.distanceFilter = 5;
-        /* the accuracy of the location data our app wants to receive */
+        
+        // accuracy of location data our app wants to receive
         manager.desiredAccuracy = kCLLocationAccuracyBest;
         
-        /* always update location */
+        // always update location
         manager.requestAlwaysAuthorization()
         if #available(iOS 9.0, *) {
             manager.allowsBackgroundLocationUpdates = true
         }
-        /* start updating location */
+        
+        // start updating location
         manager.startUpdatingLocation()
-        /* start updating heading */
+        
+        // start updating heading
         /* TODO: need to verify whether heading information is available */
         manager.startUpdatingHeading()
     }
 }
 
 extension LocationGetterModel: CLLocationManagerDelegate {
-    /* successfully update location */
+    // successfully update location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        /* ensure able to get location info */
+        
+        // ensure able to get location info
         guard let newLocation = locations.last else { return }
+        
         /* ensure within index*/
         if(paths.count == pathCount) {
             paths.append([])
@@ -69,11 +75,13 @@ extension LocationGetterModel: CLLocationManagerDelegate {
             paths[pathCount].append(newLocation)
         }
     }
-    /* successfully update heading */
+    
+    // successfully update heading
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         self.heading = newHeading.trueHeading
     }
-    /* fail */
+    
+    // fail
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print(error)
     }

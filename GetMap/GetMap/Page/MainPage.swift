@@ -8,15 +8,14 @@ struct MainPage: View {
     @Binding var trajectories: [[Coor3D]]
     @Binding var lineSegments: [LineSeg]
     @Binding var representatives: [[Coor3D]]
-    @Binding var p: [[Coor3D]]
     @Binding var mapSys: [PathBtwn]
     
     @ObservedObject var locationGetter = LocationGetterModel()
     var body: some View {
         UIDevice.current.localizedModel == "iPad" ?
-            MainPagePad(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, p: $p, mapSys: $mapSys) : nil
+            MainPagePad(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, mapSys: $mapSys) : nil
         UIDevice.current.localizedModel == "iPhone" ?
-            MainPagePhone(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, p: $p, mapSys: $mapSys) : nil
+            MainPagePhone(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, mapSys: $mapSys) : nil
     }
     
 }
@@ -26,7 +25,6 @@ struct MainPagePhone: View {
     @Binding var trajectories: [[Coor3D]]
     @Binding var lineSegments: [LineSeg]
     @Binding var representatives: [[Coor3D]]
-    @Binding var p: [[Coor3D]]
     @Binding var mapSys: [PathBtwn]
     
     @ObservedObject var locationGetter = LocationGetterModel()
@@ -35,7 +33,7 @@ struct MainPagePhone: View {
     var body: some View {
         NavigationView {
             HStack {
-                NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, p: $p, mapSys: $mapSys, locationGetter: locationGetter)) {
+                NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, mapSys: $mapSys, locationGetter: locationGetter)) {
                     ZStack {
                         Image("map")
                             .resizable()
@@ -70,7 +68,6 @@ struct MainPagePad: View {
     @Binding var trajectories: [[Coor3D]]
     @Binding var lineSegments: [LineSeg]
     @Binding var representatives: [[Coor3D]]
-    @Binding var p: [[Coor3D]]
     @Binding var mapSys: [PathBtwn]
     
     @ObservedObject var locationGetter = LocationGetterModel()
@@ -78,7 +75,7 @@ struct MainPagePad: View {
     var body: some View {
         NavigationView {
             List {
-                NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, p: $p, mapSys: $mapSys, locationGetter: locationGetter)) { Text("Map") }
+                NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, mapSys: $mapSys, locationGetter: locationGetter)) { Text("Map") }
                 NavigationLink(destination: LocationPage(locations: $locations)) { Text("Location") }
             }
         }
