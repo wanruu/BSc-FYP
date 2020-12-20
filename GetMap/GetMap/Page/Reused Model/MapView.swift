@@ -137,14 +137,15 @@ struct UserPathsView: View {
     @ObservedObject var locationGetter: LocationGetterModel
     @Binding var offset: Offset
     @Binding var scale: CGFloat
+    
     var body: some View {
         Path { p in
             /* draw paths of point list */
-            for path in locationGetter.paths {
+            for path in locationGetter.trajs {
                 for location in path {
                     let point = CGPoint(
-                        x: centerX + CGFloat((location.coordinate.longitude - centerLg)*lgScale*2) * scale + offset.x,
-                        y: centerY + CGFloat((centerLa - location.coordinate.latitude)*laScale*2) * scale + offset.y
+                        x: centerX + CGFloat((location.longitude - centerLg)*lgScale*2) * scale + offset.x,
+                        y: centerY + CGFloat((centerLa - location.latitude)*laScale*2) * scale + offset.y
                     )
                     if(location == path[0]) {
                         p.move(to: point)

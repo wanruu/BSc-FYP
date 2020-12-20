@@ -38,8 +38,8 @@ struct MapPage: View {
             }
             HStack {
                 Button(action: {
-                    uploadTasks = [Bool](repeating: false, count: locationGetter.paths.count)
-                    for i in 0..<locationGetter.paths.count {
+                    uploadTasks = [Bool](repeating: false, count: locationGetter.trajs.count)
+                    for i in 0..<locationGetter.trajs.count {
                         uploadTraj(index: i)
                     }
                     
@@ -67,7 +67,7 @@ struct MapPage: View {
                     title: Text("Error"),
                     message: Text("Can not connect to server."),
                     dismissButton: Alert.Button.default(Text("Try again")) {
-                        for i in 0..<locationGetter.paths.count {
+                        for i in 0..<locationGetter.trajs.count {
                             if(!uploadTasks[i]) {
                                 uploadTraj(index: i)
                             }
@@ -109,19 +109,16 @@ struct MapPage: View {
     }
     /* remove all data in locationGetter.paths */
     private func cleanPaths() {
-        locationGetter.paths = []
-        locationGetter.paths.append([])
-        locationGetter.pathCount = 0
-        locationGetter.paths[0].append(locationGetter.current)
+        locationGetter.trajs = []
+        locationGetter.trajs.append([])
+        locationGetter.trajsIndex = 0
+        locationGetter.trajs[0].append(locationGetter.current)
     }
     
     // MARK: - Upload a trajectory to Server
     private func uploadTraj(index: Int) {
-        // [CLLocation] -> [Coor3D]
-        var traj: [Coor3D] = []
-        for point in locationGetter.paths[index] {
-            traj.append(Coor3D(latitude: point.coordinate.latitude, longitude: point.coordinate.longitude, altitude: point.altitude))
-        }
+
+        let traj = locationGetter.trajs[index]
         
         var items: [[String: Any]] = []
         for point in traj {

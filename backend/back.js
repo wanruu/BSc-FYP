@@ -193,6 +193,24 @@ app.post('/trajectory', (req, res) => {
         }
     });
 });
+app.post('/trajectories', (req, res) => {
+    console.log("POST /trajectories - " + Date())
+    var trajectories = req.body.trajectories;
+    var time = Date();
+    var promises = []
+    
+    for(let i in trajectories) {
+        var promise = TrajectoryModel.create({points: trajectories[i], timestamp: time}, (err, result) => {
+            if(err) {
+                res.send({operation: "add", target: "trajectories", success: false, data: []});
+            }
+        });
+        promises.push(promise);
+    }
+    Promise.all(promises).then(value => {
+        res.send({operation: "add", target: "trajectories", success: true, data: []});
+    });
+});
 app.get('/trajectories', (req, res) => {
     console.log("GET /trajectories - " + Date());
     TrajectoryModel.find({}, (err, result) => {

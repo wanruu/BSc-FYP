@@ -16,8 +16,8 @@ struct UserPoint: View {
 
     var body: some View {
         let center = CGPoint(
-            x: centerX + CGFloat((locationGetter.current.coordinate.longitude - centerLg)*lgScale*2) * scale + offset.x,
-            y: centerY + CGFloat((centerLa - locationGetter.current.coordinate.latitude)*laScale*2) * scale + offset.y
+            x: centerX + CGFloat((locationGetter.current.longitude - centerLg)*lgScale*2) * scale + offset.x,
+            y: centerY + CGFloat((centerLa - locationGetter.current.latitude)*laScale*2) * scale + offset.y
         )
         return
             ZStack {

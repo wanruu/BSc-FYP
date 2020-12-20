@@ -160,8 +160,8 @@ struct FuncSheet: View {
     
     private func addLocation() {
         /* data */
-        let latitude = locationGetter.current.coordinate.latitude
-        let longitude = locationGetter.current.coordinate.longitude
+        let latitude = locationGetter.current.latitude
+        let longitude = locationGetter.current.longitude
         let altitude = locationGetter.current.altitude
         let type = Int(locationType)!
         let dataStr = "name_en=" + String(locationName) + "&latitude=" + String(latitude)  + "&longitude=" + String(longitude) + "&altitude=" + String(altitude) + "&type=" + String(type)
