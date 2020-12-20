@@ -33,8 +33,6 @@ struct LocationView: View {
     @Binding var scale: CGFloat
     
     var body: some View {
-        let x = centerX + CGFloat((location.longitude - centerLg)*lgScale*2) * scale + offset.x
-        let y = centerY + CGFloat((centerLa - location.latitude)*laScale*2) * scale + offset.y
         Button(action: {
             if(showedLocation == location) {
                 showedLocation = nil
@@ -45,6 +43,10 @@ struct LocationView: View {
             Image(location.type == 0 ? "location-purple" : "location-yellow")
             .resizable()
             .frame(width: SCWidth * 0.1, height: SCWidth * 0.1, alignment: .center)
-        }.position(x: x, y: y - SCWidth * 0.05)
+        }
+        .position(
+            x: centerX + CGFloat((location.longitude - centerLg)*lgScale*2) * scale + offset.x,
+            y: centerY + CGFloat((centerLa - location.latitude)*laScale*2) * scale + offset.y - SCWidth * 0.05
+        )
     }
 }
