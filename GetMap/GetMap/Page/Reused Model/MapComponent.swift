@@ -80,21 +80,6 @@ struct LineSegsView: View {
     }
 }
 
-// MARK: - display locations
-struct LocationsView: View {
-    @Binding var locations: [Location]
-    @Binding var offset: Offset
-    @Binding var scale: CGFloat
-    
-    var body: some View {
-        ForEach(locations) { location in
-            let x = centerX + CGFloat((location.longitude - centerLg)*lgScale*2) * scale + offset.x
-            let y = centerY + CGFloat((centerLa - location.latitude)*laScale*2) * scale + offset.y
-            Text(location.name_en).position(x: x, y: y)
-        }
-    }
-}
-
 // MARK: - display user path
 struct UserPathsView: View {
     @ObservedObject var locationGetter: LocationGetterModel

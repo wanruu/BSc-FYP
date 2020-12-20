@@ -14,7 +14,7 @@ struct MapPage: View {
     @State var representatives: [[Coor3D]] = []
     
     /* sheet */
-    @State var showLocations: Bool = false // locations
+    @State var showLocations: Bool = true // locations
     @State var showTrajs: Bool = true // trajectories
     @State var showLineSegs: Bool = false // lineSegments
     @State var showRepresents: Bool = false // representatives
@@ -23,10 +23,10 @@ struct MapPage: View {
     @State var showSheet: Bool = false
     
     /* gesture */
-    @State var lastOffset = Offset(x: 0, y: 0)
     @State var offset = Offset(x: 0, y: 0)
-    @State var lastScale = minZoomOut
     @State var scale = minZoomOut
+    @State var lastOffset = Offset(x: 0, y: 0)
+    @State var lastScale = minZoomOut
     
     var body: some View {
         ZStack {
@@ -48,7 +48,7 @@ struct MapPage: View {
         // navigation bar
         .navigationTitle("Map")
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarItems(trailing: Button(action: { showSheet = true }) { Text("Setting") } )
+        .navigationBarItems(trailing: Button(action: { showSheet = true }) { Image(systemName: "gearshape").imageScale(.large) } )
         // function sheet
         .sheet(isPresented: $showSheet) {
             NavigationView {

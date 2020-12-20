@@ -40,7 +40,7 @@ struct MainPagePhone: View {
                             .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
                             .offset(x: 0, y: SCWidth * 0.06)
                     }
-                }.padding()
+                }
                 
                 NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, mapSys: $mapSys)) {
                     ZStack {
@@ -53,7 +53,7 @@ struct MainPagePhone: View {
                             .font(.system(size: SCWidth * 0.06, weight: .bold, design: .rounded))
                             .offset(x: 0, y: SCWidth * 0.06)
                     }
-                }.padding()
+                }
                 NavigationLink(destination: LocationPage(locations: $locations)) {
                     ZStack {
                         Image("building")
@@ -66,10 +66,12 @@ struct MainPagePhone: View {
                             .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
                             .offset(x: 0, y: SCWidth * 0.06)
                     }
-                }.padding()
-                
+                }
             }
+            .navigationTitle("Home")
+            .navigationBarTitleDisplayMode(.inline)
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 
@@ -86,6 +88,8 @@ struct MainPagePad: View {
                 NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, mapSys: $mapSys)) { Text("Map") }
                 NavigationLink(destination: LocationPage(locations: $locations)) { Text("Location") }
             }
+            .navigationTitle("Home")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
