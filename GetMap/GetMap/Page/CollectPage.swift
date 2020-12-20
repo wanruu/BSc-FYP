@@ -3,6 +3,11 @@
 import Foundation
 import SwiftUI
 
+enum NavigationMode {
+    case normal // moving will not follow user location
+    case undirected
+    case directed
+}
 struct CollectPage: View {
     @Binding var locations: [Location]
     @Binding var trajectories: [[Coor3D]]
@@ -21,7 +26,8 @@ struct CollectPage: View {
     @ObservedObject var locationGetter = LocationGetterModel()
     
     // if user point is at the center
-    @State var isCenter = false
+    @State var mode: NavigationMode = .normal
+    
     // if locations are being recorded
     @State var isRecording = true
     
@@ -29,96 +35,120 @@ struct CollectPage: View {
     @State var showUploadAlert = false
     
     var body: some View {
-        ZStack {
-            Image("cuhk-campus-map")
-                .resizable()
-                .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
-                .position(x: centerX + offset.x, y: centerY + offset.y)
-                // Gesture
-                .contentShape(Rectangle())
-                .gesture(
-                    SimultaneousGesture(
-                        MagnificationGesture()
-                        .onChanged { value in
-                            isGestureChanging = true
-                            var tmpScale = lastScale * value.magnitude
-                            if(tmpScale < minZoomOut) {
-                                tmpScale = minZoomOut
-                            } else if(tmpScale > maxZoomIn) {
-                                tmpScale = maxZoomIn
+        withAnimation {
+            ZStack {
+                Image("cuhk-campus-map")
+                    .resizable()
+                    .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
+                    .position(x: centerX + offset.x, y: centerY + offset.y)
+                    // Gesture
+                    .contentShape(Rectangle())
+                    .gesture(
+                        SimultaneousGesture(
+                            MagnificationGesture()
+                            .onChanged { value in
+                                isGestureChanging = true
+                                var tmpScale = lastScale * value.magnitude
+                                if(tmpScale < minZoomOut) {
+                                    tmpScale = minZoomOut
+                                } else if(tmpScale > maxZoomIn) {
+                                    tmpScale = maxZoomIn
+                                }
+                                scale = tmpScale
+                                offset = lastOffset * tmpScale / lastScale
                             }
-                            scale = tmpScale
-                            offset = lastOffset * tmpScale / lastScale
-                        }
-                        .onEnded { _ in
-                            lastScale = scale
-                            lastOffset = offset
-                            isGestureChanging = false
-                        },
-                        DragGesture()
-                        .onChanged{ value in
-                            isGestureChanging = true
-                            isCenter = false
-                            offset.x = lastOffset.x + value.location.x - value.startLocation.x
-                            offset.y = lastOffset.y + value.location.y - value.startLocation.y
-                        }
-                        .onEnded{ _ in
-                            lastOffset = offset
-                            isGestureChanging = false
-                        }
+                            .onEnded { _ in
+                                lastScale = scale
+                                lastOffset = offset
+                                isGestureChanging = false
+                            },
+                            DragGesture()
+                            .onChanged{ value in
+                                isGestureChanging = true
+                                mode = .normal
+                                offset.x = lastOffset.x + value.location.x - value.startLocation.x
+                                offset.y = lastOffset.y + value.location.y - value.startLocation.y
+                            }
+                            .onEnded{ _ in
+                                lastOffset = offset
+                                isGestureChanging = false
+                            }
+                        )
                     )
-                )
-            // trajs data from server
-            TrajsView(trajectories: $trajectories, color: Color.gray, offset: $offset, scale: $scale)
-            // recording trajectory
-            isRecording ? UserPathsView(locationGetter: locationGetter, offset: $offset, scale: $scale) : nil
-            
-            UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale)
-            
-            // tool bar
-            showAddLocation ? nil : VStack {
-                Spacer()
-                HStack {
-                    // change to current location
-                    Button(action: {
-                        if(!isGestureChanging) {
-                            offset.x = CGFloat((centerLg - locationGetter.current.longitude)*lgScale*2) * scale
-                            offset.y = CGFloat((locationGetter.current.latitude - centerLa)*laScale*2) * scale
-                            lastOffset = offset
+                // trajs data from server
+                TrajsView(trajectories: $trajectories, color: Color.gray, offset: $offset, scale: $scale)
+                // recording trajectory
+                isRecording ? UserPathsView(locationGetter: locationGetter, offset: $offset, scale: $scale) : nil
+                
+                UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale)
+                
+                // tool bar
+                showAddLocation ? nil : VStack {
+                    Spacer()
+                    HStack {
+                        // change navigation mode
+                        Button(action: {
+                            if(mode == .normal) {
+                                mode = .undirected
+                                if(!isGestureChanging) {
+                                    offset.x = CGFloat((centerLg - locationGetter.current.longitude)*lgScale*2) * scale
+                                    offset.y = CGFloat((locationGetter.current.latitude - centerLa)*laScale*2) * scale
+                                    lastOffset = offset
+                                }
+                            } else if(mode == .directed) {
+                                mode = .normal
+                                if(!isGestureChanging) {
+                                    offset.x = CGFloat((centerLg - locationGetter.current.longitude)*lgScale*2) * scale
+                                    offset.y = CGFloat((locationGetter.current.latitude - centerLa)*laScale*2) * scale
+                                    lastOffset = offset
+                                }
+                            } else {
+                                mode = .directed
+                            }
+                        }) {
+                            mode == .normal ?
+                                Image(systemName: "location")
+                                .resizable()
+                                .frame(width: SCWidth * 0.08, height: SCWidth * 0.08, alignment: .center) : nil
+                            mode == .undirected ?
+                                Image(systemName: "location.fill")
+                                .resizable()
+                                .frame(width: SCWidth * 0.08, height: SCWidth * 0.08, alignment: .center) : nil
+                            mode == .directed ?
+                                Image(systemName: "location.north.line.fill")
+                                .resizable()
+                                .frame(width: SCWidth * 0.055, height: SCWidth * 0.09, alignment: .center) : nil
                         }
-                        isCenter = !isCenter
-                    }) {
-                        isCenter ?
-                            Image(systemName: "location.fill")
-                            .resizable()
-                            .frame(width: SCWidth * 0.08, height: SCWidth * 0.08, alignment: .center) :
-                            Image(systemName: "location")
+                        .frame(width: SCWidth * 0.1, height: SCWidth * 0.1, alignment: .center)
+                        .padding()
+                        
+                        // start/stop record trajectory
+                        Button(action: {
+                            isRecording ? uploadTrajs() : startRecord()
+                            isRecording = !isRecording
+                        }) {
+                            isRecording ?
+                                Image(systemName: "stop.circle")
+                                .resizable()
+                                .frame(width: SCWidth * 0.08, height: SCWidth * 0.08, alignment: .center) :
+                                Image(systemName: "largecircle.fill.circle")
+                                .resizable()
+                                .frame(width: SCWidth * 0.08, height: SCWidth * 0.08, alignment: .center)
+                        }
+                        .frame(width: SCWidth * 0.1, height: SCWidth * 0.1, alignment: .center)
+                        .padding()
+                        
+                        // delete recorded traj
+                        Button(action: {
+                            startRecord()
+                        }) {
+                            Image(systemName: "trash")
                             .resizable()
                             .frame(width: SCWidth * 0.08, height: SCWidth * 0.08, alignment: .center)
-                    }.padding()
-                    
-                    // start/stop record trajectory
-                    Button(action: {
-                        isRecording ? uploadTrajs() : startRecord()
-                        isRecording = !isRecording
-                    }) {
-                        isRecording ?
-                            Image(systemName: "stop.circle")
-                            .resizable()
-                            .frame(width: SCWidth * 0.08, height: SCWidth * 0.08, alignment: .center) :
-                            Image(systemName: "largecircle.fill.circle")
-                            .resizable()
-                            .frame(width: SCWidth * 0.08, height: SCWidth * 0.08, alignment: .center)
-                    }.padding()
-                    
-                    // delete recorded traj
-                    Button(action: {
-                        startRecord()
-                    }) {
-                        Image(systemName: "trash")
-                        .resizable()
-                        .frame(width: SCWidth * 0.08, height: SCWidth * 0.08, alignment: .center)
-                    }.padding()
+                        }
+                        .frame(width: SCWidth * 0.1, height: SCWidth * 0.1, alignment: .center)
+                        .padding()
+                    }
                 }
             }
         }
