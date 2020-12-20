@@ -31,6 +31,10 @@ struct MainPagePhone: View {
             HStack {
                 NavigationLink(destination: CollectPage(locations: $locations, trajectories: $trajectories)) {
                     ZStack {
+                        Image("collect")
+                            .resizable()
+                            .frame(width: SCWidth * 0.25, height: SCWidth * 0.25)
+                            .cornerRadius(SCWidth * 0.05)
                         Text("Collect")
                             .foregroundColor(Color.white).shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
                             .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))

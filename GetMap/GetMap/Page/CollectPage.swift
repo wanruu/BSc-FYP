@@ -244,13 +244,15 @@ struct NewLocationPrompt<Presenting>: View where Presenting: View {
                     width: SCWidth * 0.7,
                     height: SCHeight * 0.7
                 )
+                .cornerRadius(50)
                 .opacity(self.isShowing ? 1 : 0)
                 .offset(x: 0, y: -SCHeight * 0.1)
+                
             }
         }
     }
     private func addLocation() {
-        /* data */
+        // data
         let latitude = locationGetter.current.latitude
         let longitude = locationGetter.current.longitude
         let altitude = locationGetter.current.altitude
