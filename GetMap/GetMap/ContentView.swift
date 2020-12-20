@@ -13,8 +13,6 @@ struct ContentView: View {
     /* from server */
     @State var locations: [Location] = []
     @State var trajectories: [[Coor3D]] = []
-    @State var lineSegments: [LineSeg] = []
-    @State var representatives: [[Coor3D]] = []
     @State var mapSys: [PathBtwn] = []
     
     @State var loadTasks = [Bool](repeating: false, count: 2)
@@ -22,7 +20,7 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             loadTasks.filter{$0 == true}.count != loadTasks.count ? LoadPage(tasks: $loadTasks) : nil
-            loadTasks.filter{$0 == true}.count != loadTasks.count ? nil : MainPage(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, mapSys: $mapSys)
+            loadTasks.filter{$0 == true}.count != loadTasks.count ? nil : MainPage(locations: $locations, trajectories: $trajectories, mapSys: $mapSys)
         }
             .alert(isPresented: $showAlert) {
                 Alert(

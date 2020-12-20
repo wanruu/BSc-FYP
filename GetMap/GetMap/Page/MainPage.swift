@@ -6,16 +6,14 @@ import SwiftUI
 struct MainPage: View {
     @Binding var locations: [Location]
     @Binding var trajectories: [[Coor3D]]
-    @Binding var lineSegments: [LineSeg]
-    @Binding var representatives: [[Coor3D]]
     @Binding var mapSys: [PathBtwn]
     
     @ObservedObject var locationGetter = LocationGetterModel()
     var body: some View {
         UIDevice.current.localizedModel == "iPad" ?
-            MainPagePad(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, mapSys: $mapSys) : nil
+            MainPagePad(locations: $locations, trajectories: $trajectories, mapSys: $mapSys) : nil
         UIDevice.current.localizedModel == "iPhone" ?
-            MainPagePhone(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, mapSys: $mapSys) : nil
+            MainPagePhone(locations: $locations, trajectories: $trajectories, mapSys: $mapSys) : nil
     }
     
 }
@@ -23,8 +21,6 @@ struct MainPage: View {
 struct MainPagePhone: View {
     @Binding var locations: [Location]
     @Binding var trajectories: [[Coor3D]]
-    @Binding var lineSegments: [LineSeg]
-    @Binding var representatives: [[Coor3D]]
     @Binding var mapSys: [PathBtwn]
     
     @ObservedObject var locationGetter = LocationGetterModel()
@@ -33,7 +29,16 @@ struct MainPagePhone: View {
     var body: some View {
         NavigationView {
             HStack {
-                NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, mapSys: $mapSys, locationGetter: locationGetter)) {
+                NavigationLink(destination: CollectPage(locations: $locations, trajectories: $trajectories)) {
+                    ZStack {
+                        Text("Collect")
+                            .foregroundColor(Color.white).shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
+                            .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
+                            .offset(x: 0, y: SCWidth * 0.06)
+                    }
+                }.padding()
+                
+                NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, mapSys: $mapSys)) {
                     ZStack {
                         Image("map")
                             .resizable()
@@ -58,14 +63,7 @@ struct MainPagePhone: View {
                             .offset(x: 0, y: SCWidth * 0.06)
                     }
                 }.padding()
-                NavigationLink(destination: CollectPage(locations: $locations, trajectories: $trajectories)) {
-                    ZStack {
-                        Text("Collect")
-                            .foregroundColor(Color.white).shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
-                            .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
-                            .offset(x: 0, y: SCWidth * 0.06)
-                    }
-                }.padding()
+                
             }
         }
     }
@@ -74,8 +72,6 @@ struct MainPagePhone: View {
 struct MainPagePad: View {
     @Binding var locations: [Location]
     @Binding var trajectories: [[Coor3D]]
-    @Binding var lineSegments: [LineSeg]
-    @Binding var representatives: [[Coor3D]]
     @Binding var mapSys: [PathBtwn]
     
     @ObservedObject var locationGetter = LocationGetterModel()
@@ -83,7 +79,7 @@ struct MainPagePad: View {
     var body: some View {
         NavigationView {
             List {
-                NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, mapSys: $mapSys, locationGetter: locationGetter)) { Text("Map") }
+                NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, mapSys: $mapSys)) { Text("Map") }
                 NavigationLink(destination: LocationPage(locations: $locations)) { Text("Location") }
             }
         }

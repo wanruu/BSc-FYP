@@ -1,43 +1,6 @@
-/* MARK: display map */
 
 import Foundation
 import SwiftUI
-
-// MARK: - overall map, containning raw trajectories, processed path, user location, locations, user path
-struct MapView: View {
-    @Binding var locations: [Location]
-    @Binding var trajectories: [[Coor3D]]
-    @Binding var lineSegments: [LineSeg]
-    @Binding var representatives: [[Coor3D]]
-    @Binding var mapSys: [PathBtwn]
-    @ObservedObject var locationGetter: LocationGetterModel
-    
-    @Binding var showCurrentLocation: Bool
-    @Binding var showLocations: Bool
-    @Binding var showTrajs: Bool
-    @Binding var showLineSegs: Bool
-    @Binding var showRepresents: Bool
-    @Binding var showMap: Bool
-    
-    @Binding var offset: Offset
-    @Binding var scale: CGFloat
-    
-    var body: some View {
-        ZStack(alignment: .bottom) {
-            showMap ? Image("cuhk-campus-map")
-                .resizable()
-                .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
-                .position(x: centerX + offset.x, y: centerY + offset.y) : nil
-            UserPathsView(locationGetter: locationGetter, offset: $offset, scale: $scale) // user paths
-            showTrajs ? TrajsView(trajectories: $trajectories, color: Color.gray, offset: $offset, scale: $scale) : nil // raw trajectories
-            showLineSegs ? LineSegsView(lineSegments: $lineSegments, offset: $offset, scale: $scale) : nil
-            showRepresents ? TrajsView(trajectories: $representatives, color: Color.black, offset: $offset, scale: $scale) : nil // representative path
-            showCurrentLocation ? UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale) : nil // user location
-            showLocations ? LocationsView(locations: $locations, offset: $offset, scale: $scale) : nil // locations
-            
-        }
-    }
-}
 
 // MARK: - display raw trajectories
 struct TrajView: View {
