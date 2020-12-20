@@ -237,41 +237,6 @@ app.delete('/trajectory', (req, res) => {
     });
 });
 
-// proven to unable to deal with large input
-/* app.post('/paths', (req, res) => {
-    console.log("POST /paths - " + Date());
-    PathModel.deleteMany({}, (err, result) => {
-        if(err) {
-            res.send({operation: "add", target: "paths", success: false, data: []});
-        } else {
-            var items = req.body.data;
-            for(var i in items) {
-                var item = items[i];
-                LocationModel.findOne({name_en: item.start.name_en, type: item.start.type}, (err, result1) => {
-                    if(result1) {
-                        LocationModel.findOne({name_en: item.end.name_en, type: item.end.type}, (err, result2) => {
-                            if(result2) {
-                                var conditions = {start: result1._id, end: result2._id, path: item.path, dist: item.dist, type: item.type}
-                                PathModel.create(conditions, (err, result) => {
-                                    if(err) {
-                                        res.send({operation: "add", target: "paths", success: false, data: []});
-                                    } else {
-                                        res.send({operation: "add", target: "paths", success: true, data: []});
-                                    }
-                                });
-                            } else {
-                                res.send({operation: "add", target: "paths", success: false, data: []});
-                            }
-                        });
-                    } else {
-                        res.send({operation: "add", target: "paths", success: false, data: []});
-                    }
-                });
-            }
-        }
-    });
-});*/
-
 app.post('/path', (req, res) => {
     console.log("POST /path - " + Date());
     var data = req.body.data;

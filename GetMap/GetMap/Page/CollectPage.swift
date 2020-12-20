@@ -114,11 +114,15 @@ struct CollectPage: View {
         // navigation bar
         .navigationTitle("Collect")
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarItems(trailing: Button(action: {showAddLocation = true}) {Image(systemName: "plus.circle").imageScale(.large)}.contentShape(Rectangle()))
+        .navigationBarItems(trailing:
+            Button(action: {
+                showAddLocation = true
+            }) {
+                Image(systemName: "plus.circle").imageScale(.large).contentShape(Rectangle())
+            }
+        )
+        .newLocationPrompt(isShowing: $showAddLocation, locations: $locations, locationGetter: locationGetter)
         // alert
-        .alert(isPresented: $showAddLocation) {
-            Alert(title: Text("New Location"))
-        }
         .alert(isPresented: $showUploadAlert) {
             Alert(
                 title: Text("Error"),
@@ -172,5 +176,101 @@ struct CollectPage: View {
                 }
             }
         }.resume()
+    }
+}
+
+struct NewLocationPrompt<Presenting>: View where Presenting: View {
+    @Binding var isShowing: Bool
+    @Binding var locations: [Location]
+    @ObservedObject var locationGetter: LocationGetterModel
+    
+    @State var locationName: String = ""
+    @State var locationType: String = ""
+    
+    let presenting: Presenting
+    
+    var body: some View {
+        GeometryReader { (deviceSize: GeometryProxy) in
+            ZStack {
+                presenting.disabled(isShowing)
+                VStack {
+                    Text("New Location").bold().padding()
+                    TextField("Name", text: $locationName).textFieldStyle(RoundedBorderTextFieldStyle()).padding(.horizontal)
+                    TextField("Type", text: $locationType).textFieldStyle(RoundedBorderTextFieldStyle()).padding(.horizontal)
+                    Divider()
+                    HStack {
+                        Button(action: {
+                            withAnimation {
+                                addLocation()
+                                self.isShowing.toggle()
+                            }
+                        }) {
+                            Text("Confirm")
+                        }.padding(.horizontal, deviceSize.size.width * 0.09)
+                        
+                        Divider()
+                        Button(action: {
+                            withAnimation {
+                                self.isShowing.toggle()
+                            }
+                        }) {
+                            Text("Cancel")
+                        }.padding(.horizontal, deviceSize.size.width * 0.09)
+                    }
+                    .frame(
+                        width: deviceSize.size.width * 0.7,
+                        height: deviceSize.size.height * 0.055
+                    )
+                }
+                .background(Color(red: 0.97, green: 0.97, blue: 0.97))
+                .frame(
+                    width: deviceSize.size.width * 0.7,
+                    height: deviceSize.size.height * 0.7
+                )
+                .opacity(self.isShowing ? 1 : 0)
+            }
+        }
+    }
+    private func addLocation() {
+        /* data */
+        let latitude = locationGetter.current.latitude
+        let longitude = locationGetter.current.longitude
+        let altitude = locationGetter.current.altitude
+        let type = Int(locationType)!
+        let dataStr = "name_en=" + String(locationName) + "&latitude=" + String(latitude)  + "&longitude=" + String(longitude) + "&altitude=" + String(altitude) + "&type=" + String(type)
+        
+        let url = URL(string: server + "/location")!
+        var request = URLRequest(url: url)
+        request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        request.httpMethod = "PUT"
+        request.httpBody = dataStr.data(using: String.Encoding.utf8)
+
+        URLSession.shared.dataTask(with: request as URLRequest) { data, response, error in
+            if(error != nil) {
+                print("error")
+            } else {
+                guard let data = data else { return }
+                do {
+                    let res = try JSONDecoder().decode(LocResponse.self, from: data)
+                    if(res.success) {
+                        let newLocation = Location(name_en: locationName, latitude: latitude, longitude: longitude, altitude: altitude, type: type)
+                        locations.append(newLocation)
+                        locationName = ""
+                        locationType = ""
+                    } else {
+                        print("error")
+                    }
+                } catch let error {
+                    print(error)
+                }
+            }
+        }.resume()
+    }
+}
+extension View {
+    func newLocationPrompt(isShowing: Binding<Bool>, locations: Binding<[Location]>, locationGetter: LocationGetterModel) -> some View {
+        withAnimation {
+            NewLocationPrompt(isShowing: isShowing, locations: locations, locationGetter: locationGetter, presenting: self)
+        }
     }
 }
