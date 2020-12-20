@@ -201,7 +201,7 @@ struct NewLocationPrompt<Presenting>: View where Presenting: View {
     let presenting: Presenting
     
     var body: some View {
-        GeometryReader { (deviceSize: GeometryProxy) in
+        GeometryReader { _ in
             ZStack {
                 presenting.disabled(isShowing)
                 VStack {
@@ -219,7 +219,7 @@ struct NewLocationPrompt<Presenting>: View where Presenting: View {
                         }) {
                             Text("Confirm")
                         }
-                        .padding(.horizontal, deviceSize.size.width * 0.08)
+                        .padding(.horizontal, SCWidth * 0.08)
                         .disabled(locationName == "" || locationType == "")
                         
                         Divider()
@@ -232,20 +232,20 @@ struct NewLocationPrompt<Presenting>: View where Presenting: View {
                             }
                         }) {
                             Text("Cancel")
-                        }.padding(.horizontal, deviceSize.size.width * 0.08)
+                        }.padding(.horizontal, SCWidth * 0.08)
                     }
                     .frame(
-                        width: deviceSize.size.width * 0.7,
-                        height: deviceSize.size.height * 0.055
+                        width: SCWidth * 0.7,
+                        height: SCHeight * 0.055
                     )
                 }
                 .background(Color(red: 0.97, green: 0.97, blue: 0.97))
                 .frame(
-                    width: deviceSize.size.width * 0.7,
-                    height: deviceSize.size.height * 0.7
+                    width: SCWidth * 0.7,
+                    height: SCHeight * 0.7
                 )
                 .opacity(self.isShowing ? 1 : 0)
-                .offset(x: 0, y: -deviceSize.size.height * 0.2)
+                .offset(x: 0, y: -SCHeight * 0.1)
             }
         }
     }
