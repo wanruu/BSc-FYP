@@ -74,7 +74,9 @@ struct CollectPage: View {
             isRecording ? UserPathsView(locationGetter: locationGetter, offset: $offset, scale: $scale) : nil
             
             UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale)
-            VStack {
+            
+            // tool bar
+            showAddLocation ? nil : VStack {
                 Spacer()
                 HStack {
                     // change to current location
@@ -107,6 +109,15 @@ struct CollectPage: View {
                             Image(systemName: "largecircle.fill.circle")
                             .resizable()
                             .frame(width: SCWidth * 0.08, height: SCWidth * 0.08, alignment: .center)
+                    }.padding()
+                    
+                    // delete recorded traj
+                    Button(action: {
+                        startRecord()
+                    }) {
+                        Image(systemName: "trash")
+                        .resizable()
+                        .frame(width: SCWidth * 0.08, height: SCWidth * 0.08, alignment: .center)
                     }.padding()
                 }
             }
@@ -202,20 +213,26 @@ struct NewLocationPrompt<Presenting>: View where Presenting: View {
                         Button(action: {
                             withAnimation {
                                 addLocation()
-                                self.isShowing.toggle()
+                                hideKeyboard()
+                                isShowing.toggle()
                             }
                         }) {
                             Text("Confirm")
-                        }.padding(.horizontal, deviceSize.size.width * 0.09)
+                        }
+                        .padding(.horizontal, deviceSize.size.width * 0.08)
+                        .disabled(locationName == "" || locationType == "")
                         
                         Divider()
                         Button(action: {
                             withAnimation {
-                                self.isShowing.toggle()
+                                isShowing.toggle()
+                                hideKeyboard()
+                                locationName = ""
+                                locationType = ""
                             }
                         }) {
                             Text("Cancel")
-                        }.padding(.horizontal, deviceSize.size.width * 0.09)
+                        }.padding(.horizontal, deviceSize.size.width * 0.08)
                     }
                     .frame(
                         width: deviceSize.size.width * 0.7,
@@ -228,6 +245,7 @@ struct NewLocationPrompt<Presenting>: View where Presenting: View {
                     height: deviceSize.size.height * 0.7
                 )
                 .opacity(self.isShowing ? 1 : 0)
+                .offset(x: 0, y: -deviceSize.size.height * 0.2)
             }
         }
     }
@@ -267,10 +285,21 @@ struct NewLocationPrompt<Presenting>: View where Presenting: View {
         }.resume()
     }
 }
+
 extension View {
     func newLocationPrompt(isShowing: Binding<Bool>, locations: Binding<[Location]>, locationGetter: LocationGetterModel) -> some View {
         withAnimation {
             NewLocationPrompt(isShowing: isShowing, locations: locations, locationGetter: locationGetter, presenting: self)
         }
+    }
+}
+extension View {
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(
+            #selector(UIResponder.resignFirstResponder),
+            to: nil,
+            from: nil,
+            for: nil
+        )
     }
 }
