@@ -9,7 +9,7 @@ struct LocationPage: View {
         List {
             ForEach(locations) { location in
                 HStack {
-                    Text(String(location.type)).font(.headline)
+                    Image(systemName: location.type == 0 ? "building.2" : "bus")
                     VStack(alignment: .leading) {
                         Text(location.name_en).font(.headline)
                         Text("(\(location.latitude), \(location.longitude))").font(.subheadline)
