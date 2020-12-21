@@ -126,60 +126,65 @@ app.post('/location', (req, res) => {
     var longitude = req.body.longitude;
     var altitude = req.body.altitude;
     var type = req.body.type;
-    LocationModel.findOne({name_en: name_en, type: type}, (err, result) => {
+
+    var newLocation = {name_en: name_en, latitude: latitude, longitude: longitude, altitude: altitude, type: type};
+    LocationModel.create(newLocation, (err, result) => {
         if(err) {
-            res.send({operation: "unknown", target: "location", success: false, data: []});
-        } else if(result) {
-            var conditions = {name_en: name_en, type: type};
-            var update = {$set: {latitude: latitude, longitude: longitude, altitude: altitude}};
-            LocationModel.updateOne(conditions, update, (err, result) => {
-                if(err) {
-                    res.send({operation: "update", target: name_en, success: false, data: []});
-                }
-                else {
-                    res.send({operation: "update", target: name_en, success: true, data: []});
-                }
-            });
+            console.log(err);
+            res.status(404).send();
         } else {
-            var newLocation = {name_en: name_en, latitude: latitude, longitude: longitude, altitude: altitude, type: type};
-            LocationModel.create(newLocation, (err, result) => {
-                if(err) {
-                    res.send({operation: "add", target: name_en, success: false, data: []});
-                }
-                else {
-                    res.send({operation: "add", target: name_en, success: true, data: []});
-                }
-            });
+            res.send({id: result._id, name_en: result.name_en, latitude: result.latitude, longitude: result.longitude, altitude: result.altitude, type: result.type});
+        }
+    });
+});
+
+app.put('/location', (req, res) => {
+    console.log("PUT /location - " + Date());
+    var conditions = {_id: mongoose.Types.ObjectId(req.body.id)};
+    var update = { 
+        $set: {
+            name_en: req.body.name_en,
+            latitude: req.body.latitude,
+            longitude: req.body.longitude,
+            altitude: req.body.altitude,
+            type: req.body.type
+        }
+    }
+    LocationModel.updateOne(conditions, update, (err, result) => {
+        if(err) {
+            console.log(err);
+            res.status(404).send(err);
+        } else {
+            res.send(result);
         }
     });
 });
 
 app.get('/locations', (req, res) => {
     console.log("GET /locations - " + Date());
-    res.setHeader('Content-Type', 'application/json');
     let aggr = [
         { $match: {} },
         { $project: { _id: 0, id: "$_id", name_en: "$name_en", latitude: "$latitude", longitude: "$longitude", altitude: "$altitude", type: "$type" } }
     ];
     LocationModel.aggregate(aggr, (err, result) => {
         if(err) {
-            res.send({operation: "get", target: "locations", success: false, data: []});
+            console.log(err);
+            res.status(404).send();
         } else {
-            res.send({operation: "get", target: "locations", success: true, data: result});
+            res.send(result);
         }
     });
 });
 
 app.delete('/location', (req, res) => {
     console.log("DELETE /location - " + Date());
-    var name_en = req.body.name_en;
-    var type = req.body.type;
-    var conditions = { name_en: name_en, type: type }
-    LocationModel.deleteOne(conditions, (err, result) => {
+    LocationModel.deleteOne({ _id: mongoose.Types.ObjectId(req.body.id)}, (err, result) => {
         if(err) {
-            res.send({operation: "delete", targe: name_en, success: false, data: []});
+            console.log(err);
+            res.status(404).send();
         } else {
-            res.send({operation: "delete", target: name_en, success: true, data: []});
+            // { n: 0, ok: 1, deletedCount: 0 }
+            res.send(result);
         }
     });
 });

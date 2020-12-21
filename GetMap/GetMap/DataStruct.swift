@@ -95,3 +95,16 @@ extension View {
         )
     }
 }
+
+// MongoDB result
+struct DeleteResult {
+    var n: Int
+    var ok: Int
+    var deletedCount: Int
+}
+
+struct PutResult {
+    var n: Int
+    var nModified: Int
+    var ok: Int
+}

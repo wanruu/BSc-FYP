@@ -179,6 +179,7 @@ struct LocationView: View {
     }
 }
 
+/*
 struct EditLocationPrompt<Presenting>: View where Presenting: View {
     @Binding var isShowing: Bool
     
@@ -295,3 +296,4 @@ extension View {
         }
     }
 }
+*/

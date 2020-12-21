@@ -298,7 +298,7 @@ struct NewLocationPrompt<Presenting>: View where Presenting: View {
                 do {
                     let res = try JSONDecoder().decode(LocResponse.self, from: data)
                     if(res.success) {
-                        let newLocation = Location(name_en: locationName, latitude: latitude, longitude: longitude, altitude: altitude, type: type)
+                        let newLocation = Location(id: "", name_en: locationName, latitude: latitude, longitude: longitude, altitude: altitude, type: type)
                         locations.append(newLocation)
                         locationName = ""
                         locationType = ""
