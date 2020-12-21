@@ -190,6 +190,7 @@ struct LocationsView: View {
                             editLocation()
                         }) { Text("Submit") }
                         .disabled(Double(latitude) == nil || Double(longitude) == nil || Double(altitude) == nil || Int(type) == nil)
+                        
                         Button(action: {
                             id = ""
                         }) { Text("Cancel") }
@@ -215,24 +216,28 @@ struct LocationsView: View {
         request.httpBody = dataStr.data(using: String.Encoding.utf8)
 
         URLSession.shared.dataTask(with: request as URLRequest) { data, response, error in
-            if(error != nil) {
-                print("error")
-            } else {
-                guard let data = data else { return }
-                do {
-                    let res = try JSONDecoder().decode(PutResult.self, from: data)
-                    if(res.nModified == 1) {
-                        for i in 0..<locations.count {
-                            if(locations[i].id == id) {
-                                locations[i] = Location(id: id, name_en: name_en, latitude: Double(latitude)!, longitude: Double(longitude)!, altitude: Double(altitude)!, type: Int(type)!)
-                                break
-                            }
+            guard let data = data else { return }
+            do {
+                let res = try JSONDecoder().decode(PutResult.self, from: data)
+                if(res.nModified == 1) {
+                    for i in 0..<locations.count {
+                        if(locations[i].id == id) {
+                            // TODO: why unable to update
+                            locations[i].name_en = name_en
+                            locations[i].latitude = Double(latitude)!
+                            locations[i].longitude = Double(longitude)!
+                            locations[i].altitude = Double(altitude)!
+                            locations[i].type = Int(type)!
+                            print(altitude)
+                            print(String(Double(altitude)!))
+                            print(locations[i])
+                            break
                         }
                     }
-                    id = ""
-                } catch let error {
-                    print(error)
                 }
+                id = ""
+            } catch let error {
+                print(error)
             }
         }.resume()
     }
