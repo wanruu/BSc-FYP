@@ -6,23 +6,25 @@ import SwiftUI
 struct LocationPage: View {
     @Binding var locations: [Location]
     @State var showedLocation: Location? = nil
-    
+    // gesture
     @State var offset: Offset = Offset(x: 0, y: 0)
     @State var lastOffset = Offset(x: 0, y: 0)
     @State var scale: CGFloat = minZoomOut
     @State var lastScale = minZoomOut
-    
+    // sheet & alert
     @State var showList = false
 
     var body: some View {
         ZStack {
+            // map
             Image("cuhk-campus-map")
             .resizable()
             .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
             .position(x: centerX + offset.x, y: centerY + offset.y)
-            
+            // locations
             LocationsView(locations: $locations, showedLocation: $showedLocation, offset: $offset, scale: $scale)
         }
+        // gesture
         .contentShape(Rectangle())
         .highPriorityGesture(SimultaneousGesture(
             MagnificationGesture()
@@ -56,7 +58,7 @@ struct LocationPage: View {
         .navigationTitle("Location")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarItems(trailing: Button(action: {showList = true}) {Image(systemName: "list.bullet").imageScale(.large)} )
-        // list
+        // sheet: list
         .sheet(isPresented: $showList) {
             NavigationView {
                 List {
