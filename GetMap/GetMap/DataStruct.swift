@@ -108,3 +108,6 @@ struct PutResult: Codable {
     var nModified: Int
     var ok: Int
 }
+
+// CU Color
+let CUPurple = Color(red: 117/255, green: 15/255, blue: 109/255)
