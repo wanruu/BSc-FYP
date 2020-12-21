@@ -119,8 +119,8 @@ app.put('/version', (req, res) => {
 });
 
 /* MARK: - Location Model */
-app.put('/location', (req, res) => {
-    console.log("PUT /location - " + Date());
+app.post('/location', (req, res) => {
+    console.log("POST /location - " + Date());
     var name_en = req.body.name_en;
     var latitude = req.body.latitude;
     var longitude = req.body.longitude;
@@ -157,13 +157,17 @@ app.put('/location', (req, res) => {
 app.get('/locations', (req, res) => {
     console.log("GET /locations - " + Date());
     res.setHeader('Content-Type', 'application/json');
-    LocationModel.find({}, (err, result) => {
+    let aggr = [
+        { $match: {} },
+        { $project: { _id: 0, id: "$_id", name_en: "$name_en", latitude: "$latitude", longitude: "$longitude", altitude: "$altitude", type: "$type" } }
+    ];
+    LocationModel.aggregate(aggr, (err, result) => {
         if(err) {
             res.send({operation: "get", target: "locations", success: false, data: []});
         } else {
             res.send({operation: "get", target: "locations", success: true, data: result});
         }
-    })
+    });
 });
 
 app.delete('/location', (req, res) => {

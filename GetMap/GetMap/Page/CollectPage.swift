@@ -287,7 +287,7 @@ struct NewLocationPrompt<Presenting>: View where Presenting: View {
         let url = URL(string: server + "/location")!
         var request = URLRequest(url: url)
         request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        request.httpMethod = "PUT"
+        request.httpMethod = "POST"
         request.httpBody = dataStr.data(using: String.Encoding.utf8)
 
         URLSession.shared.dataTask(with: request as URLRequest) { data, response, error in

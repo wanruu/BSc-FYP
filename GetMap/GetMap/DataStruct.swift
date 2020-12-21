@@ -2,21 +2,17 @@ import Foundation
 import SwiftUI
 
 /* MARK: - Location */
-struct Location: Codable {
+struct Location: Codable, Identifiable {
+    var id: String
     var name_en: String
     var latitude: Double
     var longitude: Double
     var altitude: Double
     var type: Int
 }
-extension Location: Identifiable {
-    public var id: String {
-        self.name_en
-    }
-}
 extension Location: Equatable {
     static func == (l1: Location, l2: Location) -> Bool {
-        return l1.name_en == l2.name_en && l1.type == l2.type
+        return l1.id == l2.id
     }
 }
 /* MARK: - Coor3D */
