@@ -94,8 +94,7 @@ struct LocationPage: View {
     }
     
     private func deleteLocation(location: Location, index: Int) {
-        /* data */
-        let dataStr = "name_en=" + location.name_en + "&type=" + String(location.type)
+        let dataStr = "id=" + location.id
         
         let url = URL(string: server + "/location")!
         var request = URLRequest(url: url)
@@ -109,11 +108,9 @@ struct LocationPage: View {
             } else {
                 guard let data = data else { return }
                 do {
-                    let res = try JSONDecoder().decode(LocResponse.self, from: data)
-                    if(res.success) {
+                    let res = try JSONDecoder().decode(DeleteResult.self, from: data)
+                    if(res.deletedCount == 1) {
                         locations.remove(at: index)
-                    } else {
-                        print("error")
                     }
                 } catch let error {
                     print(error)

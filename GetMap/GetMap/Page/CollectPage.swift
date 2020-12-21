@@ -277,7 +277,6 @@ struct NewLocationPrompt<Presenting>: View where Presenting: View {
         }
     }
     private func addLocation() {
-        // data
         let latitude = locationGetter.current.latitude
         let longitude = locationGetter.current.longitude
         let altitude = locationGetter.current.altitude
@@ -296,15 +295,10 @@ struct NewLocationPrompt<Presenting>: View where Presenting: View {
             } else {
                 guard let data = data else { return }
                 do {
-                    let res = try JSONDecoder().decode(LocResponse.self, from: data)
-                    if(res.success) {
-                        let newLocation = Location(id: "", name_en: locationName, latitude: latitude, longitude: longitude, altitude: altitude, type: type)
-                        locations.append(newLocation)
-                        locationName = ""
-                        locationType = ""
-                    } else {
-                        print("error")
-                    }
+                    let newLocation = try JSONDecoder().decode(Location.self, from: data)
+                    locations.append(newLocation)
+                    locationName = ""
+                    locationType = ""
                 } catch let error {
                     print(error)
                 }

@@ -55,13 +55,8 @@ struct ContentView: View {
             }
             guard let data = data else { return }
             do {
-                let res = try JSONDecoder().decode(LocResponse.self, from: data)
-                if(res.success) {
-                    locations =  res.data
-                    loadTasks[0] = true
-                } else {
-                    showAlert = true
-                }
+                locations = try JSONDecoder().decode([Location].self, from: data)
+                loadTasks[0] = true
             } catch let error {
                 showAlert = true
                 print(error)
