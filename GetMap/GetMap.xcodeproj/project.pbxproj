@@ -28,7 +28,6 @@
 		B48F7B76258E87FC00EED1C1 /* LocationGetterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F7B75258E87FC00EED1C1 /* LocationGetterModel.swift */; };
 		B48F7B7B258E8C9000EED1C1 /* CollectPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F7B7A258E8C9000EED1C1 /* CollectPage.swift */; };
 		B48F7B80258EACB700EED1C1 /* MapComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F7B7F258EACB700EED1C1 /* MapComponent.swift */; };
-		B48F7B94258F51C100EED1C1 /* LocationPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F7B93258F51C100EED1C1 /* LocationPoint.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,7 +73,6 @@
 		B48F7B75258E87FC00EED1C1 /* LocationGetterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationGetterModel.swift; sourceTree = "<group>"; };
 		B48F7B7A258E8C9000EED1C1 /* CollectPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectPage.swift; sourceTree = "<group>"; };
 		B48F7B7F258EACB700EED1C1 /* MapComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapComponent.swift; sourceTree = "<group>"; };
-		B48F7B93258F51C100EED1C1 /* LocationPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPoint.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -177,7 +175,6 @@
 				B43778812571581B00918432 /* UserPoint.swift */,
 				B48F7B7F258EACB700EED1C1 /* MapComponent.swift */,
 				B48F7B75258E87FC00EED1C1 /* LocationGetterModel.swift */,
-				B48F7B93258F51C100EED1C1 /* LocationPoint.swift */,
 			);
 			path = "Reused Model";
 			sourceTree = "<group>";
@@ -328,7 +325,6 @@
 				B437781E257155C100918432 /* ContentView.swift in Sources */,
 				B437781C257155C100918432 /* GetMapApp.swift in Sources */,
 				B43778822571581B00918432 /* UserPoint.swift in Sources */,
-				B48F7B94258F51C100EED1C1 /* LocationPoint.swift in Sources */,
 				B43778F92572C80200918432 /* LocationPage.swift in Sources */,
 				B48F7B7B258E8C9000EED1C1 /* CollectPage.swift in Sources */,
 			);
