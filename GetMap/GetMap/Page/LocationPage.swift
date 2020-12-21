@@ -5,6 +5,7 @@ import SwiftUI
 
 struct LocationPage: View {
     @Binding var locations: [Location]
+    @State var showedLocation: Location? = nil
     
     @State var offset: Offset = Offset(x: 0, y: 0)
     @State var lastOffset = Offset(x: 0, y: 0)
@@ -19,7 +20,8 @@ struct LocationPage: View {
             .resizable()
             .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
             .position(x: centerX + offset.x, y: centerY + offset.y)
-            LocationsView(locations: $locations, offset: $offset, scale: $scale)
+            
+            LocationsView(locations: $locations, showedLocation: $showedLocation, offset: $offset, scale: $scale)
         }
         .contentShape(Rectangle())
         .highPriorityGesture(SimultaneousGesture(
@@ -59,11 +61,22 @@ struct LocationPage: View {
             NavigationView {
                 List {
                     ForEach(locations) { location in
-                        HStack {
-                            Image(systemName: location.type == 0 ? "building.2" : "bus")
-                            VStack(alignment: .leading) {
-                                Text(location.name_en).font(.headline)
-                                Text("(\(location.latitude), \(location.longitude))").font(.subheadline)
+                        Button(action: {
+                            showedLocation = location
+                            showList = false
+                            // move selected location to center
+                            scale = maxZoomIn
+                            lastScale = maxZoomIn
+                            offset.x = CGFloat((centerLg - location.longitude)*lgScale*2) * scale
+                            offset.y = CGFloat((location.latitude - centerLa)*laScale*2) * scale
+                            lastOffset = offset
+                        }) {
+                            HStack {
+                                Image(systemName: location.type == 0 ? "building.2" : "bus")
+                                VStack(alignment: .leading) {
+                                    Text(location.name_en).font(.headline)
+                                    Text("(\(location.latitude), \(location.longitude), \(location.altitude)").font(.subheadline)
+                                }
                             }
                         }
                     }.onDelete { offsets in

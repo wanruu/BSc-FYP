@@ -3,11 +3,11 @@ import SwiftUI
 
 struct LocationsView: View {
     @Binding var locations: [Location]
+    @Binding var showedLocation: Location?
+    
     @Binding var offset: Offset
     @Binding var scale: CGFloat
-    
-    @State var showedLocation: Location? = nil
-    
+
     var body: some View {
         ZStack {
             ForEach(locations) { location in
@@ -29,6 +29,7 @@ struct LocationsView: View {
 struct LocationView: View {
     @State var location: Location
     @Binding var showedLocation: Location?
+    
     @Binding var offset: Offset
     @Binding var scale: CGFloat
     
@@ -40,9 +41,14 @@ struct LocationView: View {
                 showedLocation = location
             }
         }) {
+            location == showedLocation ?
+            Image("location-white")
+                .resizable()
+                .frame(width: SCWidth * 0.1, height: SCWidth * 0.1, alignment: .center) :
             Image(location.type == 0 ? "location-purple" : "location-yellow")
-            .resizable()
-            .frame(width: SCWidth * 0.1, height: SCWidth * 0.1, alignment: .center)
+                .resizable()
+                .frame(width: SCWidth * 0.1, height: SCWidth * 0.1, alignment: .center)
+            
         }
         .position(
             x: centerX + CGFloat((location.longitude - centerLg)*lgScale*2) * scale + offset.x,
