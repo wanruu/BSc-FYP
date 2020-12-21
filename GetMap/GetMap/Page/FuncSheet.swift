@@ -11,7 +11,6 @@ import SwiftUI
 var clusterNum: Int = 0
 
 struct FuncSheet: View {
-    @Binding var showLocations: Bool
     @Binding var showTrajs: Bool
     @Binding var showLineSegs: Bool
     @Binding var showRepresents: Bool
@@ -29,7 +28,6 @@ struct FuncSheet: View {
         ScrollView(.vertical, showsIndicators: false) {
             Group {
                 VStack {
-                    Toggle(isOn: $showLocations) { Text("Show Locations") }
                     Toggle(isOn: $showTrajs) { Text("Show Raw Trajectories") }
                     Toggle(isOn: $showLineSegs) { Text("Show Line Segments")}
                     Toggle(isOn: $showRepresents) { Text("Show Representative path") }

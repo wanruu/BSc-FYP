@@ -3,11 +3,6 @@
 import Foundation
 import SwiftUI
 
-enum NavigationMode {
-    case normal // moving will not follow user location
-    case undirected
-    case directed
-}
 struct CollectPage: View {
     @Binding var locations: [Location]
     @Binding var trajectories: [[Coor3D]]
@@ -323,15 +318,5 @@ extension View {
         withAnimation {
             NewLocationPrompt(isShowing: isShowing, locations: locations, locationGetter: locationGetter, presenting: self)
         }
-    }
-}
-extension View {
-    func hideKeyboard() {
-        UIApplication.shared.sendAction(
-            #selector(UIResponder.resignFirstResponder),
-            to: nil,
-            from: nil,
-            for: nil
-        )
     }
 }

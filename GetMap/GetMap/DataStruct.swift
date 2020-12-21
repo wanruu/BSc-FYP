@@ -81,3 +81,21 @@ func distance(location: Location, point: Coor3D) -> Double {
     let diffZ = location.altitude - point.altitude
     return pow(diffX * diffX + diffY * diffY + diffZ * diffZ, 0.5)
 }
+
+// MARK: - mode
+enum NavigationMode {
+    case normal // moving will not follow user location
+    case undirected
+    case directed
+}
+
+extension View {
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(
+            #selector(UIResponder.resignFirstResponder),
+            to: nil,
+            from: nil,
+            for: nil
+        )
+    }
+}

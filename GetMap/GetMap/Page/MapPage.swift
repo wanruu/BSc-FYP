@@ -14,7 +14,6 @@ struct MapPage: View {
     @State var representatives: [[Coor3D]] = []
     
     /* sheet */
-    @State var showLocations: Bool = true // locations
     @State var showTrajs: Bool = true // trajectories
     @State var showLineSegs: Bool = false // lineSegments
     @State var showRepresents: Bool = false // representatives
@@ -42,8 +41,6 @@ struct MapPage: View {
             
             // representative path
             showRepresents ? TrajsView(trajectories: $representatives, color: Color.black, offset: $offset, scale: $scale) : nil
-
-            showLocations ? LocationsView(locations: $locations, offset: $offset, scale: $scale) : nil // locations
         }
         // navigation bar
         .navigationTitle("Map")
@@ -52,7 +49,7 @@ struct MapPage: View {
         // function sheet
         .sheet(isPresented: $showSheet) {
             NavigationView {
-                FuncSheet(showLocations: $showLocations, showTrajs: $showTrajs, showLineSegs: $showLineSegs, showRepresents: $showRepresents, showMap: $showMap, locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, mapSys: $mapSys)
+                FuncSheet(showTrajs: $showTrajs, showLineSegs: $showLineSegs, showRepresents: $showRepresents, showMap: $showMap, locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, mapSys: $mapSys)
                 .navigationTitle("Setting")
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationBarItems(trailing: Button(action: {showSheet = false}) { Text("Cancel")})
