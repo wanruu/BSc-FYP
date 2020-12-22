@@ -9,7 +9,7 @@ struct MainPage: View {
     @State var trajectories: [Trajectory] = []
     @State var routes: [Route] = []
     
-    @State var mapSys: [PathBtwn] = []
+    @State var mapSys: [Route] = []
     
     @State var loadTasks = [Bool](repeating: false, count: 3)
     @State var showAlert = false
@@ -106,7 +106,7 @@ struct MainPage: View {
 struct MainPagePhone: View {
     @Binding var locations: [Location]
     @Binding var trajectories: [Trajectory]
-    @Binding var mapSys: [PathBtwn]
+    @Binding var mapSys: [Route]
     
     // 1 = SCWidth * 0.001
     var body: some View {
@@ -161,7 +161,7 @@ struct MainPagePhone: View {
 struct MainPagePad: View {
     @Binding var locations: [Location]
     @Binding var trajectories: [Trajectory]
-    @Binding var mapSys: [PathBtwn]
+    @Binding var mapSys: [Route]
     
     var body: some View {
         NavigationView {

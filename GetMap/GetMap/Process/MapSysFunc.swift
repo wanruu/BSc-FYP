@@ -1,9 +1,3 @@
-//
-//  MapSysFunc.swift
-//  GetMap
-//
-//  Created by wanruuu on 2/12/2020.
-//
 
 import Foundation
 
@@ -33,8 +27,8 @@ struct Path1 {
 func findPathBetween(startLoc: Location, endLoc: Location, trajs: [[Coor3D]]) -> Path1 {
     /* Step 1: initialize priority queue */
     var priorityQueue: [Path1] = []
-    let (startMinDist, start_i, start_j) = findClosestPoint(location: startLoc, trajs: trajs)
-    let (endMinDist, end_i, end_j) = findClosestPoint(location: endLoc, trajs: trajs)
+    let (_, start_i, start_j) = findClosestPoint(location: startLoc, trajs: trajs)
+    let (_, end_i, end_j) = findClosestPoint(location: endLoc, trajs: trajs)
     priorityQueue.append(Path1(points: [trajs[start_i][start_j]], dist: 0))
     
     /* Step 2: initialize examined, whether this point has been examined */
@@ -87,16 +81,8 @@ func findPathBetween(startLoc: Location, endLoc: Location, trajs: [[Coor3D]]) ->
     }
 }
 
-struct PathBtwn {
-    var startIndex: Int
-    var endIndex: Int
-    var points: [Coor3D]
-    var dist: Double
-    var type: Int
-}
-
-func GenerateMapSys(trajs: [[Coor3D]], locations: [Location]) -> [PathBtwn] {
-    var result: [PathBtwn] = []
+func GenerateMapSys(trajs: [[Coor3D]], locations: [Location]) -> [Route] {
+    var result: [Route] = []
     /* Step 1: initialize isPathFound - if the path between two locations has been found */
     var isPathFound = [[Bool]](repeating: [Bool](repeating: false, count: locations.count), count: locations.count)
     
@@ -106,12 +92,17 @@ func GenerateMapSys(trajs: [[Coor3D]], locations: [Location]) -> [PathBtwn] {
             if(isPathFound[i][j]) {
                 continue
             }
-            let path = findPathBetween(startLoc: locations[i], endLoc: locations[j], trajs: trajs)
-            let pathBtwn = PathBtwn(startIndex: i, endIndex: j, points: path.points, dist: path.dist, type: 0)
-            let paths = divide(pathBtwn: pathBtwn, locations: locations, trajs: trajs)
+            let path: Path1 = findPathBetween(startLoc: locations[i], endLoc: locations[j], trajs: trajs)
+            let route = Route(id: "", startId: locations[i].id, endId: locations[j].id, points: path.points, dist: path.dist, type: 0)
+            let paths = divide(route: route, locations: locations, trajs: trajs)
             for path in paths {
-                isPathFound[path.startIndex][path.endIndex] = true
-                isPathFound[path.endIndex][path.startIndex] = true
+                let startLoc = locations.filter{$0.id == path.startId}[0]
+                let startIndex = locations.firstIndex(of: startLoc)!
+                let endLoc = locations.filter{$0.id == path.endId}[0]
+                let endIndex = locations.firstIndex(of: endLoc)!
+
+                isPathFound[startIndex][endIndex] = true
+                isPathFound[endIndex][startIndex] = true
                 result.append(path)
             }
         }
@@ -119,8 +110,8 @@ func GenerateMapSys(trajs: [[Coor3D]], locations: [Location]) -> [PathBtwn] {
     return result
 }
 
-func divide(pathBtwn: PathBtwn, locations: [Location], trajs: [[Coor3D]]) -> [PathBtwn] {
-    var result: [PathBtwn] = []
+func divide(route: Route, locations: [Location], trajs: [[Coor3D]]) -> [Route] {
+    var result: [Route] = []
     var devisionSign: [(Int, Int, Double)] = []
     /* Step 1: calculate closest point for each location */
     var closestPoints: [(Double, Int, Int)] = []
@@ -130,7 +121,7 @@ func divide(pathBtwn: PathBtwn, locations: [Location], trajs: [[Coor3D]]) -> [Pa
     }
     
     /* Step 2: sign */
-    let points = pathBtwn.points
+    let points = route.points
     for i in 0..<points.count { // for each point to be divided
         for j in 0..<locations.count { // for each location
             let (closest_dist, closest_i, closest_j) = closestPoints[j]
@@ -162,8 +153,8 @@ func divide(pathBtwn: PathBtwn, locations: [Location], trajs: [[Coor3D]]) -> [Pa
             for i in 0...pointIndex - lastPointIndex {
                 newPoints.append(points[lastPointIndex + i])
             }
-            let newPathBtwn = PathBtwn(startIndex: lastLocIndex, endIndex: locIndex, points: newPoints, dist: distSoFar, type: 0)
-            result.append(newPathBtwn)
+            let newRoute = Route(id: "", startId: locations[lastLocIndex].id, endId: locations[locIndex].id, points: newPoints, dist: distSoFar, type: 0)
+            result.append(newRoute)
             lastPointIndex = pointIndex
             lastLocIndex = locIndex
             distSoFar = 0.0
@@ -171,3 +162,4 @@ func divide(pathBtwn: PathBtwn, locations: [Location], trajs: [[Coor3D]]) -> [Pa
     }
     return result
 }
+

@@ -27,6 +27,7 @@
 		B48F7B76258E87FC00EED1C1 /* LocationGetterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F7B75258E87FC00EED1C1 /* LocationGetterModel.swift */; };
 		B48F7B7B258E8C9000EED1C1 /* CollectPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F7B7A258E8C9000EED1C1 /* CollectPage.swift */; };
 		B48F7B80258EACB700EED1C1 /* MapComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F7B7F258EACB700EED1C1 /* MapComponent.swift */; };
+		B48F7BAA259213FE00EED1C1 /* SearchPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F7BA9259213FE00EED1C1 /* SearchPage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,6 +72,7 @@
 		B48F7B75258E87FC00EED1C1 /* LocationGetterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationGetterModel.swift; sourceTree = "<group>"; };
 		B48F7B7A258E8C9000EED1C1 /* CollectPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectPage.swift; sourceTree = "<group>"; };
 		B48F7B7F258EACB700EED1C1 /* MapComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapComponent.swift; sourceTree = "<group>"; };
+		B48F7BA9259213FE00EED1C1 /* SearchPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -162,6 +164,7 @@
 				B48F7B7A258E8C9000EED1C1 /* CollectPage.swift */,
 				B43778F02572C71B00918432 /* MapPage.swift */,
 				B43778F82572C80200918432 /* LocationPage.swift */,
+				B48F7BA9259213FE00EED1C1 /* SearchPage.swift */,
 			);
 			path = Page;
 			sourceTree = "<group>";
@@ -317,6 +320,7 @@
 				B43779A02577114100918432 /* MapSysFunc.swift in Sources */,
 				B48F7B76258E87FC00EED1C1 /* LocationGetterModel.swift in Sources */,
 				B437784F257155F700918432 /* Constant.swift in Sources */,
+				B48F7BAA259213FE00EED1C1 /* SearchPage.swift in Sources */,
 				B43779132572D9AC00918432 /* MainPage.swift in Sources */,
 				B437781E257155C100918432 /* ContentView.swift in Sources */,
 				B437781C257155C100918432 /* GetMapApp.swift in Sources */,

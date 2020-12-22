@@ -8,7 +8,7 @@ struct MapPage: View {
     @Binding var locations: [Location]
     @Binding var trajectories: [Trajectory]
 
-    @Binding var mapSys: [PathBtwn]
+    @Binding var mapSys: [Route]
 
     @State var lineSegments: [LineSeg] = []
     @State var representatives: [[Coor3D]] = []
@@ -103,7 +103,7 @@ struct FuncSheet: View {
     @Binding var trajectories: [Trajectory]
     @Binding var lineSegments: [LineSeg]
     @Binding var representatives: [[Coor3D]]
-    @Binding var mapSys: [PathBtwn]
+    @Binding var mapSys: [Route]
     
     @State var uploadTasks: [Bool] = []
     
@@ -175,7 +175,7 @@ struct FuncSheet: View {
                         /* Step 5: upload map system */
                         uploadTasks = [Bool](repeating: false, count: mapSys.count)
                         for i in 0..<mapSys.count {
-                            uploadPath(path: mapSys[i], index: i)
+                            uploadRoute(route: mapSys[i], index: i)
                         }
                         
                     }) { Text("Upload map system") }
@@ -183,18 +183,17 @@ struct FuncSheet: View {
             }.padding()
         }
     }
-    private func uploadPath(path: PathBtwn, index: Int) {
-        /* data */
+    private func uploadRoute(route: Route, index: Int) {
         var points: [[String: Any]] = []
-        for point in path.points {
+        for point in route.points {
             points.append(["latitude": point.latitude, "longitude": point.longitude, "altitude": point.altitude])
         }
         let json: [String: Any] = [
-            "startId": locations[path.startIndex].id,
-            "endId": locations[path.endIndex].id,
+            "startId": route.startId,
+            "endId": route.endId,
             "points": points,
-            "dist": path.dist,
-            "type": path.type
+            "dist": route.dist,
+            "type": route.type
         ]
         let jsonData = try? JSONSerialization.data(withJSONObject: json)
         let url = URL(string: server + "/route")!
