@@ -3,18 +3,10 @@
 import Foundation
 import SwiftUI
 
-
-struct TrajResponse: Codable {
-    let operation: String
-    let target: String
-    let success: Bool
-    let data: [[Coor3D]]
-}
-
 struct MainPage: View {
     // data loaded from server
     @State var locations: [Location] = []
-    @State var trajectories: [[Coor3D]] = []
+    @State var trajectories: [Trajectory] = []
     @State var mapSys: [PathBtwn] = []
     
     @State var loadTasks = [Bool](repeating: false, count: 2)
@@ -80,13 +72,9 @@ struct MainPage: View {
             }
             guard let data = data else { return }
             do {
-                let res = try JSONDecoder().decode(TrajResponse.self, from: data)
-                if(res.success) {
-                    trajectories =  res.data
-                    loadTasks[1] = true
-                } else {
-                    showAlert = true
-                }
+                let res = try JSONDecoder().decode([Trajectory].self, from: data)
+                trajectories =  res
+                loadTasks[1] = true
             } catch let error {
                 showAlert = true
                 print(error)
@@ -97,7 +85,7 @@ struct MainPage: View {
 
 struct MainPagePhone: View {
     @Binding var locations: [Location]
-    @Binding var trajectories: [[Coor3D]]
+    @Binding var trajectories: [Trajectory]
     @Binding var mapSys: [PathBtwn]
     
     // 1 = SCWidth * 0.001
@@ -152,7 +140,7 @@ struct MainPagePhone: View {
 
 struct MainPagePad: View {
     @Binding var locations: [Location]
-    @Binding var trajectories: [[Coor3D]]
+    @Binding var trajectories: [Trajectory]
     @Binding var mapSys: [PathBtwn]
     
     var body: some View {

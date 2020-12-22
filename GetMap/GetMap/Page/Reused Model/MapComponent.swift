@@ -4,17 +4,17 @@ import SwiftUI
 
 // MARK: - display raw trajectories
 struct TrajView: View {
-    @Binding var trajectory: [Coor3D]
+    @Binding var trajectory: Trajectory
     @State var color: Color
     @Binding var offset: Offset
     @Binding var scale: CGFloat
     
     var body: some View {
         Path { p in
-            for i in 0..<trajectory.count {
+            for i in 0..<trajectory.points.count {
                 let point = CGPoint(
-                    x: centerX + CGFloat((trajectory[i].longitude - centerLg)*lgScale*2) * scale + offset.x,
-                    y: centerY + CGFloat((centerLa - trajectory[i].latitude)*laScale*2) * scale + offset.y
+                    x: centerX + CGFloat((trajectory.points[i].longitude - centerLg)*lgScale*2) * scale + offset.x,
+                    y: centerY + CGFloat((centerLa - trajectory.points[i].latitude)*laScale*2) * scale + offset.y
                 )
                 if(i == 0) {
                     p.move(to: point)
@@ -26,7 +26,7 @@ struct TrajView: View {
     }
 }
 struct TrajsView: View {
-    @Binding var trajectories: [[Coor3D]]
+    @Binding var trajectories: [Trajectory]
     @State var color: Color
     @Binding var offset: Offset
     @Binding var scale: CGFloat
@@ -34,10 +34,10 @@ struct TrajsView: View {
     var body: some View {
         Path { p in
             for i in 0..<trajectories.count {
-                for j in 0..<trajectories[i].count {
+                for j in 0..<trajectories[i].points.count {
                     let point = CGPoint(
-                        x: centerX + CGFloat((trajectories[i][j].longitude - centerLg)*lgScale*2) * scale + offset.x,
-                        y: centerY + CGFloat((centerLa - trajectories[i][j].latitude)*laScale*2) * scale + offset.y
+                        x: centerX + CGFloat((trajectories[i].points[j].longitude - centerLg)*lgScale*2) * scale + offset.x,
+                        y: centerY + CGFloat((centerLa - trajectories[i].points[j].latitude)*laScale*2) * scale + offset.y
                     )
                     if(j == 0) {
                         p.move(to: point)

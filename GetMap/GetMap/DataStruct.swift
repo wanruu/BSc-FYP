@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-/* MARK: - Location */
+// MARK: - Location
 struct Location: Codable, Identifiable {
     var id: String
     var name_en: String
@@ -15,7 +15,21 @@ extension Location: Equatable {
         return l1.id == l2.id
     }
 }
-/* MARK: - Coor3D */
+// MARK: - A Trajectory
+struct Trajectory: Codable, Identifiable {
+    var id: String
+    var points: [Coor3D]
+}
+// MARK: - A Route
+struct Route: Codable, Identifiable {
+    var id: String
+    var startId: String
+    var endId: String
+    var points: [Coor3D]
+    var dist: Double
+    var type: Int
+}
+// MARK: - Coor3D
 struct Coor3D: Codable {
     var latitude: Double
     var longitude: Double

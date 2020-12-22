@@ -5,7 +5,7 @@ import SwiftUI
 
 struct CollectPage: View {
     @Binding var locations: [Location]
-    @Binding var trajectories: [[Coor3D]]
+    @Binding var trajectories: [Trajectory]
     
     // gesture
     @State var lastOffset = Offset(x: 0, y: 0)
@@ -199,16 +199,13 @@ struct CollectPage: View {
             } else {
                 guard let data = data else { return }
                 do {
-                    let res = try JSONDecoder().decode(TrajResponse.self, from: data)
-                    if(res.success) {
-                        for traj in locationGetter.trajs {
-                            trajectories.append(traj)
-                        }
-                    } else {
-                        showUploadAlert = true
+                    let res = try JSONDecoder().decode([Trajectory].self, from: data)
+                    for traj in res {
+                        trajectories.append(traj)
                     }
                 } catch let error {
                     print(error)
+                    showUploadAlert = true
                 }
             }
         }.resume()

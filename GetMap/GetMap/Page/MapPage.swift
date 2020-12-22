@@ -6,7 +6,7 @@ import CoreLocation
 
 struct MapPage: View {
     @Binding var locations: [Location]
-    @Binding var trajectories: [[Coor3D]]
+    @Binding var trajectories: [Trajectory]
 
     @Binding var mapSys: [PathBtwn]
 
@@ -69,7 +69,7 @@ struct MapPage: View {
             showLineSegs ? LineSegsView(lineSegments: $lineSegments, offset: $offset, scale: $scale) : nil
             
             // representative path
-            showRepresents ? TrajsView(trajectories: $representatives, color: Color.black, offset: $offset, scale: $scale) : nil
+            // showRepresents ? TrajsView(trajectories: $representatives, color: Color.black, offset: $offset, scale: $scale) : nil
         }
         // navigation bar
         .navigationTitle("Map")
@@ -100,7 +100,7 @@ struct FuncSheet: View {
     @Binding var showMap: Bool
     
     @Binding var locations: [Location]
-    @Binding var trajectories: [[Coor3D]]
+    @Binding var trajectories: [Trajectory]
     @Binding var lineSegments: [LineSeg]
     @Binding var representatives: [[Coor3D]]
     @Binding var mapSys: [PathBtwn]
@@ -124,10 +124,10 @@ struct FuncSheet: View {
                         /* Step 1: partition */
                         lineSegments = []
                         for traj in trajectories {
-                            if(traj.count < 2) {
+                            if(traj.points.count < 2) {
                                 continue
                             }
-                            let cp = partition(traj: traj)
+                            let cp = partition(traj: traj.points)
                             for index in 0...cp.count-2 {
                                 let newLineSeg = LineSeg(start: cp[index], end: cp[index+1], clusterId: 0)
                                 lineSegments.append(newLineSeg)
@@ -185,35 +185,30 @@ struct FuncSheet: View {
     }
     private func uploadPath(path: PathBtwn, index: Int) {
         /* data */
-        let start: [String: Any] = ["name_en": locations[path.startIndex].name_en, "type": locations[path.startIndex].type]
-        let end: [String: Any] = ["name_en": locations[path.endIndex].name_en, "type": locations[path.endIndex].type]
         var points: [[String: Any]] = []
         for point in path.points {
             points.append(["latitude": point.latitude, "longitude": point.longitude, "altitude": point.altitude])
         }
-        let json: [String: Any] = ["data": ["start": start, "end": end, "path": points, "dist": path.dist, "type": path.type]]
+        let json: [String: Any] = [
+            "startId": locations[path.startIndex].id,
+            "endId": locations[path.endIndex].id,
+            "points": points,
+            "dist": path.dist,
+            "type": path.type
+        ]
         let jsonData = try? JSONSerialization.data(withJSONObject: json)
-        let url = URL(string: server + "/path")!
+        let url = URL(string: server + "/route")!
         var request = URLRequest(url: url)
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "POST"
         request.httpBody = jsonData
         URLSession.shared.dataTask(with: request) { data, response, error in
-            if(error != nil) {
-                print("error")
-            } else {
-                guard let data = data else { return }
-                do {
-                    let res = try JSONDecoder().decode(TrajResponse.self, from: data)
-                    if(res.success) {
-                        print("success")
-                        uploadTasks[index] = true
-                    } else {
-                        print("error")
-                    }
-                } catch let error {
-                    print(error)
-                }
+            guard let data = data else { return }
+            do {
+                let _ = try JSONDecoder().decode([Route].self, from: data)
+                uploadTasks[index] = true
+            } catch let error {
+                print(error)
             }
         }.resume()
     }
