@@ -7,9 +7,11 @@ struct MainPage: View {
     // data loaded from server
     @State var locations: [Location] = []
     @State var trajectories: [Trajectory] = []
+    @State var routes: [Route] = []
+    
     @State var mapSys: [PathBtwn] = []
     
-    @State var loadTasks = [Bool](repeating: false, count: 2)
+    @State var loadTasks = [Bool](repeating: false, count: 3)
     @State var showAlert = false
     
     var body: some View {
@@ -43,7 +45,8 @@ struct MainPage: View {
                 switch i {
                     case 0: loadLocations()
                     case 1: loadTrajs()
-                    default: loadLocations()
+                    case 2: loadRoutes()
+                    default: return
                 }
             }
         }
@@ -75,6 +78,23 @@ struct MainPage: View {
                 let res = try JSONDecoder().decode([Trajectory].self, from: data)
                 trajectories =  res
                 loadTasks[1] = true
+            } catch let error {
+                showAlert = true
+                print(error)
+            }
+        }.resume()
+    }
+    private func loadRoutes() { // load task #2
+        let url = URL(string: server + "/routes")!
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if(error != nil) {
+                showAlert = true
+            }
+            guard let data = data else { return }
+            do {
+                let res = try JSONDecoder().decode([Route].self, from: data)
+                routes =  res
+                loadTasks[2] = true
             } catch let error {
                 showAlert = true
                 print(error)
