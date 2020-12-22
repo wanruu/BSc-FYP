@@ -21,11 +21,40 @@ struct MapPage: View {
 
     @State var showSheet: Bool = false
     
-    /* gesture */
+    // gesture
     @State var offset = Offset(x: 0, y: 0)
     @State var scale = minZoomOut
     @State var lastOffset = Offset(x: 0, y: 0)
     @State var lastScale = minZoomOut
+    var gesture: some Gesture {
+        SimultaneousGesture(
+            MagnificationGesture()
+                .onChanged { value in
+                    var tmpScale = lastScale * value.magnitude
+                    if(tmpScale < minZoomOut) {
+                        tmpScale = minZoomOut
+                    } else if(tmpScale > maxZoomIn) {
+                        tmpScale = maxZoomIn
+                    }
+                    scale = tmpScale
+                    offset = lastOffset * tmpScale / lastScale
+                }
+                .onEnded { _ in
+                    lastScale = scale
+                    lastOffset.x = offset.x
+                    lastOffset.y = offset.y
+                },
+            DragGesture()
+                .onChanged{ value in
+                    offset.x = lastOffset.x + value.location.x - value.startLocation.x
+                    offset.y = lastOffset.y + value.location.y - value.startLocation.y
+                }
+                .onEnded{ _ in
+                    lastOffset.x = offset.x
+                    lastOffset.y = offset.y
+                }
+            )
+    }
     
     var body: some View {
         ZStack {
@@ -57,33 +86,6 @@ struct MapPage: View {
         }
         // gesture
         .contentShape(Rectangle())
-        .gesture(SimultaneousGesture(
-            MagnificationGesture()
-                .onChanged { value in
-                    var tmpScale = lastScale * value.magnitude
-                    if(tmpScale < minZoomOut) {
-                        tmpScale = minZoomOut
-                    } else if(tmpScale > maxZoomIn) {
-                        tmpScale = maxZoomIn
-                    }
-                    scale = tmpScale
-                    offset = lastOffset * tmpScale / lastScale
-                }
-                .onEnded { _ in
-                    lastScale = scale
-                    lastOffset.x = offset.x
-                    lastOffset.y = offset.y
-                },
-            DragGesture()
-                .onChanged{ value in
-                    offset.x = lastOffset.x + value.location.x - value.startLocation.x
-                    offset.y = lastOffset.y + value.location.y - value.startLocation.y
-                }
-                .onEnded{ _ in
-                    lastOffset.x = offset.x
-                    lastOffset.y = offset.y
-                }
-            )
-        )
+        .gesture(gesture)
     }
 }

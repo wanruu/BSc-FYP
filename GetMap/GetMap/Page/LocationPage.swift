@@ -25,20 +25,8 @@ struct LocationPage: View {
     @State var lastOffset = Offset(x: 0, y: 0)
     @State var scale: CGFloat = minZoomOut
     @State var lastScale = minZoomOut
-    
-    var body: some View {
-        ZStack {
-            // background map
-            Image("cuhk-campus-map")
-            .resizable()
-            .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
-            .position(x: centerX + offset.x, y: centerY + offset.y)
-            // locations
-            LocationsView(locations: $locations, clickedIndex: $clickedIndex, name_en: $name_en, latitude: $latitude, longitude: $longitude, altitude: $altitude, type: $type, offset: $offset, scale: $scale)
-        }
-        // gesture
-        .contentShape(Rectangle())
-        .highPriorityGesture(SimultaneousGesture(
+    var gesture: some Gesture {
+        SimultaneousGesture(
             MagnificationGesture()
                 .onChanged { value in
                     var tmpScale = lastScale * value.magnitude
@@ -65,7 +53,21 @@ struct LocationPage: View {
                     lastOffset.y = offset.y
                 }
             )
-        )
+    }
+    
+    var body: some View {
+        ZStack {
+            // background map
+            Image("cuhk-campus-map")
+            .resizable()
+            .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
+            .position(x: centerX + offset.x, y: centerY + offset.y)
+            // locations
+            LocationsView(locations: $locations, clickedIndex: $clickedIndex, name_en: $name_en, latitude: $latitude, longitude: $longitude, altitude: $altitude, type: $type, offset: $offset, scale: $scale)
+        }
+        // gesture
+        .contentShape(Rectangle())
+        .highPriorityGesture(gesture)
         // navigation bar
         .navigationTitle("Location")
         .navigationBarTitleDisplayMode(.inline)
