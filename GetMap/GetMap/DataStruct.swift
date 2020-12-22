@@ -37,7 +37,7 @@ struct Coor3D: Codable {
 }
 extension Coor3D: Identifiable {
     public var id: String {
-        "\(self.latitude)\(self.longitude)"
+        "\(self.latitude)-\(self.longitude)-\(self.altitude)"
     }
 }
 extension Coor3D {
@@ -53,7 +53,7 @@ extension Coor3D: Equatable {
         return p1.latitude == p2.latitude && p1.longitude == p2.longitude && p1.altitude == p2.altitude
     }
 }
-/* MARK: - LineSeg */
+// MARK: - LineSeg
 struct LineSeg {
     var start: Coor3D
     var end: Coor3D
@@ -61,10 +61,10 @@ struct LineSeg {
 }
 extension LineSeg: Identifiable {
     public var id: String {
-        "\(self.start.latitude)\(self.end.latitude)"
+        "\(self.start.id)-\(self.end.id)"
     }
 }
-/* MARK: - Offset, Created to fix the bug of zoom in/out function */
+// MARK: - Offset, Created to fix the bug of zoom in/out function
 struct Offset {
     var x: CGFloat
     var y: CGFloat
@@ -77,7 +77,7 @@ extension Offset {
         return Offset(x: offset.x / para, y: offset.y / para)
     }
 }
-/* MARK: - distance function */
+// MARK: - distance function
 func distance(start: Coor3D, end: Coor3D) -> Double {
     let diffX = (start.latitude - end.latitude) * laScale
     let diffY = (start.longitude - end.longitude) * lgScale
@@ -110,7 +110,7 @@ extension View {
     }
 }
 
-// MongoDB result
+// MARK: MongoDB result
 struct DeleteResult: Codable {
     var n: Int
     var ok: Int
