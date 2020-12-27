@@ -53,7 +53,7 @@ extension Coor3D: Equatable {
         return p1.latitude == p2.latitude && p1.longitude == p2.longitude && p1.altitude == p2.altitude
     }
 }
-// MARK: - LineSeg
+// MARK: - LineSegt
 struct LineSeg {
     var start: Coor3D
     var end: Coor3D

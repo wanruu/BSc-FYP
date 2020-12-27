@@ -260,7 +260,7 @@ app.delete('/trajectory', (req, res) => {
 // MARK: path between two location
 app.post('/route', (req, res) => {
     console.log("POST /route - " + Date());
-    var conditions = {startId: req.body.startId, end: req.body.endId, points: req.body.points, dist: req.body.dist, type: req.body.type}
+    var conditions = {startId: req.body.startId, endId: req.body.endId, points: req.body.points, dist: req.body.dist, type: req.body.type}
     RouteModel.create(conditions, (err, result) => {
         if(err) {
             console.log(err);

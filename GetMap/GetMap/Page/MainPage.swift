@@ -21,7 +21,7 @@ struct MainPage: View {
                     UIDevice.current.localizedModel == "iPad" ?
                         MainPagePad(locations: $locations, trajectories: $trajectories, mapSys: $mapSys) : nil
                     UIDevice.current.localizedModel == "iPhone" ?
-                        MainPagePhone(locations: $locations, trajectories: $trajectories, mapSys: $mapSys) : nil
+                        MainPagePhone(locations: $locations, trajectories: $trajectories, routes: $routes, mapSys: $mapSys) : nil
                 } : nil
             loadTasks.filter{$0 == true}.count == loadTasks.count ? nil : LoadPage(tasks: $loadTasks)
         }
@@ -106,6 +106,7 @@ struct MainPage: View {
 struct MainPagePhone: View {
     @Binding var locations: [Location]
     @Binding var trajectories: [Trajectory]
+    @Binding var routes: [Route]
     @Binding var mapSys: [Route]
     
     // 1 = SCWidth * 0.001
@@ -145,6 +146,14 @@ struct MainPagePhone: View {
                             .cornerRadius(SCWidth * 0.05)
                         
                         Text("Location")
+                            .foregroundColor(Color.white).shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
+                            .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
+                            .offset(x: 0, y: SCWidth * 0.06)
+                    }
+                }
+                NavigationLink(destination: SearchPage(locations: $locations, routes: $routes)) {
+                    ZStack {
+                        Text("Search")
                             .foregroundColor(Color.white).shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
                             .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
                             .offset(x: 0, y: SCWidth * 0.06)
