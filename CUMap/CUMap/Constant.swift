@@ -14,27 +14,31 @@ import SwiftUI
 // let server = "http://169.254.161.175:8000" /* laptop */
 let server = "http://42.194.159.158:8000" /* tencent server */
 
-/* screen info */
+// screen info
 let SCWidth = UIScreen.main.bounds.width
 let SCHeight = UIScreen.main.bounds.height
 
-/* center */
+// center
 let centerX = SCWidth/2
 let centerY = SCHeight/2
 
 let centerLa = 22.419915 // +: down
 let centerLg = 114.20774 // +: left
 
-/* zoom in/out limit */
+// zoom in/out limit
 let initialZoom: CGFloat = 0.3
 let maxZoomIn: CGFloat = 0.8
 let minZoomOut: CGFloat = 0.2
 
-/* map size: minZoomOut */
+// map size: minZoomOut
 let mapWidth = 620.0
 let mapHeight = 820.0
 
-/* 1 degree of latitude & longitude: how many meters in real world? */
+// 1 degree of latitude & longitude: how many meters in real world?
 let laScale = 111000.0
 let lgScale = 85390.0
 
+// CUHK Color
+let CUPurple = Color(red: 117/255, green: 15/255, blue: 109/255)
+let CUYellow = Color(red: 221/255, green: 163/255, blue: 0)
+let CUPaleYellow = Color(red: 244/255, green: 223/255, blue: 176/255)

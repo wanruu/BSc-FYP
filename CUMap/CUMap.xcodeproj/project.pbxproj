@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B408C5AC257BC43B006AFDAB /* MapPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B408C5AB257BC43B006AFDAB /* MapPage.swift */; };
+		B408C5AC257BC43B006AFDAB /* MainPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B408C5AB257BC43B006AFDAB /* MainPage.swift */; };
 		B408C5B7257BC4C4006AFDAB /* DataStruct.swift in Sources */ = {isa = PBXBuildFile; fileRef = B408C5B6257BC4C4006AFDAB /* DataStruct.swift */; };
 		B408C5BF257BC5F7006AFDAB /* LoadPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B408C5BE257BC5F7006AFDAB /* LoadPage.swift */; };
 		B408C5CB257BD88B006AFDAB /* CUMap.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B408C5C9257BD88B006AFDAB /* CUMap.xcdatamodeld */; };
@@ -28,6 +28,8 @@
 		B4D4FDAB2570160000E61C29 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D4FDAA2570160000E61C29 /* Persistence.swift */; };
 		B4D4FDB92570160000E61C29 /* CUMapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D4FDB82570160000E61C29 /* CUMapTests.swift */; };
 		B4D4FDC42570160000E61C29 /* CUMapUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D4FDC32570160000E61C29 /* CUMapUITests.swift */; };
+		B4DA25792599119E002A0009 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DA25782599119E002A0009 /* MapView.swift */; };
+		B4DA258125991B9B002A0009 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DA258025991B9B002A0009 /* SearchView.swift */; };
 		B4E4264A2583AC7D006009D6 /* UserPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E426492583AC7D006009D6 /* UserPoint.swift */; };
 /* End PBXBuildFile section */
 
@@ -49,7 +51,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		B408C5AB257BC43B006AFDAB /* MapPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPage.swift; sourceTree = "<group>"; };
+		B408C5AB257BC43B006AFDAB /* MainPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPage.swift; sourceTree = "<group>"; };
 		B408C5B6257BC4C4006AFDAB /* DataStruct.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStruct.swift; sourceTree = "<group>"; };
 		B408C5BE257BC5F7006AFDAB /* LoadPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadPage.swift; sourceTree = "<group>"; };
 		B408C5CA257BD88B006AFDAB /* CUMap.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CUMap.xcdatamodel; sourceTree = "<group>"; };
@@ -76,6 +78,8 @@
 		B4D4FDBF2570160000E61C29 /* CUMapUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CUMapUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4D4FDC32570160000E61C29 /* CUMapUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CUMapUITests.swift; sourceTree = "<group>"; };
 		B4D4FDC52570160000E61C29 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B4DA25782599119E002A0009 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		B4DA258025991B9B002A0009 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		B4E426492583AC7D006009D6 /* UserPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPoint.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -141,6 +145,7 @@
 				B4D218DD2570561600E24F2E /* Constant.swift */,
 				B4D218E22570569800E24F2E /* LocationGetterModel.swift */,
 				B408C5B6257BC4C4006AFDAB /* DataStruct.swift */,
+				B4DA257725991120002A0009 /* View Model */,
 				B4D4FDDF2570206D00E61C29 /* Page */,
 				B4D4FDA52570160000E61C29 /* Assets.xcassets */,
 				B4D4FDAA2570160000E61C29 /* Persistence.swift */,
@@ -180,10 +185,19 @@
 			isa = PBXGroup;
 			children = (
 				B408C5BE257BC5F7006AFDAB /* LoadPage.swift */,
-				B408C5AB257BC43B006AFDAB /* MapPage.swift */,
-				B4E426492583AC7D006009D6 /* UserPoint.swift */,
+				B408C5AB257BC43B006AFDAB /* MainPage.swift */,
 			);
 			name = Page;
+			sourceTree = "<group>";
+		};
+		B4DA257725991120002A0009 /* View Model */ = {
+			isa = PBXGroup;
+			children = (
+				B4E426492583AC7D006009D6 /* UserPoint.swift */,
+				B4DA25782599119E002A0009 /* MapView.swift */,
+				B4DA258025991B9B002A0009 /* SearchView.swift */,
+			);
+			path = "View Model";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -315,6 +329,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B4DA258125991B9B002A0009 /* SearchView.swift in Sources */,
 				B408C5B7257BC4C4006AFDAB /* DataStruct.swift in Sources */,
 				B408C5DA257BD9AF006AFDAB /* CDPath+CoreDataProperties.swift in Sources */,
 				B4D4FDAB2570160000E61C29 /* Persistence.swift in Sources */,
@@ -326,9 +341,10 @@
 				B4D4FDA2257015FF00E61C29 /* CUMapApp.swift in Sources */,
 				B408C5D5257BD9AF006AFDAB /* CDLocation+CoreDataClass.swift in Sources */,
 				B408C5E0257BE17B006AFDAB /* CDVersion+CoreDataClass.swift in Sources */,
-				B408C5AC257BC43B006AFDAB /* MapPage.swift in Sources */,
+				B408C5AC257BC43B006AFDAB /* MainPage.swift in Sources */,
 				B408C5D8257BD9AF006AFDAB /* CDPoint+CoreDataProperties.swift in Sources */,
 				B4D218DE2570561600E24F2E /* Constant.swift in Sources */,
+				B4DA25792599119E002A0009 /* MapView.swift in Sources */,
 				B408C5D9257BD9AF006AFDAB /* CDPath+CoreDataClass.swift in Sources */,
 				B408C5D6257BD9AF006AFDAB /* CDLocation+CoreDataProperties.swift in Sources */,
 				B408C5D7257BD9AF006AFDAB /* CDPoint+CoreDataClass.swift in Sources */,

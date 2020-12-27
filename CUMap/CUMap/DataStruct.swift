@@ -8,47 +8,38 @@
 import Foundation
 import SwiftUI
 
-/* MARK: - Location */
-struct Location: Codable {
+// MARK: - Location
+struct Location: Codable, Identifiable {
+    var id: String
     var name_en: String
     var latitude: Double
     var longitude: Double
     var altitude: Double
     var type: Int
 }
-extension Location: Identifiable {
-    public var id: String {
-        "\(self.name_en)_\(self.type)"
-    }
-}
 extension Location: Equatable {
     static func == (l1: Location, l2: Location) -> Bool {
-        return l1.name_en == l2.name_en && l1.type == l2.type
+        return l1.id == l2.id
     }
 }
 
-// MARK: - path between
-
-struct PathBtwn: Codable {
-    var start: LocationBasic
-    var end: LocationBasic
-    var path: [Coor3D]
+// MARK: - A Unit Route
+struct Route: Codable, Identifiable {
+    var id: String
+    var startId: String
+    var endId: String
+    var points: [Coor3D]
     var dist: Double
     var type: Int
 }
 
-extension PathBtwn: Identifiable {
-    public var id: String {
-        self.start.name_en + String(self.start.type) + self.end.name_en + String(self.end.type)
-    }
-}
 // MARK: - Version
 struct Version: Codable {
     var database: String
     var version: String
 }
 
-/* MARK: - Coor3D */
+// MARK: - Coor3D
 struct Coor3D: Codable {
     var latitude: Double
     var longitude: Double
@@ -56,7 +47,7 @@ struct Coor3D: Codable {
 }
 extension Coor3D: Identifiable {
     public var id: String {
-        "\(self.latitude)\(self.longitude)"
+        "\(self.latitude)-\(self.longitude)-\(self.altitude)"
     }
 }
 extension Coor3D {
@@ -73,7 +64,7 @@ extension Coor3D: Equatable {
     }
 }
 
-/* MARK: - Offset, Created to fix the bug of zoom in/out function */
+// MARK: - Offset, Created to fix the bug of zoom in/out function
 struct Offset {
     var x: CGFloat
     var y: CGFloat
@@ -86,7 +77,7 @@ extension Offset {
         return Offset(x: offset.x / para, y: offset.y / para)
     }
 }
-/* MARK: - distance function */
+// MARK: - distance function
 func distance(start: Coor3D, end: Coor3D) -> Double {
     let diffX = (start.latitude - end.latitude) * laScale
     let diffY = (start.longitude - end.longitude) * lgScale
@@ -101,30 +92,14 @@ func distance(location: Location, point: Coor3D) -> Double {
     return pow(diffX * diffX + diffY * diffY + diffZ * diffZ, 0.5)
 }
 
-
-// MARK: - response
-struct LocResponse: Codable {
-    let operation: String
-    let target: String
-    let success: Bool
-    let data: [Location]
+// MARK: View Extension
+extension View {
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(
+            #selector(UIResponder.resignFirstResponder),
+            to: nil,
+            from: nil,
+            for: nil
+        )
+    }
 }
-
-struct PathResponse: Codable {
-    let operation: String
-    let target: String
-    let success: Bool
-    let data: [PathBtwn]
-}
-struct LocationBasic: Codable {
-    var name_en: String
-    var type: Int
-}
-
-struct VersionResponse: Codable {
-    let operation: String
-    let target: String
-    let success: Bool
-    let data: [Version]
-}
-
