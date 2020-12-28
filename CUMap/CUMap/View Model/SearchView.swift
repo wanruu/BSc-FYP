@@ -40,35 +40,150 @@ enum TransMode {
     case bus
     case foot
 }
+
+// To control which page to show
 struct SearchView: View {
     @State var locations: [Location]
     @State var routes: [Route]
     @Binding var plans: [[Route]]
     @ObservedObject var locationGetter: LocationGetterModel
-
-    @Binding var mode: TransMode
+    
     @State var startName = ""
     @State var endName = ""
-    @Binding var startId: String
-    @Binding var endId: String
+    @State var startId = ""
+    @State var endId = ""
+    
+    @Binding var mode: TransMode
+    
     @State var showStartList = false
     @State var showEndList = false
+    @Binding var showPlans: Bool
     
     var body: some View {
         if showStartList {
-            SearchList(locations: $locations, locationGetter: locationGetter, placeholder: "From", locationName: $startName, locationId: $startId, keyword: startName, showList: $showStartList)
+            // Page 1: search starting point
+            SearchList(locations: locations, placeholder: "From", locationName: $startName, locationId: $startId, keyword: startName, showList: $showStartList)
+                .onAppear() {
+                    showPlans = false
+                }
         } else if showEndList {
-            SearchList(locations: $locations, locationGetter: locationGetter, placeholder: "To", locationName: $endName, locationId: $endId, keyword: endName, showList: $showEndList)
+            // Page 2: search ending point
+            SearchList(locations: locations, placeholder: "To", locationName: $endName, locationId: $endId, keyword: endName, showList: $showEndList)
+                .onAppear() {
+                    showPlans = false
+                }
         } else {
+            // Page 3: search box
             VStack {
-                SearchArea(startName: startName, endName: endName, startId: startId, endId: endId, busTime: 0, footTime: -1, showStartList: $showStartList, showEndList: $showEndList, mode: $mode)
-                    .onAppear() {
-                        dij()
-                    }
+                SearchArea(locations: locations, routes: routes, plans: $plans, locationGetter: locationGetter, startName: startName, endName: endName, startId: startId, endId: endId, mode: $mode, showStartList: $showStartList, showEndList: $showEndList, showPlans: $showPlans)
                 Spacer()
             }
         }
     }
+}
+
+// Search bar: to do route planning
+struct SearchArea: View {
+    @State var locations: [Location]
+    @State var routes: [Route]
+    @Binding var plans: [[Route]]
+    @ObservedObject var locationGetter: LocationGetterModel
+    
+    @State var startName: String
+    @State var endName: String
+    @State var startId: String
+    @State var endId: String
+    
+    @Binding var mode: TransMode
+    
+    @Binding var showStartList: Bool
+    @Binding var showEndList: Bool
+    @Binding var showPlans: Bool
+    
+    var body: some View {
+        // find min time for both mode
+        let (footPlans, busPlans) = classify(plans: plans)
+        var footTime = INF
+        var busTime = INF
+        for plan in footPlans {
+            let time = estimateTime(plan: plan)
+            if time < footTime {
+                footTime = time
+            }
+        }
+        for plan in busPlans {
+            let time = estimateTime(plan: plan)
+            if time < busTime {
+                busTime = time
+            }
+        }
+        
+        return VStack(spacing: 15) {
+            // search box
+            HStack {
+                VStack {
+                    TextField("From", text: $startName)
+                        .padding(.horizontal)
+                        .padding(.vertical, 10)
+                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 0.8))
+                        .onTapGesture { showStartList = true }
+                    TextField("To", text: $endName)
+                        .padding(.horizontal)
+                        .padding(.vertical, 10)
+                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 0.8))
+                        .onTapGesture { showEndList = true }
+                }
+                Image(systemName: "arrow.up.arrow.down")
+                    .imageScale(.large)
+                    .padding()
+                    .onTapGesture {
+                        // swap
+                        var tmp = startName
+                        startName = endName
+                        endName = tmp
+                        tmp = startId
+                        startId = endId
+                        endId = tmp
+                        dij()
+                    } // TODO: add rotate animation
+            }
+            // select mode
+            ScrollView(.horizontal, showsIndicators: true) {
+                HStack(spacing: 30) {
+                    HStack {
+                        Image(systemName: "bus").foregroundColor(Color.black.opacity(0.7))
+                        busTime == INF ? Text("—") : Text("\(busTime) min")
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .background(mode == .bus ? CUPurple.opacity(0.2) : nil)
+                    .cornerRadius(20)
+                    .onTapGesture {
+                        mode = .bus
+                    }
+                    
+                    HStack {
+                        Image(systemName: "figure.walk").foregroundColor(Color.black.opacity(0.7))
+                        footTime == INF ? Text("—") : Text("\(footTime) min")
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .background(mode == .foot ? CUPurple.opacity(0.2) : nil)
+                    .cornerRadius(20)
+                    .onTapGesture {
+                        mode = .foot
+                    }
+                }
+            }
+        }
+        .padding()
+        .background(Color.white)
+        .onAppear() {
+            showPlans = true
+            dij()
+        }
+    }
+    
     private func dij() {
         if startId == "" || endId == "" {
             return
@@ -117,8 +232,11 @@ struct SearchView: View {
         }
         
         // Step 4: find the result
-        plans.append(minDist[endIndex].routes)
+        if minDist[endIndex].routes.count > 1 {
+            plans.append(minDist[endIndex].routes)
+        }
     }
+    
     private func indexOf(id: String) -> Int {
         for i in 0..<locations.count {
             if locations[i].id == id {
@@ -127,90 +245,14 @@ struct SearchView: View {
         }
         return -1
     }
-}
+    
 
-struct SearchArea: View {
-    @State var startName: String
-    @State var endName: String
-    @State var startId: String
-    @State var endId: String
     
-    @State var busTime: Int
-    @State var footTime: Int
-    
-    @Binding var showStartList: Bool
-    @Binding var showEndList: Bool
-    @Binding var mode: TransMode
-    
-    var body: some View {
-        VStack(spacing: 15) {
-            HStack {
-                VStack {
-                    TextField("From", text: $startName)
-                        .padding(.horizontal)
-                        .padding(.vertical, 10)
-                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 0.8))
-                        .onTapGesture {
-                            showStartList = true
-                        }
-
-                    TextField("To", text: $endName)
-                        .padding(.horizontal)
-                        .padding(.vertical, 10)
-                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 0.8))
-                        .onTapGesture {
-                            showEndList = true
-                        }
-                }
-                Image(systemName: "arrow.up.arrow.down")
-                    .imageScale(.large)
-                    .padding()
-                    .onTapGesture {
-                        // swap
-                        var tmp = startName
-                        startName = endName
-                        endName = tmp
-                        tmp = startId
-                        startId = endId
-                        endId = tmp
-                    }
-            }
-            ScrollView(.horizontal, showsIndicators: true) {
-                HStack(spacing: 30) {
-                    HStack {
-                        Image(systemName: "bus").foregroundColor(Color.black.opacity(0.7))
-                        busTime == -1 ? Text("—") : Text("\(busTime) min")
-                    }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 5)
-                    .background(mode == .bus ? CUPurple.opacity(0.2) : nil)
-                    .cornerRadius(20)
-                    .onTapGesture {
-                        mode = .bus
-                    }
-                    
-                    HStack {
-                        Image(systemName: "figure.walk").foregroundColor(Color.black.opacity(0.7))
-                        footTime == -1 ? Text("—") : Text("\(footTime) min")
-                    }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 5)
-                    .background(mode == .foot ? CUPurple.opacity(0.2) : nil)
-                    .cornerRadius(20)
-                    .onTapGesture {
-                        mode = .foot
-                    }
-                }
-            }
-        }
-        .padding()
-        .background(Color.white)
-    }
 }
 
 struct SearchList: View {
-    @Binding var locations: [Location]
-    @ObservedObject var locationGetter: LocationGetterModel
+    @State var locations: [Location]
+    
     var placeholder: String
     
     @Binding var locationName: String
@@ -230,12 +272,14 @@ struct SearchList: View {
                         showList = false
                     }
                 TextField(placeholder, text: $keyword)
-                keyword == "" ? nil : Image(systemName: "xmark")
-                    .imageScale(.large)
-                    .padding(.leading)
-                    .onTapGesture {
-                        keyword = ""
-                    }
+                if keyword != "" {
+                    Image(systemName: "xmark")
+                        .imageScale(.large)
+                        .padding(.leading)
+                        .onTapGesture {
+                            keyword = ""
+                        }
+                }
             }
             .padding()
             .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.gray, lineWidth: 0.8))
@@ -244,7 +288,8 @@ struct SearchList: View {
             List {
                 // current location
                 Button(action: {
-                    // TODO
+                    locationName = "Your Location"
+                    locationId = "current"
                     showList = false
                 }) {
                     HStack {
@@ -257,31 +302,59 @@ struct SearchList: View {
                 }
                 
                 // other locations
-                ForEach(locations) { location in keyword == "" || location.name_en.lowercased().contains(keyword.lowercased()) ?
-                    Button(action: {
-                        locationName = location.name_en
-                        locationId = location.id
-                        showList = false
-                    }) {
-                        HStack {
-                            if location.type == 0 {
-                                Image(systemName: "building.2.fill")
-                                    .imageScale(.large)
-                                    .foregroundColor(CUPurple)
-                                    .padding(.trailing)
-                            } else if location.type == 1 {
-                                Image(systemName: "bus")
-                                    .imageScale(.large)
-                                    .foregroundColor(CUYellow)
-                                    .padding(.trailing)
+                ForEach(locations) { location in
+                    if keyword == "" || location.name_en.lowercased().contains(keyword.lowercased()) {
+                        Button(action: {
+                            locationName = location.name_en
+                            locationId = location.id
+                            showList = false
+                        }) {
+                            HStack {
+                                if location.type == 0 {
+                                    Image(systemName: "building.2.fill")
+                                        .imageScale(.large)
+                                        .foregroundColor(CUPurple)
+                                        .padding(.trailing)
+                                } else if location.type == 1 {
+                                    Image(systemName: "bus")
+                                        .imageScale(.large)
+                                        .foregroundColor(CUYellow)
+                                        .padding(.trailing)
+                                }
+                                Text(location.name_en)
                             }
-                            Text(location.name_en)
                         }
-                    } : nil
+                    }
                 }
             }
-        }
-        .background(Color.white)
+            
+        }.background(Color.white)
     }
 }
 
+// classify search results into by bus or on foot
+func classify(plans: [[Route]]) -> ([[Route]], [[Route]]) { // [foot plan], [bus plan]
+    var foot: [[Route]] = []
+    var bus: [[Route]] = []
+    
+    for plan in plans {
+        if plan.filter({$0.type == 1}).count > 0 {
+            bus.append(plan)
+        } else {
+            foot.append(plan)
+        }
+    }
+    return (foot, bus)
+}
+
+func estimateTime(plan: [Route]) -> Double {
+    var time = 0.0
+    for route in plan {
+        if route.type == 0 {
+            time += route.dist / footSpeed
+        } else if route.type == 1 {
+            time += route.dist / busSpeed
+        }
+    }
+    return time
+}
