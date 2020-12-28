@@ -29,12 +29,7 @@
 import Foundation
 import SwiftUI
 
-let INF: Double = 99999
-
-struct DijDist {
-    var routes: [Route]
-    var dist: Double
-}
+let INF: Double = 9999999
 
 enum TransMode {
     case bus
@@ -45,7 +40,7 @@ enum TransMode {
 struct SearchView: View {
     @State var locations: [Location]
     @State var routes: [Route]
-    @Binding var plans: [[Route]]
+    @Binding var plans: [Plan]
     @ObservedObject var locationGetter: LocationGetterModel
     
     @State var startName = ""
@@ -86,7 +81,7 @@ struct SearchView: View {
 struct SearchArea: View {
     @State var locations: [Location]
     @State var routes: [Route]
-    @Binding var plans: [[Route]]
+    @Binding var plans: [Plan]
     @ObservedObject var locationGetter: LocationGetterModel
     
     @State var startName: String
@@ -102,19 +97,14 @@ struct SearchArea: View {
     
     var body: some View {
         // find min time for both mode
-        let (footPlans, busPlans) = classify(plans: plans)
         var footTime = INF
         var busTime = INF
-        for plan in footPlans {
-            let time = estimateTime(plan: plan)
-            if time < footTime {
-                footTime = time
+        for plan in plans {
+            if plan.type == 0 && plan.time < footTime {
+                footTime = plan.time
             }
-        }
-        for plan in busPlans {
-            let time = estimateTime(plan: plan)
-            if time < busTime {
-                busTime = time
+            if plan.type == 1 && plan.time < busTime {
+                busTime = plan.time
             }
         }
         
@@ -152,7 +142,7 @@ struct SearchArea: View {
                 HStack(spacing: 30) {
                     HStack {
                         Image(systemName: "bus").foregroundColor(Color.black.opacity(0.7))
-                        busTime == INF ? Text("—") : Text("\(busTime) min")
+                        busTime == INF ? Text("—") : Text("\(Int(busTime / 60)) min")
                     }
                     .padding(.horizontal, 8)
                     .padding(.vertical, 5)
@@ -164,7 +154,7 @@ struct SearchArea: View {
                     
                     HStack {
                         Image(systemName: "figure.walk").foregroundColor(Color.black.opacity(0.7))
-                        footTime == INF ? Text("—") : Text("\(footTime) min")
+                        footTime == INF ? Text("—") : Text("\(Int(footTime) / 60) min")
                     }
                     .padding(.horizontal, 8)
                     .padding(.vertical, 5)
@@ -179,12 +169,15 @@ struct SearchArea: View {
         .padding()
         .background(Color.white)
         .onAppear() {
-            showPlans = true
+            if startId != "" && endId != "" {
+                showPlans = true
+            }
             dij()
         }
     }
     
     private func dij() {
+        // TODO: deal with current location
         if startId == "" || endId == "" {
             return
         }
@@ -195,9 +188,10 @@ struct SearchArea: View {
         let startIndex = indexOf(id: startId)
         let endIndex = indexOf(id: endId)
         
-        var minDist = [DijDist](repeating: DijDist(routes: [], dist: INF), count: locations.count) // distance from start location to every location
+        var minDist = [Plan](repeating: Plan(startId: startId, endId: endId, routes: [], dist: INF, time: INF, type: 0), count: locations.count) // distance from start location to every location
         var checked = [Bool](repeating: false, count: locations.count)
         minDist[startIndex].dist = 0
+        minDist[startIndex].time = 0
         
         // Step 3: start
         while checked.filter({$0 == true}).count != checked.count { // not all have been checked
@@ -217,6 +211,8 @@ struct SearchArea: View {
                     if minDist[next].dist > minDist[cur].dist + route.dist { // update
                         minDist[next].dist = minDist[cur].dist + route.dist
                         minDist[next].routes = minDist[cur].routes + [route]
+                        let time = route.type == 0 ? route.dist / footSpeed : route.dist / busSpeed
+                        minDist[next].time = minDist[cur].time + time
                     }
                 } else if route.endId == locations[cur].id {
                     let next = indexOf(id: route.startId)
@@ -225,6 +221,8 @@ struct SearchArea: View {
                         points.reverse()
                         minDist[next].dist = minDist[cur].dist + route.dist
                         minDist[next].routes = minDist[cur].routes + [Route(id: route.id, startId: route.endId, endId: route.startId, points: points, dist: route.dist, type: route.type)]
+                        let time = route.type == 0 ? route.dist / footSpeed : route.dist / busSpeed
+                        minDist[next].time = minDist[cur].time + time
                     }
                 }
             }
@@ -233,7 +231,7 @@ struct SearchArea: View {
         
         // Step 4: find the result
         if minDist[endIndex].routes.count > 1 {
-            plans.append(minDist[endIndex].routes)
+            plans.append(minDist[endIndex])
         }
     }
     
@@ -245,8 +243,6 @@ struct SearchArea: View {
         }
         return -1
     }
-    
-
     
 }
 
@@ -347,7 +343,7 @@ func classify(plans: [[Route]]) -> ([[Route]], [[Route]]) { // [foot plan], [bus
     return (foot, bus)
 }
 
-func estimateTime(plan: [Route]) -> Double {
+func estimateTime(plan: [Route]) -> Int { // min
     var time = 0.0
     for route in plan {
         if route.type == 0 {
@@ -356,5 +352,5 @@ func estimateTime(plan: [Route]) -> Double {
             time += route.dist / busSpeed
         }
     }
-    return time
+    return Int(time / 60)
 }

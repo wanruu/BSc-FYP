@@ -266,7 +266,7 @@ app.post('/route', (req, res) => {
             console.log(err);
             res.status(404).send();
         } else {
-            res.send({id: result._id, startId: result.startId, endId: result.endId, points: points, dist: result.dist, type: result.type});
+            res.send({id: result._id, startId: result.startId, endId: result.endId, points: result.points, dist: result.dist, type: result.type});
         }
     });
 });

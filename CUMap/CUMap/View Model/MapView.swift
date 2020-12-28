@@ -8,7 +8,7 @@ import Foundation
 import SwiftUI
 
 struct MapView: View {
-    @State var plans: [[Route]]
+    @Binding var plans: [Plan]
     @ObservedObject var locationGetter: LocationGetterModel
     
     @Binding var lastHeight: CGFloat
@@ -55,7 +55,7 @@ struct MapView: View {
                 .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
                 .position(x: centerX + offset.x, y: centerY + offset.y)
                     
-            PlansMapView(plans: plans, offset: $offset, scale: $scale, height: $height)
+            PlansMapView(plans: $plans, offset: $offset, scale: $scale)
             
             UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale)
 
@@ -75,24 +75,22 @@ struct MapView: View {
 }
 
 struct PlansMapView: View {
-    @State var plans: [[Route]]
+    @Binding var plans: [Plan]
     @Binding var offset: Offset
     @Binding var scale: CGFloat
-    @Binding var height: CGFloat
     
     var body: some View {
         ZStack {
-            ForEach(plans.indices) { i in
-                let plan = plans[i]
-                ForEach(plan) { route in
+            ForEach(plans) { plan in
+                ForEach(plan.routes) { route in
                     // Display a route
                     Path { path in
-                        for j in 0..<route.points.count {
+                        for i in 0..<route.points.count {
                             let point = CGPoint(
-                                x: centerX + CGFloat((route.points[j].longitude - centerLg)*lgScale*2) * scale + offset.x,
-                                y: centerY + CGFloat((centerLa - route.points[j].latitude)*laScale*2) * scale + offset.y - height + smallH
+                                x: centerX + CGFloat((route.points[i].longitude - centerLg) * lgScale * 2) * scale + offset.x,
+                                y: centerY + CGFloat((centerLa - route.points[i].latitude) * laScale * 2) * scale + offset.y
                             )
-                            if(j == 0) {
+                            if i == 0 {
                                 path.move(to: point)
                             } else {
                                 path.addLine(to: point)
@@ -102,9 +100,5 @@ struct PlansMapView: View {
                 }
             }
         }
-        .animation(
-            Animation.easeInOut(duration: 0.4)
-                .repeatCount(1, autoreverses: false)
-        )
     }
 }

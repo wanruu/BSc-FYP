@@ -30,7 +30,7 @@
 		B4D4FDC42570160000E61C29 /* CUMapUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D4FDC32570160000E61C29 /* CUMapUITests.swift */; };
 		B4DA25792599119E002A0009 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DA25782599119E002A0009 /* MapView.swift */; };
 		B4DA258125991B9B002A0009 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DA258025991B9B002A0009 /* SearchView.swift */; };
-		B4DA2589259965C2002A0009 /* PlansView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DA2588259965C2002A0009 /* PlansView.swift */; };
+		B4DA2589259965C2002A0009 /* PlansTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DA2588259965C2002A0009 /* PlansTextView.swift */; };
 		B4E4264A2583AC7D006009D6 /* UserPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E426492583AC7D006009D6 /* UserPoint.swift */; };
 /* End PBXBuildFile section */
 
@@ -81,7 +81,7 @@
 		B4D4FDC52570160000E61C29 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B4DA25782599119E002A0009 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		B4DA258025991B9B002A0009 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
-		B4DA2588259965C2002A0009 /* PlansView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlansView.swift; sourceTree = "<group>"; };
+		B4DA2588259965C2002A0009 /* PlansTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlansTextView.swift; sourceTree = "<group>"; };
 		B4E426492583AC7D006009D6 /* UserPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPoint.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -198,7 +198,7 @@
 				B4E426492583AC7D006009D6 /* UserPoint.swift */,
 				B4DA258025991B9B002A0009 /* SearchView.swift */,
 				B4DA25782599119E002A0009 /* MapView.swift */,
-				B4DA2588259965C2002A0009 /* PlansView.swift */,
+				B4DA2588259965C2002A0009 /* PlansTextView.swift */,
 			);
 			path = "View Model";
 			sourceTree = "<group>";
@@ -337,7 +337,7 @@
 				B408C5DA257BD9AF006AFDAB /* CDPath+CoreDataProperties.swift in Sources */,
 				B4D4FDAB2570160000E61C29 /* Persistence.swift in Sources */,
 				B408C5E1257BE17B006AFDAB /* CDVersion+CoreDataProperties.swift in Sources */,
-				B4DA2589259965C2002A0009 /* PlansView.swift in Sources */,
+				B4DA2589259965C2002A0009 /* PlansTextView.swift in Sources */,
 				B408C5BF257BC5F7006AFDAB /* LoadPage.swift in Sources */,
 				B4D4FDA4257015FF00E61C29 /* ContentView.swift in Sources */,
 				B408C5CB257BD88B006AFDAB /* CUMap.xcdatamodeld in Sources */,
