@@ -69,7 +69,7 @@ struct MapPage: View {
             showLineSegs ? LineSegsView(lineSegments: $lineSegments, offset: $offset, scale: $scale) : nil
             
             // representative path
-            // showRepresents ? TrajsView(trajectories: $representatives, color: Color.black, offset: $offset, scale: $scale) : nil
+            showRepresents ? RepresentView(trajs: $representatives, offset: $offset, scale: $scale) : nil
         }
         // navigation bar
         .navigationTitle("Map")

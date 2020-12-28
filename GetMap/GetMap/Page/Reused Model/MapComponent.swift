@@ -2,7 +2,7 @@
 import Foundation
 import SwiftUI
 
-// MARK: - display raw trajectories
+// display raw trajectories
 struct TrajView: View {
     @Binding var trajectory: Trajectory
     @State var color: Color
@@ -49,38 +49,58 @@ struct TrajsView: View {
         }.stroke(color, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
     }
 }
-struct LineSegView: View {
-    @State var lineSeg: LineSeg
+
+// display representative
+struct RepresentView: View {
+    @Binding var trajs: [[Coor3D]]
     @Binding var offset: Offset
     @Binding var scale: CGFloat
+    
     var body: some View {
         Path { p in
-            let start = CGPoint(
-                x: centerX + CGFloat((lineSeg.start.longitude - centerLg)*lgScale*2) * scale + offset.x,
-                y: centerY + CGFloat((centerLa - lineSeg.start.latitude)*laScale*2) * scale + offset.y
-            )
-            let end = CGPoint(
-                x: centerX + CGFloat((lineSeg.end.longitude - centerLg)*lgScale*2) * scale + offset.x,
-                y: centerY + CGFloat((centerLa - lineSeg.end.latitude)*laScale*2) * scale + offset.y
-            )
-            p.move(to: start)
-            p.addLine(to: end)
-        }.stroke(colors[lineSeg.clusterId % colors.count], style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+            for i in 0..<trajs.count {
+                for j in 0..<trajs[i].count {
+                    let point = CGPoint(
+                        x: centerX + CGFloat((trajs[i][j].longitude - centerLg) * lgScale * 2) * scale + offset.x,
+                        y: centerY + CGFloat((centerLa - trajs[i][j].latitude) * laScale * 2) * scale + offset.y
+                    )
+                    if j == 0 {
+                        p.move(to: point)
+                    } else {
+                        p.addLine(to: point)
+                    }
+                }
+            }
+        }.stroke(Color.black, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
     }
 }
 
+// display line segments
 struct LineSegsView: View {
     @Binding var lineSegments: [LineSeg]
     @Binding var offset: Offset
     @Binding var scale: CGFloat
     var body: some View {
         ForEach(lineSegments) { lineSeg in
-            lineSeg.clusterId >= 0 ? LineSegView(lineSeg: lineSeg, offset: $offset, scale: $scale) : nil
+            if lineSeg.clusterId >= 0 {
+                Path { p in
+                    let start = CGPoint(
+                        x: centerX + CGFloat((lineSeg.start.longitude - centerLg)*lgScale*2) * scale + offset.x,
+                        y: centerY + CGFloat((centerLa - lineSeg.start.latitude)*laScale*2) * scale + offset.y
+                    )
+                    let end = CGPoint(
+                        x: centerX + CGFloat((lineSeg.end.longitude - centerLg)*lgScale*2) * scale + offset.x,
+                        y: centerY + CGFloat((centerLa - lineSeg.end.latitude)*laScale*2) * scale + offset.y
+                    )
+                    p.move(to: start)
+                    p.addLine(to: end)
+                }.stroke(colors[lineSeg.clusterId % colors.count], style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+            }
         }
     }
 }
 
-// MARK: - display user path
+// display user path
 struct UserPathsView: View {
     @ObservedObject var locationGetter: LocationGetterModel
     @Binding var offset: Offset
