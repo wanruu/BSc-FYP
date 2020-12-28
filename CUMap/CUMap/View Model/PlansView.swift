@@ -9,11 +9,34 @@ import SwiftUI
     􀁟: exclamationmark.circle.fill
  */
 
+/*
+       small                medium               large
+ -----------------    -----------------    -----------------
+ |    Search     |    |               |    -----------------
+ |               |    |               |    |      􀌇       |
+ -----------------    |      Map      |    |               |
+ |               |    |               |    |               |
+ |               |    |               |    |               |
+ |               |    -----------------    |               |
+ |      Map      |    |               |    |SCHeight/10*8.8|
+ |               |    |               |    |               |
+ |               |    | SCHeight/10*4 |    |               |
+ |               |    |               |    |               |
+ -----------------    |               |    |               |
+ | SCHeight / 10 |    |               |    |               |
+ -----------------    -----------------    -----------------
+ */
+
+let smallH = SCHeight / 10
+let mediumH = SCHeight / 10 * 4
+let largeH = SCHeight / 10 * 8.8
+
 struct PlansTextView: View {
     @State var locations: [Location]
     @State var plans: [[Route]]
-    @State var mode: TransMode
-    @State var lastHeight = SCHeight / 10
+    
+    // height
+    @State var lastHeight = smallH
     @Binding var height: CGFloat
     
     var drag: some Gesture {
@@ -25,12 +48,16 @@ struct PlansTextView: View {
                     height = lastHeight + value.startLocation.y - value.location.y
                 }
             }
-            .onEnded { _ in
+            .onEnded { value in
+                // whether scroll up or down
+                let up = value.startLocation.y - value.location.y > 0
                 withAnimation() {
-                    if height > SCHeight / 10 * 8.8 {
-                        height = SCHeight / 10 * 8.8
-                    } else if height < SCHeight / 10 {
-                        height = SCHeight / 10
+                    if lastHeight == largeH { // large
+                        height = up ? largeH : mediumH
+                    } else if lastHeight == smallH { // small
+                        height = up ? mediumH : smallH
+                    } else { // medium
+                        height = up ? largeH : smallH
                     }
                 }
                 lastHeight = height
@@ -49,15 +76,15 @@ struct PlansTextView: View {
             
             if plans.count == 0 {
                 Text("No results").font(.title2)
-                .padding()
-                .frame(width: SCWidth, alignment: .center)
-                .background(Color.white)
+                    .padding()
+                    .frame(width: SCWidth, height: height, alignment: .center)
+                    .background(Color.white)
             } else {
                 // TODO: display more plans
-                PlanTextView(locations: locations, plan: plans[0], mode: mode)
-                .padding()
-                .frame(width: SCWidth, height: height, alignment: .center)
-                .background(Color.white)
+                PlanTextView(locations: locations, plan: plans[0])
+                    .padding()
+                    .frame(width: SCWidth, height: height, alignment: .center)
+                    .background(Color.white)
             }
         }.gesture(drag)
     }
@@ -66,7 +93,6 @@ struct PlansTextView: View {
 struct PlanTextView: View {
     @State var locations: [Location]
     @State var plan: [Route]
-    @State var mode: TransMode
     
     var body: some View {
         var totalTime = 0.0 // seconds
