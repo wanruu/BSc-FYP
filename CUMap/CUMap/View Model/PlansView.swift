@@ -53,11 +53,22 @@ struct PlansTextView: View {
                 let up = value.startLocation.y - value.location.y > 0
                 withAnimation() {
                     if lastHeight == largeH { // large
-                        height = up ? largeH : mediumH
+                        if height > (mediumH + largeH) / 2 { // still large
+                            height = up ? largeH : mediumH
+                        } else {
+                            height = height < (smallH + mediumH) / 2 ? smallH : mediumH
+                        }
                     } else if lastHeight == smallH { // small
-                        height = up ? mediumH : smallH
+                        if height < (smallH + mediumH) / 2 { // still small
+                            height = up ? mediumH : smallH
+                        } else {
+                            height = height > (mediumH + largeH) / 2 ? largeH : mediumH
+                        }
                     } else { // medium
-                        height = up ? largeH : smallH
+                        if height >= (smallH + mediumH) / 2 && height <= (mediumH + largeH) / 2 { // still medium
+                            height = up ? largeH : smallH
+                        }
+                        height = height > (mediumH + largeH) / 2 ? largeH : smallH
                     }
                 }
                 lastHeight = height
