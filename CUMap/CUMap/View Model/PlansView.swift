@@ -44,7 +44,8 @@ struct PlansTextView: View {
                 .foregroundColor(Color.gray)
                 .padding(.top)
                 .frame(width: SCWidth, alignment: .center)
-                .background(Color.white)
+                .background(RoundedCorners(color: .white, tl: 30, tr: 30, bl: 0, br: 0))
+                .shadow(radius: 10)
             
             if plans.count == 0 {
                 Text("No results").font(.title2)
@@ -94,7 +95,7 @@ struct PlanTextView: View {
             }
         }
         return GeometryReader { geometry in
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 20) {
                 // time & distance
                 HStack {
                     Text(String(Int(totalTime))).font(.title2).bold()
@@ -103,9 +104,9 @@ struct PlanTextView: View {
                 }
                 Divider()
                 // changing height
-                HStack {
+                //HStack {
                     // TODO: changing height count
-                }
+                //}
                 // height chart
                 ZStack {
                     Path { path in
@@ -144,11 +145,11 @@ struct PlanTextView: View {
                         .background(Color.white)
                         .cornerRadius(100)
                         .position(x: geometry.size.width * 0.95, y: geometry.size.width / 8 / CGFloat(maxHeight - minHeight) * CGFloat(maxHeight - plan.last!.points.last!.altitude))
-                }.frame(height: geometry.size.width / 8).padding(.vertical)
+                }.frame(height: geometry.size.width / 8)
                 Divider()
                 
                 // Alert
-                HStack {
+                HStack(spacing: 20) {
                     Image(systemName: "exclamationmark.circle.fill")
                         .imageScale(.large)
                         .foregroundColor(CUYellow)
@@ -157,22 +158,85 @@ struct PlanTextView: View {
                 Divider()
                 
                 // Indication
-                ForEach(plan.indices) { i in
-                    if i == 0 {
-                        let start = locations.filter({$0.id == plan[i].startId}).first!
-                        HStack {
+                VStack(alignment: .leading, spacing: 30) {
+                    ForEach(plan.indices) { i in
+                        let location = locations.filter({$0.id == plan[i].startId}).first!
+                        HStack(spacing: 20) {
                             Image(systemName: "circlebadge").imageScale(.large)
-                            Text(start.name_en)
+                            VStack(alignment: .leading) {
+                                Text(location.name_en)
+                                Divider()
+                            }
                         }
+                        HStack(spacing: 20) {
+                            if plan[i].type == 0 {
+                                Image(systemName: "figure.walk")
+                                VStack(alignment: .leading) {
+                                    Text("Walk for \(Int(plan[i].dist/footSpeed)) min (\(Int(plan[i].dist)) m)")
+                                    Divider()
+                                }
+                            } else if plan[i].type == 1 {
+                                Image(systemName: "bus")
+                                // TODO: bus info
+                                VStack(alignment: .leading) {
+                                    Text("Take bus for \(Int(plan[i].dist/busSpeed)) min (\(Int(plan[i].dist)) m)")
+                                    Divider()
+                                }
+                            }
+                        }
+                        
+                        if i == plan.count - 1 {
+                            let end = locations.filter({$0.id == plan[i].endId}).first!
+                            HStack(spacing: 20) {
+                                Image(systemName: "smallcircle.fill.circle")
+                                VStack(alignment: .leading) {
+                                    Text(end.name_en)
+                                    Divider()
+                                }
+                            }
+                        }
+                        
+                        
+                        
                     }
-                    let location = locations.filter({$0.id == plan[i].endId}).first!
-                    HStack {
-                        Image(systemName: "smallcircle.fill.circle")
-                        Text(location.name_en)
-                    }
-                    
                 }
+                
             }
+        }
+    }
+}
+
+struct RoundedCorners: View {
+    var color: Color = .blue
+    var tl: CGFloat = 0.0
+    var tr: CGFloat = 0.0
+    var bl: CGFloat = 0.0
+    var br: CGFloat = 0.0
+ 
+    var body: some View {
+        GeometryReader { geometry in
+            Path { path in
+ 
+                let w = geometry.size.width
+                let h = geometry.size.height
+ 
+                // Make sure we do not exceed the size of the rectangle
+                let tr = min(min(self.tr, h/2), w/2)
+                let tl = min(min(self.tl, h/2), w/2)
+                let bl = min(min(self.bl, h/2), w/2)
+                let br = min(min(self.br, h/2), w/2)
+ 
+                path.move(to: CGPoint(x: w / 2.0, y: 0))
+                path.addLine(to: CGPoint(x: w - tr, y: 0))
+                path.addArc(center: CGPoint(x: w - tr, y: tr), radius: tr, startAngle: Angle(degrees: -90), endAngle: Angle(degrees: 0), clockwise: false)
+                path.addLine(to: CGPoint(x: w, y: h - br))
+                path.addArc(center: CGPoint(x: w - br, y: h - br), radius: br, startAngle: Angle(degrees: 0), endAngle: Angle(degrees: 90), clockwise: false)
+                path.addLine(to: CGPoint(x: bl, y: h))
+                path.addArc(center: CGPoint(x: bl, y: h - bl), radius: bl, startAngle: Angle(degrees: 90), endAngle: Angle(degrees: 180), clockwise: false)
+                path.addLine(to: CGPoint(x: 0, y: tl))
+                path.addArc(center: CGPoint(x: tl, y: tl), radius: tl, startAngle: Angle(degrees: 180), endAngle: Angle(degrees: 270), clockwise: false)
+            }
+            .fill(self.color)
         }
     }
 }
