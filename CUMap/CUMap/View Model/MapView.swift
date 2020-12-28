@@ -10,12 +10,14 @@ import SwiftUI
 struct MapView: View {
     @State var plans: [[Route]]
     @ObservedObject var locationGetter: LocationGetterModel
+    @Binding var height: CGFloat
     
     /* gesture */
     @State var lastOffset = Offset(x: 0, y: 0)
     @State var offset = Offset(x: 0, y: 0)
     @State var lastScale = initialZoom
     @State var scale = initialZoom
+    
     var gesture: some Gesture {
         SimultaneousGesture(
             MagnificationGesture()
@@ -55,6 +57,7 @@ struct MapView: View {
             
             UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale)
         }
+        .clipShape(Rectangle())
         .contentShape(Rectangle())
         .gesture(gesture)
     }

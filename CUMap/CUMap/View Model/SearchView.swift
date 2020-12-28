@@ -49,8 +49,8 @@ struct SearchView: View {
     @Binding var mode: TransMode
     @State var startName = ""
     @State var endName = ""
-    @State var startId = ""
-    @State var endId = ""
+    @Binding var startId: String
+    @Binding var endId: String
     @State var showStartList = false
     @State var showEndList = false
     
@@ -63,15 +63,16 @@ struct SearchView: View {
             VStack {
                 SearchArea(startName: startName, endName: endName, startId: startId, endId: endId, busTime: 0, footTime: -1, showStartList: $showStartList, showEndList: $showEndList, mode: $mode)
                     .onAppear() {
-                        if startId != "" && endId != "" {
-                            dij()
-                        }
+                        dij()
                     }
                 Spacer()
             }
         }
     }
     private func dij() {
+        if startId == "" || endId == "" {
+            return
+        }
         // Step 1: clean up result
         plans = []
         

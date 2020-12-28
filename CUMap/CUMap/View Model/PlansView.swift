@@ -13,8 +13,8 @@ struct PlansTextView: View {
     @State var locations: [Location]
     @State var plans: [[Route]]
     @State var mode: TransMode
-    @State var lastHeight: CGFloat = SCHeight / 10
-    @State var height: CGFloat = SCHeight / 10
+    @State var lastHeight = SCHeight / 10
+    @Binding var height: CGFloat
     
     var drag: some Gesture {
         DragGesture()
