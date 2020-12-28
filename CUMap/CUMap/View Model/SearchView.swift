@@ -46,7 +46,7 @@ struct SearchView: View {
     @State var plans: [[Route]]
     @ObservedObject var locationGetter: LocationGetterModel
 
-    @State var mode: TransMode = .bus
+    @Binding var mode: TransMode
     @State var startName = ""
     @State var endName = ""
     @State var startId = ""
@@ -105,8 +105,10 @@ struct SearchView: View {
                 } else if route.endId == locations[cur].id {
                     let next = indexOf(id: route.startId)
                     if minDist[next].dist > minDist[cur].dist + route.dist { // update
+                        var points = route.points
+                        points.reverse()
                         minDist[next].dist = minDist[cur].dist + route.dist
-                        minDist[next].routes = minDist[cur].routes + [route]
+                        minDist[next].routes = minDist[cur].routes + [Route(id: route.id, startId: route.endId, endId: route.startId, points: points, dist: route.dist, type: route.type)]
                     }
                 }
             }

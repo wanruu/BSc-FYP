@@ -51,7 +51,7 @@ struct MapView: View {
                 .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
                 .position(x: centerX + offset.x, y: centerY + offset.y)
                 
-            PlansView(plans: plans, offset: $offset, scale: $scale)
+            PlansMapView(plans: plans, offset: $offset, scale: $scale)
             
             UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale)
         }
@@ -60,7 +60,7 @@ struct MapView: View {
     }
 }
 
-struct PlansView: View {
+struct PlansMapView: View {
     @State var plans: [[Route]]
     @Binding var offset: Offset
     @Binding var scale: CGFloat

@@ -42,3 +42,7 @@ let lgScale = 85390.0
 let CUPurple = Color(red: 117/255, green: 15/255, blue: 109/255)
 let CUYellow = Color(red: 221/255, green: 163/255, blue: 0)
 let CUPaleYellow = Color(red: 244/255, green: 223/255, blue: 176/255)
+
+// Speed: m/s
+let busSpeed = 2.0
+let footSpeed = 1.2
