@@ -36,7 +36,7 @@ struct PlansTextView: View {
     @State var plans: [[Route]]
     
     // height
-    @State var lastHeight = smallH
+    @Binding var lastHeight: CGFloat
     @Binding var height: CGFloat
     
     var drag: some Gesture {

@@ -28,16 +28,17 @@ struct MainPage: View {
     @State var mode: TransMode = .bus
     
     // height of pland text view
+    @State var lastHeight = smallH
     @State var height = smallH
     
     var body: some View {
         ZStack {
-            MapView(plans: plans, locationGetter: locationGetter, height: $height)
-            withAnimation() {
-                height < mediumH ? SearchView(locations: locations, routes: routes, plans: plans, locationGetter: locationGetter, mode: $mode, startId: $startId, endId: $endId) : nil
-            }
+            MapView(plans: plans, locationGetter: locationGetter, lastHeight: $lastHeight, height: $height)
+            
+            SearchView(locations: locations, routes: routes, plans: $plans, locationGetter: locationGetter, mode: $mode, startId: $startId, endId: $endId)
+
             if startId != "" && endId != "" {
-                PlansTextView(locations: locations, plans: plans, height: $height)
+                PlansTextView(locations: locations, plans: plans, lastHeight: $lastHeight, height: $height)
             }
         }
     }

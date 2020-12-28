@@ -43,7 +43,7 @@ enum TransMode {
 struct SearchView: View {
     @State var locations: [Location]
     @State var routes: [Route]
-    @State var plans: [[Route]]
+    @Binding var plans: [[Route]]
     @ObservedObject var locationGetter: LocationGetterModel
 
     @Binding var mode: TransMode

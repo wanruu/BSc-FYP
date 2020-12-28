@@ -37,7 +37,7 @@ var LocationSchema = Schema({
     latitude: { type: Number, require: true },
     longitude: { type: Number, require: true },
     altitude: { type: Number, require: true },
-    type: { type: Number, require: true }
+    type: { type: Number, require: true } // 0: building, 1: bus stop
 });
 var TrajectorySchema = Schema({
     points: [{ latitude: Number, longitude: Number, altitude: Number }],
@@ -282,6 +282,26 @@ app.get('/routes', (req, res) => {
             console.log(err);
             res.status(404).send();
         } else {
+            /* var items = [];
+            for(var i in result) {
+                var points = [];
+                for(var j in result[i].points) {
+                    points.push({
+                        latitude: result[i].points[j].latitude, 
+                        longitude: result[i].points[j].longitude,
+                        altitude: result[i].points[j].altitude
+                    });
+                }
+                items.push({
+                    id: result[i].id,
+                    startId: result[i].startId,
+                    endId: result[i].endId,
+                    points: points,
+                    dist: result[i].dist,
+                    type: result[i].type
+                });
+            }
+            res.send(items);*/
             res.send(result);
         }
     });

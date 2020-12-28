@@ -10,6 +10,8 @@ import SwiftUI
 struct MapView: View {
     @State var plans: [[Route]]
     @ObservedObject var locationGetter: LocationGetterModel
+    
+    @Binding var lastHeight: CGFloat
     @Binding var height: CGFloat
     
     /* gesture */
@@ -52,12 +54,21 @@ struct MapView: View {
                 .resizable()
                 .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
                 .position(x: centerX + offset.x, y: centerY + offset.y)
-                
-            PlansMapView(plans: plans, offset: $offset, scale: $scale)
+                    
+            PlansMapView(plans: plans, offset: $offset, scale: $scale, height: $height)
             
             UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale)
+
         }
+        // animation
+        .offset(x: 0, y: -lastHeight + smallH)
+        .animation(
+            offset == lastOffset ? Animation.easeInOut(duration: 0.4)
+            .repeatCount(1, autoreverses: false) : nil
+        )
+        
         .clipShape(Rectangle())
+        // gesture
         .contentShape(Rectangle())
         .gesture(gesture)
     }
@@ -67,26 +78,33 @@ struct PlansMapView: View {
     @State var plans: [[Route]]
     @Binding var offset: Offset
     @Binding var scale: CGFloat
+    @Binding var height: CGFloat
     
     var body: some View {
-        ForEach(plans.indices) { i in
-            let plan = plans[i]
-            ForEach(plan) { route in
-                // Display a route
-                Path { path in
-                    for j in 0..<route.points.count {
-                        let point = CGPoint(
-                            x: centerX + CGFloat((route.points[j].longitude - centerLg)*lgScale*2) * scale + offset.x,
-                            y: centerY + CGFloat((centerLa - route.points[j].latitude)*laScale*2) * scale + offset.y
-                        )
-                        if(j == 0) {
-                            path.move(to: point)
-                        } else {
-                            path.addLine(to: point)
+        ZStack {
+            ForEach(plans.indices) { i in
+                let plan = plans[i]
+                ForEach(plan) { route in
+                    // Display a route
+                    Path { path in
+                        for j in 0..<route.points.count {
+                            let point = CGPoint(
+                                x: centerX + CGFloat((route.points[j].longitude - centerLg)*lgScale*2) * scale + offset.x,
+                                y: centerY + CGFloat((centerLa - route.points[j].latitude)*laScale*2) * scale + offset.y - height + smallH
+                            )
+                            if(j == 0) {
+                                path.move(to: point)
+                            } else {
+                                path.addLine(to: point)
+                            }
                         }
-                    }
-                }.stroke(route.type == 0 ? CUPurple : CUYellow, style: StrokeStyle(lineWidth: 5, lineJoin: .round))
+                    }.stroke(route.type == 0 ? CUPurple : CUYellow, style: StrokeStyle(lineWidth: 5, lineJoin: .round))
+                }
             }
         }
+        .animation(
+            Animation.easeInOut(duration: 0.4)
+                .repeatCount(1, autoreverses: false)
+        )
     }
 }

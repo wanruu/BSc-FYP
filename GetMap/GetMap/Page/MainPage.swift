@@ -93,7 +93,7 @@ struct MainPage: View {
             guard let data = data else { return }
             do {
                 let res = try JSONDecoder().decode([Route].self, from: data)
-                routes =  res
+                routes = res
                 loadTasks[2] = true
             } catch let error {
                 showAlert = true

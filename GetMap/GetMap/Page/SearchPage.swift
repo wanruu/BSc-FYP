@@ -1,5 +1,21 @@
+// MARK: Search Page
+
+/*
+ Search Page:
+    - Search Area
+    - Map
+    - Result: sheet
+ */
 import Foundation
 import SwiftUI
+
+
+let INF = 99999.0
+
+struct DijDist {
+    var points: [Coor3D]
+    var dist: Double
+}
 
 struct SearchPage: View {
     @Binding var locations: [Location]
@@ -100,61 +116,54 @@ struct SearchArea: View {
     var body: some View {
         VStack {
             // search input area
-            HStack {
-                VStack {
-                    // from
-                    HStack {
-                        showStartSearch ?
-                            Image(systemName: "chevron.backward")
-                            .imageScale(.large)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                print("click")
-                                showStartSearch = false
-                                startName = tmpName
-                                startId = tmpId
-                                hideKeyboard()
-                            } : nil
-                        
-                        showEndSearch ? nil : TextField("From", text: $startName)
-                            .onTapGesture {
-                                tmpName = startName
-                                tmpId = startId
-                                startName = ""
-                                startId = ""
-                                showStartSearch = true
-                                showEndSearch = false
-                            }.textFieldStyle(RoundedBorderTextFieldStyle())
-                    }
-                    // to
-                    HStack {
-                        showEndSearch ?
-                            Image(systemName: "chevron.backward")
-                            .imageScale(.large)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                showEndSearch = false
-                                endName = tmpName
-                                endId = tmpId
-                                hideKeyboard()
-                            } : nil
-                        
-                        showStartSearch ? nil : TextField("To", text: $endName)
-                            .onTapGesture {
-                                tmpName = endName
-                                tmpId = endId
-                                endName = ""
-                                endId = ""
-                                showEndSearch = true
-                                showStartSearch = false
-                            }.textFieldStyle(RoundedBorderTextFieldStyle())
-                    }
+            VStack {
+                // from
+                HStack {
+                    showStartSearch ?
+                        Image(systemName: "chevron.backward")
+                        .imageScale(.large)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            showStartSearch = false
+                            startName = tmpName
+                            startId = tmpId
+                            hideKeyboard()
+                        } : nil
                     
+                    showEndSearch ? nil : TextField("From", text: $startName)
+                        .onTapGesture {
+                            tmpName = startName
+                            tmpId = startId
+                            startName = ""
+                            startId = ""
+                            showStartSearch = true
+                            showEndSearch = false
+                        }.textFieldStyle(RoundedBorderTextFieldStyle())
                 }
-                // search button
-                showStartSearch || showEndSearch ? nil : Button(action: {
-                    dij()
-                }) { Text("Search") }.background(Color.white).disabled(startName == "" || endName == "")
+                // to
+                HStack {
+                    showEndSearch ?
+                        Image(systemName: "chevron.backward")
+                        .imageScale(.large)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            showEndSearch = false
+                            endName = tmpName
+                            endId = tmpId
+                            hideKeyboard()
+                        } : nil
+                    
+                    showStartSearch ? nil : TextField("To", text: $endName)
+                        .onTapGesture {
+                            tmpName = endName
+                            tmpId = endId
+                            endName = ""
+                            endId = ""
+                            showEndSearch = true
+                            showStartSearch = false
+                        }.textFieldStyle(RoundedBorderTextFieldStyle())
+                }
+                
             }
             // search list
             showStartSearch ? List {
@@ -180,6 +189,8 @@ struct SearchArea: View {
                 }
             } : nil
         }
+        .padding()
+        .background(Color.white)
     }
     private func dij() {
         // Step 1: clean up result
@@ -242,11 +253,4 @@ struct SearchArea: View {
         }
         return -1
     }
-}
-
-let INF = 99999.0
-
-struct DijDist {
-    var points: [Coor3D]
-    var dist: Double
 }
