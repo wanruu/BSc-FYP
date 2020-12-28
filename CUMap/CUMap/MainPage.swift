@@ -26,8 +26,8 @@ import SwiftUI
 
 // MARK: - MapPage
 struct MainPage: View {
-    @Binding var locations: [Location]
-    @Binding var routes: [Route]
+    @State var locations: [Location]
+    @State var routes: [Route]
     @ObservedObject var locationGetter: LocationGetterModel
     
     // search result
@@ -38,8 +38,8 @@ struct MainPage: View {
     
     var body: some View {
         ZStack {
-            MapView(plans: $plans, locationGetter: locationGetter)
-            SearchView(locations: $locations, routes: $routes, plans: $plans, locationGetter: locationGetter)
+            MapView(plans: plans, locationGetter: locationGetter)
+            SearchView(locations: locations, routes: routes, plans: plans, locationGetter: locationGetter)
         }
     }
 }

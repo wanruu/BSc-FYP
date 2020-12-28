@@ -41,9 +41,9 @@ enum TransMode {
     case foot
 }
 struct SearchView: View {
-    @Binding var locations: [Location]
-    @Binding var routes: [Route]
-    @Binding var plans: [[Route]]
+    @State var locations: [Location]
+    @State var routes: [Route]
+    @State var plans: [[Route]]
     @ObservedObject var locationGetter: LocationGetterModel
 
     @State var mode: TransMode = .bus
@@ -124,7 +124,6 @@ struct SearchView: View {
         }
         return -1
     }
-    
 }
 
 struct SearchArea: View {
