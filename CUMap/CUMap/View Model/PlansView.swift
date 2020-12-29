@@ -161,41 +161,41 @@ struct PlanView: View {
                 .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: -2)
             
             // content
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 0) {
                 // time & distance
                 HStack {
                     Text("\(Int(plan.time/60))").font(.title2).bold()
                     Text("min").font(.title2)
                     Text("(\(Int(plan.dist)) m)").font(.title3).foregroundColor(Color.gray)
-                }.padding(.horizontal)
+                }.padding(.horizontal).padding(.bottom)
                 Divider()
                 
                 ScrollView(.vertical, showsIndicators: false) {
-                    // chart
-                    HeightChart(plan: $plan, width: SCWidth * 0.9, height: SCWidth * 0.2)
-                        .frame(height: SCWidth * 0.3)
-                    Divider()
-                    // Alert
-                    HStack(spacing: 20) {
-                        Image(systemName: "exclamationmark.circle.fill")
-                            .imageScale(.large)
-                            .foregroundColor(CUYellow)
-                        Text("The estimated time to arrive may not be accurate.")
-                        Spacer()
-                    }.padding()
-                    Divider()
-                    // steps
-                    HStack {
+                    VStack {
+                        // chart
+                        HeightChart(plan: $plan, width: SCWidth * 0.9, height: SCWidth * 0.2)
+                            .frame(height: SCWidth * 0.3)
+                        Divider()
+                    }
+                    VStack(alignment: .leading) {
+                        // Alert
+                        HStack(spacing: 20) {
+                            Image(systemName: "exclamationmark.circle.fill")
+                                .imageScale(.large)
+                                .foregroundColor(CUYellow)
+                            Text("The estimated time to arrive may not be accurate.")
+
+                        }.padding()
+                        Divider()
+                        // steps
                         Instructions(locations: locations, plan: $plan)
-                        Spacer()
-                    }.padding()
-                    Divider()
+                        Divider()
+                    }
                 }
             }
             .frame(width: SCWidth, height: height, alignment: .center)
             .background(Color.white)
-        }
-        .gesture(drag)
+        }.gesture(drag)
     }
 }
 
@@ -276,39 +276,53 @@ struct Instructions: View {
     @Binding var plan: Plan
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 30) {
-            ForEach(plan.routes) { route in
-                if route == plan.routes.first! { // first route
-                    let startLoc = locations.filter({$0.id == route.startId}).first!
-                    HStack(spacing: 20) {
-                        Image(systemName: "circlebadge").imageScale(.large)
-                        Text(startLoc.name_en).font(.title3)
-                    }
-                }
-                
+        ZStack {
+            // timeline sign
+            VStack(alignment: .leading, spacing: 0) {
                 HStack(spacing: 20) {
+                    Divider().frame(width: 20)
+                    Spacer()
+                }.padding()
+            }
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(plan.routes) { route in
+                    if route == plan.routes.first! { // first route
+                        let startLoc = locations.filter({$0.id == route.startId}).first!
+                        HStack(spacing: 20) {
+                            Image(systemName: "circlebadge").imageScale(.large).frame(width: 20)
+                            Text(startLoc.name_en).font(.title3)
+                            Spacer()
+                        }.padding()
+                    }
+                    
                     if route.type == 0 {
-                        Image(systemName: "figure.walk")
-                        Text("Walk for \(Int(route.dist/footSpeed/60)) min (\(Int(route.dist)) m)")
+                        HStack(spacing: 20) {
+                            Image(systemName: "figure.walk").frame(width: 20)
+                            Text("Walk for \(Int(route.dist/footSpeed/60)) min (\(Int(route.dist)) m)")
+                            Spacer()
+                        }.padding()
                     } else if route.type == 1 {
-                        Image(systemName: "bus")
-                        // TODO: bus info
-                        Text("Take bus for \(Int(route.dist/busSpeed/60)) min (\(Int(route.dist)) m)")
+                        HStack(spacing: 20) {
+                            Image(systemName: "bus").frame(width: 20)
+                            // TODO: bus info
+                            Text("Take bus for \(Int(route.dist/busSpeed/60)) min (\(Int(route.dist)) m)")
+                            Spacer()
+                        }.padding()
                     }
+                    
+                    let loc = locations.filter({$0.id == route.endId}).first!
+                    HStack(spacing: 20) {
+                        if route == plan.routes.last! { // last route
+                            Image(systemName: "smallcircle.fill.circle")
+                        } else if route.type == 0 {
+                            Image(systemName: "building.2")
+                        } else {
+                            Image(systemName: "bus")
+                        }
+                        Text(loc.name_en).font(.title3)
+                        Spacer()
+                    }.padding()
                 }
-                
-                let loc = locations.filter({$0.id == route.endId}).first!
-                HStack(spacing: 20) {
-                    if route == plan.routes.last! { // last route
-                        Image(systemName: "smallcircle.fill.circle")
-                    } else if route.type == 0 {
-                        Image(systemName: "building.2")
-                    } else {
-                        Image(systemName: "bus")
-                    }
-                    Text(loc.name_en).font(.title3)
-                }
-                
             }
         }
     }
