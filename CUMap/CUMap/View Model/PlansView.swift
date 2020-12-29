@@ -173,20 +173,19 @@ struct PlanView: View {
                 Divider()
                 
                 ScrollView(.vertical, showsIndicators: false) {
-                    VStack {
+                    VStack(spacing: 0) {
                         // chart
-                        HeightChart(plan: $plan, width: SCWidth * 0.9, height: SCWidth * 0.2)
-                            .frame(height: SCWidth * 0.3)
+                        HeightChart(plan: $plan, width: SCWidth * 0.9, height: SCWidth * 0.25)
+                            .padding(.vertical)
                         Divider()
                     }
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 0) {
                         // Alert
                         HStack(spacing: 20) {
                             Image(systemName: "exclamationmark.circle.fill")
                                 .imageScale(.large)
                                 .foregroundColor(CUYellow)
                             Text("The estimated time to arrive may not be accurate.")
-
                         }.padding()
                         Divider()
                         // steps
@@ -201,74 +200,119 @@ struct PlanView: View {
     }
 }
 
+/*
+ |<---- width ----->|
+ 
+ ---------------------   -
+ |  􀄨 ?m     􀄩 ?m   |   | h1
+ ---------------------   -
+ |              |    |   | h2
+ |              |    |   |
+ |--------------|    |   -
+ |              |    |   | h3
+ ---------------------   -
+ 
+ |<---- w1 ---->| w2 |
+ 
+ w1 = width * 0.85
+ w2 = width * 0.15
+ h1 = height * 0.2
+ h2 = height * 0.6
+ h3 = height * 0.2
+
+ */
 struct HeightChart: View {
     @Binding var plan: Plan
     @State var width: CGFloat
     @State var height: CGFloat
+    
     var body: some View {
+        let w1 = width * 0.85
+        let w2 = width * 0.15
+        let h1 = height * 0.2
+        let h2 = height * 0.6
+        // let h3 = height * 0.2
+        
+        // find max, min altitude
         var maxHeight = -99999.0
         var minHeight = 99999.0
         for route in plan.routes {
             for point in route.points {
-                let altitude = point.altitude
-                if altitude > maxHeight {
-                    maxHeight = altitude
-                } else if altitude < minHeight {
-                    minHeight = altitude
+                if point.altitude > maxHeight {
+                    maxHeight = point.altitude
+                } else if point.altitude < minHeight {
+                    minHeight = point.altitude
                 }
             }
         }
-        return ZStack {
-            Path { path in
-                var dist = 0.0
-                for i in 0..<plan.routes.count {
-                    let p1 = CGPoint(
-                        x: Double(width) / plan.dist * dist,
-                        y: Double(height) * 0.75 / (maxHeight - minHeight) * (maxHeight - plan.routes[i].points.first!.altitude))
-                    dist += plan.routes[i].dist
-                    let p2 = CGPoint(
-                        x: Double(width) / plan.dist * dist,
-                        y: Double(height) * 0.75 / (maxHeight - minHeight) * (maxHeight - plan.routes[i].points.last!.altitude))
-                    if i == 0 {
-                        path.move(to: p1)
-                    } else {
-                        path.addLine(to: p1)
-                    }
-                    path.addLine(to: p2)
+        // calculate for drawing chart
+        var up = 0.0
+        var down = 0.0
+        var lastAltitude = 0.0
+        var dist = 0.0
+        var lastDist = 0.0
+        var chartPoints: [(Double, Double)] = [] // (distance, altitude)
+        chartPoints.append((0, plan.routes[0].points[0].altitude))
+        for route in plan.routes {
+            for i in 0..<route.points.count {
+                if i == 0 { continue }
+                dist += distance(start: route.points[i-1], end: route.points[i])
+                if dist - lastDist < 10 { continue }
+                chartPoints.append((dist, route.points[i].altitude))
+                lastDist = dist
+                
+                let diff = route.points[i].altitude - lastAltitude
+                if diff > 0 {
+                    up += diff
+                } else {
+                    down -= diff
                 }
-            }.stroke(CUPurple, style: StrokeStyle(lineWidth: 4, lineJoin: .round))
+                lastAltitude = route.points[i].altitude
+            }
+        }
+        chartPoints.append((dist, plan.routes.last!.points.last!.altitude))
+        
+        return ZStack {
+            HStack {
+                Image(systemName: "arrow.up").imageScale(.small)
+                Text("\(Int(up)) m").font(.footnote).padding(.trailing)
+                Image(systemName: "arrow.down").imageScale(.small).padding(.leading)
+                Text("\(Int(down)) m").font(.footnote)
+            }.offset(y: -height / 2 + h1 / 2)
+            
+            Path { path in
+                path.move(to: CGPoint(x: 0, y: Double(h2) / (maxHeight - minHeight) * (maxHeight - plan.routes[0].points[0].altitude) + Double(h1)))
+                for (x, y) in chartPoints {
+                    path.addLine(to: CGPoint(x: Double(w1) / dist * x, y: Double(h2) / (maxHeight - minHeight) * (maxHeight - y) + Double(h1)))
+                }
+            }.stroke(CUPurple, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
             
             Path { path in
                 path.move(to: CGPoint(x: 0, y: height))
-                var dist = 0.0
-                for route in plan.routes {
-                    let p1 = CGPoint(
-                        x: Double(width) / plan.dist * dist,
-                        y: Double(height) * 0.75 / (maxHeight - minHeight) * (maxHeight - route.points.first!.altitude))
-                    dist += route.dist
-                    let p2 = CGPoint(
-                        x: Double(width) / plan.dist * dist,
-                        y: Double(height) * 0.75 / (maxHeight - minHeight) * (maxHeight - route.points.last!.altitude))
-                    path.addLine(to: p1)
-                    path.addLine(to: p2)
+                for (x, y) in chartPoints {
+                    path.addLine(to: CGPoint(x: Double(w1) / dist * x, y: Double(h2) / (maxHeight - minHeight) * (maxHeight - y) + Double(h1)))
                 }
-                path.addLine(to: CGPoint(x: width, y: height))
+                path.addLine(to: CGPoint(x: w1, y: height))
             }.fill(CUPurple.opacity(0.5))
             
             Image(systemName: "circlebadge")
                 .imageScale(.large)
                 .background(Color.white)
                 .cornerRadius(100)
-                .position(
-                    x: 0,
-                    y: height * 0.75 / CGFloat(maxHeight - minHeight) * CGFloat(maxHeight - plan.routes.first!.points.first!.altitude))
+                .position(x: 0, y: h2 / CGFloat(maxHeight - minHeight) * CGFloat(maxHeight - plan.routes.first!.points.first!.altitude) + h1)
             
             Image(systemName: "smallcircle.fill.circle")
                 .background(Color.white)
                 .cornerRadius(100)
-                .position(
-                    x: width,
-                    y: height * 0.75 / CGFloat(maxHeight - minHeight) * CGFloat(maxHeight - plan.routes.last!.points.last!.altitude))
+                .position(x: w1, y: h2 / CGFloat(maxHeight - minHeight) * CGFloat(maxHeight - plan.routes.last!.points.last!.altitude) + h1)
+            
+            
+            Text("\(Int(plan.routes.first!.points.first!.altitude))m")
+                .font(.footnote)
+                .position(x: w1 + w2 / 2, y: h2 / CGFloat(maxHeight - minHeight) * CGFloat(maxHeight - plan.routes.first!.points.first!.altitude) + h1)
+            Text("\(Int(plan.routes.last!.points.last!.altitude))m")
+                .font(.footnote)
+                .position(x: w1 + w2 / 2, y: h2 / CGFloat(maxHeight - minHeight) * CGFloat(maxHeight - plan.routes.last!.points.last!.altitude) + h1)
         }.frame(width: width, height: height)
     }
 }

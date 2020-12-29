@@ -35,7 +35,9 @@ struct MainPage: View {
             
             SearchView(locations: locations, routes: routes, plans: $plans, locationGetter: locationGetter, mode: $mode, lastHeight: $lastHeight, height: $height)
             
-            PlansView(locations: locations, plans: $plans, lastHeight: $lastHeight, height: $height)
+            if lastHeight != 0 {
+                PlansView(locations: locations, plans: $plans, lastHeight: $lastHeight, height: $height)
+            }
         }
     }
 }
