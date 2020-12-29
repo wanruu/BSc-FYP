@@ -104,7 +104,8 @@ struct SearchArea: View {
     @Binding var showStartList: Bool
     @Binding var showEndList: Bool
 
-    
+    // animation for 􀄬
+    @State var angle = 0.0
     var body: some View {
         VStack(spacing: 0) {
             // search box
@@ -122,9 +123,12 @@ struct SearchArea: View {
                         .onTapGesture { showEndList = true }
                 }
                 Image(systemName: "arrow.up.arrow.down")
-                    .padding(.leading)
                     .imageScale(.large)
+                    .rotationEffect(.degrees(angle))
+                    .animation(Animation.easeInOut(duration: 0.1))
+                    .padding(.leading)
                     .onTapGesture {
+                        angle = 180 - angle
                         // swap
                         var tmp = startName
                         startName = endName
@@ -133,7 +137,7 @@ struct SearchArea: View {
                         startId = endId
                         endId = tmp
                         dij()
-                    } // TODO: add rotate animation
+                    } 
             }.padding(.horizontal, 30).padding(.top)
             // select mode
             ModeSelectBar(plans: $plans, mode: $mode, lastHeight: $lastHeight, height: $height)
@@ -248,7 +252,7 @@ struct ModeSelectBar: View {
             HStack(spacing: 30) {
                 HStack {
                     Image(systemName: "bus").foregroundColor(Color.black.opacity(0.7))
-                    if height != 0 {
+                    if lastHeight != 0 {
                         busTime == INF ? Text("—") : Text("\(Int(busTime / 60)) min")
                     }
                 }
@@ -260,7 +264,7 @@ struct ModeSelectBar: View {
                 
                 HStack {
                     Image(systemName: "figure.walk").foregroundColor(Color.black.opacity(0.7))
-                    if height != 0 {
+                    if lastHeight != 0 {
                         footTime == INF ? Text("—") : Text("\(Int(footTime) / 60) min")
                     }
                 }
