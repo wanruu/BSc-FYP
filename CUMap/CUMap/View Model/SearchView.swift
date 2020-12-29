@@ -80,7 +80,7 @@ struct SearchView: View {
                 Rectangle()
                     .frame(height: SCHeight * 0.3)
                     .foregroundColor(.white)
-                    .offset(y: -SCHeight * 0.5)
+                    .offset(y: -SCHeight * 0.5 + offset).animation(Animation.easeOut)
                 VStack(spacing: 0) {
                     SearchArea(locations: locations, routes: routes, plans: $plans, locationGetter: locationGetter, startName: startName, endName: endName, startId: startId, endId: endId, mode: $mode, lastHeight: $lastHeight, height: $height, showStartList: $showStartList, showEndList: $showEndList)
                     Spacer()
