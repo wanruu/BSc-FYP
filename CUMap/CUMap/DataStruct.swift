@@ -117,6 +117,12 @@ func distance(location: Location, point: Coor3D) -> Double {
     return pow(diffX * diffX + diffY * diffY + diffZ * diffZ, 0.5)
 }
 
+func distance(p1: CGPoint, p2: CGPoint) -> CGFloat {
+    let diffX = p1.x - p2.x
+    let diffY = p1.y - p2.y
+    return pow(diffX * diffX + diffY * diffY, 0.5)
+}
+
 // MARK: View Extension
 extension View {
     func hideKeyboard() {

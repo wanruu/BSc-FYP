@@ -64,10 +64,9 @@ struct MapView: View {
         // animation
         .offset(y: lastHeight == largeH ? 0 : -lastHeight + smallH)
         .animation(
-            offset == lastOffset ? Animation.easeInOut(duration: 0.4)
+            offset == lastOffset ? Animation.easeInOut(duration: 5)//0.4)
             .repeatCount(1, autoreverses: false) : nil
         )
-        // .clipShape(Rectangle())
         // gesture
         .gesture(gesture)
     }
@@ -81,23 +80,62 @@ struct PlansMapView: View {
     var body: some View {
         ZStack {
             ForEach(plans) { plan in
-                ForEach(plan.routes) { route in
-                    // Display a route
-                    Path { path in
-                        for i in 0..<route.points.count {
-                            let point = CGPoint(
-                                x: centerX + CGFloat((route.points[i].longitude - centerLg) * lgScale * 2) * scale + offset.x,
-                                y: centerY + CGFloat((centerLa - route.points[i].latitude) * laScale * 2) * scale + offset.y
-                            )
-                            if i == 0 {
-                                path.move(to: point)
-                            } else {
-                                path.addLine(to: point)
-                            }
-                        }
-                    }.stroke(route.type == 0 ? CUPurple : CUYellow, style: StrokeStyle(lineWidth: 5, lineJoin: .round))
-                }
+                PlanMapView(plan: plan, opacity: 1, offset: $offset, scale: $scale)
             }
         }
+    }
+}
+
+struct DrawPoint {
+    var type: Int
+    var x: CGFloat
+    var y: CGFloat
+}
+extension DrawPoint: Identifiable {
+    var id: String {
+        "\(type)-\(x)-\(y)"
+    }
+}
+
+struct PlanMapView: View {
+    @State var plan: Plan
+    @State var opacity: Double
+    @Binding var offset: Offset
+    @Binding var scale: CGFloat
+    
+    var body: some View {
+        // calculate points list to draw
+        let DIST: CGFloat = (innerRadius * 1.5) * maxZoomIn / scale
+        var points: [DrawPoint] = []
+
+        var lastX = CGFloat((plan.routes[0].points[0].longitude - centerLg) * lgScale * 2)
+        var lastY = CGFloat((centerLa - plan.routes[0].points[0].latitude) * laScale * 2)
+        
+        var distSoFar: CGFloat = 0
+        
+        for route in plan.routes {
+            for point in route.points {
+                let thisX = CGFloat((point.longitude - centerLg) * lgScale * 2)
+                let thisY = CGFloat((centerLa - point.latitude) * laScale * 2)
+                
+                let dist = pow((lastX - thisX) * (lastX - thisX) + (lastY - thisY) * (lastY - thisY), 0.5)
+                if distSoFar + dist < DIST {
+                    distSoFar += dist
+                } else {
+                    distSoFar = 0
+                    points.append(DrawPoint(type: route.type, x: thisX, y: thisY))
+                }
+                lastX = thisX
+                lastY = thisY
+            }
+        }
+        
+        return
+            ForEach(points) { point in
+                Circle()
+                    .frame(width: innerRadius, height: innerRadius, alignment: .center)
+                    .foregroundColor(point.type == 0 ? CUPurple : CUYellow)
+                    .position(x: centerX + point.x * scale + offset.x, y: centerY + point.y * scale + offset.y)
+            }
     }
 }
