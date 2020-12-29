@@ -259,98 +259,101 @@ struct SearchList: View {
     @Binding var showList: Bool
     
     var body: some View {
-        VStack {
-            HStack {
-                Image(systemName: "chevron.backward")
-                    .imageScale(.large)
-                    .padding(.trailing)
-                    .onTapGesture {
-                        showList = false
-                    }
-                TextField(placeholder, text: $keyword)
-                if keyword != "" {
-                    Image(systemName: "xmark")
+        VStack(spacing: 0) {
+            // text field
+            VStack(spacing: 0) {
+                HStack(spacing: 20) {
+                    Image(systemName: "chevron.backward")
                         .imageScale(.large)
-                        .padding(.leading)
-                        .onTapGesture {
-                            keyword = ""
-                        }
-                }
-            }
-            .padding()
-            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.gray, lineWidth: 0.8))
-            .padding()
-
-            List {
-                // current location
-                Button(action: {
-                    locationName = "Your Location"
-                    locationId = "current"
-                    showList = false
-                }) {
-                    HStack {
-                        Image(systemName: "location.fill")
+                        .onTapGesture { showList = false }
+                    TextField(placeholder, text: $keyword)
+                    if keyword != "" {
+                        Image(systemName: "xmark")
                             .imageScale(.large)
-                            .foregroundColor(Color.blue)
-                            .padding(.trailing)
-                        Text("Your Location")
+                            .onTapGesture { keyword = "" }
                     }
                 }
-                
-                // other locations
-                ForEach(locations) { location in
-                    if keyword == "" || location.name_en.lowercased().contains(keyword.lowercased()) {
-                        Button(action: {
-                            locationName = location.name_en
-                            locationId = location.id
-                            showList = false
-                        }) {
-                            HStack {
-                                if location.type == 0 {
-                                    Image(systemName: "building.2.fill")
-                                        .imageScale(.large)
-                                        .foregroundColor(CUPurple)
-                                        .padding(.trailing)
-                                } else if location.type == 1 {
-                                    Image(systemName: "bus")
-                                        .imageScale(.large)
-                                        .foregroundColor(CUYellow)
-                                        .padding(.trailing)
-                                }
-                                Text(location.name_en)
-                            }
+                .padding()
+                .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.gray, lineWidth: 0.8))
+                .padding()
+                // shadow
+                Rectangle()
+                    .foregroundColor(.white)
+                    .frame(width: SCWidth, height: 2)
+                    .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: 2)
+            }.padding(.bottom, 6)
+            
+            ScrollView {
+                VStack(spacing: 0) {
+                    // current location
+                    Button(action: {
+                        locationName = "Your Location"
+                        locationId = "current"
+                        showList = false
+                    }) {
+                        HStack(spacing: 20) {
+                            Image(systemName: "location.fill")
+                                .imageScale(.large)
+                                .foregroundColor(Color.blue)
+                                
+                            Text("Your Location")
+                            Spacer()
+                        }
+                    }.buttonStyle(MyButtonStyle())
+                    Divider()
+                    // other locations
+                    ForEach(locations) { location in
+                        if keyword == "" || location.name_en.lowercased().contains(keyword.lowercased()) {
+                            SearchOption(name: $locationName, id: $locationId, location: location, showList: $showList)
+                            Divider()
                         }
                     }
-                }
+                }.padding(.horizontal)
             }
-            
         }.background(Color.white)
     }
 }
 
-// classify search results into by bus or on foot
-func classify(plans: [[Route]]) -> ([[Route]], [[Route]]) { // [foot plan], [bus plan]
-    var foot: [[Route]] = []
-    var bus: [[Route]] = []
+struct SearchOption: View {
+    @Binding var name: String
+    @Binding var id: String
+    @State var location: Location
+    @Binding var showList: Bool
     
-    for plan in plans {
-        if plan.filter({$0.type == 1}).count > 0 {
-            bus.append(plan)
-        } else {
-            foot.append(plan)
-        }
+    var body: some View {
+        Button(action: {
+            name = location.name_en
+            id = location.id
+            showList = false
+        }) {
+            HStack(spacing: 20) {
+                if location.type == 0 {
+                    Image(systemName: "building.2.fill")
+                        .imageScale(.large)
+                        .foregroundColor(CUPurple)
+                } else if location.type == 1 {
+                    Image(systemName: "bus")
+                        .imageScale(.large)
+                        .foregroundColor(CUYellow)
+                }
+                Text(location.name_en)
+                Spacer()
+            }
+        }.buttonStyle(MyButtonStyle())
     }
-    return (foot, bus)
 }
 
-func estimateTime(plan: [Route]) -> Int { // min
-    var time = 0.0
-    for route in plan {
-        if route.type == 0 {
-            time += route.dist / footSpeed
-        } else if route.type == 1 {
-            time += route.dist / busSpeed
-        }
+struct MyButtonStyle: ButtonStyle {
+    func makeBody(configuration: Self.Configuration) -> some View {
+        configuration.label
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(Color.gray.opacity(configuration.isPressed ? 0.2 : 0))
+                    .animation(.spring())
+            )
+            .scaleEffect(configuration.isPressed ? 0.95: 1)
+            .foregroundColor(.primary)
+            .animation(.spring())
     }
-    return Int(time / 60)
 }
