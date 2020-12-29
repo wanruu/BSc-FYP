@@ -25,21 +25,17 @@ struct MainPage: View {
     @State var plans: [Plan] = []
     @State var mode: TransMode = .bus
     
-    // height of pland text view
-    @State var lastHeight = smallH
-    @State var height = smallH
-
-    @State var showPlans = false
+    // height of plan view
+    @State var lastHeight: CGFloat = 0
+    @State var height: CGFloat = 0
     
     var body: some View {
         ZStack {
             MapView(plans: $plans, locationGetter: locationGetter, lastHeight: $lastHeight, height: $height)
             
-            SearchView(locations: locations, routes: routes, plans: $plans, locationGetter: locationGetter, mode: $mode, showPlans: $showPlans)
+            SearchView(locations: locations, routes: routes, plans: $plans, locationGetter: locationGetter, mode: $mode, lastHeight: $lastHeight, height: $height)
             
-            if showPlans {
-                PlansView(locations: locations, plans: $plans, lastHeight: $lastHeight, height: $height)
-            }
+            PlansView(locations: locations, plans: $plans, lastHeight: $lastHeight, height: $height)
         }
     }
 }

@@ -50,29 +50,35 @@ struct SearchView: View {
     
     @Binding var mode: TransMode
     
+    // height of plan view
+    @Binding var lastHeight: CGFloat
+    @Binding var height: CGFloat
+    
     @State var showStartList = false
     @State var showEndList = false
-    @Binding var showPlans: Bool
     
     var body: some View {
         if showStartList {
             // Page 1: search starting point
             SearchList(locations: locations, placeholder: "From", locationName: $startName, locationId: $startId, keyword: startName, showList: $showStartList)
                 .onAppear() {
-                    showPlans = false
+                    height = 0
+                    lastHeight = 0
                 }
         } else if showEndList {
             // Page 2: search ending point
             SearchList(locations: locations, placeholder: "To", locationName: $endName, locationId: $endId, keyword: endName, showList: $showEndList)
                 .onAppear() {
-                    showPlans = false
+                    height = 0
+                    lastHeight = 0
                 }
         } else {
             // Page 3: search box
+            let offset = smallH - height >= 0 ? 0 : smallH - height
             VStack {
-                SearchArea(locations: locations, routes: routes, plans: $plans, locationGetter: locationGetter, startName: startName, endName: endName, startId: startId, endId: endId, mode: $mode, showStartList: $showStartList, showEndList: $showEndList, showPlans: $showPlans)
+                SearchArea(locations: locations, routes: routes, plans: $plans, locationGetter: locationGetter, startName: startName, endName: endName, startId: startId, endId: endId, mode: $mode, lastHeight: $lastHeight, height: $height, showStartList: $showStartList, showEndList: $showEndList)
                 Spacer()
-            }
+            }.offset(y: offset).animation(Animation.easeOut)
         }
     }
 }
@@ -91,9 +97,13 @@ struct SearchArea: View {
     
     @Binding var mode: TransMode
     
+    // height of plan view
+    @Binding var lastHeight: CGFloat
+    @Binding var height: CGFloat
+    
     @Binding var showStartList: Bool
     @Binding var showEndList: Bool
-    @Binding var showPlans: Bool
+
     
     var body: some View {
         VStack(spacing: 0) {
@@ -112,7 +122,7 @@ struct SearchArea: View {
                         .onTapGesture { showEndList = true }
                 }
                 Image(systemName: "arrow.up.arrow.down")
-                    .padding(.leading, 20)
+                    .padding(.leading)
                     .imageScale(.large)
                     .onTapGesture {
                         // swap
@@ -126,7 +136,7 @@ struct SearchArea: View {
                     } // TODO: add rotate animation
             }.padding(.horizontal, 30).padding(.top)
             // select mode
-            ModeSelectBar(plans: $plans, mode: $mode, showPlans: $showPlans)
+            ModeSelectBar(plans: $plans, mode: $mode, lastHeight: $lastHeight, height: $height)
                 .padding(.horizontal, 30).padding(.top)
             
             // shadow
@@ -138,7 +148,8 @@ struct SearchArea: View {
         .background(Color.white)
         .onAppear() {
             if startId != "" && endId != "" {
-                showPlans = true
+                height = smallH
+                lastHeight = smallH
             }
             dij()
         }
@@ -217,7 +228,10 @@ struct SearchArea: View {
 struct ModeSelectBar: View {
     @Binding var plans: [Plan]
     @Binding var mode: TransMode
-    @Binding var showPlans: Bool
+    // height of plan view
+    @Binding var lastHeight: CGFloat
+    @Binding var height: CGFloat
+    
     var body: some View {
         // find min time for both mode
         var footTime = INF
@@ -234,7 +248,7 @@ struct ModeSelectBar: View {
             HStack(spacing: 30) {
                 HStack {
                     Image(systemName: "bus").foregroundColor(Color.black.opacity(0.7))
-                    if showPlans {
+                    if height != 0 {
                         busTime == INF ? Text("—") : Text("\(Int(busTime / 60)) min")
                     }
                 }
@@ -246,7 +260,7 @@ struct ModeSelectBar: View {
                 
                 HStack {
                     Image(systemName: "figure.walk").foregroundColor(Color.black.opacity(0.7))
-                    if showPlans {
+                    if height != 0 {
                         footTime == INF ? Text("—") : Text("\(Int(footTime) / 60) min")
                     }
                 }

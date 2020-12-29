@@ -91,16 +91,18 @@ struct NoPlanView: View {
     var body: some View {
         VStack(spacing: 0) {
             Spacer()
-            Image(systemName: "line.horizontal.3")
-                .foregroundColor(Color.gray)
-                .padding()
-                .frame(width: SCWidth)
-                .background(RoundedCorners(color: .white, tl: 30, tr: 30, bl: 0, br: 0))
-                .clipped()
-                .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: -2)
-            Text("No results").font(.title2)
-                .frame(width: SCWidth, height: height, alignment: .center)
-                .background(Color.white)
+            if height != 0 {
+                Image(systemName: "line.horizontal.3")
+                    .foregroundColor(Color.gray)
+                    .padding()
+                    .frame(width: SCWidth)
+                    .background(RoundedCorners(color: .white, tl: 30, tr: 30, bl: 0, br: 0))
+                    .clipped()
+                    .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: -2)
+                Text("No results").font(.title2)
+                    .frame(width: SCWidth, height: height, alignment: .center)
+                    .background(Color.white)
+            }
         }
         .gesture(drag)
     }
