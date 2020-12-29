@@ -9,17 +9,17 @@ import SwiftUI
 
 struct MapView: View {
     @Binding var plans: [Plan]
+    @Binding var planIndex: Int
     @ObservedObject var locationGetter: LocationGetterModel
     
     @Binding var lastHeight: CGFloat
     @Binding var height: CGFloat
     
-    /* gesture */
+    // gesture
     @State var lastOffset = Offset(x: 0, y: 0)
     @State var offset = Offset(x: 0, y: 0)
     @State var lastScale = initialZoom
     @State var scale = initialZoom
-    
     var gesture: some Gesture {
         SimultaneousGesture(
             MagnificationGesture()
@@ -50,13 +50,41 @@ struct MapView: View {
     
     var body: some View {
         // TODO: calculate offset to ensure plan is at center of map
+        
         ZStack {
             Image("cuhk-campus-map")
                 .resizable()
                 .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
                 .position(x: centerX + offset.x, y: centerY + offset.y)
 
-            PlansMapView(plans: $plans, offset: $offset, scale: $scale)
+            PlansMapView(plans: $plans, planIndex: $planIndex, lastOffset: $lastOffset, offset: $offset, lastScale: $lastScale, scale: $scale)
+                .onAppear {
+                    guard planIndex < plans.count else { return }
+                    var minLa = INF
+                    var minLg = INF
+                    var maxLa = -INF
+                    var maxLg = -INF
+                    
+                    for route in plans[planIndex].routes {
+                        for point in route.points {
+                            if point.latitude < minLa {
+                                minLa = point.latitude
+                            } else if point.latitude > maxLa {
+                                maxLa = point.latitude
+                            }
+                            if point.longitude < minLg {
+                                minLg = point.longitude
+                            } else if point.longitude > maxLg {
+                                maxLg = point.longitude
+                            }
+                        }
+                    }
+                    scale = minZoomOut
+                    lastScale = scale
+                    offset.x = CGFloat((centerLg - minLg / 2 - maxLg / 2) * lgScale * 2) * scale
+                    offset.y = CGFloat((minLa / 2 + maxLa / 2 - centerLa) * laScale * 2) * scale
+                    lastOffset = offset
+                }
             
             UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale)
 
@@ -64,7 +92,7 @@ struct MapView: View {
         // animation
         .offset(y: lastHeight == largeH ? 0 : -lastHeight + smallH)
         .animation(
-            offset == lastOffset ? Animation.easeInOut(duration: 5)//0.4)
+            offset == lastOffset && scale == lastScale ? Animation.easeInOut(duration: 0.4)
             .repeatCount(1, autoreverses: false) : nil
         )
         // gesture
@@ -74,13 +102,21 @@ struct MapView: View {
 
 struct PlansMapView: View {
     @Binding var plans: [Plan]
+    @Binding var planIndex: Int
+    
+    @Binding var lastOffset: Offset
     @Binding var offset: Offset
+    @Binding var lastScale: CGFloat
     @Binding var scale: CGFloat
     
     var body: some View {
         ZStack {
             ForEach(plans) { plan in
-                PlanMapView(plan: plan, opacity: 1, offset: $offset, scale: $scale)
+                if plans.firstIndex(where: {$0.id == plan.id}) == planIndex {
+                    PlanMapView(plan: plan, opacity: 1, offset: $offset, scale: $scale)
+                } else {
+                    PlanMapView(plan: plan, opacity: 0.5, offset: $offset, scale: $scale)
+                }
             }
         }
     }

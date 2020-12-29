@@ -23,6 +23,7 @@ struct MainPage: View {
     
     // search result
     @State var plans: [Plan] = []
+    @State var planIndex: Int = 0
     @State var mode: TransMode = .bus
     
     // height of plan view
@@ -35,7 +36,7 @@ struct MainPage: View {
     var body: some View {
         ZStack {
             if !showStartList && !showEndList {
-                MapView(plans: $plans, locationGetter: locationGetter, lastHeight: $lastHeight, height: $height)
+                MapView(plans: $plans, planIndex: $planIndex, locationGetter: locationGetter, lastHeight: $lastHeight, height: $height)
             }
             
             SearchView(locations: locations, routes: routes, plans: $plans, locationGetter: locationGetter, mode: $mode, lastHeight: $lastHeight, height: $height, showStartList: $showStartList, showEndList: $showEndList)
