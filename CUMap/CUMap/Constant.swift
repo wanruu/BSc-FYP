@@ -45,4 +45,4 @@ let CUPaleYellow = Color(red: 244/255, green: 223/255, blue: 176/255)
 
 // Speed: m/s
 let busSpeed = 2.0
-let footSpeed = 1.2
+let footSpeed = 0.9

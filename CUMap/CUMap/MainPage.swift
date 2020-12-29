@@ -38,7 +38,7 @@ struct MainPage: View {
             SearchView(locations: locations, routes: routes, plans: $plans, locationGetter: locationGetter, mode: $mode, showPlans: $showPlans)
             
             if showPlans {
-                PlansTextView(locations: locations, plans: $plans, lastHeight: $lastHeight, height: $height)
+                PlansView(locations: locations, plans: $plans, lastHeight: $lastHeight, height: $height)
             }
         }
     }
