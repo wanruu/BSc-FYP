@@ -29,11 +29,16 @@ struct MainPage: View {
     @State var lastHeight: CGFloat = 0
     @State var height: CGFloat = 0
     
+    @State var showStartList = false
+    @State var showEndList = false
+    
     var body: some View {
         ZStack {
-            MapView(plans: $plans, locationGetter: locationGetter, lastHeight: $lastHeight, height: $height)
+            if !showStartList && !showEndList {
+                MapView(plans: $plans, locationGetter: locationGetter, lastHeight: $lastHeight, height: $height)
+            }
             
-            SearchView(locations: locations, routes: routes, plans: $plans, locationGetter: locationGetter, mode: $mode, lastHeight: $lastHeight, height: $height)
+            SearchView(locations: locations, routes: routes, plans: $plans, locationGetter: locationGetter, mode: $mode, lastHeight: $lastHeight, height: $height, showStartList: $showStartList, showEndList: $showEndList)
             
             if lastHeight != 0 {
                 PlansView(locations: locations, plans: $plans, lastHeight: $lastHeight, height: $height)

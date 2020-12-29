@@ -54,8 +54,8 @@ struct SearchView: View {
     @Binding var lastHeight: CGFloat
     @Binding var height: CGFloat
     
-    @State var showStartList = false
-    @State var showEndList = false
+    @Binding var showStartList: Bool
+    @Binding var showEndList: Bool
     
     var body: some View {
         if showStartList {
@@ -75,10 +75,17 @@ struct SearchView: View {
         } else {
             // Page 3: search box
             let offset = smallH - height >= 0 ? 0 : smallH - height
-            VStack {
-                SearchArea(locations: locations, routes: routes, plans: $plans, locationGetter: locationGetter, startName: startName, endName: endName, startId: startId, endId: endId, mode: $mode, lastHeight: $lastHeight, height: $height, showStartList: $showStartList, showEndList: $showEndList)
-                Spacer()
-            }.offset(y: offset).animation(Animation.easeOut)
+            ZStack {
+                // blank
+                Rectangle()
+                    .frame(height: SCHeight * 0.3)
+                    .foregroundColor(.white)
+                    .offset(y: -SCHeight * 0.5)
+                VStack(spacing: 0) {
+                    SearchArea(locations: locations, routes: routes, plans: $plans, locationGetter: locationGetter, startName: startName, endName: endName, startId: startId, endId: endId, mode: $mode, lastHeight: $lastHeight, height: $height, showStartList: $showStartList, showEndList: $showEndList)
+                    Spacer()
+                }.offset(y: offset).animation(Animation.easeOut)
+            }
         }
     }
 }

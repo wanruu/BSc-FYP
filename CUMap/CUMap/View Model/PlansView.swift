@@ -10,21 +10,21 @@ import SwiftUI
  */
 
 /*
-       small                medium               large
- -----------------    -----------------    -----------------
- |    Search     |    |               |    -----------------
- |               |    |               |    |      􀌇       |
- -----------------    |      Map      |    |               |
- |               |    |               |    |               |
- |               |    |               |    |               |
- |               |    -----------------    |               |
- |      Map      |    |               |    |SCHeight/10*8.8|
- |               |    |               |    |               |
- |               |    | SCHeight/10*4 |    |               |
- |               |    |               |    |               |
- -----------------    |               |    |               |
- | SCHeight / 10 |    |               |    |               |
- -----------------    -----------------    -----------------
+       small                  medium               large
+ ------------------    ------------------    -----------------
+ |     Search     |    |                |    -----------------
+ |                |    |                |    |      􀌇       |
+ ------------------    |       Map      |    |               |
+ |       􀌇       |    |                |    |               |
+ |                |    |                |    |               |
+ |                |    ------------------    |               |
+ |       Map      |    |       􀌇       |    |SCHeight * 0.88|
+ |                |    |                |    |               |
+ |                |    |  SCHeight*0.4  |    |               |
+ |                |    |                |    |               |
+ ------------------    |                |    |               |
+ |  SCHeight*0.1  |    |                |    |               |
+ ------------------    ------------------    -----------------
  */
 
 let smallH = SCHeight / 10
@@ -89,22 +89,28 @@ struct NoPlanView: View {
             }
     }
     var body: some View {
-        VStack(spacing: 0) {
-            Spacer()
-            if height != 0 {
-                Image(systemName: "line.horizontal.3")
-                    .foregroundColor(Color.gray)
-                    .padding()
-                    .frame(width: SCWidth)
-                    .background(RoundedCorners(color: .white, tl: 30, tr: 30, bl: 0, br: 0))
-                    .clipped()
-                    .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: -2)
-                Text("No results").font(.title2)
-                    .frame(width: SCWidth, height: height, alignment: .center)
-                    .background(Color.white)
+        ZStack {
+            // blank
+            Rectangle()
+                .frame(height: smallH, alignment: .center)
+                .foregroundColor(.white)
+                .offset(y: SCHeight * 0.5)
+            VStack(spacing: 0) {
+                Spacer()
+                if lastHeight != 0 {
+                    Image(systemName: "line.horizontal.3")
+                        .foregroundColor(Color.gray)
+                        .padding()
+                        .frame(width: SCWidth)
+                        .background(RoundedCorners(color: .white, tl: 30, tr: 30, bl: 0, br: 0))
+                        .clipped()
+                        .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: -2)
+                    Text("No results").font(.title2)
+                        .frame(width: SCWidth, height: height, alignment: .center)
+                        .background(Color.white)
+                }
             }
-        }
-        .gesture(drag)
+        }.gesture(drag)
     }
 }
 
@@ -152,50 +158,57 @@ struct PlanView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            Spacer()
-            Image(systemName: "line.horizontal.3")
-                .foregroundColor(Color.gray)
-                .padding()
-                .frame(width: SCWidth)
-                .background(RoundedCorners(color: .white, tl: 30, tr: 30, bl: 0, br: 0))
-                .clipped()
-                .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: -2)
-            
-            // content
-            VStack(alignment: .leading, spacing: 0) {
-                // time & distance
-                HStack {
-                    Text("\(Int(plan.time/60))").font(.title2).bold()
-                    Text("min").font(.title2)
-                    Text("(\(Int(plan.dist)) m)").font(.title3).foregroundColor(Color.gray)
-                }.padding(.horizontal).padding(.bottom)
-                Divider()
+        ZStack {
+            // blank
+            Rectangle()
+                .frame(height: smallH, alignment: .center)
+                .foregroundColor(.white)
+                .offset(y: SCHeight * 0.5)
+            VStack(spacing: 0) {
+                Spacer()
+                Image(systemName: "line.horizontal.3")
+                    .foregroundColor(Color.gray)
+                    .padding()
+                    .frame(width: SCWidth)
+                    .background(RoundedCorners(color: .white, tl: 30, tr: 30, bl: 0, br: 0))
+                    .clipped()
+                    .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: -2)
                 
-                ScrollView(.vertical, showsIndicators: false) {
-                    VStack(spacing: 0) {
-                        // chart
-                        HeightChart(plan: $plan, width: SCWidth * 0.9, height: SCWidth * 0.25)
-                            .padding(.vertical)
-                        Divider()
-                    }
-                    VStack(alignment: .leading, spacing: 0) {
-                        // Alert
-                        HStack(spacing: 20) {
-                            Image(systemName: "exclamationmark.circle.fill")
-                                .imageScale(.large)
-                                .foregroundColor(CUYellow)
-                            Text("The estimated time to arrive may not be accurate.")
-                        }.padding()
-                        Divider()
-                        // steps
-                        Instructions(locations: locations, plan: $plan)
-                        Divider()
+                // content
+                VStack(alignment: .leading, spacing: 0) {
+                    // time & distance
+                    HStack {
+                        Text("\(Int(plan.time/60))").font(.title2).bold()
+                        Text("min").font(.title2)
+                        Text("(\(Int(plan.dist)) m)").font(.title3).foregroundColor(Color.gray)
+                    }.padding(.horizontal).padding(.bottom)
+                    Divider()
+                    
+                    ScrollView(.vertical, showsIndicators: false) {
+                        VStack(spacing: 0) {
+                            // chart
+                            HeightChart(plan: $plan, width: SCWidth * 0.9, height: SCWidth * 0.25)
+                                .padding(.vertical)
+                            Divider()
+                        }
+                        VStack(alignment: .leading, spacing: 0) {
+                            // Alert
+                            HStack(spacing: 20) {
+                                Image(systemName: "exclamationmark.circle.fill")
+                                    .imageScale(.large)
+                                    .foregroundColor(CUYellow)
+                                Text("The estimated time to arrive may not be accurate.")
+                            }.padding()
+                            Divider()
+                            // steps
+                            Instructions(locations: locations, plan: $plan)
+                            Divider()
+                        }
                     }
                 }
+                .frame(width: SCWidth, height: height, alignment: .center)
+                .background(Color.white)
             }
-            .frame(width: SCWidth, height: height, alignment: .center)
-            .background(Color.white)
         }.gesture(drag)
     }
 }

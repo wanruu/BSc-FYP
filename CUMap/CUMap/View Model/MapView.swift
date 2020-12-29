@@ -55,7 +55,7 @@ struct MapView: View {
                 .resizable()
                 .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
                 .position(x: centerX + offset.x, y: centerY + offset.y)
-                    
+
             PlansMapView(plans: $plans, offset: $offset, scale: $scale)
             
             UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale)
@@ -67,7 +67,7 @@ struct MapView: View {
             offset == lastOffset ? Animation.easeInOut(duration: 0.4)
             .repeatCount(1, autoreverses: false) : nil
         )
-        .clipShape(Rectangle())
+        // .clipShape(Rectangle())
         // gesture
         .gesture(gesture)
     }
