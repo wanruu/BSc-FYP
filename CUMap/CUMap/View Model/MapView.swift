@@ -49,8 +49,6 @@ struct MapView: View {
     }
     
     var body: some View {
-        // TODO: calculate offset to ensure plan is at center of map
-        
         ZStack {
             Image("cuhk-campus-map")
                 .resizable()

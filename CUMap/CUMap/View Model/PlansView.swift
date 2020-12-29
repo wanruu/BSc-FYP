@@ -373,7 +373,7 @@ struct Instructions: View {
                     HStack(spacing: 20) {
                         if route == plan.routes.last! { // last route
                             Image(systemName: "smallcircle.fill.circle")
-                        } else if route.type == 0 {
+                        } else if loc.type == 0 {
                             Image(systemName: "building.2")
                         } else {
                             Image(systemName: "bus")
