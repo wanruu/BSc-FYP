@@ -49,6 +49,7 @@ struct MapView: View {
     }
     
     var body: some View {
+        // TODO: calculate offset to ensure plan is at center of map
         ZStack {
             Image("cuhk-campus-map")
                 .resizable()
@@ -61,15 +62,13 @@ struct MapView: View {
 
         }
         // animation
-        .offset(x: 0, y: -lastHeight + smallH)
+        .offset(y: lastHeight == largeH ? 0 : -lastHeight + smallH)
         .animation(
             offset == lastOffset ? Animation.easeInOut(duration: 0.4)
             .repeatCount(1, autoreverses: false) : nil
         )
-        
         .clipShape(Rectangle())
         // gesture
-        .contentShape(Rectangle())
         .gesture(gesture)
     }
 }
