@@ -96,19 +96,7 @@ struct SearchArea: View {
     @Binding var showPlans: Bool
     
     var body: some View {
-        // find min time for both mode
-        var footTime = INF
-        var busTime = INF
-        for plan in plans {
-            if plan.type == 0 && plan.time < footTime {
-                footTime = plan.time
-            }
-            if plan.type == 1 && plan.time < busTime {
-                busTime = plan.time
-            }
-        }
-        
-        return VStack(spacing: 15) {
+        VStack(spacing: 0) {
             // search box
             HStack {
                 VStack {
@@ -124,8 +112,8 @@ struct SearchArea: View {
                         .onTapGesture { showEndList = true }
                 }
                 Image(systemName: "arrow.up.arrow.down")
+                    .padding(.leading, 20)
                     .imageScale(.large)
-                    .padding()
                     .onTapGesture {
                         // swap
                         var tmp = startName
@@ -136,37 +124,17 @@ struct SearchArea: View {
                         endId = tmp
                         dij()
                     } // TODO: add rotate animation
-            }
+            }.padding(.horizontal, 30).padding(.top)
             // select mode
-            ScrollView(.horizontal, showsIndicators: true) {
-                HStack(spacing: 30) {
-                    HStack {
-                        Image(systemName: "bus").foregroundColor(Color.black.opacity(0.7))
-                        busTime == INF ? Text("—") : Text("\(Int(busTime / 60)) min")
-                    }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 5)
-                    .background(mode == .bus ? CUPurple.opacity(0.2) : nil)
-                    .cornerRadius(20)
-                    .onTapGesture {
-                        mode = .bus
-                    }
-                    
-                    HStack {
-                        Image(systemName: "figure.walk").foregroundColor(Color.black.opacity(0.7))
-                        footTime == INF ? Text("—") : Text("\(Int(footTime) / 60) min")
-                    }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 5)
-                    .background(mode == .foot ? CUPurple.opacity(0.2) : nil)
-                    .cornerRadius(20)
-                    .onTapGesture {
-                        mode = .foot
-                    }
-                }
-            }
+            ModeSelectBar(plans: $plans, mode: $mode, showPlans: $showPlans)
+                .padding(.horizontal, 30).padding(.top)
+            
+            // shadow
+            Rectangle()
+                .foregroundColor(.white)
+                .frame(width: SCWidth, height: 10)
+                .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: 4)
         }
-        .padding()
         .background(Color.white)
         .onAppear() {
             if startId != "" && endId != "" {
@@ -244,6 +212,52 @@ struct SearchArea: View {
         return -1
     }
     
+}
+
+struct ModeSelectBar: View {
+    @Binding var plans: [Plan]
+    @Binding var mode: TransMode
+    @Binding var showPlans: Bool
+    var body: some View {
+        // find min time for both mode
+        var footTime = INF
+        var busTime = INF
+        for plan in plans {
+            if plan.type == 0 && plan.time < footTime {
+                footTime = plan.time
+            }
+            if plan.type == 1 && plan.time < busTime {
+                busTime = plan.time
+            }
+        }
+        return ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 30) {
+                HStack {
+                    Image(systemName: "bus").foregroundColor(Color.black.opacity(0.7))
+                    if showPlans {
+                        busTime == INF ? Text("—") : Text("\(Int(busTime / 60)) min")
+                    }
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 5)
+                .background(mode == .bus ? CUPurple.opacity(0.2) : nil)
+                .cornerRadius(20)
+                .onTapGesture { mode = .bus }
+                
+                HStack {
+                    Image(systemName: "figure.walk").foregroundColor(Color.black.opacity(0.7))
+                    if showPlans {
+                        footTime == INF ? Text("—") : Text("\(Int(footTime) / 60) min")
+                    }
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 5)
+                .background(mode == .foot ? CUPurple.opacity(0.2) : nil)
+                .cornerRadius(20)
+                .onTapGesture { mode = .foot }
+            }
+        }
+    }
 }
 
 struct SearchList: View {
