@@ -29,47 +29,47 @@ struct CollectPage: View {
     // uploading
     @State var showUploadAlert = false
     
+    var gesture: some Gesture {
+        SimultaneousGesture(
+            MagnificationGesture()
+                .onChanged { value in
+                    isGestureChanging = true
+                    var tmpScale = lastScale * value.magnitude
+                    if(tmpScale < minZoomOut) {
+                        tmpScale = minZoomOut
+                    } else if(tmpScale > maxZoomIn) {
+                        tmpScale = maxZoomIn
+                    }
+                    scale = tmpScale
+                    offset = lastOffset * tmpScale / lastScale
+                }
+                .onEnded { _ in
+                    lastScale = scale
+                    lastOffset = offset
+                    isGestureChanging = false
+                },
+            DragGesture()
+                .onChanged{ value in
+                    isGestureChanging = true
+                    mode = .normal
+                    offset.x = lastOffset.x + value.location.x - value.startLocation.x
+                    offset.y = lastOffset.y + value.location.y - value.startLocation.y
+                }
+                .onEnded{ _ in
+                    lastOffset = offset
+                    isGestureChanging = false
+                }
+        )
+    }
+    
     var body: some View {
-        withAnimation {
-            ZStack {
-                Image("cuhk-campus-map")
-                    .resizable()
-                    .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
-                    .position(x: centerX + offset.x, y: centerY + offset.y)
-                    // Gesture
-                    .contentShape(Rectangle())
-                    .gesture(
-                        SimultaneousGesture(
-                            MagnificationGesture()
-                            .onChanged { value in
-                                isGestureChanging = true
-                                var tmpScale = lastScale * value.magnitude
-                                if(tmpScale < minZoomOut) {
-                                    tmpScale = minZoomOut
-                                } else if(tmpScale > maxZoomIn) {
-                                    tmpScale = maxZoomIn
-                                }
-                                scale = tmpScale
-                                offset = lastOffset * tmpScale / lastScale
-                            }
-                            .onEnded { _ in
-                                lastScale = scale
-                                lastOffset = offset
-                                isGestureChanging = false
-                            },
-                            DragGesture()
-                            .onChanged{ value in
-                                isGestureChanging = true
-                                mode = .normal
-                                offset.x = lastOffset.x + value.location.x - value.startLocation.x
-                                offset.y = lastOffset.y + value.location.y - value.startLocation.y
-                            }
-                            .onEnded{ _ in
-                                lastOffset = offset
-                                isGestureChanging = false
-                            }
-                        )
-                    )
+        ZStack {
+            Image("cuhk-campus-map")
+                .resizable()
+                .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
+                .position(x: centerX + offset.x, y: centerY + offset.y)
+                .gesture(gesture)
+            
                 // trajs data from server
                 TrajsView(trajectories: $trajectories, color: Color.gray, offset: $offset, scale: $scale)
                 // recording trajectory
@@ -146,7 +146,6 @@ struct CollectPage: View {
                     }
                 }
             }
-        }
         // navigation bar
         .navigationTitle("Collect")
         .navigationBarTitleDisplayMode(.inline)

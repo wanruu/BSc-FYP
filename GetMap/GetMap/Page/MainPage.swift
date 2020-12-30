@@ -112,58 +112,73 @@ struct MainPagePhone: View {
     // 1 = SCWidth * 0.001
     var body: some View {
         NavigationView {
-            HStack {
-                NavigationLink(destination: CollectPage(locations: $locations, trajectories: $trajectories)) {
-                    ZStack {
-                        Image("collect")
-                            .resizable()
-                            .frame(width: SCWidth * 0.25, height: SCWidth * 0.25)
-                            .cornerRadius(SCWidth * 0.05)
-                        Text("Collect")
-                            .foregroundColor(Color.white).shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
-                            .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
-                            .offset(x: 0, y: SCWidth * 0.06)
+            VStack(alignment: .leading) {
+                Text("Collect").font(.title3).bold()
+                HStack(spacing: 30) {
+                    NavigationLink(destination: CollectPage(locations: $locations, trajectories: $trajectories)) {
+                        ZStack {
+                            Image("collect")
+                                .resizable()
+                                .frame(width: SCWidth * 0.25, height: SCWidth * 0.25)
+                                .cornerRadius(SCWidth * 0.05)
+                            Text("Collect")
+                                .foregroundColor(Color.white).shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
+                                .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
+                                .offset(y: SCWidth * 0.06)
+                        }
                     }
+                    Spacer()
                 }
-                
-                NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, mapSys: $mapSys)) {
-                    ZStack {
-                        Image("map")
-                            .resizable()
-                            .frame(width: SCWidth * 0.25, height: SCWidth * 0.25)
-                            .cornerRadius(SCWidth * 0.05)
-                        Text("Map")
-                            .foregroundColor(Color.white) .shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
-                            .font(.system(size: SCWidth * 0.06, weight: .bold, design: .rounded))
-                            .offset(x: 0, y: SCWidth * 0.06)
+                Text("Process").font(.title3).bold().padding(.top)
+                HStack(spacing: 30) {
+                    NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, mapSys: $mapSys)) {
+                        ZStack {
+                            Image("map")
+                                .resizable()
+                                .frame(width: SCWidth * 0.25, height: SCWidth * 0.25)
+                                .cornerRadius(SCWidth * 0.05)
+                            Text("Map")
+                                .foregroundColor(Color.white) .shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
+                                .font(.system(size: SCWidth * 0.06, weight: .bold, design: .rounded))
+                                .offset(y: SCWidth * 0.06)
+                        }
                     }
+                    NavigationLink(destination: LocationPage(locations: $locations)) {
+                        ZStack {
+                            Image("building")
+                                .resizable()
+                                .frame(width: SCWidth * 0.25, height: SCWidth * 0.25)
+                                .cornerRadius(SCWidth * 0.05)
+                            Text("Location")
+                                .foregroundColor(Color.white).shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
+                                .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
+                                .offset(y: SCWidth * 0.06)
+                        }
+                    }
+                    Spacer()
                 }
-                NavigationLink(destination: LocationPage(locations: $locations)) {
-                    ZStack {
-                        Image("building")
-                            .resizable()
-                            .frame(width: SCWidth * 0.25, height: SCWidth * 0.25)
-                            .cornerRadius(SCWidth * 0.05)
-                        
-                        Text("Location")
-                            .foregroundColor(Color.white).shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
-                            .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
-                            .offset(x: 0, y: SCWidth * 0.06)
+                Text("Verify").font(.title3).bold().padding(.top)
+                HStack(spacing: 30) {
+                    NavigationLink(destination: SearchPage(locations: $locations, routes: $routes)) {
+                        ZStack {
+                            Image(systemName: "doc.text.magnifyingglass")
+                                .resizable()
+                                .frame(width: SCWidth * 0.25, height: SCWidth * 0.25)
+                                .scaledToFit()
+                                .cornerRadius(SCWidth * 0.05)
+                            Text("Search")
+                                .foregroundColor(Color.white).shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
+                                .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
+                                .offset(y: SCWidth * 0.06)
+                        }
                     }
-                }
-                NavigationLink(destination: SearchPage(locations: $locations, routes: $routes)) {
-                    ZStack {
-                        Text("Search")
-                            .foregroundColor(Color.white).shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
-                            .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
-                            .offset(x: 0, y: SCWidth * 0.06)
-                    }
+                    Spacer()
                 }
             }
+            .padding(.horizontal, 30)
             .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.inline)
-        }
-        .navigationViewStyle(StackNavigationViewStyle())
+        }.navigationViewStyle(StackNavigationViewStyle())
     }
 }
 

@@ -1,18 +1,11 @@
-//
-//  GlobalVariable.swift
-//  GetMap
-//
-//  Created by wanruuu on 5/11/2020.
-//
-
 import Foundation
 import SwiftUI
 
 // let server = "http://10.13.66.145:8000" /* lulu CUHK1x */
-// let server = "http://10.13.115.254:8000" /* CUHK1x */
+let server = "http://10.13.115.254:8000" /* CUHK1x */
 // let server = "http://10.6.32.127:8000" /* CUHK */
 // let server = "http://169.254.161.175:8000" /* laptop */
-let server = "http://42.194.159.158:8000" /* tencent server */
+// let server = "http://42.194.159.158:8000" /* tencent server */
 
 /* screen info */
 let SCWidth = UIScreen.main.bounds.width
