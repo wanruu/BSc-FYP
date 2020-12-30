@@ -1,4 +1,4 @@
-/* MARK: Main Page, navigation to Map Page & Location Page */
+// MARK: Main Page, navigation to Map Page & Location Page
 
 import Foundation
 import SwiftUI
@@ -150,6 +150,18 @@ struct MainPagePhone: View {
                                 .frame(width: SCWidth * 0.25, height: SCWidth * 0.25)
                                 .cornerRadius(SCWidth * 0.05)
                             Text("Location")
+                                .foregroundColor(Color.white).shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
+                                .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
+                                .offset(y: SCWidth * 0.06)
+                        }
+                    }
+                    NavigationLink(destination: BusPage()) {
+                        ZStack {
+                            Image(systemName: "bus")
+                                .resizable()
+                                .frame(width: SCWidth * 0.25, height: SCWidth * 0.25)
+                                .cornerRadius(SCWidth * 0.05)
+                            Text("Bus")
                                 .foregroundColor(Color.white).shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
                                 .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
                                 .offset(y: SCWidth * 0.06)

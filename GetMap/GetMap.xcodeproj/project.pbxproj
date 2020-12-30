@@ -28,6 +28,9 @@
 		B48F7B7B258E8C9000EED1C1 /* CollectPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F7B7A258E8C9000EED1C1 /* CollectPage.swift */; };
 		B48F7B80258EACB700EED1C1 /* MapComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F7B7F258EACB700EED1C1 /* MapComponent.swift */; };
 		B48F7BAA259213FE00EED1C1 /* SearchPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F7BA9259213FE00EED1C1 /* SearchPage.swift */; };
+		B4DA2597259CEC01002A0009 /* BusPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DA2596259CEC01002A0009 /* BusPage.swift */; };
+		B4DA259D259CF8B7002A0009 /* ButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DA259C259CF8B7002A0009 /* ButtonStyle.swift */; };
+		B4DA25A6259D0170002A0009 /* CheckBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DA25A5259D0170002A0009 /* CheckBox.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +76,9 @@
 		B48F7B7A258E8C9000EED1C1 /* CollectPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectPage.swift; sourceTree = "<group>"; };
 		B48F7B7F258EACB700EED1C1 /* MapComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapComponent.swift; sourceTree = "<group>"; };
 		B48F7BA9259213FE00EED1C1 /* SearchPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPage.swift; sourceTree = "<group>"; };
+		B4DA2596259CEC01002A0009 /* BusPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusPage.swift; sourceTree = "<group>"; };
+		B4DA259C259CF8B7002A0009 /* ButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyle.swift; sourceTree = "<group>"; };
+		B4DA25A5259D0170002A0009 /* CheckBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBox.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,6 +130,8 @@
 				B437781D257155C100918432 /* ContentView.swift */,
 				B437784E257155F700918432 /* Constant.swift */,
 				B43779922576517400918432 /* DataStruct.swift */,
+				B4DA25A4259D012B002A0009 /* Custom Module */,
+				B4DA259B259CF89E002A0009 /* Style */,
 				B437789D2571589800918432 /* Process */,
 				B43778EF2572C70400918432 /* Page */,
 				B437781B257155C100918432 /* GetMapApp.swift */,
@@ -164,6 +172,7 @@
 				B48F7B7A258E8C9000EED1C1 /* CollectPage.swift */,
 				B43778F02572C71B00918432 /* MapPage.swift */,
 				B43778F82572C80200918432 /* LocationPage.swift */,
+				B4DA2596259CEC01002A0009 /* BusPage.swift */,
 				B48F7BA9259213FE00EED1C1 /* SearchPage.swift */,
 			);
 			path = Page;
@@ -177,6 +186,22 @@
 				B48F7B75258E87FC00EED1C1 /* LocationGetterModel.swift */,
 			);
 			path = "Reused Model";
+			sourceTree = "<group>";
+		};
+		B4DA259B259CF89E002A0009 /* Style */ = {
+			isa = PBXGroup;
+			children = (
+				B4DA259C259CF8B7002A0009 /* ButtonStyle.swift */,
+			);
+			path = Style;
+			sourceTree = "<group>";
+		};
+		B4DA25A4259D012B002A0009 /* Custom Module */ = {
+			isa = PBXGroup;
+			children = (
+				B4DA25A5259D0170002A0009 /* CheckBox.swift */,
+			);
+			path = "Custom Module";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -314,6 +339,7 @@
 				B437797525752A0600918432 /* LoadPage.swift in Sources */,
 				B43778F12572C71B00918432 /* MapPage.swift in Sources */,
 				B43778B82571593000918432 /* PartFunc.swift in Sources */,
+				B4DA259D259CF8B7002A0009 /* ButtonStyle.swift in Sources */,
 				B437799B257693EF00918432 /* ConnectFunc.swift in Sources */,
 				B43779932576517400918432 /* DataStruct.swift in Sources */,
 				B43778B32571591B00918432 /* DistFunc.swift in Sources */,
@@ -321,8 +347,10 @@
 				B48F7B76258E87FC00EED1C1 /* LocationGetterModel.swift in Sources */,
 				B437784F257155F700918432 /* Constant.swift in Sources */,
 				B48F7BAA259213FE00EED1C1 /* SearchPage.swift in Sources */,
+				B4DA25A6259D0170002A0009 /* CheckBox.swift in Sources */,
 				B43779132572D9AC00918432 /* MainPage.swift in Sources */,
 				B437781E257155C100918432 /* ContentView.swift in Sources */,
+				B4DA2597259CEC01002A0009 /* BusPage.swift in Sources */,
 				B437781C257155C100918432 /* GetMapApp.swift in Sources */,
 				B43778822571581B00918432 /* UserPoint.swift in Sources */,
 				B43778F92572C80200918432 /* LocationPage.swift in Sources */,

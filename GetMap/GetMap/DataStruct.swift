@@ -29,6 +29,24 @@ struct Route: Codable, Identifiable {
     var dist: Double
     var type: Int
 }
+
+// MARK: - Bus
+struct Bus: Codable, Identifiable {
+    var id: String
+    var name_en: String
+    var name_ch: String
+    var serviceHour: String
+    var serviceDay: Int
+    var stops: [String]
+    var departTime: [Int]
+    var special: [BusRule]
+}
+struct BusRule: Codable {
+    var departTime: Int
+    var busStop: String
+    var stop: Bool
+}
+
 // MARK: - Coor3D
 struct Coor3D: Codable {
     var latitude: Double
@@ -130,3 +148,15 @@ struct PutResult: Codable {
 
 // CU Color
 let CUPurple = Color(red: 117/255, green: 15/255, blue: 109/255)
+
+extension String: Identifiable {
+    public var id: String {
+        self
+    }
+}
+
+extension Int: Identifiable {
+    public var id: String {
+        String(self)
+    }
+}

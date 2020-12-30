@@ -152,6 +152,48 @@ struct LocationPage: View {
     }
 }
 
+/*
+struct EditLocWindow: View {
+    @State var id: String
+    @State var name_en: String
+    @State var latitude: String
+    @State var longitude: String
+    @State var altitude: String
+    @State var type: String
+    var body: some View {
+        
+    }
+}
+*/
+struct LocationView: View {
+    @Binding var location: Location
+    @State var name_en: String
+    @State var latitude: String
+    @State var longitude: String
+    @State var altitude: String
+    @State var type: String
+    
+    @Binding var offset: Offset
+    @Binding var scale: CGFloat
+    
+    @State var showing = false
+    var body: some View {
+        ZStack {
+            Button(action: {
+                showing = !showing
+            }) {
+                Image(location.type == 0 ? "location-purple" : "location-yellow")
+                .resizable()
+                .frame(width: SCWidth * 0.1, height: SCWidth * 0.1, alignment: .center)
+            }
+            .position(
+                x: centerX + CGFloat((location.longitude - centerLg)*lgScale*2) * scale + offset.x,
+                y: centerY + CGFloat((centerLa - location.latitude)*laScale*2) * scale + offset.y - SCWidth * 0.05
+            )
+        }
+    }
+}
+
 struct LocationsView: View {
     // location data
     @Binding var locations: [Location]
