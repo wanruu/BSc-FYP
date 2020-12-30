@@ -115,7 +115,7 @@ struct MainPagePhone: View {
             VStack(alignment: .leading) {
                 Text("Collect").font(.title3).bold()
                 HStack(spacing: 30) {
-                    NavigationLink(destination: CollectPage(locations: $locations, trajectories: $trajectories)) {
+                    NavigationLink(destination: CollectPage()) {
                         ZStack {
                             Image("collect")
                                 .resizable()
@@ -190,8 +190,8 @@ struct MainPagePad: View {
     var body: some View {
         NavigationView {
             List {
-                NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, mapSys: $mapSys)) { Text("Map") }
-                NavigationLink(destination: LocationPage(locations: $locations)) { Text("Location") }
+                // NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, mapSys: $mapSys)) { Text("Map") }
+                // NavigationLink(destination: LocationPage(locations: $locations)) { Text("Location") }
             }
             .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.inline)

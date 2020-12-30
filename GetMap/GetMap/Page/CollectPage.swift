@@ -4,18 +4,6 @@ import Foundation
 import SwiftUI
 
 struct CollectPage: View {
-    @Binding var locations: [Location]
-    @Binding var trajectories: [Trajectory]
-    
-    // gesture
-    @State var lastOffset = Offset(x: 0, y: 0)
-    @State var offset = Offset(x: 0, y: 0)
-    @State var lastScale = minZoomOut
-    @State var scale = minZoomOut
-    @State var isGestureChanging = false
-    
-    // add location window
-    @State var showAddLocation = false
     
     // collect traj data
     @ObservedObject var locationGetter = LocationGetterModel()
@@ -23,9 +11,16 @@ struct CollectPage: View {
     // if user point is at the center
     @State var mode: NavigationMode = .normal
     
+    // gesture
+    @State var lastOffset = Offset(x: 0, y: 0)
+    @State var offset = Offset(x: 0, y: 0)
+    @State var lastScale = minZoomOut
+    @State var scale = minZoomOut
+    
+    // add location window
+    @State var showAddLocation = false
     // if locations are being recorded
     @State var isRecording = true
-    
     // uploading
     @State var showUploadAlert = false
     
@@ -33,7 +28,6 @@ struct CollectPage: View {
         SimultaneousGesture(
             MagnificationGesture()
                 .onChanged { value in
-                    isGestureChanging = true
                     var tmpScale = lastScale * value.magnitude
                     if(tmpScale < minZoomOut) {
                         tmpScale = minZoomOut
@@ -46,18 +40,15 @@ struct CollectPage: View {
                 .onEnded { _ in
                     lastScale = scale
                     lastOffset = offset
-                    isGestureChanging = false
                 },
             DragGesture()
                 .onChanged{ value in
-                    isGestureChanging = true
                     mode = .normal
                     offset.x = lastOffset.x + value.location.x - value.startLocation.x
                     offset.y = lastOffset.y + value.location.y - value.startLocation.y
                 }
                 .onEnded{ _ in
                     lastOffset = offset
-                    isGestureChanging = false
                 }
         )
     }
@@ -69,9 +60,7 @@ struct CollectPage: View {
                 .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
                 .position(x: centerX + offset.x, y: centerY + offset.y)
                 .gesture(gesture)
-            
-                // trajs data from server
-                TrajsView(trajectories: $trajectories, color: Color.gray, offset: $offset, scale: $scale)
+
                 // recording trajectory
                 isRecording ? UserPathsView(locationGetter: locationGetter, offset: $offset, scale: $scale) : nil
                 
@@ -85,14 +74,14 @@ struct CollectPage: View {
                         Button(action: {
                             if(mode == .normal) {
                                 mode = .undirected
-                                if(!isGestureChanging) {
+                                if(offset == lastOffset && scale == lastScale) {
                                     offset.x = CGFloat((centerLg - locationGetter.current.longitude)*lgScale*2) * scale
                                     offset.y = CGFloat((locationGetter.current.latitude - centerLa)*laScale*2) * scale
                                     lastOffset = offset
                                 }
                             } else if(mode == .directed) {
                                 mode = .normal
-                                if(!isGestureChanging) {
+                                if(offset == lastOffset && scale == lastScale) {
                                     offset.x = CGFloat((centerLg - locationGetter.current.longitude)*lgScale*2) * scale
                                     offset.y = CGFloat((locationGetter.current.latitude - centerLa)*laScale*2) * scale
                                     lastOffset = offset
@@ -101,18 +90,19 @@ struct CollectPage: View {
                                 mode = .directed
                             }
                         }) {
-                            mode == .normal ?
+                            if mode == .normal {
                                 Image(systemName: "location")
                                 .resizable()
-                                .frame(width: SCWidth * 0.08, height: SCWidth * 0.08, alignment: .center) : nil
-                            mode == .undirected ?
+                                .frame(width: SCWidth * 0.08, height: SCWidth * 0.08, alignment: .center)
+                            } else if mode == .undirected {
                                 Image(systemName: "location.fill")
                                 .resizable()
-                                .frame(width: SCWidth * 0.08, height: SCWidth * 0.08, alignment: .center) : nil
-                            mode == .directed ?
+                                .frame(width: SCWidth * 0.08, height: SCWidth * 0.08, alignment: .center)
+                            } else if mode == .directed {
                                 Image(systemName: "location.north.line.fill")
                                 .resizable()
-                                .frame(width: SCWidth * 0.055, height: SCWidth * 0.09, alignment: .center) : nil
+                                .frame(width: SCWidth * 0.055, height: SCWidth * 0.09, alignment: .center)
+                            }
                         }
                         .frame(width: SCWidth * 0.1, height: SCWidth * 0.1, alignment: .center)
                         .padding()
@@ -150,13 +140,11 @@ struct CollectPage: View {
         .navigationTitle("Collect")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarItems(trailing:
-            Button(action: {
-                showAddLocation = true
-            }) {
+            Button(action: { showAddLocation = true }) {
                 Image(systemName: "plus.circle").imageScale(.large).contentShape(Rectangle())
             }
         )
-        .newLocationPrompt(isShowing: $showAddLocation, locations: $locations, locationGetter: locationGetter)
+        .newLocationPrompt(isShowing: $showAddLocation, locationGetter: locationGetter)
         // alert
         .alert(isPresented: $showUploadAlert) {
             Alert(
@@ -198,10 +186,7 @@ struct CollectPage: View {
             } else {
                 guard let data = data else { return }
                 do {
-                    let res = try JSONDecoder().decode([Trajectory].self, from: data)
-                    for traj in res {
-                        trajectories.append(traj)
-                    }
+                    let _ = try JSONDecoder().decode([Trajectory].self, from: data)
                 } catch let error {
                     print(error)
                     showUploadAlert = true
@@ -213,7 +198,6 @@ struct CollectPage: View {
 
 struct NewLocationPrompt<Presenting>: View where Presenting: View {
     @Binding var isShowing: Bool
-    @Binding var locations: [Location]
     @ObservedObject var locationGetter: LocationGetterModel
     
     @State var locationName: String = ""
@@ -222,54 +206,41 @@ struct NewLocationPrompt<Presenting>: View where Presenting: View {
     let presenting: Presenting
     
     var body: some View {
-        GeometryReader { _ in
-            ZStack {
-                presenting.disabled(isShowing)
-                VStack {
-                    Text("New Location").bold().padding()
-                    TextField("Name", text: $locationName).textFieldStyle(RoundedBorderTextFieldStyle()).padding(.horizontal)
-                    TextField("Type", text: $locationType).textFieldStyle(RoundedBorderTextFieldStyle()).padding(.horizontal)
-                    Divider()
-                    HStack {
-                        Button(action: {
-                            withAnimation {
-                                addLocation()
-                                hideKeyboard()
-                                isShowing.toggle()
-                            }
-                        }) {
-                            Text("Confirm")
+        ZStack {
+            presenting.disabled(isShowing)
+            VStack {
+                Text("New Location").bold().padding()
+                TextField("Name", text: $locationName).textFieldStyle(RoundedBorderTextFieldStyle()).padding(.horizontal)
+                TextField("Type", text: $locationType).textFieldStyle(RoundedBorderTextFieldStyle()).padding(.horizontal)
+                Divider()
+                HStack {
+                    Button(action: {
+                        addLocation()
+                        withAnimation {
+                            hideKeyboard()
+                            isShowing.toggle()
                         }
-                        .padding(.horizontal, SCWidth * 0.08)
-                        .disabled(locationName == "" || locationType == "")
-                        
-                        Divider()
-                        Button(action: {
-                            withAnimation {
-                                isShowing.toggle()
-                                hideKeyboard()
-                                locationName = ""
-                                locationType = ""
-                            }
-                        }) {
-                            Text("Cancel")
-                        }.padding(.horizontal, SCWidth * 0.08)
-                    }
-                    .frame(
-                        width: SCWidth * 0.7,
-                        height: SCHeight * 0.055
-                    )
-                }
-                .background(Color(red: 0.97, green: 0.97, blue: 0.97))
-                .frame(
-                    width: SCWidth * 0.7,
-                    height: SCHeight * 0.7
-                )
-                .cornerRadius(50)
-                .opacity(self.isShowing ? 1 : 0)
-                .offset(x: 0, y: -SCHeight * 0.1)
-                
+                    }) { Text("Confirm") }
+                    .padding(.horizontal, SCWidth * 0.08)
+                    .disabled(locationName == "" || locationType == "")
+                    
+                    Divider()
+                    Button(action: {
+                        locationName = ""
+                        locationType = ""
+                        withAnimation {
+                            isShowing.toggle()
+                            hideKeyboard()
+                        }
+                    }) { Text("Cancel") }
+                    .padding(.horizontal, SCWidth * 0.08)
+                }.frame(width: SCWidth * 0.7, height: SCHeight * 0.055)
             }
+            .background(Color(red: 0.97, green: 0.97, blue: 0.97))
+            .frame(width: SCWidth * 0.7, height: SCHeight * 0.7)
+            .cornerRadius(50)
+            .opacity(self.isShowing ? 1 : 0)
+            .offset(x: 0, y: -SCHeight * 0.1)
         }
     }
     private func addLocation() {
@@ -291,8 +262,7 @@ struct NewLocationPrompt<Presenting>: View where Presenting: View {
             } else {
                 guard let data = data else { return }
                 do {
-                    let newLocation = try JSONDecoder().decode(Location.self, from: data)
-                    locations.append(newLocation)
+                    let _ = try JSONDecoder().decode(Location.self, from: data)
                     locationName = ""
                     locationType = ""
                 } catch let error {
@@ -304,9 +274,9 @@ struct NewLocationPrompt<Presenting>: View where Presenting: View {
 }
 
 extension View {
-    func newLocationPrompt(isShowing: Binding<Bool>, locations: Binding<[Location]>, locationGetter: LocationGetterModel) -> some View {
+    func newLocationPrompt(isShowing: Binding<Bool>, locationGetter: LocationGetterModel) -> some View {
         withAnimation {
-            NewLocationPrompt(isShowing: isShowing, locations: locations, locationGetter: locationGetter, presenting: self)
+            NewLocationPrompt(isShowing: isShowing, locationGetter: locationGetter, presenting: self)
         }
     }
 }

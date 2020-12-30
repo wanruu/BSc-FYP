@@ -77,6 +77,11 @@ extension Offset {
         return Offset(x: offset.x / para, y: offset.y / para)
     }
 }
+extension Offset: Equatable {
+    static func == (o1: Offset, o2: Offset) -> Bool {
+        return o1.x == o2.x && o1.y == o2.y
+    }
+}
 // MARK: - distance function
 func distance(start: Coor3D, end: Coor3D) -> Double {
     let diffX = (start.latitude - end.latitude) * laScale

@@ -65,6 +65,9 @@ struct LocationPage: View {
             // locations
             LocationsView(locations: $locations, clickedIndex: $clickedIndex, name_en: $name_en, latitude: $latitude, longitude: $longitude, altitude: $altitude, type: $type, offset: $offset, scale: $scale)
         }
+        .onAppear {
+            loadLocations()
+        }
         // gesture
         .contentShape(Rectangle())
         .highPriorityGesture(gesture)
@@ -74,6 +77,10 @@ struct LocationPage: View {
         .navigationBarItems(trailing: Button(action: {showList = true}) {Image(systemName: "list.bullet").imageScale(.large)} )
         // sheet: list
         .sheet(isPresented: $showList) {
+            Image(systemName: "line.horizontal.3")
+                .foregroundColor(Color.gray)
+                .padding()
+                .frame(width: SCWidth)
             List {
                 ForEach(locations) { location in
                     let i = locations.firstIndex(of: location)!
@@ -105,6 +112,22 @@ struct LocationPage: View {
                 }
             }
         }
+    }
+    
+    private func loadLocations() {
+        let url = URL(string: server + "/locations")!
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if(error != nil) {
+                // showAlert = true
+            }
+            guard let data = data else { return }
+            do {
+                locations = try JSONDecoder().decode([Location].self, from: data)
+            } catch let error {
+                // showAlert = true
+                print(error)
+            }
+        }.resume()
     }
     
     private func deleteLocation(index: Int) {
@@ -173,7 +196,7 @@ struct LocationsView: View {
                 )
             }
             // textfield
-            clickedIndex == -1 ? nil :
+            if clickedIndex != -1 {
                 VStack {
                     TextField("Name", text: $name_en).textFieldStyle(RoundedBorderTextFieldStyle())
                     TextField("Latitude", text: $latitude).textFieldStyle(RoundedBorderTextFieldStyle())
@@ -200,6 +223,7 @@ struct LocationsView: View {
                     x: centerX + CGFloat((locations[clickedIndex].longitude - centerLg)*lgScale*2) * scale + offset.x,
                     y: centerY + CGFloat((centerLa - locations[clickedIndex].latitude)*laScale*2) * scale + offset.y - SCWidth * 0.5
                 )
+            }
         }
     }
     private func editLocation() {
