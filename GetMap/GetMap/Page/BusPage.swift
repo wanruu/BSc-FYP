@@ -7,9 +7,40 @@ struct BusPage: View {
     var body: some View {
         VStack {
             List(buses) { bus in
-                HStack {
-                    Text(bus.id)
-                    Text(bus.name_en)
+                VStack(alignment: .leading) {
+                    HStack {
+                        Text(bus.id).font(.title2)
+                        Text(bus.name_en).font(.title2)
+                        Text(bus.name_ch)
+                    }
+                    
+                    HStack {
+                        if bus.serviceDay == 0 {
+                            Text("Mon - Sat")
+                        } else if bus.serviceDay == 1 {
+                            Text("Sun & Public Holidays")
+                        } else {
+                            Text("Teaching days only")
+                        }
+                        Text(bus.serviceHour)
+                    }
+                    
+                    HStack {
+                        Text("Departs hourly at")
+                        ForEach(bus.departTime) { value in
+                            Text("\(value)")
+                        }
+                        Text("mins")
+                    }
+                    VStack {
+                        ForEach(bus.special) { rule in
+                            HStack {
+                                Text("Buses departing at \(rule.departTime) minutes will")
+                                rule.stop ? nil : Text("not")
+                                Text("stop at \(rule.busStop)")
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -94,9 +125,21 @@ struct NewBusSheet: View {
                     // Part 4: Depart time
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Departs Hourly at").bold()
-                        HStack {
-                            ForEach(departTimes) { time in
-                                Text(String(time))
+                        ScrollView(.horizontal, showsIndicators: true) {
+                            HStack {
+                                ForEach(departTimes) { time in
+                                    HStack(spacing: 20) {
+                                        Text(String(time))
+                                        Image(systemName: "minus.circle.fill")
+                                            .foregroundColor(.red)
+                                            .onTapGesture {
+                                                let index = departTimes.firstIndex(of: time)!
+                                                departTimes.remove(at: index)
+                                            }
+                                    }
+                                    .padding()
+                                    .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
+                                }
                             }
                         }
                         

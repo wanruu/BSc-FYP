@@ -46,6 +46,11 @@ struct BusRule: Codable {
     var busStop: String
     var stop: Bool
 }
+extension BusRule: Identifiable {
+    public var id: String {
+        "\(departTime)-\(busStop)-\(stop)"
+    }
+}
 
 // MARK: - Coor3D
 struct Coor3D: Codable {
