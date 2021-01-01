@@ -1,8 +1,8 @@
-/* MARK: MapPage contains MapView + other functions */
+// MapPage contains MapView + other functions
 
 import Foundation
 import SwiftUI
-import CoreLocation
+
 
 struct MapPage: View {
     @Binding var locations: [Location]

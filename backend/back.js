@@ -340,7 +340,7 @@ app.post('/bus', (req, res) => {
 });
 
 app.get('/buses', (req, res) => {
-    console.log("GET /bus - " + Date());
+    console.log("GET /buses - " + Date());
     BusModel.find({}, (err, result) => {
         if(err) {
             console.log(err);
