@@ -113,6 +113,7 @@ struct SearchArea: View {
 
     // animation for 􀄬
     @State var angle = 0.0
+    
     var body: some View {
         VStack(spacing: 0) {
             // search box
@@ -379,20 +380,5 @@ struct SearchOption: View {
                 Spacer()
             }
         }.buttonStyle(MyButtonStyle())
-    }
-}
-
-struct MyButtonStyle: ButtonStyle {
-    func makeBody(configuration: Self.Configuration) -> some View {
-        configuration.label
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(Color.gray.opacity(configuration.isPressed ? 0.2 : 0))
-                    .animation(.spring())
-            )
-            .scaleEffect(configuration.isPressed ? 0.95: 1)
-            .foregroundColor(.primary)
-            .animation(.spring())
     }
 }
