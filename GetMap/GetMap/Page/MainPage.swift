@@ -103,6 +103,23 @@ struct MainPage: View {
     }
 }
 
+struct PageItem: View {
+    @State var image: String
+    @State var title: String
+    var body: some View {
+        ZStack {
+            Image(image)
+                .resizable()
+                .frame(width: SCWidth * 0.25, height: SCWidth * 0.25)
+                .cornerRadius(SCWidth * 0.05)
+            Text(title)
+                .foregroundColor(Color.white).shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
+                .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
+                .offset(y: SCWidth * 0.06)
+        }
+    }
+}
+
 struct MainPagePhone: View {
     @Binding var locations: [Location]
     @Binding var trajectories: [Trajectory]
@@ -114,83 +131,34 @@ struct MainPagePhone: View {
         NavigationView {
             VStack(alignment: .leading) {
                 Text("Collect").font(.title3).bold()
-                HStack(spacing: 30) {
+                HStack {
                     NavigationLink(destination: CollectPage()) {
-                        ZStack {
-                            Image("collect")
-                                .resizable()
-                                .frame(width: SCWidth * 0.25, height: SCWidth * 0.25)
-                                .cornerRadius(SCWidth * 0.05)
-                            Text("Collect")
-                                .foregroundColor(Color.white).shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
-                                .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
-                                .offset(y: SCWidth * 0.06)
-                        }
+                        PageItem(image: "collect", title: "Collect")
                     }
-                    Spacer()
                 }
                 Text("Process").font(.title3).bold().padding(.top)
                 HStack(spacing: 30) {
                     NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, mapSys: $mapSys)) {
-                        ZStack {
-                            Image("map")
-                                .resizable()
-                                .frame(width: SCWidth * 0.25, height: SCWidth * 0.25)
-                                .cornerRadius(SCWidth * 0.05)
-                            Text("Map")
-                                .foregroundColor(Color.white) .shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
-                                .font(.system(size: SCWidth * 0.06, weight: .bold, design: .rounded))
-                                .offset(y: SCWidth * 0.06)
-                        }
+                        PageItem(image: "map", title: "Map")
                     }
                     NavigationLink(destination: LocationPage(locations: $locations)) {
-                        ZStack {
-                            Image("building")
-                                .resizable()
-                                .frame(width: SCWidth * 0.25, height: SCWidth * 0.25)
-                                .cornerRadius(SCWidth * 0.05)
-                            Text("Location")
-                                .foregroundColor(Color.white).shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
-                                .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
-                                .offset(y: SCWidth * 0.06)
-                        }
+                        PageItem(image: "building", title: "Location")
                     }
                     NavigationLink(destination: BusPage()) {
-                        ZStack {
-                            Image(systemName: "bus")
-                                .resizable()
-                                .frame(width: SCWidth * 0.25, height: SCWidth * 0.25)
-                                .cornerRadius(SCWidth * 0.05)
-                            Text("Bus")
-                                .foregroundColor(Color.white).shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
-                                .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
-                                .offset(y: SCWidth * 0.06)
-                        }
+                        PageItem(image: "bus", title: "Bus")
                     }
-                    Spacer()
                 }
                 Text("Verify").font(.title3).bold().padding(.top)
                 HStack(spacing: 30) {
                     NavigationLink(destination: SearchPage(locations: $locations, routes: $routes)) {
-                        ZStack {
-                            Image(systemName: "doc.text.magnifyingglass")
-                                .resizable()
-                                .frame(width: SCWidth * 0.25, height: SCWidth * 0.25)
-                                .scaledToFit()
-                                .cornerRadius(SCWidth * 0.05)
-                            Text("Search")
-                                .foregroundColor(Color.white).shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
-                                .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
-                                .offset(y: SCWidth * 0.06)
-                        }
+                        PageItem(image: "", title: "Search")
                     }
-                    Spacer()
                 }
             }
             .padding(.horizontal, 30)
             .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.inline)
-        }.navigationViewStyle(StackNavigationViewStyle())
+        }
     }
 }
 
