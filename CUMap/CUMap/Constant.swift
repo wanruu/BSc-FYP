@@ -14,13 +14,9 @@ let server = "http://10.13.115.254:8000" /* CUHK1x */
 // let server = "http://169.254.161.175:8000" /* laptop */
 // let server = "http://42.194.159.158:8000" /* tencent server */
 
-// screen info
-let SCWidth = UIScreen.main.bounds.width
-let SCHeight = UIScreen.main.bounds.height
-
 // center
-let centerX = SCWidth/2
-let centerY = SCHeight/2
+// let centerX = SCWidth/2
+// let centerY = SCHeight/2
 
 let centerLa = 22.419915 // +: down
 let centerLg = 114.20774 // +: left

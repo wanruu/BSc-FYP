@@ -20,6 +20,7 @@ struct MapView: View {
     @State var offset = Offset(x: 0, y: 0)
     @State var lastScale = initialZoom
     @State var scale = initialZoom
+    
     var gesture: some Gesture {
         SimultaneousGesture(
             MagnificationGesture()
@@ -53,7 +54,7 @@ struct MapView: View {
             Image("cuhk-campus-map")
                 .resizable()
                 .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
-                .position(x: centerX + offset.x, y: centerY + offset.y)
+                .position(x: UIScreen.main.bounds.width / 2 + offset.x, y: UIScreen.main.bounds.height / 2 + offset.y)
 
             PlansMapView(plans: $plans, planIndex: $planIndex, lastOffset: $lastOffset, offset: $offset, lastScale: $lastScale, scale: $scale)
                 .onAppear {
@@ -87,11 +88,10 @@ struct MapView: View {
             UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale)
 
         }
-        // animation
-        .offset(y: lastHeight == largeH ? 0 : -lastHeight + smallH)
+        .offset(y: lastHeight >= UIScreen.main.bounds.height * 0.4 ? -lastHeight : 0)
         .animation(
-            offset == lastOffset && scale == lastScale ? Animation.easeInOut(duration: 0.4)
-            .repeatCount(1, autoreverses: false) : nil
+            offset == lastOffset && scale == lastScale ?
+                Animation.easeInOut(duration: 0.5) : nil
         )
         // gesture
         .gesture(gesture)
@@ -169,7 +169,7 @@ struct PlanMapView: View {
                 Circle()
                     .frame(width: innerRadius, height: innerRadius, alignment: .center)
                     .foregroundColor(point.type == 0 ? CUPurple : CUYellow)
-                    .position(x: centerX + point.x * scale + offset.x, y: centerY + point.y * scale + offset.y)
+                    .position(x: UIScreen.main.bounds.width / 2 + point.x * scale + offset.x, y: UIScreen.main.bounds.height / 2 + point.y * scale + offset.y)
             }
     }
 }

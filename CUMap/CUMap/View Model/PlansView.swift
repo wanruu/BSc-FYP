@@ -18,7 +18,7 @@ import SwiftUI
  |       􀌇       |    |                |    |               |
  |                |    |                |    |               |
  |                |    ------------------    |               |
- |       Map      |    |       􀌇       |    |SCHeight * 0.88|
+ |       Map      |    |       􀌇       |    |SCHeight * 0.9 |
  |                |    |                |    |               |
  |                |    |  SCHeight*0.4  |    |               |
  |                |    |                |    |               |
@@ -27,9 +27,12 @@ import SwiftUI
  ------------------    ------------------    -----------------
  */
 
-let smallH = SCHeight / 10
-let mediumH = SCHeight / 10 * 4
-let largeH = SCHeight / 10 * 8.8
+/*
+enum sheetSize {
+    case small
+    case medium
+    case large
+}*/
 
 struct PlansView: View {
     @State var locations: [Location]
@@ -40,11 +43,13 @@ struct PlansView: View {
     @Binding var height: CGFloat
 
     var body: some View {
-        if plans.count == 0 {
-            NoPlanView(lastHeight: $lastHeight, height: $height)
-        } else {
-            // TODO: display more plans
-            PlanView(locations: locations, plan: $plans[0], lastHeight: $lastHeight, height: $height)
+        ZStack {
+            if plans.count == 0 {
+                NoPlanView(lastHeight: $lastHeight, height: $height)
+            } else {
+                // TODO: display more plans
+                PlanView(locations: locations, plan: $plans[0], lastHeight: $lastHeight, height: $height)
+            }
         }
     }
 }
@@ -58,6 +63,8 @@ struct NoPlanView: View {
             .onChanged { value in
                 if lastHeight + value.startLocation.y - value.location.y < 0 {
                     height = 0
+                } else if lastHeight + value.startLocation.y - value.location.y > UIScreen.main.bounds.height * 0.9 {
+                    height = UIScreen.main.bounds.height * 0.9
                 } else {
                     height = lastHeight + value.startLocation.y - value.location.y
                 }
@@ -65,6 +72,10 @@ struct NoPlanView: View {
             .onEnded { value in
                 // whether scroll up or down
                 let up = value.startLocation.y - value.location.y > 0
+                let smallH = UIScreen.main.bounds.height * 0.1
+                let mediumH = UIScreen.main.bounds.height * 0.4
+                let largeH = UIScreen.main.bounds.height * 0.9
+                
                 withAnimation() {
                     if lastHeight == largeH { // large
                         if height > (mediumH + largeH) / 2 { // still large
@@ -89,28 +100,22 @@ struct NoPlanView: View {
             }
     }
     var body: some View {
-        ZStack {
-            // blank
-            Rectangle()
-                .frame(height: smallH, alignment: .center)
-                .foregroundColor(.white)
-                .offset(y: SCHeight * 0.5)
-            VStack(spacing: 0) {
-                Spacer()
-                if lastHeight != 0 {
-                    Image(systemName: "line.horizontal.3")
-                        .foregroundColor(Color.gray)
-                        .padding()
-                        .frame(width: SCWidth)
-                        .background(RoundedCorners(color: .white, tl: 30, tr: 30, bl: 0, br: 0))
-                        .clipped()
-                        .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: -2)
-                    Text("No results").font(.title2)
-                        .frame(width: SCWidth, height: height, alignment: .center)
-                        .background(Color.white)
-                }
+        VStack {
+            Spacer()
+            VStack {
+                Image(systemName: "line.horizontal.3")
+                    .foregroundColor(Color.gray)
+                    .padding()
+                Text("No results").font(.title2)
             }
-        }.gesture(drag)
+            .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.9, alignment: .top)
+            .background(RoundedCorners(color: .white, tl: 15, tr: 15, bl: 0, br: 0))
+            .clipped()
+            .shadow(radius: 4)
+        }
+        .ignoresSafeArea(.all, edges: .bottom)
+        .offset(y: UIScreen.main.bounds.height * 0.9 - height)
+        .gesture(drag)
     }
 }
 
@@ -126,6 +131,8 @@ struct PlanView: View {
             .onChanged { value in
                 if lastHeight + value.startLocation.y - value.location.y < 0 {
                     height = 0
+                } else if lastHeight + value.startLocation.y - value.location.y > UIScreen.main.bounds.height * 0.9 {
+                    height = UIScreen.main.bounds.height * 0.9
                 } else {
                     height = lastHeight + value.startLocation.y - value.location.y
                 }
@@ -133,6 +140,10 @@ struct PlanView: View {
             .onEnded { value in
                 // whether scroll up or down
                 let up = value.startLocation.y - value.location.y > 0
+                let smallH = UIScreen.main.bounds.height * 0.1
+                let mediumH = UIScreen.main.bounds.height * 0.4
+                let largeH = UIScreen.main.bounds.height * 0.9
+                
                 withAnimation() {
                     if lastHeight == largeH { // large
                         if height > (mediumH + largeH) / 2 { // still large
@@ -158,25 +169,16 @@ struct PlanView: View {
     }
     
     var body: some View {
-        ZStack {
-            // blank
-            Rectangle()
-                .frame(height: smallH, alignment: .center)
-                .foregroundColor(.white)
-                .offset(y: SCHeight * 0.5)
-            VStack(spacing: 0) {
+        GeometryReader { geometry in
+            VStack {
                 Spacer()
-                Image(systemName: "line.horizontal.3")
-                    .foregroundColor(Color.gray)
-                    .padding()
-                    .frame(width: SCWidth)
-                    .background(RoundedCorners(color: .white, tl: 30, tr: 30, bl: 0, br: 0))
-                    .clipped()
-                    .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: -2)
-                
-                // content
                 VStack(alignment: .leading, spacing: 0) {
-                    // time & distance
+                    // icon
+                    Image(systemName: "line.horizontal.3")
+                        .foregroundColor(Color.gray)
+                        .padding()
+                        .frame(width: geometry.size.width, alignment: .center)
+                    // title
                     HStack {
                         Text("\(Int(plan.time/60))").font(.title2).bold()
                         Text("min").font(.title2)
@@ -187,8 +189,10 @@ struct PlanView: View {
                     ScrollView(.vertical, showsIndicators: false) {
                         VStack(spacing: 0) {
                             // chart
-                            HeightChart(plan: $plan, width: SCWidth * 0.9, height: SCWidth * 0.25)
+                            HeightChart(plan: $plan)
+                                .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.25, alignment: .center)
                                 .padding(.vertical)
+                                
                             Divider()
                         }
                         VStack(alignment: .leading, spacing: 0) {
@@ -206,10 +210,15 @@ struct PlanView: View {
                         }
                     }
                 }
-                .frame(width: SCWidth, height: height, alignment: .center)
-                .background(Color.white)
+                .frame(width: geometry.size.width, height: UIScreen.main.bounds.height * 0.9, alignment: .top)
+                .background(RoundedCorners(color: .white, tl: 15, tr: 15, bl: 0, br: 0))
+                .clipped()
+                .shadow(radius: 4)
             }
-        }.gesture(drag)
+            .ignoresSafeArea(.all, edges: .bottom)
+            .offset(y: UIScreen.main.bounds.height * 0.9 - height)
+            .gesture(drag)
+        }
     }
 }
 
@@ -236,16 +245,8 @@ struct PlanView: View {
  */
 struct HeightChart: View {
     @Binding var plan: Plan
-    @State var width: CGFloat
-    @State var height: CGFloat
     
     var body: some View {
-        let w1 = width * 0.85
-        let w2 = width * 0.15
-        let h1 = height * 0.2
-        let h2 = height * 0.6
-        // let h3 = height * 0.2
-        
         // find max, min altitude
         var maxHeight = -99999.0
         var minHeight = 99999.0
@@ -285,48 +286,59 @@ struct HeightChart: View {
         }
         chartPoints.append((dist, plan.routes.last!.points.last!.altitude))
         
-        return ZStack {
-            HStack {
-                Image(systemName: "arrow.up").imageScale(.small)
-                Text("\(Int(up)) m").font(.footnote).padding(.trailing)
-                Image(systemName: "arrow.down").imageScale(.small).padding(.leading)
-                Text("\(Int(down)) m").font(.footnote)
-            }.offset(y: -height / 2 + h1 / 2)
+        return GeometryReader { geometry in
+            let width = geometry.size.width * 0.9
+            let height = geometry.size.width * 0.25
             
-            Path { path in
-                path.move(to: CGPoint(x: 0, y: Double(h2) / (maxHeight - minHeight) * (maxHeight - plan.routes[0].points[0].altitude) + Double(h1)))
-                for (x, y) in chartPoints {
-                    path.addLine(to: CGPoint(x: Double(w1) / dist * x, y: Double(h2) / (maxHeight - minHeight) * (maxHeight - y) + Double(h1)))
-                }
-            }.stroke(CUPurple, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
-            
-            Path { path in
-                path.move(to: CGPoint(x: 0, y: height))
-                for (x, y) in chartPoints {
-                    path.addLine(to: CGPoint(x: Double(w1) / dist * x, y: Double(h2) / (maxHeight - minHeight) * (maxHeight - y) + Double(h1)))
-                }
-                path.addLine(to: CGPoint(x: w1, y: height))
-            }.fill(CUPurple.opacity(0.5))
-            
-            Image(systemName: "circlebadge")
-                .imageScale(.large)
-                .background(Color.white)
-                .cornerRadius(100)
-                .position(x: 0, y: h2 / CGFloat(maxHeight - minHeight) * CGFloat(maxHeight - plan.routes.first!.points.first!.altitude) + h1)
-            
-            Image(systemName: "smallcircle.fill.circle")
-                .background(Color.white)
-                .cornerRadius(100)
-                .position(x: w1, y: h2 / CGFloat(maxHeight - minHeight) * CGFloat(maxHeight - plan.routes.last!.points.last!.altitude) + h1)
-            
-            
-            Text("\(Int(plan.routes.first!.points.first!.altitude))m")
-                .font(.footnote)
-                .position(x: w1 + w2 / 2, y: h2 / CGFloat(maxHeight - minHeight) * CGFloat(maxHeight - plan.routes.first!.points.first!.altitude) + h1)
-            Text("\(Int(plan.routes.last!.points.last!.altitude))m")
-                .font(.footnote)
-                .position(x: w1 + w2 / 2, y: h2 / CGFloat(maxHeight - minHeight) * CGFloat(maxHeight - plan.routes.last!.points.last!.altitude) + h1)
-        }.frame(width: width, height: height)
+            let w1 = geometry.size.width * 0.9 * 0.9
+            let w2 = geometry.size.width * 0.9 * 0.1
+            let h1 = geometry.size.width * 0.25 * 0.2
+            let h2 = geometry.size.width * 0.25 * 0.6
+            // let h3 = geometry.size.height * 0.2
+            ZStack {
+                HStack {
+                    Image(systemName: "arrow.up").imageScale(.small)
+                    Text("\(Int(up)) m").font(.footnote).padding(.trailing)
+                    Image(systemName: "arrow.down").imageScale(.small).padding(.leading)
+                    Text("\(Int(down)) m").font(.footnote)
+                }.offset(y: -height / 2 + h1 / 2)
+                
+                Text("\(Int(plan.routes.first!.points.first!.altitude))m")
+                    .font(.footnote)
+                    .position(x: w1 + w2, y: h2 / CGFloat(maxHeight - minHeight) * CGFloat(maxHeight - plan.routes.first!.points.first!.altitude) + h1)
+                
+                Text("\(Int(plan.routes.last!.points.last!.altitude))m")
+                    .font(.footnote)
+                    .position(x: w1 + w2, y: h2 / CGFloat(maxHeight - minHeight) * CGFloat(maxHeight - plan.routes.last!.points.last!.altitude) + h1)
+                
+                Path { path in
+                    path.move(to: CGPoint(x: 0, y: Double(h2) / (maxHeight - minHeight) * (maxHeight - plan.routes[0].points[0].altitude) + Double(h1)))
+                    for (x, y) in chartPoints {
+                        path.addLine(to: CGPoint(x: Double(w1) / dist * x, y: Double(h2) / (maxHeight - minHeight) * (maxHeight - y) + Double(h1)))
+                    }
+                }.stroke(CUPurple, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+                
+                Path { path in
+                    path.move(to: CGPoint(x: 0, y: height))
+                    for (x, y) in chartPoints {
+                        path.addLine(to: CGPoint(x: Double(w1) / dist * x, y: Double(h2) / (maxHeight - minHeight) * (maxHeight - y) + Double(h1)))
+                    }
+                    path.addLine(to: CGPoint(x: w1, y: height))
+                }.fill(CUPurple.opacity(0.5))
+                
+                Image(systemName: "circlebadge")
+                    .imageScale(.large)
+                    .background(Color.white)
+                    .cornerRadius(100)
+                    .position(x: 0, y: h2 / CGFloat(maxHeight - minHeight) * CGFloat(maxHeight - plan.routes.first!.points.first!.altitude) + h1)
+                
+                Image(systemName: "smallcircle.fill.circle")
+                    .background(Color.white)
+                    .cornerRadius(100)
+                    .position(x: w1, y: h2 / CGFloat(maxHeight - minHeight) * CGFloat(maxHeight - plan.routes.last!.points.last!.altitude) + h1)
+            }
+            .frame(width: width, height: height, alignment: .center)
+        }
     }
 }
 

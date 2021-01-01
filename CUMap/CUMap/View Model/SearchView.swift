@@ -54,30 +54,30 @@ struct SearchView: View {
     @Binding var lastHeight: CGFloat
     @Binding var height: CGFloat
     
-    @Binding var showStartList: Bool
-    @Binding var showEndList: Bool
+    @State var showStartList = false
+    @State var showEndList = false
     
     var body: some View {
-        if showStartList {
-            // Page 1: search starting point
-            SearchList(locations: locations, placeholder: "From", locationName: $startName, locationId: $startId, keyword: startName, showList: $showStartList)
-                .onAppear() {
-                    height = 0
-                    lastHeight = 0
-                }
-        } else if showEndList {
-            // Page 2: search ending point
-            SearchList(locations: locations, placeholder: "To", locationName: $endName, locationId: $endId, keyword: endName, showList: $showEndList)
-                .onAppear() {
-                    height = 0
-                    lastHeight = 0
-                }
-        } else {
-            // Page 3: search box
-            SearchArea(locations: locations, routes: routes, plans: $plans, locationGetter: locationGetter, startName: startName, endName: endName, startId: startId, endId: endId, mode: $mode, lastHeight: $lastHeight, height: $height, showStartList: $showStartList, showEndList: $showEndList)
+        GeometryReader { geometry in
+            if showStartList {
+                // Page 1: search starting point
+                SearchList(locations: locations, placeholder: "From", locationName: $startName, locationId: $startId, keyword: startName, showList: $showStartList)
+            } else if showEndList {
+                // Page 2: search ending point
+                SearchList(locations: locations, placeholder: "To", locationName: $endName, locationId: $endId, keyword: endName, showList: $showEndList)
+            } else {
+                // Page 3: search box
+                SearchArea(locations: locations, routes: routes, plans: $plans, locationGetter: locationGetter, startName: startName, endName: endName, startId: startId, endId: endId, mode: $mode, showStartList: $showStartList, showEndList: $showEndList)
+                    .offset(y: height > UIScreen.main.bounds.height * 0.1 ? (UIScreen.main.bounds.height * 0.1 - height) * 2 : 0)
+                    .onAppear {
+                        if startId != "" && endId != "" {
+                            lastHeight = UIScreen.main.bounds.height * 0.1
+                            height = UIScreen.main.bounds.height * 0.1
+                        }
+                    }
+            }
         }
     }
-    
 }
 
 // Search bar: to do route planning
@@ -94,10 +94,6 @@ struct SearchArea: View {
     
     @Binding var mode: TransMode
     
-    // height of plan view
-    @Binding var lastHeight: CGFloat
-    @Binding var height: CGFloat
-    
     @Binding var showStartList: Bool
     @Binding var showEndList: Bool
 
@@ -105,19 +101,30 @@ struct SearchArea: View {
     @State var angle = 0.0
     
     var body: some View {
-        GeometryReader { geometry in
-            VStack(spacing: 0) {
+        // find min time for both mode
+        var footTime = INF
+        var busTime = INF
+        for plan in plans {
+            if plan.type == 0 && plan.time < footTime {
+                footTime = plan.time
+            }
+            if plan.type == 1 && plan.time < busTime {
+                busTime = plan.time
+            }
+        }
+        return GeometryReader { geometry in
+            VStack(spacing: 20) {
                 // search box
-                HStack(spacing: 20) {
-                    VStack {
+                HStack {
+                    VStack(spacing: 12) {
                         TextField("From", text: $startName)
                             .padding(.horizontal)
-                            .padding(.vertical, 10)
+                            .padding(.vertical, 12)
                             .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 0.8))
                             .onTapGesture { showStartList = true }
                         TextField("To", text: $endName)
                             .padding(.horizontal)
-                            .padding(.vertical, 10)
+                            .padding(.vertical, 12)
                             .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 0.8))
                             .onTapGesture { showEndList = true }
                     }
@@ -139,26 +146,44 @@ struct SearchArea: View {
                         }
                 }
                 // select mode
-                ModeSelectBar(plans: $plans, mode: $mode, lastHeight: $lastHeight, height: $height)
-                    .padding(.top)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 30) {
+                        HStack {
+                            Image(systemName: "bus").foregroundColor(Color.black.opacity(0.7))
+                            if startId != "" && endId != "" {
+                                busTime == INF ? Text("—") : Text("\(Int(busTime / 60)) min")
+                            }
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 5)
+                        .background(mode == .bus ? CUPurple.opacity(0.2) : nil)
+                        .cornerRadius(20)
+                        .onTapGesture { mode = .bus }
+                        
+                        HStack {
+                            Image(systemName: "figure.walk").foregroundColor(Color.black.opacity(0.7))
+                            if startId != "" && endId != "" {
+                                footTime == INF ? Text("—") : Text("\(Int(footTime) / 60) min")
+                            }
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 5)
+                        .background(mode == .foot ? CUPurple.opacity(0.2) : nil)
+                        .cornerRadius(20)
+                        .onTapGesture { mode = .foot }
+                    }
+                }
             }
             // size and color
-            .padding()
-            .padding(.horizontal)
+            .padding(20)
             .frame(width: geometry.size.height > geometry.size.width ? geometry.size.width : geometry.size.width * 0.5, height: geometry.size.height > geometry.size.width ? geometry.size.height * 0.3 : geometry.size.height * 0.5, alignment: geometry.size.height > geometry.size.width ? .bottom : .center)
             .background(Color.white)
             // shadow
             .clipped()
-            .shadow(radius: 2)
+            .shadow(radius: 4)
             // saft area
-            .ignoresSafeArea(.all, edges: .vertical)
-
+            .ignoresSafeArea(.all, edges: .top)
             .onAppear() {
-                // TODO: what's this??
-                if startId != "" && endId != "" {
-                    height = smallH
-                    lastHeight = smallH
-                }
                 dij()
             }
         }
@@ -235,120 +260,77 @@ struct SearchArea: View {
     
 }
 
-struct ModeSelectBar: View {
-    @Binding var plans: [Plan]
-    @Binding var mode: TransMode
-    // height of plan view
-    @Binding var lastHeight: CGFloat
-    @Binding var height: CGFloat
-    
-    var body: some View {
-        // find min time for both mode
-        var footTime = INF
-        var busTime = INF
-        for plan in plans {
-            if plan.type == 0 && plan.time < footTime {
-                footTime = plan.time
-            }
-            if plan.type == 1 && plan.time < busTime {
-                busTime = plan.time
-            }
-        }
-        return ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 30) {
-                HStack {
-                    Image(systemName: "bus").foregroundColor(Color.black.opacity(0.7))
-                    if lastHeight != 0 {
-                        busTime == INF ? Text("—") : Text("\(Int(busTime / 60)) min")
-                    }
-                }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 5)
-                .background(mode == .bus ? CUPurple.opacity(0.2) : nil)
-                .cornerRadius(20)
-                .onTapGesture { mode = .bus }
-                
-                HStack {
-                    Image(systemName: "figure.walk").foregroundColor(Color.black.opacity(0.7))
-                    if lastHeight != 0 {
-                        footTime == INF ? Text("—") : Text("\(Int(footTime) / 60) min")
-                    }
-                }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 5)
-                .background(mode == .foot ? CUPurple.opacity(0.2) : nil)
-                .cornerRadius(20)
-                .onTapGesture { mode = .foot }
-            }
-        }
-    }
-}
-
 struct SearchList: View {
     @State var locations: [Location]
     
     var placeholder: String
-    
     @Binding var locationName: String
     @Binding var locationId: String
-    
     @State var keyword: String
     
     @Binding var showList: Bool
     
     var body: some View {
-        VStack(spacing: 0) {
-            // text field
-            VStack(spacing: 0) {
-                HStack(spacing: 20) {
-                    Image(systemName: "chevron.backward")
-                        .imageScale(.large)
-                        .onTapGesture { showList = false }
-                    TextField(placeholder, text: $keyword)
-                    if keyword != "" {
-                        Image(systemName: "xmark")
-                            .imageScale(.large)
-                            .onTapGesture { keyword = "" }
-                    }
-                }
-                .padding()
-                .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.gray, lineWidth: 0.8))
-                .padding()
-                // shadow
+        GeometryReader { geometry in
+            ZStack {
                 Rectangle()
                     .foregroundColor(.white)
-                    .frame(width: SCWidth, height: 2)
-                    .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: 2)
-            }.padding(.bottom, 6)
-            
-            ScrollView {
+                    .frame(minWidth: geometry.size.width, maxWidth: .infinity, minHeight: geometry.size.height, maxHeight: .infinity, alignment: .center)
+                    .ignoresSafeArea(.all)
                 VStack(spacing: 0) {
-                    // current location
-                    Button(action: {
-                        locationName = "Your Location"
-                        locationId = "current"
-                        showList = false
-                    }) {
+                    // text field
+                    VStack(spacing: 0) {
                         HStack(spacing: 20) {
-                            Image(systemName: "location.fill")
+                            Image(systemName: "chevron.backward")
                                 .imageScale(.large)
-                                .foregroundColor(Color.blue)
-                                
-                            Text("Your Location")
-                            Spacer()
+                                .onTapGesture { showList = false }
+                            TextField(placeholder, text: $keyword)
+                            if keyword != "" {
+                                Image(systemName: "xmark")
+                                    .imageScale(.large)
+                                    .onTapGesture { keyword = "" }
+                            }
                         }
-                    }.buttonStyle(MyButtonStyle())
-                    Divider()
-                    // other locations
-                    ForEach(locations) { location in
-                        if keyword == "" || location.name_en.lowercased().contains(keyword.lowercased()) {
-                            SearchOption(name: $locationName, id: $locationId, location: location, showList: $showList)
+                        .padding()
+                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.gray, lineWidth: 0.8))
+                        .padding()
+                        // shadow
+                        Rectangle()
+                            .foregroundColor(.white)
+                            .frame(width: UIScreen.main.bounds.width, height: 2)
+                            .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: 2)
+                    }.padding(.bottom, 6)
+                    
+                    ScrollView {
+                        VStack(spacing: 0) {
+                            // current location
+                            Button(action: {
+                                locationName = "Your Location"
+                                locationId = "current"
+                                showList = false
+                            }) {
+                                HStack(spacing: 20) {
+                                    Image(systemName: "location.fill")
+                                        .imageScale(.large)
+                                        .foregroundColor(Color.blue)
+                                        
+                                    Text("Your Location")
+                                    Spacer()
+                                }
+                            }.buttonStyle(MyButtonStyle())
                             Divider()
-                        }
+                            // other locations
+                            ForEach(locations) { location in
+                                if keyword == "" || location.name_en.lowercased().contains(keyword.lowercased()) {
+                                    SearchOption(name: $locationName, id: $locationId, location: location, showList: $showList)
+                                    Divider()
+                                }
+                            }
+                        }.padding(.horizontal)
                     }
-                }.padding(.horizontal)
+                }
             }
-        }.background(Color.white)
+        }
     }
 }
 
