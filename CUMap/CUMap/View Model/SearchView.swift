@@ -74,20 +74,10 @@ struct SearchView: View {
                 }
         } else {
             // Page 3: search box
-            let offset = smallH - height >= 0 ? 0 : smallH - height
-            ZStack {
-                // blank
-                Rectangle()
-                    .frame(height: SCHeight * 0.3)
-                    .foregroundColor(.white)
-                    .offset(y: -SCHeight * 0.5 + offset).animation(Animation.easeOut)
-                VStack(spacing: 0) {
-                    SearchArea(locations: locations, routes: routes, plans: $plans, locationGetter: locationGetter, startName: startName, endName: endName, startId: startId, endId: endId, mode: $mode, lastHeight: $lastHeight, height: $height, showStartList: $showStartList, showEndList: $showEndList)
-                    Spacer()
-                }.offset(y: offset).animation(Animation.easeOut)
-            }
+            SearchArea(locations: locations, routes: routes, plans: $plans, locationGetter: locationGetter, startName: startName, endName: endName, startId: startId, endId: endId, mode: $mode, lastHeight: $lastHeight, height: $height, showStartList: $showStartList, showEndList: $showEndList)
         }
     }
+    
 }
 
 // Search bar: to do route planning
@@ -115,56 +105,64 @@ struct SearchArea: View {
     @State var angle = 0.0
     
     var body: some View {
-        VStack(spacing: 0) {
-            // search box
-            HStack {
-                VStack {
-                    TextField("From", text: $startName)
-                        .padding(.horizontal)
-                        .padding(.vertical, 10)
-                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 0.8))
-                        .onTapGesture { showStartList = true }
-                    TextField("To", text: $endName)
-                        .padding(.horizontal)
-                        .padding(.vertical, 10)
-                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 0.8))
-                        .onTapGesture { showEndList = true }
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                // search box
+                HStack(spacing: 20) {
+                    VStack {
+                        TextField("From", text: $startName)
+                            .padding(.horizontal)
+                            .padding(.vertical, 10)
+                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 0.8))
+                            .onTapGesture { showStartList = true }
+                        TextField("To", text: $endName)
+                            .padding(.horizontal)
+                            .padding(.vertical, 10)
+                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 0.8))
+                            .onTapGesture { showEndList = true }
+                    }
+                    Image(systemName: "arrow.up.arrow.down")
+                        .imageScale(.large)
+                        .rotationEffect(.degrees(angle))
+                        .animation(Animation.easeInOut(duration: 0.1))
+                        .padding(.leading)
+                        .onTapGesture {
+                            angle = 180 - angle
+                            // swap
+                            var tmp = startName
+                            startName = endName
+                            endName = tmp
+                            tmp = startId
+                            startId = endId
+                            endId = tmp
+                            dij()
+                        }
                 }
-                Image(systemName: "arrow.up.arrow.down")
-                    .imageScale(.large)
-                    .rotationEffect(.degrees(angle))
-                    .animation(Animation.easeInOut(duration: 0.1))
-                    .padding(.leading)
-                    .onTapGesture {
-                        angle = 180 - angle
-                        // swap
-                        var tmp = startName
-                        startName = endName
-                        endName = tmp
-                        tmp = startId
-                        startId = endId
-                        endId = tmp
-                        dij()
-                    } 
-            }.padding(.horizontal, 30).padding(.top)
-            // select mode
-            ModeSelectBar(plans: $plans, mode: $mode, lastHeight: $lastHeight, height: $height)
-                .padding(.horizontal, 30).padding(.top)
-            
-            // shadow
-            Rectangle()
-                .foregroundColor(.white)
-                .frame(width: SCWidth, height: 10)
-                .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: 4)
-        }
-        .background(Color.white)
-        .onAppear() {
-            if startId != "" && endId != "" {
-                height = smallH
-                lastHeight = smallH
+                // select mode
+                ModeSelectBar(plans: $plans, mode: $mode, lastHeight: $lastHeight, height: $height)
+                    .padding(.top)
             }
-            dij()
+            // size and color
+            .padding()
+            .padding(.horizontal)
+            .frame(width: geometry.size.height > geometry.size.width ? geometry.size.width : geometry.size.width * 0.5, height: geometry.size.height > geometry.size.width ? geometry.size.height * 0.3 : geometry.size.height * 0.5, alignment: geometry.size.height > geometry.size.width ? .bottom : .center)
+            .background(Color.white)
+            // shadow
+            .clipped()
+            .shadow(radius: 2)
+            // saft area
+            .ignoresSafeArea(.all, edges: .vertical)
+
+            .onAppear() {
+                // TODO: what's this??
+                if startId != "" && endId != "" {
+                    height = smallH
+                    lastHeight = smallH
+                }
+                dij()
+            }
         }
+        
     }
     
     private func dij() {
