@@ -112,7 +112,8 @@ struct SearchArea: View {
                 busTime = plan.time
             }
         }
-        return GeometryReader { geometry in
+        
+        return
             VStack(spacing: 20) {
                 // search box
                 HStack {
@@ -175,19 +176,15 @@ struct SearchArea: View {
                 }
             }
             // size and color
-            .padding(20)
-            .frame(width: geometry.size.height > geometry.size.width ? geometry.size.width : geometry.size.width * 0.5, height: geometry.size.height > geometry.size.width ? geometry.size.height * 0.3 : geometry.size.height * 0.5, alignment: geometry.size.height > geometry.size.width ? .bottom : .center)
+            .padding()
+            .frame(width: UIScreen.main.bounds.width < UIScreen.main.bounds.height ? UIScreen.main.bounds.width : UIScreen.main.bounds.width / 2, height: UIScreen.main.bounds.width < UIScreen.main.bounds.height ? UIScreen.main.bounds.height * 0.28 : UIScreen.main.bounds.height * 0.5, alignment: .bottom)
             .background(Color.white)
-            // shadow
             .clipped()
             .shadow(radius: 4)
-            // saft area
             .ignoresSafeArea(.all, edges: .top)
             .onAppear() {
                 dij()
             }
-        }
-        
     }
     
     private func dij() {
@@ -316,17 +313,19 @@ struct SearchList: View {
                                         
                                     Text("Your Location")
                                     Spacer()
-                                }
+                                }.padding(.horizontal)
                             }.buttonStyle(MyButtonStyle())
                             Divider()
+                                .padding(.horizontal)
                             // other locations
                             ForEach(locations) { location in
                                 if keyword == "" || location.name_en.lowercased().contains(keyword.lowercased()) {
                                     SearchOption(name: $locationName, id: $locationId, location: location, showList: $showList)
                                     Divider()
+                                        .padding(.horizontal)
                                 }
                             }
-                        }.padding(.horizontal)
+                        }
                     }
                 }
             }
@@ -358,7 +357,7 @@ struct SearchOption: View {
                 }
                 Text(location.name_en)
                 Spacer()
-            }
+            }.padding(.horizontal)
         }.buttonStyle(MyButtonStyle())
     }
 }
