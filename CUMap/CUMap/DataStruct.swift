@@ -9,32 +9,38 @@ import Foundation
 import SwiftUI
 
 // MARK: - Location
-struct Location: Codable, Identifiable {
-    var id: String
+struct Location {
+    var _id: String
     var name_en: String
     var latitude: Double
     var longitude: Double
     var altitude: Double
     var type: Int
 }
-extension Location: Equatable {
+extension Location: Identifiable, Equatable, Codable {
+    public var id: String {
+        self._id
+    }
     static func == (l1: Location, l2: Location) -> Bool {
-        return l1.id == l2.id
+        return l1._id == l2._id
     }
 }
 
 // MARK: - A Unit Route
-struct Route: Codable, Identifiable {
-    var id: String
+struct Route {
+    var _id: String
     var startId: String
     var endId: String
     var points: [Coor3D]
     var dist: Double
     var type: Int
 }
-extension Route: Equatable {
+extension Route: Identifiable, Equatable, Codable {
+    public var id: String {
+        self._id
+    }
     static func == (r1: Route, r2: Route) -> Bool {
-        return r1.id == r2.id
+        return r1._id == r2._id
     }
 }
 

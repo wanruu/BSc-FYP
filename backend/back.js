@@ -1,4 +1,4 @@
-/* require modules */
+// require modules
 var mongoose = require('mongoose');
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -6,20 +6,20 @@ var session = require('express-session');
 var http = require('http');
 var cors = require('cors');
 
-/* define app to use express */
+// define app to use express
 var app = express();
 app.use(bodyParser.urlencoded({extended: false}), bodyParser.json());
 
-/* session */
+// session
 app.use(session({
     secret: 'CUMap',
     cookie: { maxAge: 1000*60*60 }
 }));
 
-/* cors */
+// cors
 app.use(cors());
 
-/* connect to mongodb */
+// connect to mongodb
 var mongodb = 'mongodb://localhost:27017/CUMap';
 mongoose.set('useCreateIndex', true);
 mongoose.connect(mongodb, { useNewUrlParser: true });
@@ -29,7 +29,7 @@ db.once('open', () => {
     console.log('Connection is open...');
 });
 
-/* define schema */
+// define schema
 var Schema = mongoose.Schema;
 
 var LocationSchema = Schema({
@@ -65,14 +65,14 @@ var VersionSchema = Schema({
     version: { type: String, require: true }
 });
 
-/* define model */
+// define model
 const LocationModel = mongoose.model('Location', LocationSchema);
 const TrajectoryModel = mongoose.model('Trajectory', TrajectorySchema);
 const RouteModel = mongoose.model('Route', RouteSchema);
 const BusModel = mongoose.model('Bus', BusSchema);
 const VersionModel = mongoose.model('Version', VersionSchema);
 
-/* set header */
+// set header
 /* app.all('/', (req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, DELETE, POST');
@@ -81,14 +81,14 @@ const VersionModel = mongoose.model('Version', VersionSchema);
     next();
 }); */
 
-/* MARK: - get map img */
+// get map img
 /* app.get('/map', (req, res) => {
     console.log("get");
     res.setHeader('Content-Type', 'image/jpeg');
     res.sendFile("cuhk-campus-map.jpg", {root: __dirname});
 }); */
 
-/* admin login */
+// admin login 
 // TODO
 
 app.get('/versions', (req, res) => {
@@ -148,7 +148,7 @@ app.post('/location', (req, res) => {
             console.log(err);
             res.status(404).send();
         } else {
-            res.send({id: result._id, name_en: result.name_en, latitude: result.latitude, longitude: result.longitude, altitude: result.altitude, type: result.type});
+            res.send(result);
         }
     });
 });
@@ -177,11 +177,7 @@ app.put('/location', (req, res) => {
 
 app.get('/locations', (req, res) => {
     console.log("GET /locations - " + Date());
-    let aggr = [
-        { $match: {} },
-        { $project: { _id: 0, id: "$_id", name_en: "$name_en", latitude: "$latitude", longitude: "$longitude", altitude: "$altitude", type: "$type" } }
-    ];
-    LocationModel.aggregate(aggr, (err, result) => {
+    LocationModel.find({}, (err, result) => {
         if(err) {
             console.log(err);
             res.status(404).send();
@@ -277,42 +273,18 @@ app.post('/route', (req, res) => {
             console.log(err);
             res.status(404).send();
         } else {
-            res.send({id: result._id, startId: result.startId, endId: result.endId, points: result.points, dist: result.dist, type: result.type});
+            res.send(result);
         }
     });
 });
 
 app.get('/routes', (req, res) => {
     console.log("GET /routes - " + Date());
-    let aggr = [
-        { $match: {} },
-        { $project: { _id: 0, id: "$_id", startId: "$startId", endId: "$endId", points: "$points", dist: "$dist", type: "$type" } }
-    ];
-    RouteModel.aggregate(aggr, (err, result) => {
+    RouteModel.find({}, (err, result) => {
         if(err) {
             console.log(err);
             res.status(404).send();
         } else {
-            /* var items = [];
-            for(var i in result) {
-                var points = [];
-                for(var j in result[i].points) {
-                    points.push({
-                        latitude: result[i].points[j].latitude, 
-                        longitude: result[i].points[j].longitude,
-                        altitude: result[i].points[j].altitude
-                    });
-                }
-                items.push({
-                    id: result[i].id,
-                    startId: result[i].startId,
-                    endId: result[i].endId,
-                    points: points,
-                    dist: result[i].dist,
-                    type: result[i].type
-                });
-            }
-            res.send(items);*/
             res.send(result);
         }
     });

@@ -425,7 +425,7 @@ func RPMinDist(locations: [Location], routes: [Route], startId: String, endId: S
                     var points = route.points
                     points.reverse()
                     plans[next].dist = plans[cur].dist + route.dist
-                    plans[next].routes = plans[cur].routes + [Route(id: route.id, startId: route.endId, endId: route.startId, points: points, dist: route.dist, type: route.type)]
+                    plans[next].routes = plans[cur].routes + [Route(_id: route.id, startId: route.endId, endId: route.startId, points: points, dist: route.dist, type: route.type)]
                     let time = route.type == 0 ? route.dist / footSpeed : route.dist / busSpeed
                     plans[next].time = plans[cur].time + time
                 }
@@ -490,7 +490,7 @@ func RPMinTime(locations: [Location], routes: [Route], startId: String, endId: S
                     
                     var points = route.points
                     points.reverse()
-                    plans[next].routes = plans[cur].routes + [Route(id: route.id, startId: route.endId, endId: route.startId, points: points, dist: route.dist, type: route.type)]
+                    plans[next].routes = plans[cur].routes + [Route(_id: route.id, startId: route.endId, endId: route.startId, points: points, dist: route.dist, type: route.type)]
                 }
             }
         }
