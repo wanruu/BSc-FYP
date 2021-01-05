@@ -57,33 +57,6 @@ struct MapView: View {
                 .position(x: UIScreen.main.bounds.width / 2 + offset.x, y: UIScreen.main.bounds.height / 2 + offset.y)
 
             PlansMapView(plans: $plans, planIndex: $planIndex, lastOffset: $lastOffset, offset: $offset, lastScale: $lastScale, scale: $scale)
-                .onAppear {
-                    guard planIndex < plans.count else { return }
-                    var minLa = INF
-                    var minLg = INF
-                    var maxLa = -INF
-                    var maxLg = -INF
-                    
-                    for route in plans[planIndex].routes {
-                        for point in route.points {
-                            if point.latitude < minLa {
-                                minLa = point.latitude
-                            } else if point.latitude > maxLa {
-                                maxLa = point.latitude
-                            }
-                            if point.longitude < minLg {
-                                minLg = point.longitude
-                            } else if point.longitude > maxLg {
-                                maxLg = point.longitude
-                            }
-                        }
-                    }
-                    scale = minZoomOut
-                    lastScale = scale
-                    offset.x = CGFloat((centerLg - minLg / 2 - maxLg / 2) * lgScale * 2) * scale
-                    offset.y = CGFloat((minLa / 2 + maxLa / 2 - centerLa) * laScale * 2) * scale
-                    lastOffset = offset
-                }
             
             UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale)
 
@@ -110,10 +83,14 @@ struct PlansMapView: View {
     var body: some View {
         ZStack {
             ForEach(plans) { plan in
-                if plans.firstIndex(where: {$0.id == plan.id}) == planIndex {
+                if plans.firstIndex(where: {$0.id == plan.id}) == planIndex { // chosen plan
                     PlanMapView(plan: plan, opacity: 1, offset: $offset, scale: $scale)
-                } else {
+                } else { // unchosen plan
                     PlanMapView(plan: plan, opacity: 0.5, offset: $offset, scale: $scale)
+                        .onTapGesture {
+                            print("switch plan")
+                            planIndex = plans.firstIndex(where: {$0.id == plan.id})!
+                        }
                 }
             }
         }

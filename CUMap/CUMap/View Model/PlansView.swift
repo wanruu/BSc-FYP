@@ -41,6 +41,8 @@ struct PlansView: View {
     // height
     @Binding var lastHeight: CGFloat
     @Binding var height: CGFloat
+    
+    @Binding var planIndex: Int
 
     var body: some View {
         ZStack {
@@ -48,7 +50,9 @@ struct PlansView: View {
                 NoPlanView(lastHeight: $lastHeight, height: $height)
             } else {
                 // TODO: display more plans
-                PlanView(locations: locations, plan: $plans[0], lastHeight: $lastHeight, height: $height)
+                if planIndex > 0 && planIndex < plans.count {
+                    PlanView(locations: locations, plan: $plans[planIndex], lastHeight: $lastHeight, height: $height)
+                }
             }
         }
     }
