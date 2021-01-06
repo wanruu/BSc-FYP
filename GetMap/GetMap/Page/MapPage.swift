@@ -161,26 +161,28 @@ struct FuncSheet: View {
                         }
                     }
                     representatives = smooth(trajs: representatives)
+
                 }) { Text("Generate representative path").frame(width: UIScreen.main.bounds.width * 0.7) }
                 .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: false))
                 
-                /*
                 Button(action: {
                     // Step 4: generate map system
-                    let paths = GenerateMapSys(trajs: representatives, locations: locations)
+                    let paths = generateRoutes(trajs: representatives, locations: locations)
                     for path in paths {
                         mapSys.append(path)
                     }
-                }) { Text("Generate map system") }
+                }) { Text("Generate map system").frame(width: UIScreen.main.bounds.width * 0.7) }
+                .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: false))
                 
-                Button(action: {
+                 Button(action: {
                     // Step 5: upload map system
-                    uploadTasks = [Bool](repeating: false, count: mapSys.count)
+                    /* uploadTasks = [Bool](repeating: false, count: mapSys.count)
                     for i in 0..<mapSys.count {
                         uploadRoute(route: mapSys[i], index: i)
-                    }
+                    }*/
                         
-                }) { Text("Upload map system") } */
+                }) { Text("Upload map system").frame(width: UIScreen.main.bounds.width * 0.7) }
+                .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: false))
             }.padding()
         }
     }
