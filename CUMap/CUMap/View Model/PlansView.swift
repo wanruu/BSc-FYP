@@ -50,7 +50,7 @@ struct PlansView: View {
                 NoPlanView(lastHeight: $lastHeight, height: $height)
             } else {
                 // TODO: display more plans
-                if planIndex > 0 && planIndex < plans.count {
+                if planIndex >= 0 && planIndex < plans.count {
                     PlanView(locations: locations, plan: $plans[planIndex], lastHeight: $lastHeight, height: $height)
                 }
             }
@@ -362,21 +362,20 @@ struct Instructions: View {
             VStack(alignment: .leading, spacing: 0) {
                 ForEach(plan.routes) { route in
                     if route == plan.routes.first! { // first route
-                        let startLoc = locations.filter({$0.id == route.startId}).first!
                         HStack(spacing: 20) {
                             Image(systemName: "circlebadge").imageScale(.large).frame(width: 20)
-                            Text(startLoc.name_en).font(.title3)
+                            Text(plan.startLoc.name_en).font(.title3)
                             Spacer()
                         }.padding()
                     }
                     
-                    if route.type == 0 {
+                    if route.type == [0] {
                         HStack(spacing: 20) {
                             Image(systemName: "figure.walk").frame(width: 20)
                             Text("Walk for \(Int(route.dist/footSpeed/60)) min (\(Int(route.dist)) m)")
                             Spacer()
                         }.padding()
-                    } else if route.type == 1 {
+                    } else {
                         HStack(spacing: 20) {
                             Image(systemName: "bus").frame(width: 20)
                             // TODO: bus info
@@ -384,17 +383,16 @@ struct Instructions: View {
                             Spacer()
                         }.padding()
                     }
-                    
-                    let loc = locations.filter({$0.id == route.endId}).first!
+
                     HStack(spacing: 20) {
                         if route == plan.routes.last! { // last route
                             Image(systemName: "smallcircle.fill.circle")
-                        } else if loc.type == 0 {
+                        } else if route.endLoc.type == 0 {
                             Image(systemName: "building.2")
                         } else {
                             Image(systemName: "bus")
                         }
-                        Text(loc.name_en).font(.title3)
+                        Text(route.endLoc.name_en).font(.title3)
                         Spacer()
                     }.padding()
                 }

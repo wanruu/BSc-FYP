@@ -29,11 +29,11 @@ extension Location: Identifiable, Equatable, Codable {
 // MARK: - A Unit Route
 struct Route {
     var _id: String
-    var startId: String
-    var endId: String
+    var startLoc: Location
+    var endLoc: Location
     var points: [Coor3D]
     var dist: Double
-    var type: Int
+    var type: [Int]
 }
 extension Route: Identifiable, Equatable, Codable {
     public var id: String {
@@ -46,16 +46,17 @@ extension Route: Identifiable, Equatable, Codable {
 
 // MARK: - A plan
 struct Plan {
-    var startId: String
-    var endId: String
+    var startLoc: Location
+    var endLoc: Location
     var routes: [Route]
     var dist: Double // meters
     var time: Double // seconds
+    var height: [Double] // meters
     var type: Int
 }
 extension Plan: Identifiable {
     public var id: String {
-        "\(self.startId)\(self.endId)\(self.dist)\(self.time)\(self.type)"
+        "\(self.startLoc._id)\(self.endLoc._id)\(self.dist)\(self.time)\(self.type)"
     }
 }
 

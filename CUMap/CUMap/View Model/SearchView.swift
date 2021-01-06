@@ -189,8 +189,13 @@ struct SearchArea: View {
             }
     }
     private func RP() {
+        if startId == "" || endId == "" {
+            return
+        }
         plans = []
-        let plan1 = RPMinDist(locations: locations, routes: routes, startId: startId, endId: endId)
+        let startLoc = locations.filter({$0._id == startId})[0]
+        let endLoc = locations.filter({$0._id == endId})[0]
+        let plan1 = RPMinDist(locations: locations, routes: routes, startLoc: startLoc, endLoc: endLoc)
         if plan1 != nil {
             plans.append(plan1!)
         }
@@ -379,59 +384,49 @@ struct SearchOption: View {
     }
 }
 
-func RPMinDist(locations: [Location], routes: [Route], startId: String, endId: String) -> Plan? {
+func RPMinDist(locations: [Location], routes: [Route], startLoc: Location, endLoc: Location) -> Plan? {
     // Step 1: preprocessing
-
-    // avoid exception
-    if startId == "" || endId == "" {
-        return nil
-    }
-    let startIndex = indexOf(id: startId, locations: locations)
-    let endIndex = indexOf(id: endId, locations: locations)
-    if startIndex == -1 || endIndex == -1 {
-        return nil
-    }
+    var plans = [Plan](repeating: Plan(startLoc: startLoc, endLoc: endLoc, routes: [], dist: INF, time: INF, height: [], type: 0), count: locations.count) // plan from startLoc to any other locations
+    var checked = [Bool](repeating: false, count: locations.count) // at beginning, all locations are not checked
     
-    // Step 2: initialize minDist & vertex set & queue
-    var plans = [Plan](repeating: Plan(startId: startId, endId: endId, routes: [], dist: INF, time: INF, type: 0), count: locations.count)
-    var checked = [Bool](repeating: false, count: locations.count)
+    // Step 2: set dist and time to 0 for startLoc
+    let startIndex = locations.firstIndex(of: startLoc)!
+    let endIndex = locations.firstIndex(of: endLoc)!
     plans[startIndex].dist = 0
     plans[startIndex].time = 0
     
-    // Step 3: start
+    // Step 3: loop to check
     while checked.filter({$0 == true}).count != checked.count { // not all have been checked
-        // find the index of min dist who hasn't been checked
-        var cur = -1
-        var min = INF + 1.0
+        // find location with min dist so far who hasn't been checked
+        var index = -1
+        var minDist = INF + 1.0
         for i in 0..<checked.count {
-            if !checked[i] && plans[i].dist < min {
-                cur = i
-                min = plans[i].dist
+            if !checked[i] && plans[i].dist < minDist {
+                index = i
+                minDist = plans[i].dist
             }
         }
+        let curLoc = locations[index]
         
+        // find all route related to curLoc and update statistics
         for route in routes {
-            if route.startId == locations[cur].id {
-                let next = indexOf(id: route.endId, locations: locations)
-                if plans[next].dist > plans[cur].dist + route.dist { // update
-                    plans[next].dist = plans[cur].dist + route.dist
-                    plans[next].routes = plans[cur].routes + [route]
-                    let time = route.type == 0 ? route.dist / footSpeed : route.dist / busSpeed
-                    plans[next].time = plans[cur].time + time
+            if route.startLoc.id == curLoc.id { // if curLoc is startLoc of the route
+                let endLocIndex = locations.firstIndex(of: route.endLoc)!
+                if plans[endLocIndex].dist > plans[index].dist + route.dist { // update
+                    plans[endLocIndex].dist = plans[index].dist + route.dist
+                    plans[endLocIndex].routes = plans[index].routes + [route]
                 }
-            } else if route.endId == locations[cur].id {
-                let next = indexOf(id: route.startId, locations: locations)
-                if plans[next].dist > plans[cur].dist + route.dist { // update
+            } else if route.endLoc.id == curLoc.id { // if curLoc is endLoc of the route
+                let startLocIndex = locations.firstIndex(of: route.startLoc)!
+                if plans[startLocIndex].dist > plans[index].dist + route.dist { // update
                     var points = route.points
                     points.reverse()
-                    plans[next].dist = plans[cur].dist + route.dist
-                    plans[next].routes = plans[cur].routes + [Route(_id: route.id, startId: route.endId, endId: route.startId, points: points, dist: route.dist, type: route.type)]
-                    let time = route.type == 0 ? route.dist / footSpeed : route.dist / busSpeed
-                    plans[next].time = plans[cur].time + time
+                    plans[startLocIndex].dist = plans[index].dist + route.dist
+                    plans[startLocIndex].routes = plans[index].routes + [Route(_id: route.id, startLoc: route.endLoc, endLoc: route.startLoc, points: points, dist: route.dist, type: route.type)]
                 }
             }
         }
-        checked[cur] = true
+        checked[index] = true
     }
     // Step 4: find the result
     if plans[endIndex].routes.count > 1 {
@@ -441,6 +436,7 @@ func RPMinDist(locations: [Location], routes: [Route], startId: String, endId: S
     return nil
 }
 
+/*
 func RPMinTime(locations: [Location], routes: [Route], startId: String, endId: String) -> Plan? {
     // Step 1: preprocessing
 
@@ -503,6 +499,7 @@ func RPMinTime(locations: [Location], routes: [Route], startId: String, endId: S
     
     return nil
 }
+ */
 
 func indexOf(id: String, locations: [Location]) -> Int {
     for i in 0..<locations.count {

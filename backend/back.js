@@ -44,11 +44,11 @@ var TrajectorySchema = Schema({
     timestamp: Date
 });
 var RouteSchema = Schema({
-    startId: { type: Schema.Types.ObjectId, ref: 'Location' },
-    endId: { type: Schema.Types.ObjectId, ref: 'Location' },
+    startLoc: { type: Schema.Types.ObjectId, ref: 'Location' },
+    endLoc: { type: Schema.Types.ObjectId, ref: 'Location' },
     points: [{ latitude: Number, longitude: Number, altitude: Number }],
     dist: { type: Number, require: true },
-    type: { type: Number, require: true } // 0: on foot, 1: by bus
+    type: [ Number ]
 });
 var BusSchema = Schema({
     id: { type: String, require: true, unique: true }, // 1a, 1b, 2, 3, 4, 5, 6a, 6b, 7, 8, light
@@ -133,7 +133,9 @@ app.put('/version', (req, res) => {
     });
 });
 
-/* MARK: - Location Model */
+/* *************************************************************** */
+
+// Location Model
 app.post('/location', (req, res) => {
     console.log("POST /location - " + Date());
     var name_en = req.body.name_en;
@@ -200,9 +202,11 @@ app.delete('/location', (req, res) => {
     });
 });
 
-// MARK: - Trajectory Model
+/* *************************************************************** */
+
+// Trajectory Model
 app.post('/trajectory', (req, res) => {
-    console.log("POST /trajectory - " + Date())
+    console.log("POST /trajectory - " + Date());
     var points = req.body.points;
     var time = Date();
     TrajectoryModel.create({points: points, timestamp: time}, (err, result) => {
@@ -264,10 +268,18 @@ app.delete('/trajectory', (req, res) => {
     });
 });
 
-// MARK: path between two location
+/* *************************************************************** */
+
+// path between two location
 app.post('/route', (req, res) => {
     console.log("POST /route - " + Date());
-    var conditions = {startId: req.body.startId, endId: req.body.endId, points: req.body.points, dist: req.body.dist, type: req.body.type}
+    var conditions = {
+        startLoc: mongoose.Types.ObjectId(req.body.startId), 
+        endLoc: mongoose.Types.ObjectId(req.body.endId), 
+        points: req.body.points,
+        dist: req.body.dist,
+        type: req.body.type
+    }
     RouteModel.create(conditions, (err, result) => {
         if(err) {
             console.log(err);
@@ -280,7 +292,17 @@ app.post('/route', (req, res) => {
 
 app.get('/routes', (req, res) => {
     console.log("GET /routes - " + Date());
-    RouteModel.find({}, (err, result) => {
+    var conditions = [
+        {
+            path: 'startLoc',
+            select: '_id name_en latitude longtitude altitude type'
+        },
+        {
+            path: 'endLoc',
+            select: '_id name_en latitude longtitude altitude type'
+        }
+    ];
+    RouteModel.find({}).populate(conditions).exec((err, result) => {
         if(err) {
             console.log(err);
             res.status(404).send();
@@ -289,6 +311,8 @@ app.get('/routes', (req, res) => {
         }
     });
 });
+
+/* *************************************************************** */
 
 // BUS
 app.post('/bus', (req, res) => {

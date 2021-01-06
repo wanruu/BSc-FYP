@@ -134,7 +134,8 @@ struct PlanMapView: View {
                     distSoFar += dist
                 } else {
                     distSoFar = 0
-                    points.append(DrawPoint(type: route.type, x: thisX, y: thisY))
+                    // TODO: change color of point by route type
+                    points.append(DrawPoint(type: 0, x: thisX, y: thisY))
                 }
                 lastX = thisX
                 lastY = thisY
