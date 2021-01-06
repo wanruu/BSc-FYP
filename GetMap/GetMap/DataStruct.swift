@@ -2,32 +2,44 @@ import Foundation
 import SwiftUI
 
 // MARK: - Location
-struct Location: Codable, Identifiable {
-    var id: String
+struct Location {
+    var _id: String
     var name_en: String
     var latitude: Double
     var longitude: Double
     var altitude: Double
     var type: Int
 }
-extension Location: Equatable {
+extension Location: Identifiable, Equatable, Codable {
+    public var id: String {
+        self._id
+    }
     static func == (l1: Location, l2: Location) -> Bool {
-        return l1.id == l2.id
+        return l1._id == l2._id
     }
 }
+
 // MARK: - A Trajectory
 struct Trajectory: Codable, Identifiable {
     var id: String
     var points: [Coor3D]
 }
 // MARK: - A Route
-struct Route: Codable, Identifiable {
-    var id: String
-    var startId: String
-    var endId: String
+struct Route {
+    var _id: String
+    var startLoc: Location
+    var endLoc: Location
     var points: [Coor3D]
     var dist: Double
-    var type: Int
+    var type: [Int]
+}
+extension Route: Identifiable, Equatable, Codable {
+    public var id: String {
+        self._id
+    }
+    static func == (r1: Route, r2: Route) -> Bool {
+        return r1._id == r2._id
+    }
 }
 
 // MARK: - Bus
@@ -53,7 +65,7 @@ extension BusRule: Identifiable {
 }
 
 // MARK: - Coor3D
-struct Coor3D: Codable {
+struct Coor3D: Codable, Hashable {
     var latitude: Double
     var longitude: Double
     var altitude: Double

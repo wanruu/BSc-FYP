@@ -51,7 +51,7 @@ struct TrajsView: View {
 }
 
 // display representative
-struct RepresentView: View {
+/*struct RepresentsView: View {
     @Binding var trajs: [[Coor3D]]
     @Binding var offset: Offset
     @Binding var scale: CGFloat
@@ -73,7 +73,36 @@ struct RepresentView: View {
             }
         }.stroke(Color.black, style: StrokeStyle(lineWidth: 3, lineJoin: .round))
     }
+}*/
+
+// colored
+struct RepresentsView: View {
+    @Binding var trajs: [[Coor3D]]
+    @Binding var offset: Offset
+    @Binding var scale: CGFloat
+    
+    var body: some View {
+        ForEach(trajs, id: \.self) { traj in
+            let i = trajs.firstIndex(of: traj)!
+            Text("\(i)").position(x: centerX + CGFloat((traj[0].longitude - centerLg) * lgScale * 2) * scale + offset.x, y: centerY + CGFloat((centerLa - traj[0].latitude) * laScale * 2) * scale + offset.y)
+            Path { p in
+                for j in 0..<traj.count {
+                    let point = CGPoint(
+                        x: centerX + CGFloat((traj[j].longitude - centerLg) * lgScale * 2) * scale + offset.x,
+                        y: centerY + CGFloat((centerLa - traj[j].latitude) * laScale * 2) * scale + offset.y
+                    )
+                    if j == 0 {
+                        p.move(to: point)
+                    } else {
+                        p.addLine(to: point)
+                    }
+                }
+            }.stroke(colors[i % colors.count].opacity(0.5), style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+        }
+        
+    }
 }
+
 
 // display line segments
 struct LineSegsView: View {

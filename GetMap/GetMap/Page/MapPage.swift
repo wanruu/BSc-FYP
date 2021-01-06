@@ -13,7 +13,7 @@ struct MapPage: View {
     @State var lineSegments: [LineSeg] = []
     @State var representatives: [[Coor3D]] = []
     
-    /* sheet */
+    // sheet
     @State var showTrajs: Bool = true // trajectories
     @State var showLineSegs: Bool = false // lineSegments
     @State var showRepresents: Bool = false // representatives
@@ -66,10 +66,11 @@ struct MapPage: View {
             // raw trajectories
             showTrajs ? TrajsView(trajectories: $trajectories, color: Color.gray, offset: $offset, scale: $scale) : nil
             
+            // line segments
             showLineSegs ? LineSegsView(lineSegments: $lineSegments, offset: $offset, scale: $scale) : nil
             
             // representative path
-            showRepresents ? RepresentView(trajs: $representatives, offset: $offset, scale: $scale) : nil
+            showRepresents ? RepresentsView(trajs: $representatives, offset: $offset, scale: $scale) : nil
         }
         // navigation bar
         .navigationTitle("Map")
@@ -80,8 +81,6 @@ struct MapPage: View {
             NavigationView {
                 FuncSheet(showTrajs: $showTrajs, showLineSegs: $showLineSegs, showRepresents: $showRepresents, showMap: $showMap, locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, mapSys: $mapSys)
                 .navigationTitle("Setting")
-                .navigationBarTitleDisplayMode(.inline)
-                .navigationBarItems(trailing: Button(action: {showSheet = false}) { Text("Cancel")})
             }
         }
         // gesture
@@ -109,77 +108,79 @@ struct FuncSheet: View {
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
-            Group {
-                VStack {
-                    Toggle(isOn: $showTrajs) { Text("Show Raw Trajectories") }
-                    Toggle(isOn: $showLineSegs) { Text("Show Line Segments")}
-                    Toggle(isOn: $showRepresents) { Text("Show Representative path") }
-                    Toggle(isOn: $showMap) { Text("Show Background map")}
-                }
+            VStack {
+                Toggle(isOn: $showTrajs) { Text("Show Raw Trajectories") }
+                Toggle(isOn: $showLineSegs) { Text("Show Line Segments")}
+                Toggle(isOn: $showRepresents) { Text("Show Representative path") }
+                Toggle(isOn: $showMap) { Text("Show Background map")}
             }.padding()
+            
             Divider()
-            Group {
-                VStack {
-                    Button(action: {
-                        /* Step 1: partition */
-                        lineSegments = []
-                        for traj in trajectories {
-                            if(traj.points.count < 2) {
-                                continue
-                            }
-                            let cp = partition(traj: traj.points)
-                            for index in 0...cp.count-2 {
-                                let newLineSeg = LineSeg(start: cp[index], end: cp[index+1], clusterId: 0)
-                                lineSegments.append(newLineSeg)
-                            }
+            
+            VStack {
+                Button(action: {
+                    // Step 1: partition
+                    lineSegments = []
+                    for traj in trajectories {
+                        if(traj.points.count < 2) {
+                            continue
                         }
-                    }) { Text("Partition") }
-                    Divider()
-                    Button(action: {
-                        /* Step 2: cluster */
-                        let clusterIds = cluster(lineSegs: lineSegments)
-                        clusterNum = 0
-                        for i in 0..<lineSegments.count {
-                            lineSegments[i].clusterId = clusterIds[i]
-                            clusterNum = max(clusterNum, clusterIds[i])
+                        let cp = partition(traj: traj.points)
+                        for index in 0...cp.count-2 {
+                            let newLineSeg = LineSeg(start: cp[index], end: cp[index+1], clusterId: 0)
+                            lineSegments.append(newLineSeg)
                         }
-                    }) { Text("Cluster") }
-                    Divider()
-                    Button(action: {
-                        /* Step 3: generate representative trajectory */
-                        representatives = []
-                        var clusters = [[LineSeg]](repeating: [], count: clusterNum)
-                        for lineSeg in lineSegments {
-                            if(lineSeg.clusterId != -1 && lineSeg.clusterId != 0) {
-                                clusters[lineSeg.clusterId - 1].append(lineSeg)
-                            }
+                    }
+                }) { Text("Partition").frame(width: UIScreen.main.bounds.width * 0.7) }
+                .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: false))
+                
+                Button(action: {
+                    // Step 2: cluster
+                    let clusterIds = cluster(lineSegs: lineSegments)
+                    clusterNum = 0
+                    for i in 0..<lineSegments.count {
+                        lineSegments[i].clusterId = clusterIds[i]
+                        clusterNum = max(clusterNum, clusterIds[i])
+                    }
+                }) { Text("Cluster").frame(width: UIScreen.main.bounds.width * 0.7) }
+                .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: false))
+                
+                Button(action: {
+                    // Step 3: generate representative trajectory
+                    representatives = []
+                    var clusters = [[LineSeg]](repeating: [], count: clusterNum)
+                    for lineSeg in lineSegments {
+                        if(lineSeg.clusterId != -1 && lineSeg.clusterId != 0) {
+                            clusters[lineSeg.clusterId - 1].append(lineSeg)
                         }
-                        for cluster in clusters {
-                            let repTraj = generateRepresent(lineSegs: cluster)
-                            if(repTraj.count >= 2) {
-                                representatives.append(repTraj)
-                            }
+                    }
+                    for cluster in clusters {
+                        let repTraj = generateRepresent(lineSegs: cluster)
+                        if(repTraj.count >= 2) {
+                            representatives.append(repTraj)
                         }
-                        representatives = connect(trajs: representatives)
-                    }) { Text("Generate representative path") }
-                    Divider()
-                    Button(action: {
-                        /* Step 4: generate map system */
-                        let paths = GenerateMapSys(trajs: representatives, locations: locations)
-                        for path in paths {
-                            mapSys.append(path)
-                        }
-                    }) { Text("Generate map system") }
-                    Divider()
-                    Button(action: {
-                        /* Step 5: upload map system */
-                        uploadTasks = [Bool](repeating: false, count: mapSys.count)
-                        for i in 0..<mapSys.count {
-                            uploadRoute(route: mapSys[i], index: i)
-                        }
+                    }
+                    representatives = smooth(trajs: representatives)
+                }) { Text("Generate representative path").frame(width: UIScreen.main.bounds.width * 0.7) }
+                .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: false))
+                
+                /*
+                Button(action: {
+                    // Step 4: generate map system
+                    let paths = GenerateMapSys(trajs: representatives, locations: locations)
+                    for path in paths {
+                        mapSys.append(path)
+                    }
+                }) { Text("Generate map system") }
+                
+                Button(action: {
+                    // Step 5: upload map system
+                    uploadTasks = [Bool](repeating: false, count: mapSys.count)
+                    for i in 0..<mapSys.count {
+                        uploadRoute(route: mapSys[i], index: i)
+                    }
                         
-                    }) { Text("Upload map system") }
-                }
+                }) { Text("Upload map system") } */
             }.padding()
         }
     }
@@ -189,8 +190,8 @@ struct FuncSheet: View {
             points.append(["latitude": point.latitude, "longitude": point.longitude, "altitude": point.altitude])
         }
         let json: [String: Any] = [
-            "startId": route.startId,
-            "endId": route.endId,
+            "startId": route.startLoc._id,
+            "endId": route.endLoc._id,
             "points": points,
             "dist": route.dist,
             "type": route.type

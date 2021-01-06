@@ -150,11 +150,11 @@ struct MainPagePhone: View {
                     }
                 }
                 Text("Verify").font(.title3).bold().padding(.top)
-                HStack(spacing: 30) {
+                /* HStack(spacing: 30) {
                     NavigationLink(destination: SearchPage(locations: $locations, routes: $routes)) {
                         PageItem(image: "building", title: "Search")
                     }
-                }
+                }*/
             }
         }
     }
