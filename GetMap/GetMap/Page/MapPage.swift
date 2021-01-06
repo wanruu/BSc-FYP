@@ -8,7 +8,7 @@ struct MapPage: View {
     @Binding var locations: [Location]
     @Binding var trajectories: [Trajectory]
 
-    @Binding var mapSys: [Route]
+    @State var routes: [Route] = []
 
     @State var lineSegments: [LineSeg] = []
     @State var representatives: [[Coor3D]] = []
@@ -79,7 +79,7 @@ struct MapPage: View {
         // function sheet
         .sheet(isPresented: $showSheet) {
             NavigationView {
-                FuncSheet(showTrajs: $showTrajs, showLineSegs: $showLineSegs, showRepresents: $showRepresents, showMap: $showMap, locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, mapSys: $mapSys)
+                FuncSheet(showTrajs: $showTrajs, showLineSegs: $showLineSegs, showRepresents: $showRepresents, showMap: $showMap, locations: $locations, trajectories: $trajectories, lineSegments: $lineSegments, representatives: $representatives, routes: $routes)
                 .navigationTitle("Setting")
             }
         }
@@ -102,7 +102,7 @@ struct FuncSheet: View {
     @Binding var trajectories: [Trajectory]
     @Binding var lineSegments: [LineSeg]
     @Binding var representatives: [[Coor3D]]
-    @Binding var mapSys: [Route]
+    @Binding var routes: [Route]
     
     @State var uploadTasks: [Bool] = []
     
@@ -167,19 +167,16 @@ struct FuncSheet: View {
                 
                 Button(action: {
                     // Step 4: generate map system
-                    let paths = generateRoutes(trajs: representatives, locations: locations)
-                    for path in paths {
-                        mapSys.append(path)
-                    }
+                    routes = generateRoutes(trajs: representatives, locations: locations)
                 }) { Text("Generate map system").frame(width: UIScreen.main.bounds.width * 0.7) }
                 .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: false))
                 
                  Button(action: {
                     // Step 5: upload map system
-                    /* uploadTasks = [Bool](repeating: false, count: mapSys.count)
-                    for i in 0..<mapSys.count {
-                        uploadRoute(route: mapSys[i], index: i)
-                    }*/
+                    uploadTasks = [Bool](repeating: false, count: routes.count)
+                    for i in 0..<routes.count {
+                        uploadRoute(route: routes[i], index: i)
+                    }
                         
                 }) { Text("Upload map system").frame(width: UIScreen.main.bounds.width * 0.7) }
                 .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: false))
@@ -207,6 +204,7 @@ struct FuncSheet: View {
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data else { return }
             do {
+                // TODO: type mismatch
                 let _ = try JSONDecoder().decode([Route].self, from: data)
                 uploadTasks[index] = true
             } catch let error {

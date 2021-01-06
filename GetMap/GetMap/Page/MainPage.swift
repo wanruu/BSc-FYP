@@ -9,8 +9,6 @@ struct MainPage: View {
     @State var trajectories: [Trajectory] = []
     @State var routes: [Route] = []
     
-    @State var mapSys: [Route] = []
-    
     @State var loadTasks = [Bool](repeating: false, count: 3)
     @State var showAlert = false
     
@@ -19,9 +17,9 @@ struct MainPage: View {
             loadTasks.filter{$0 == true}.count == loadTasks.count ?
                 ZStack {
                     UIDevice.current.localizedModel == "iPad" ?
-                        MainPagePad(locations: $locations, trajectories: $trajectories, mapSys: $mapSys) : nil
+                        MainPagePad(locations: $locations, trajectories: $trajectories) : nil
                     UIDevice.current.localizedModel == "iPhone" ?
-                        MainPagePhone(locations: $locations, trajectories: $trajectories, routes: $routes, mapSys: $mapSys) : nil
+                        MainPagePhone(locations: $locations, trajectories: $trajectories, routes: $routes) : nil
                 } : nil
             loadTasks.filter{$0 == true}.count == loadTasks.count ? nil : LoadPage(tasks: $loadTasks)
         }
@@ -125,7 +123,6 @@ struct MainPagePhone: View {
     @Binding var locations: [Location]
     @Binding var trajectories: [Trajectory]
     @Binding var routes: [Route]
-    @Binding var mapSys: [Route]
     
     // 1 = SCWidth * 0.001
     var body: some View {
@@ -139,7 +136,7 @@ struct MainPagePhone: View {
                 }
                 Text("Process").font(.title3).bold().padding(.top)
                 HStack(spacing: 30) {
-                    NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, mapSys: $mapSys)) {
+                    NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories)) {
                         PageItem(image: "map", title: "Map")
                     }
                     NavigationLink(destination: LocationPage(locations: $locations)) {
@@ -163,12 +160,11 @@ struct MainPagePhone: View {
 struct MainPagePad: View {
     @Binding var locations: [Location]
     @Binding var trajectories: [Trajectory]
-    @Binding var mapSys: [Route]
     
     var body: some View {
         NavigationView {
             List {
-                // NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories, mapSys: $mapSys)) { Text("Map") }
+                // NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories)) { Text("Map") }
                 // NavigationLink(destination: LocationPage(locations: $locations)) { Text("Location") }
             }
             .navigationTitle("Home")
