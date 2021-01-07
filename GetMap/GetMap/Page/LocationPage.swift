@@ -1,30 +1,22 @@
-/* MARK: Location Page - a list of locations */
-
 import Foundation
 import SwiftUI
 
 struct LocationPage: View {
     // locations data
-    @Binding var locations: [Location]
+    @State var locations: [Location] = []
+    @State var clickedLoc: Location? = nil // clicked location
     
-    // sheet
+    // control
     @State var showList = false
-
-    // clicked location
-    @State var clickedIndex: Int = -1
+    @State var showEditWindow = false
     
-    // edit location textfield
-    @State var name_en: String = ""
-    @State var latitude: String = ""
-    @State var longitude: String = ""
-    @State var altitude: String = ""
-    @State var type: String = ""
+    // TODO: add alert of unable to connect to server
     
     // gesture
     @State var offset: Offset = Offset(x: 0, y: 0)
-    @State var lastOffset = Offset(x: 0, y: 0)
+    @State var lastOffset: Offset = Offset(x: 0, y: 0)
     @State var scale: CGFloat = minZoomOut
-    @State var lastScale = minZoomOut
+    @State var lastScale: CGFloat = minZoomOut
     var gesture: some Gesture {
         SimultaneousGesture(
             MagnificationGesture()
@@ -62,55 +54,54 @@ struct LocationPage: View {
             .resizable()
             .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
             .position(x: centerX + offset.x, y: centerY + offset.y)
+            
             // locations
-            LocationsView(locations: $locations, clickedIndex: $clickedIndex, name_en: $name_en, latitude: $latitude, longitude: $longitude, altitude: $altitude, type: $type, offset: $offset, scale: $scale)
+            ForEach(locations) { location in
+                Button(action: {
+                    clickedLoc = location
+                    showEditWindow = true
+                }) {
+                    if clickedLoc != nil && location.id == clickedLoc!.id {
+                        Image("location-white")
+                            .resizable()
+                            .frame(width: SCWidth * 0.1, height: SCWidth * 0.1, alignment: .center)
+                    } else if location.type == 0 {
+                        Image("location-purple")
+                            .resizable()
+                            .frame(width: SCWidth * 0.1, height: SCWidth * 0.1, alignment: .center)
+                    } else {
+                        Image("location-yellow")
+                            .resizable()
+                            .frame(width: SCWidth * 0.1, height: SCWidth * 0.1, alignment: .center)
+                    }
+                }
+                .position(
+                    x: centerX + CGFloat((location.longitude - centerLg)*lgScale*2) * scale + offset.x,
+                    y: centerY + CGFloat((centerLa - location.latitude)*laScale*2) * scale + offset.y - SCWidth * 0.05
+                )
+            }
+            
+            // edit window
+            if showEditWindow && clickedLoc != nil {
+                EditLocWindow(locations: $locations, id: clickedLoc!._id, name_en: clickedLoc!.name_en, latitude: String(clickedLoc!.latitude), longitude: String(clickedLoc!.longitude), altitude: String(clickedLoc!.altitude), type: String(clickedLoc!.type), showing: $showEditWindow)
+            }
+            
         }
         .onAppear {
             loadLocations()
         }
         // gesture
-        .contentShape(Rectangle())
+        //.contentShape(Rectangle())
         .highPriorityGesture(gesture)
+        
         // navigation bar
         .navigationTitle("Location")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarItems(trailing: Button(action: {showList = true}) {Image(systemName: "list.bullet").imageScale(.large)} )
-        // sheet: list
+        
+        // sheet: location list
         .sheet(isPresented: $showList) {
-            Image(systemName: "line.horizontal.3")
-                .foregroundColor(Color.gray)
-                .padding()
-                .frame(width: SCWidth)
-            List {
-                ForEach(locations) { location in
-                    let i = locations.firstIndex(of: location)!
-                    Button(action: {
-                        clickedIndex = i
-                        name_en = locations[i].name_en
-                        latitude = String(locations[i].latitude)
-                        longitude = String(locations[i].longitude)
-                        altitude = String(locations[i].altitude)
-                        type = String(locations[i].type)
-                        showList = false
-                        // move selected location to center
-                        offset.x = CGFloat((centerLg - locations[i].longitude)*lgScale*2) * scale
-                        offset.y = CGFloat((locations[i].latitude - centerLa)*laScale*2) * scale
-                        lastOffset = offset
-                    }) {
-                        HStack {
-                            Image(systemName: locations[i].type == 0 ? "building.2" : "bus")
-                            VStack(alignment: .leading) {
-                                Text(locations[i].name_en).font(.headline)
-                                Text("(\(locations[i].latitude), \(locations[i].longitude), \(locations[i].altitude)").font(.subheadline)
-                            }
-                        }
-                    }
-                }
-                .onDelete { offsets in
-                    let index = offsets.first!
-                    deleteLocation(index: index)
-                }
-            }
+            LocationList(locations: $locations, clickedLoc: $clickedLoc, showList: $showList, offset: $offset, lastOffset: $lastOffset, scale: $scale, lastScale: $lastScale)
         }
     }
     
@@ -128,6 +119,47 @@ struct LocationPage: View {
                 print(error)
             }
         }.resume()
+    }
+}
+
+struct LocationList: View {
+    @Binding var locations: [Location]
+    @Binding var clickedLoc: Location?
+    
+    @Binding var showList: Bool
+    
+    @Binding var offset: Offset
+    @Binding var lastOffset: Offset
+    @Binding var scale: CGFloat
+    @Binding var lastScale: CGFloat
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 0) {
+                ForEach(locations) { location in
+                    Button(action: {
+                        clickedLoc = location
+                        // move to center
+                        offset.x = -CGFloat((location.longitude - centerLg) * lgScale * 2) * scale
+                        offset.y = -CGFloat((centerLa - location.latitude) * laScale * 2) * scale
+                        lastOffset = offset
+                        
+                        showList = false
+                    }) {
+                        HStack(spacing: 20) {
+                            Image(systemName: location.type == 0 ? "building.2" : "bus").imageScale(.large)
+                            Text(location.name_en)
+                            Spacer()
+                        }
+                    }.buttonStyle(MyButtonStyle2(bgColor: CUPurple))
+                    Divider()
+                }
+                .onDelete { offsets in
+                    let index = offsets.first!
+                    deleteLocation(index: index)
+                }
+            }.padding()
+        }
     }
     
     private func deleteLocation(index: Int) {
@@ -152,124 +184,80 @@ struct LocationPage: View {
     }
 }
 
-/*
+
+
 struct EditLocWindow: View {
-    @State var id: String
-    @State var name_en: String
-    @State var latitude: String
-    @State var longitude: String
-    @State var altitude: String
-    @State var type: String
-    var body: some View {
-        
-    }
-}
-*/
-struct LocationView: View {
-    @Binding var location: Location
-    @State var name_en: String
-    @State var latitude: String
-    @State var longitude: String
-    @State var altitude: String
-    @State var type: String
-    
-    @Binding var offset: Offset
-    @Binding var scale: CGFloat
-    
-    @State var showing = false
-    var body: some View {
-        ZStack {
-            Button(action: {
-                showing = !showing
-            }) {
-                Image(location.type == 0 ? "location-purple" : "location-yellow")
-                .resizable()
-                .frame(width: SCWidth * 0.1, height: SCWidth * 0.1, alignment: .center)
-            }
-            .position(
-                x: centerX + CGFloat((location.longitude - centerLg)*lgScale*2) * scale + offset.x,
-                y: centerY + CGFloat((centerLa - location.latitude)*laScale*2) * scale + offset.y - SCWidth * 0.05
-            )
-        }
-    }
-}
-
-struct LocationsView: View {
-    // location data
+    // need to update after editing successfully
     @Binding var locations: [Location]
-    // clicked location index
-    @Binding var clickedIndex: Int
-    // textfield
-    @Binding var name_en: String
-    @Binding var latitude: String
-    @Binding var longitude: String
-    @Binding var altitude: String
-    @Binding var type: String
     
-    // gesture
-    @Binding var offset: Offset
-    @Binding var scale: CGFloat
-
+    // for textfields
+    @State var id: String = ""
+    @State var name_en: String = ""
+    @State var latitude: String = ""
+    @State var longitude: String = ""
+    @State var altitude: String = ""
+    @State var type: String = ""
+    
+    @Binding var showing: Bool
+    
     var body: some View {
-        ZStack {
-            // landmark
-            ForEach(locations) { location in
-                let i = locations.firstIndex(of: location)!
-                // let i = 0
-                Button(action: {
-                    if(clickedIndex == i) {
-                        clickedIndex = -1
-                    } else {
-                        clickedIndex = i
-                        name_en = locations[i].name_en
-                        latitude = String(locations[i].latitude)
-                        longitude = String(locations[i].longitude)
-                        altitude = String(locations[i].altitude)
-                        type = String(locations[i].type)
+        GeometryReader { geometry in
+            ZStack {
+                Rectangle()
+                    .frame(minWidth: geometry.size.width, maxWidth: .infinity, minHeight: geometry.size.height, maxHeight: .infinity, alignment: .center)
+                    .foregroundColor(Color.gray.opacity(0.2))
+                    .edgesIgnoringSafeArea(.all)
+                    .onTapGesture {
+                        showing = false
                     }
-                }) {
-                    Image(locations[i].type == 0 ? "location-purple" : "location-yellow")
-                    .resizable()
-                        .frame(width: SCWidth * 0.1, height: SCWidth * 0.1, alignment: .center)
-                }
-                .position(
-                    x: centerX + CGFloat((locations[i].longitude - centerLg)*lgScale*2) * scale + offset.x,
-                    y: centerY + CGFloat((centerLa - locations[i].latitude)*laScale*2) * scale + offset.y - SCWidth * 0.05
-                )
-            }
-            // textfield
-            if clickedIndex != -1 {
-                VStack {
-                    TextField("Name", text: $name_en).textFieldStyle(RoundedBorderTextFieldStyle())
-                    TextField("Latitude", text: $latitude).textFieldStyle(RoundedBorderTextFieldStyle())
-                    TextField("Longitude", text: $longitude).textFieldStyle(RoundedBorderTextFieldStyle())
-                    TextField("Altitude", text: $altitude).textFieldStyle(RoundedBorderTextFieldStyle())
-                    TextField("Type", text: $type).textFieldStyle(RoundedBorderTextFieldStyle())
-                    HStack {
+                VStack(spacing: 20) {
+                    Text("Edit Location").font(.title2)
+                    VStack(alignment: .leading) {
+                        TextField("ID", text: $id)
+                            .padding(10)
+                            .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
+                            .disabled(true)
+                            .foregroundColor(.gray)
 
+                        TextField("Name", text: $name_en)
+                            .padding(10)
+                            .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
+                        TextField("latitude", text: $latitude)
+                            .padding(10)
+                            .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
+                        TextField("longitude", text: $longitude)
+                            .padding(10)
+                            .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
+                        TextField("altitude", text: $altitude)
+                            .padding(10)
+                            .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
+                        TextField("Type", text: $type)
+                            .padding(10)
+                            .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
+                    }
+                    HStack {
                         Button(action: {
                             editLocation()
+                            showing = false
                         }) { Text("Submit") }
                         .disabled(Double(latitude) == nil || Double(longitude) == nil || Double(altitude) == nil || Int(type) == nil)
+                        .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: Double(latitude) == nil || Double(longitude) == nil || Double(altitude) == nil || Int(type) == nil))
 
                         Button(action: {
-                            clickedIndex = -1
+                            showing = false
                         }) { Text("Cancel") }
+                        .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: false))
                     }
                 }
-                .padding()
-                .background(Color.white.opacity(0.9))
-                .cornerRadius(10)
-                .frame(width: SCWidth * 0.7)
-                .position(
-                    x: centerX + CGFloat((locations[clickedIndex].longitude - centerLg)*lgScale*2) * scale + offset.x,
-                    y: centerY + CGFloat((centerLa - locations[clickedIndex].latitude)*laScale*2) * scale + offset.y - SCWidth * 0.5
-                )
+                .padding(20)
+                .frame(width: geometry.size.width * 0.88, alignment: .center)
+                .background(Color.white)
+                .cornerRadius(5)
             }
         }
     }
     private func editLocation() {
-        let dataStr = "id=" + locations[clickedIndex].id + "&name_en=" + name_en + "&latitude=" + latitude + "&longitude=" + longitude + "&altitude=" + altitude + "&type=" + type
+        let dataStr = "id=\(id)&name_en=\(name_en)&latitude=\(latitude)&longitude=\(longitude)&altitude=\(altitude)&type=\(type)"
         
         let url = URL(string: server + "/location")!
         var request = URLRequest(url: url)
@@ -282,23 +270,9 @@ struct LocationsView: View {
             do {
                 let res = try JSONDecoder().decode(PutResult.self, from: data)
                 if(res.nModified == 1) {
-                    for i in 0..<locations.count {
-                        if(i == clickedIndex) {
-                            // TODO: why unable to update
-                            locations[i].name_en = name_en
-                            locations[i].latitude = Double(latitude)!
-                            locations[i].longitude = Double(longitude)!
-                            print(locations[i].altitude)
-                            locations[i].altitude = Double(altitude)!
-                            print(locations[i].altitude)
-                            locations[i].type = Int(type)!
-                            print(altitude)
-                            print(locations[i])
-                            break
-                        }
-                    }
+                    let index = locations.firstIndex(where: {$0._id == id})!
+                    locations[index] = Location(_id: id, name_en: name_en, latitude: Double(latitude)!, longitude: Double(longitude)!, altitude: Double(altitude)!, type: Int(type)!)
                 }
-                clickedIndex = -1
             } catch let error {
                 print(error)
             }

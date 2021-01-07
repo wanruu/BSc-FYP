@@ -24,3 +24,22 @@ struct MyButtonStyle: ButtonStyle {
     }
     
 }
+
+// press: white -> bgColor
+struct MyButtonStyle2: ButtonStyle {
+    var bgColor: Color
+    
+    func makeBody(configuration: Self.Configuration) -> some View {
+        configuration.label
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(bgColor.opacity(configuration.isPressed ? 0.7 : 0))
+                    .animation(.spring())
+            )
+            .scaleEffect(configuration.isPressed ? 0.95: 1)
+            .foregroundColor(.primary)
+            .animation(.spring())
+    }
+    
+}

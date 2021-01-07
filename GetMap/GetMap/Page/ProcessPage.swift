@@ -4,9 +4,9 @@ import Foundation
 import SwiftUI
 
 
-struct MapPage: View {
-    @Binding var locations: [Location]
-    @Binding var trajectories: [Trajectory]
+struct ProcessPage: View {
+    @State var locations: [Location] = []
+    @State var trajectories: [Trajectory] = []
 
     @State var routes: [Route] = []
 
@@ -73,7 +73,7 @@ struct MapPage: View {
             showRepresents ? RepresentsView(trajs: $representatives, offset: $offset, scale: $scale) : nil
         }
         // navigation bar
-        .navigationTitle("Map")
+        .navigationTitle("Generate Routes")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarItems(trailing: Button(action: { showSheet = true }) { Image(systemName: "gearshape").imageScale(.large) } )
         // function sheet
@@ -84,11 +84,46 @@ struct MapPage: View {
             }
         }
         // gesture
-        .contentShape(Rectangle())
         .gesture(gesture)
+        
+        .onAppear {
+            loadLocations()
+            loadTrajs()
+        }
+    }
+    private func loadLocations() { // load task #0
+        let url = URL(string: server + "/locations")!
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if(error != nil) {
+                // showAlert = true
+            }
+            guard let data = data else { return }
+            do {
+                locations = try JSONDecoder().decode([Location].self, from: data)
+                //loadTasks[0] = true
+            } catch let error {
+                //showAlert = true
+                print(error)
+            }
+        }.resume()
+    }
+    private func loadTrajs() { // load task #1
+        let url = URL(string: server + "/trajectories")!
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if(error != nil) {
+                //showAlert = true
+            }
+            guard let data = data else { return }
+            do {
+                trajectories = try JSONDecoder().decode([Trajectory].self, from: data)
+                //loadTasks[1] = true
+            } catch let error {
+                //showAlert = true
+                print(error)
+            }
+        }.resume()
     }
 }
-
 
 var clusterNum: Int = 0
 

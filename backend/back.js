@@ -212,7 +212,7 @@ app.post('/trajectory', (req, res) => {
             console.log(err);
             res.status(404).send();
         } else {
-            res.send({id: result._id, points: points});
+            res.send(result);
         }
     });
 });
@@ -229,7 +229,7 @@ app.post('/trajectories', (req, res) => {
                     console.log(err);
                     res.status(404).send();
                 }
-                resolve({id: result._id, points: trajectories[i]});
+                resolve(result);
             });
         });
         promises.push(promise);
@@ -240,11 +240,7 @@ app.post('/trajectories', (req, res) => {
 });
 app.get('/trajectories', (req, res) => {
     console.log("GET /trajectories - " + Date());
-    let aggr = [
-        { $match: {} },
-        { $project: { _id: 0, id: "$_id", points: "$points" } }
-    ];
-    TrajectoryModel.aggregate(aggr, (err, result) => {
+    TrajectoryModel.find({}, (err, result) => {
         if(err) {
             console.log(err);
             res.status(404).send();

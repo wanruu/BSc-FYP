@@ -1,7 +1,8 @@
-/* MARK: Model for Collecting User Location Data */
+// Model for Collecting User Location Data
 
 /* This is a model for getting location information of user,
- including current latitude, longitude, altitude, heading and a list of location points */
+ including current latitude, longitude, altitude, heading and a list of location points
+ */
 
 import Foundation
 import CoreLocation

@@ -4,22 +4,19 @@ import Foundation
 import SwiftUI
 
 struct CollectPage: View {
-    @ObservedObject var locationGetter = LocationGetterModel()
     
-    // if user point is at the center
-    @State var mode: NavigationMode = .normal
+    // Updating and recording location
+    @StateObject var locationGetter = LocationGetterModel()
+    @State var isRecording = true // if locations are being recorded
+    
+    // control add location window
+    @State var showAddLocation = false
     
     // gesture
     @State var lastOffset = Offset(x: 0, y: 0)
     @State var offset = Offset(x: 0, y: 0)
     @State var lastScale = minZoomOut
     @State var scale = minZoomOut
-    
-    // add location window
-    @State var showAddLocation = false
-    // if locations are being recorded
-    @State var isRecording = true
-    
     var gesture: some Gesture {
         SimultaneousGesture(
             MagnificationGesture()
@@ -39,7 +36,6 @@ struct CollectPage: View {
                 },
             DragGesture()
                 .onChanged{ value in
-                    mode = .normal
                     offset.x = lastOffset.x + value.location.x - value.startLocation.x
                     offset.y = lastOffset.y + value.location.y - value.startLocation.y
                 }
@@ -51,6 +47,7 @@ struct CollectPage: View {
     
     var body: some View {
         ZStack {
+            // Background map image
             Image("cuhk-campus-map")
                 .resizable()
                 .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
@@ -58,15 +55,17 @@ struct CollectPage: View {
                 .gesture(gesture)
 
             // recording trajectory
-            if isRecording {
+            if isRecording { // TODO: need judge isRecording?
                 UserPathsView(locationGetter: locationGetter, offset: $offset, scale: $scale)
             }
+            
+            // current location
             UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale)
+            
             // tool bar
             VStack {
                 Spacer()
                 HStack(spacing: 30) {
-                    ModeButton(locationGetter: locationGetter, mode: $mode, lastOffset: $lastOffset, offset: $offset, lastScale: $lastScale, scale: $scale)
                     RecordButton(locationGetter: locationGetter, isRecording: $isRecording)
                     DeleteButton(locationGetter: locationGetter)
                 }
@@ -87,6 +86,8 @@ struct CollectPage: View {
 }
 
 // MARK: - Tool Bar
+// TODO: unused
+/*
 struct ModeButton: View {
     @ObservedObject var locationGetter: LocationGetterModel
     @Binding var mode: NavigationMode
@@ -137,7 +138,7 @@ struct ModeButton: View {
         .frame(width: SCWidth * 0.1, height: SCWidth * 0.1, alignment: .center)
     }
 }
-
+*/
 struct RecordButton: View {
     @ObservedObject var locationGetter: LocationGetterModel
     @Binding var isRecording: Bool
