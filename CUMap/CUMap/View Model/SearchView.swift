@@ -48,10 +48,8 @@ struct SearchView: View {
     
     @ObservedObject var locationGetter: LocationGetterModel
     
-    @State var startName = ""
-    @State var endName = ""
-    @State var startId = ""
-    @State var endId = ""
+    @State var startLoc: Location? = nil
+    @State var endLoc: Location? = nil
     
     @Binding var mode: TransMode
     
@@ -66,16 +64,16 @@ struct SearchView: View {
         GeometryReader { geometry in
             if showStartList {
                 // Page 1: search starting point
-                SearchList(locations: locations, placeholder: "From", locationName: $startName, locationId: $startId, keyword: startName, showList: $showStartList)
+                SearchList(placeholder: "From", keyword: startLoc == nil ? "" : startLoc!.name_en, locationGetter: locationGetter, locations: locations, location: $startLoc, showList: $showStartList)
             } else if showEndList {
                 // Page 2: search ending point
-                SearchList(locations: locations, placeholder: "To", locationName: $endName, locationId: $endId, keyword: endName, showList: $showEndList)
+                SearchList(placeholder: "To", keyword: endLoc == nil ? "" : endLoc!.name_en, locationGetter: locationGetter, locations: locations, location: $endLoc, showList: $showEndList)
             } else {
                 // Page 3: search box
-                SearchArea(startName: startName, endName: endName, mode: $mode, showStartList: $showStartList, showEndList: $showEndList, locations: locations, routes: routes, locationGetter: locationGetter, startId: startId, endId: endId, plans: $plans, planIndex: $planIndex)
+                SearchArea(mode: $mode, showStartList: $showStartList, showEndList: $showEndList, startLoc: $startLoc, endLoc: $endLoc, routes: routes, plans: $plans, planIndex: $planIndex)
                     .offset(y: height > UIScreen.main.bounds.height * 0.1 ? (UIScreen.main.bounds.height * 0.1 - height) * 2 : 0)
                     .onAppear {
-                        if startId != "" && endId != "" {
+                        if startLoc != nil && endLoc != nil {
                             lastHeight = UIScreen.main.bounds.height * 0.1
                             height = UIScreen.main.bounds.height * 0.1
                         }
@@ -87,9 +85,6 @@ struct SearchView: View {
 
 // Search bar: to do route planning
 struct SearchArea: View {
-    // display data
-    @State var startName: String
-    @State var endName: String
     @Binding var mode: TransMode
     @State var angle = 0.0 // animation for 􀄬
     
@@ -98,14 +93,15 @@ struct SearchArea: View {
     @Binding var showEndList: Bool
     
     // input for RP
-    @State var locations: [Location]
+    @Binding var startLoc: Location?
+    @Binding var endLoc: Location?
     @State var routes: [Route]
-    @ObservedObject var locationGetter: LocationGetterModel
-    @State var startId: String
-    @State var endId: String
+
     // output of RP
     @Binding var plans: [Plan]
     @Binding var planIndex: Int
+    
+    @State var empty = ""
 
     var body: some View {
         // find min time for both mode
@@ -125,14 +121,18 @@ struct SearchArea: View {
                 // search box
                 HStack {
                     VStack(spacing: 12) {
-                        TextField("From", text: $startName)
-                            .padding(.horizontal)
-                            .padding(.vertical, 12)
+                        Text(startLoc == nil ? "From" : startLoc!.name_en)
+                            .foregroundColor(startLoc == nil ? .gray : .black)
+                            .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                            .contentShape(Rectangle())
+                            .padding()
                             .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 0.8))
                             .onTapGesture { showStartList = true }
-                        TextField("To", text: $endName)
-                            .padding(.horizontal)
-                            .padding(.vertical, 12)
+                        Text(endLoc == nil ? "To" : endLoc!.name_en)
+                            .foregroundColor(endLoc == nil ? .gray : .black)
+                            .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                            .contentShape(Rectangle())
+                            .padding()
                             .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 0.8))
                             .onTapGesture { showEndList = true }
                     }
@@ -144,12 +144,9 @@ struct SearchArea: View {
                         .onTapGesture {
                             angle = 180 - angle
                             // swap
-                            var tmp = startName
-                            startName = endName
-                            endName = tmp
-                            tmp = startId
-                            startId = endId
-                            endId = tmp
+                            let tmp = startLoc
+                            startLoc = endLoc
+                            endLoc = tmp
                             RP()
                         }
                 }
@@ -158,7 +155,7 @@ struct SearchArea: View {
                     HStack(spacing: 30) {
                         HStack {
                             Image(systemName: "bus").foregroundColor(Color.black.opacity(0.7))
-                            if startId != "" && endId != "" {
+                            if startLoc != nil && endLoc != nil {
                                 busTime == INF ? Text("—") : Text("\(Int(busTime / 60)) min")
                             }
                         }
@@ -170,7 +167,7 @@ struct SearchArea: View {
                         
                         HStack {
                             Image(systemName: "figure.walk").foregroundColor(Color.black.opacity(0.7))
-                            if startId != "" && endId != "" {
+                            if startLoc != nil && endLoc != nil {
                                 footTime == INF ? Text("—") : Text("\(Int(footTime) / 60) min")
                             }
                         }
@@ -194,18 +191,14 @@ struct SearchArea: View {
             }
     }
     private func RP() {
+        // clear result
         plans = []
         
-        let startLocs = locations.filter({$0._id == startId})
-        let endLocs = locations.filter({$0._id == endId})
-        if startLocs.count == 0 || endLocs.count == 0 {
+        if startLoc == nil || endLoc == nil {
             return
         }
-        let startLoc = startLocs[0]
-        let endLoc = endLocs[0]
         
-        
-        let plan0 = RPDirect(routes: routes, startLoc: startLoc, endLoc: endLoc)
+        let plan0 = RPDirect(routes: routes, startLoc: startLoc!, endLoc: endLoc!)
         if plan0 != nil {
             plans.append(plan0!)
         }
@@ -300,22 +293,29 @@ struct SearchArea: View {
 }
 
 struct SearchList: View {
-    @State var locations: [Location]
-    
+    // search box
     @State var placeholder: String
-    @Binding var locationName: String
-    @Binding var locationId: String
     @State var keyword: String
     
+    // location list
+    @ObservedObject var locationGetter: LocationGetterModel
+    @State var locations: [Location]
+    
+    // chosen location
+    @Binding var location: Location?
+
+    // show itself
     @Binding var showList: Bool
     
     var body: some View {
         GeometryReader { geometry in
             ZStack {
+                // white background
                 Rectangle()
                     .foregroundColor(.white)
                     .frame(minWidth: geometry.size.width, maxWidth: .infinity, minHeight: geometry.size.height, maxHeight: .infinity, alignment: .center)
                     .ignoresSafeArea(.all)
+                
                 VStack(spacing: 0) {
                     // text field
                     VStack(spacing: 0) {
@@ -340,12 +340,13 @@ struct SearchList: View {
                             .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: 2)
                     }.padding(.bottom, 6)
                     
+                    // list
                     ScrollView {
                         VStack(spacing: 0) {
                             // current location
                             Button(action: {
-                                locationName = "Your Location"
-                                locationId = "current"
+                                // TODO: change type of current location
+                                self.location = Location(_id: "current", name_en: "Your Location", latitude: locationGetter.current.latitude, longitude: locationGetter.current.longitude, altitude: locationGetter.current.altitude, type: 0)
                                 showList = false
                             }) {
                                 HStack(spacing: 20) {
@@ -357,50 +358,39 @@ struct SearchList: View {
                                     Spacer()
                                 }.padding(.horizontal)
                             }.buttonStyle(MyButtonStyle())
-                            Divider()
-                                .padding(.horizontal)
+                            
+                            Divider().padding(.horizontal)
                             // other locations
                             ForEach(locations) { location in
                                 if keyword == "" || location.name_en.lowercased().contains(keyword.lowercased()) {
-                                    SearchOption(name: $locationName, id: $locationId, location: location, showList: $showList)
+                                    Button(action: {
+                                        self.location = location
+                                        showList = false
+                                    }) {
+                                        HStack(spacing: 20) {
+                                            if location.type == 0 {
+                                                Image(systemName: "building.2.fill")
+                                                    .imageScale(.large)
+                                                    .foregroundColor(CUPurple)
+                                            } else if location.type == 1 {
+                                                Image(systemName: "bus")
+                                                    .imageScale(.large)
+                                                    .foregroundColor(CUYellow)
+                                            }
+                                            Text(location.name_en)
+                                            Spacer()
+                                        }.padding(.horizontal)
+                                    }.buttonStyle(MyButtonStyle())
+                                    
                                     Divider().padding(.horizontal)
                                 }
                             }
                         }
                     }
-                    
+                    // end of scrollview
                 }
             }
         }
-    }
-}
-
-struct SearchOption: View {
-    @Binding var name: String
-    @Binding var id: String
-    @State var location: Location
-    @Binding var showList: Bool
-    
-    var body: some View {
-        Button(action: {
-            name = location.name_en
-            id = location.id
-            showList = false
-        }) {
-            HStack(spacing: 20) {
-                if location.type == 0 {
-                    Image(systemName: "building.2.fill")
-                        .imageScale(.large)
-                        .foregroundColor(CUPurple)
-                } else if location.type == 1 {
-                    Image(systemName: "bus")
-                        .imageScale(.large)
-                        .foregroundColor(CUYellow)
-                }
-                Text(location.name_en)
-                Spacer()
-            }.padding(.horizontal)
-        }.buttonStyle(MyButtonStyle())
     }
 }
 

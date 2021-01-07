@@ -129,14 +129,14 @@ Search box:
 Location List:
 
 ```swift
+@ObservedObject var locationGetter: LocationGetterModel // for current location
 @State var locations: [Location]
 ```
 
 Chosen Location:
 
 ```swift
-@Binding var locationName: String
-@Binding var locationId: String
+@Binding var location: Location
 ```
 
 Show itself or not:
