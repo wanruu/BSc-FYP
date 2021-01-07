@@ -249,8 +249,8 @@ struct HeightChart: View {
     
     var body: some View {
         // find max, min altitude
-        var maxHeight = -99999.0
-        var minHeight = 99999.0
+        var maxHeight = -INF
+        var minHeight = INF
         for route in plan.routes {
             for point in route.points {
                 if point.altitude > maxHeight {

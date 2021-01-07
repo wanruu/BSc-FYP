@@ -398,22 +398,23 @@ func RPDirect(routes: [Route], startLoc: Location, endLoc: Location) -> Plan? {
     var plan: Plan? = nil
     for route in routes {
         if route.startLoc == startLoc && route.endLoc == endLoc {
-            plan = Plan(startLoc: startLoc, endLoc: endLoc, routes: [route], dist: INF, time: INF, height: [], type: 0)
+            plan = Plan(startLoc: startLoc, endLoc: endLoc, routes: [route], dist: INF, time: INF, ascent: 0, type: 0)
             break
         } else if route.startLoc == endLoc && route.endLoc == startLoc {
             var points = route.points
             points.reverse()
-            plan = Plan(startLoc: endLoc, endLoc: startLoc, routes: [Route(_id: route._id, startLoc: route.endLoc, endLoc: route.startLoc, points: points, dist: route.dist, type: route.type)], dist: INF, time: INF, height: [], type: 0)
+            plan = Plan(startLoc: endLoc, endLoc: startLoc, routes: [Route(_id: route._id, startLoc: route.endLoc, endLoc: route.startLoc, points: points, dist: route.dist, type: route.type)], dist: INF, time: INF, ascent: 0, type: 0)
             break
         }
     }
     if plan != nil {
         var totalDist = 0.0 // meters
         var totalTime = 0.0 // seconds
-        var height: [Double] = []
+        
+        // TODO: calculate ascent
+        var ascent: Double = 0
         
         let points = plan!.routes[0].points
-        height.append(points[0].altitude)
         for i in 0..<points.count - 1 {
             let dist = distance(start: points[i], end: points[i+1])
             totalDist += dist
@@ -422,21 +423,17 @@ func RPDirect(routes: [Route], startLoc: Location, endLoc: Location) -> Plan? {
             } else {
                 totalTime += dist / busSpeed
             }
-            height.append(points[i+1].altitude)
         }
         plan!.dist = totalDist
         plan!.time = totalTime
-        plan!.height = height
+        plan!.ascent = ascent
     }
     return plan
 }
 
 func RPMinDist(locations: [Location], routes: [Route], startLoc: Location, endLoc: Location) -> Plan? {
     // Step 1: preprocessing
-    var plans = [Plan](repeating: Plan(startLoc: startLoc, endLoc: endLoc, routes: [], dist: INF, time: INF, height: [], type: 0), count: locations.count) // plan from startLoc to any other locations
-    /*for i in 0..<locations.count {
-        plans[i].endLoc = locations[i]
-    }*/
+    var plans = [Plan](repeating: Plan(startLoc: startLoc, endLoc: endLoc, routes: [], dist: INF, time: INF, ascent: 0, type: 0), count: locations.count) // plan from startLoc to any other locations
     
     var checked = [Bool](repeating: false, count: locations.count) // at beginning, all locations are not checked
     

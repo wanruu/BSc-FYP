@@ -51,7 +51,7 @@ struct Plan {
     var routes: [Route]
     var dist: Double // meters
     var time: Double // seconds
-    var height: [Double] // meters
+    var ascent: Double // meters
     var type: Int
 }
 extension Plan: Identifiable {
