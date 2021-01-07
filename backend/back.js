@@ -40,8 +40,7 @@ var LocationSchema = Schema({
     type: { type: Number, require: true } // 0: building, 1: bus stop
 });
 var TrajectorySchema = Schema({
-    points: [{ latitude: Number, longitude: Number, altitude: Number }],
-    timestamp: Date
+    points: [{ latitude: Number, longitude: Number, altitude: Number }]
 });
 var RouteSchema = Schema({
     startLoc: { type: Schema.Types.ObjectId, ref: 'Location' },
@@ -208,8 +207,7 @@ app.delete('/location', (req, res) => {
 app.post('/trajectory', (req, res) => {
     console.log("POST /trajectory - " + Date());
     var points = req.body.points;
-    var time = Date();
-    TrajectoryModel.create({points: points, timestamp: time}, (err, result) => {
+    TrajectoryModel.create({points: points}, (err, result) => {
         if(err) {
             console.log(err);
             res.status(404).send();
@@ -222,12 +220,11 @@ app.post('/trajectory', (req, res) => {
 app.post('/trajectories', (req, res) => {
     console.log("POST /trajectories - " + Date())
     var trajectories = req.body.trajectories;
-    var time = Date();
     var promises = []
     
     for(let i in trajectories) {
         var promise = new Promise(function(resolve, reject) {
-            TrajectoryModel.create({points: trajectories[i], timestamp: time}, (err, result) => {
+            TrajectoryModel.create({points: trajectories[i]}, (err, result) => {
                 if(err) {
                     console.log(err);
                     res.status(404).send();

@@ -38,25 +38,26 @@ enum TransMode {
 
 // To control which page to show
 struct SearchView: View {
+    
     // data used to do route planning
+    @ObservedObject var locationGetter: LocationGetterModel
     @State var locations: [Location]
+    @State var startLoc: Location? = nil
+    @State var endLoc: Location? = nil
     @State var routes: [Route]
     
     // result of route planning
     @Binding var plans: [Plan]
     @Binding var planIndex: Int
     
-    @ObservedObject var locationGetter: LocationGetterModel
-    
-    @State var startLoc: Location? = nil
-    @State var endLoc: Location? = nil
-    
+    // decide which plan to display
     @Binding var mode: TransMode
     
     // height of plan view
     @Binding var lastHeight: CGFloat
     @Binding var height: CGFloat
     
+    // show SearchList
     @State var showStartList = false
     @State var showEndList = false
     
@@ -70,7 +71,7 @@ struct SearchView: View {
                 SearchList(placeholder: "To", keyword: endLoc == nil ? "" : endLoc!.name_en, locationGetter: locationGetter, locations: locations, location: $endLoc, showList: $showEndList)
             } else {
                 // Page 3: search box
-                SearchArea(mode: $mode, showStartList: $showStartList, showEndList: $showEndList, startLoc: $startLoc, endLoc: $endLoc, routes: routes, plans: $plans, planIndex: $planIndex)
+                SearchArea(startLoc: $startLoc, endLoc: $endLoc, routes: routes, plans: $plans, planIndex: $planIndex, showStartList: $showStartList, showEndList: $showEndList, mode: $mode)
                     .offset(y: height > UIScreen.main.bounds.height * 0.1 ? (UIScreen.main.bounds.height * 0.1 - height) * 2 : 0)
                     .onAppear {
                         if startLoc != nil && endLoc != nil {
@@ -85,13 +86,7 @@ struct SearchView: View {
 
 // Search bar: to do route planning
 struct SearchArea: View {
-    @Binding var mode: TransMode
-    @State var angle = 0.0 // animation for 􀄬
-    
-    // show searchList
-    @Binding var showStartList: Bool
-    @Binding var showEndList: Bool
-    
+
     // input for RP
     @Binding var startLoc: Location?
     @Binding var endLoc: Location?
@@ -101,8 +96,14 @@ struct SearchArea: View {
     @Binding var plans: [Plan]
     @Binding var planIndex: Int
     
-    @State var empty = ""
-
+    // show searchList
+    @Binding var showStartList: Bool
+    @Binding var showEndList: Bool
+    
+    // other data
+    @Binding var mode: TransMode
+    @State var angle = 0.0 // animation for 􀄬
+    
     var body: some View {
         // find min time for both mode
         var footTime = INF

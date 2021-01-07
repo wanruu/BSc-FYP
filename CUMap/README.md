@@ -74,32 +74,14 @@ Positioned at top of screen, ignoring safe area.
 
 For doing RP (route planning), once it appears or 􀄬 is clicked.
 
-<img src="./CUMap/screenshots/SearchArea.png" alt="SearchList" style="zoom:50%;" />
+<img src="./screenshots/SearchArea.png" alt="SearchList" style="zoom:50%;" />
 
-Display data:
-
-```swift
-@State var startName: String
-@State var endName: String
-@State var mode: TransMode // .bus ot .foot
-@State var angle = 0.0 // animation for 􀄬
-```
-
-Show SearchList:
+Input for RP:
 
 ```swift
-@Binding var showStartList: Bool
-@Binding var showEndList: Bool
-```
-
-Input:
-
-```swift
-@State var locations: [Location]
+@Binding var startLoc: Location?
+@Binding var endLoc: Location?
 @State var routes: [Route]
-@ObservedObject var locationGetter: LocationGetterModel // user's location
-@State var startId: String
-@State var endId: String
 ```
 
 Output:
@@ -109,7 +91,19 @@ Output:
 @Binding var planIndex: Int
 ```
 
-<b>Note</b>: if user chooses "Your location", `startId` or `endId` will be set as `"current"`, `startName` or `endName` will be set as `"Your Location"`.
+Show SearchList:
+
+```swift
+@Binding var showStartList: Bool
+@Binding var showEndList: Bool
+```
+
+Other data:
+
+```swift
+@State var mode: TransMode // .bus ot .foot
+@State var angle = 0.0 // animation for 􀄬
+```
 
 ### 4.2 SearchList
 
@@ -117,7 +111,7 @@ A page occupying whole screen.
 
 For searching and choosing a location as starting point or ending point.
 
-<img src="./CUMap/screenshots/SearchList.png" alt="SearchList" style="zoom:25%;" />
+<img src="./screenshots/SearchList.png" alt="SearchList" style="zoom:25%;" />
 
 Search box:
 
@@ -136,7 +130,7 @@ Location List:
 Chosen Location:
 
 ```swift
-@Binding var location: Location
+@Binding var location: Location?
 ```
 
 Show itself or not:
