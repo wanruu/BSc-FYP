@@ -72,7 +72,7 @@ struct TrajPage: View {
             }
         }
         // navigation bar
-        .navigationTitle("Trajectory")
+        .navigationTitle("Collect")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarItems(trailing:
             Button(action: { showProcess = true }) {
@@ -178,70 +178,206 @@ struct ProcessSheet: View {
     @State var lineSegments: [LineSeg] = []
     @State var representatives: [[Coor3D]] = []
     @State var routes: [Route] = []
-    
-    @State var taskStatus = [TaskStatus](repeating: .pending, count: 7)
+
+    @State var taskStatus = [TaskStatus](repeating: .pending, count: 8)
+    // @State var taskStatus = [TaskStatus](repeating: .fail, count: 8)
     
     var body: some View {
         VStack {
             // start process button
             Button(action: {
-                taskStatus[0] = .processing
                 taskStatus[1] = .processing
-            }) {
-                Text("Start")
-            }.buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: false))
+                taskStatus[0] = .processing
+            }) { Text("Start") }.buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: false))
             Divider()
             
             // steps
             List {
-                // Task 0
                 HStack {
                     Text("Load locations")
                     Spacer()
                     TaskStatusImage(status: $taskStatus[0])
                 }
-                // Task 1
                 HStack {
                     Text("Load trajectories")
                     Spacer()
                     TaskStatusImage(status: $taskStatus[1])
                 }
-                // Task 2
                 HStack {
                     Text("Partition trajectories into line segments")
                     Spacer()
                     TaskStatusImage(status: $taskStatus[2])
                 }
-                // Task 3
                 HStack {
                     Text("Cluster line segments")
                     Spacer()
                     TaskStatusImage(status: $taskStatus[3])
                 }
-                // Task 4
                 HStack {
                     Text("Generate representative paths")
                     Spacer()
                     TaskStatusImage(status: $taskStatus[4])
                 }
-                // Task 5
                 HStack {
                     Text("Generate routes between two locations")
                     Spacer()
                     TaskStatusImage(status: $taskStatus[5])
                 }
-                // Task 6
                 HStack {
-                    Text("Upload routes")
+                    Text("Delete routes in database")
                     Spacer()
                     TaskStatusImage(status: $taskStatus[6])
                 }
+                HStack {
+                    Text("Upload routes")
+                    Spacer()
+                    TaskStatusImage(status: $taskStatus[7])
+                }
             }
-            // end of list
+        }
+        /*
+         Task flow:
+         1 -> 2 -> 3 -> 4 ->
+                        0 -> 5 ->
+                             6 -> 7
+         */
+        .onChange(of: taskStatus[0], perform: { value in
+            if value == .processing {
+                startTask(index: 0)
+            } else if value == .success && taskStatus[4] == .success {
+                taskStatus[5] = .processing
+            }
+        })
+        .onChange(of: taskStatus[1], perform: { value in
+            if value == .processing {
+                startTask(index: 1)
+            } else if value == .success {
+                taskStatus[2] = .processing
+            }
+        })
+        .onChange(of: taskStatus[2], perform: { value in
+            if value == .processing {
+                startTask(index: 2)
+            } else if value == .success {
+                taskStatus[3] = .processing
+            }
+        })
+        .onChange(of: taskStatus[3], perform: { value in
+            if value == .processing {
+                startTask(index: 3)
+            } else if value == .success {
+                taskStatus[4] = .processing
+            }
+        })
+        .onChange(of: taskStatus[4], perform: { value in
+            if value == .processing {
+                startTask(index: 4)
+            } else if value == .success && taskStatus[0] == .success {
+                taskStatus[5] = .processing
+            }
+        })
+        .onChange(of: taskStatus[5], perform: { value in
+            if value == .processing {
+                startTask(index: 5)
+            } else if value == .success && taskStatus[6] == .success {
+                taskStatus[7] = .processing
+            }
+        })
+        .onChange(of: taskStatus[6], perform: { value in
+            if value == .processing {
+                startTask(index: 6)
+            } else if value == .success && taskStatus[5] == .success {
+                taskStatus[7] = .processing
+            }
+        })
+        .onChange(of: taskStatus[7], perform: { value in
+            if value == .processing {
+                startTask(index: 7)
+            }
+        })
+    }
+
+    private func startTask(index: Int) {
+        switch index {
+            case 0: loadLocations()
+            case 1: loadTrajs()
+            case 2: partition()
+            case 3: cluster()
+            case 4: generRepresents()
+            case 5: generRoutes()
+            case 6: deleteRoutes()
+            case 7: uploadRoutes()
+            default: return
+                
         }
     }
-    
-    
+    private func loadLocations() { // Task 0
+        let url = URL(string: server + "/locations")!
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if(error != nil) {
+                taskStatus[0] = .fail
+            }
+            guard let data = data else { return }
+            do {
+                locations = try JSONDecoder().decode([Location].self, from: data)
+                taskStatus[0] = .success
+            } catch let error {
+                taskStatus[0] = .fail
+                print(error)
+            }
+        }.resume()
+    }
+    private func loadTrajs() { // Task 1
+        let url = URL(string: server + "/trajectories")!
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if(error != nil) {
+                taskStatus[1] = .fail
+            }
+            guard let data = data else { return }
+            do {
+                trajectories = try JSONDecoder().decode([Trajectory].self, from: data)
+                taskStatus[1] = .success
+            } catch let error {
+                taskStatus[1] = .fail
+                print(error)
+            }
+        }.resume()
+    }
+    private func partition() { // Task 2: Partition trajectories into line segments
+        lineSegments = []
+        for traj in trajectories {
+            if(traj.points.count < 2) {
+                continue
+            }
+            let cp = GetMap.partition(traj: traj.points)
+            for index in 0...cp.count-2 {
+                let newLineSeg = LineSeg(start: cp[index], end: cp[index+1], clusterId: 0)
+                lineSegments.append(newLineSeg)
+            }
+        }
+        taskStatus[2] = .success
+    }
+    private func cluster() { // Task 3: Cluster line segments
+        let clusterIds = GetMap.cluster(lineSegs: lineSegments)
+        clusterNum = 0
+        for i in 0..<lineSegments.count {
+            lineSegments[i].clusterId = clusterIds[i]
+            clusterNum = max(clusterNum, clusterIds[i])
+        }
+        taskStatus[3] = .success
+    }
+    private func generRepresents() { // Task 4: Generate representative paths
+        taskStatus[4] = .success
+    }
+    private func generRoutes() { // Task 5: Generate routes between two locations
+        taskStatus[5] = .success
+    }
+    private func deleteRoutes() { // Task 6: delete routes
+        taskStatus[6] = .success
+    }
+    private func uploadRoutes() { // Task 7: upload routes
+        taskStatus[7] = .success
+    }
 }
 
 enum TaskStatus {
@@ -260,12 +396,18 @@ struct TaskStatusImage: View {
         if status == .pending {
             Image(systemName: "hourglass.bottomhalf.fill")
                 .imageScale(.large)
+                .foregroundColor(.gray)
         } else if status == .success {
-            Image(systemName: "checkmark")
+            Image(systemName: "checkmark.circle.fill")
                 .imageScale(.large)
+                .foregroundColor(.green)
         } else if status == .fail {
-            Image(systemName: "exclamationmark")
+            Image(systemName: "exclamationmark.circle.fill")
                 .imageScale(.large)
+                .foregroundColor(.red)
+                .onTapGesture {
+                    status = .processing
+                }
         } else if status == .processing {
             Image(systemName: "arrow.clockwise")
                 .imageScale(.large)
