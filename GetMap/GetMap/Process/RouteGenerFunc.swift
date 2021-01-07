@@ -15,7 +15,7 @@ func generateRoutes(trajs: [[Coor3D]], locations: [Location]) -> [Route] {
     let processedTrajs = splitTrajs(trajs: trajs, points: closestPoints)
     
     // Step 2: add direct route between two locations to route
-    for traj in processedTrajs {
+    for traj in processedTrajs { // for each traj
         if traj.count < 2 {
             continue
         }
@@ -23,7 +23,7 @@ func generateRoutes(trajs: [[Coor3D]], locations: [Location]) -> [Route] {
         let endP = traj.last!
         let startIndex = closestPoints.firstIndex(of: startP)
         let endIndex = closestPoints.firstIndex(of: endP)
-        if startIndex == nil || endIndex == nil {
+        if startIndex == nil || endIndex == nil || startIndex == endIndex {
             continue
         }
         let startLoc = locations[startIndex!]

@@ -285,6 +285,7 @@ app.post('/route', (req, res) => {
             console.log(err);
             res.status(404).send();
         } else {
+            console.log(result);
             res.send(result);
         }
     });
@@ -295,11 +296,11 @@ app.get('/routes', (req, res) => {
     var conditions = [
         {
             path: 'startLoc',
-            select: '_id name_en latitude longtitude altitude type'
+            select: '_id name_en latitude longitude altitude type'
         },
         {
             path: 'endLoc',
-            select: '_id name_en latitude longtitude altitude type'
+            select: '_id name_en latitude longitude altitude type'
         }
     ];
     RouteModel.find({}).populate(conditions).exec((err, result) => {

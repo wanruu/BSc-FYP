@@ -195,10 +195,17 @@ struct SearchArea: View {
         plans = []
         let startLoc = locations.filter({$0._id == startId})[0]
         let endLoc = locations.filter({$0._id == endId})[0]
-        let plan1 = RPMinDist(locations: locations, routes: routes, startLoc: startLoc, endLoc: endLoc)
+        
+        let plan0 = RPDirect(routes: routes, startLoc: startLoc, endLoc: endLoc)
+        if plan0 != nil {
+            plans = [plan0!]
+            
+        }
+        
+        /*let plan1 = RPMinDist(locations: locations, routes: routes, startLoc: startLoc, endLoc: endLoc)
         if plan1 != nil {
             plans.append(plan1!)
-        }
+        }*/
         /*let plan2 = RPMinTime(locations: locations, routes: routes, startId: startId, endId: endId)
         if plan2 != nil {
             plans.append(plan2!)
@@ -384,16 +391,30 @@ struct SearchOption: View {
     }
 }
 
+func RPDirect(routes: [Route], startLoc: Location, endLoc: Location) -> Plan? {
+    for route in routes {
+        if route.startLoc == startLoc && route.endLoc == endLoc {
+            return Plan(startLoc: startLoc, endLoc: endLoc, routes: [route], dist: INF, time: INF, height: [], type: 0)
+        } else if route.startLoc == endLoc && route.endLoc == startLoc {
+            return Plan(startLoc: endLoc, endLoc: startLoc, routes: [route], dist: INF, time: INF, height: [], type: 0)
+        }
+    }
+    return nil
+}
+
 func RPMinDist(locations: [Location], routes: [Route], startLoc: Location, endLoc: Location) -> Plan? {
     // Step 1: preprocessing
     var plans = [Plan](repeating: Plan(startLoc: startLoc, endLoc: endLoc, routes: [], dist: INF, time: INF, height: [], type: 0), count: locations.count) // plan from startLoc to any other locations
+    /*for i in 0..<locations.count {
+        plans[i].endLoc = locations[i]
+    }*/
+    
     var checked = [Bool](repeating: false, count: locations.count) // at beginning, all locations are not checked
     
     // Step 2: set dist and time to 0 for startLoc
     let startIndex = locations.firstIndex(of: startLoc)!
     let endIndex = locations.firstIndex(of: endLoc)!
     plans[startIndex].dist = 0
-    plans[startIndex].time = 0
     
     // Step 3: loop to check
     while checked.filter({$0 == true}).count != checked.count { // not all have been checked
@@ -407,18 +428,21 @@ func RPMinDist(locations: [Location], routes: [Route], startLoc: Location, endLo
             }
         }
         let curLoc = locations[index]
+        if index == endIndex {
+            break
+        }
         
         // find all route related to curLoc and update statistics
         for route in routes {
             if route.startLoc.id == curLoc.id { // if curLoc is startLoc of the route
                 let endLocIndex = locations.firstIndex(of: route.endLoc)!
-                if plans[endLocIndex].dist > plans[index].dist + route.dist { // update
+                if plans[endLocIndex].dist > plans[index].dist + route.dist {
                     plans[endLocIndex].dist = plans[index].dist + route.dist
                     plans[endLocIndex].routes = plans[index].routes + [route]
                 }
             } else if route.endLoc.id == curLoc.id { // if curLoc is endLoc of the route
                 let startLocIndex = locations.firstIndex(of: route.startLoc)!
-                if plans[startLocIndex].dist > plans[index].dist + route.dist { // update
+                if plans[startLocIndex].dist > plans[index].dist + route.dist {
                     var points = route.points
                     points.reverse()
                     plans[startLocIndex].dist = plans[index].dist + route.dist

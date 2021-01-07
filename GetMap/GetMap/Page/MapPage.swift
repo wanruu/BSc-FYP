@@ -168,7 +168,7 @@ struct FuncSheet: View {
                 Button(action: {
                     // Step 4: generate map system
                     routes = generateRoutes(trajs: representatives, locations: locations)
-                }) { Text("Generate map system").frame(width: UIScreen.main.bounds.width * 0.7) }
+                }) { Text("Generate routes").frame(width: UIScreen.main.bounds.width * 0.7) }
                 .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: false))
                 
                  Button(action: {
@@ -178,7 +178,7 @@ struct FuncSheet: View {
                         uploadRoute(route: routes[i], index: i)
                     }
                         
-                }) { Text("Upload map system").frame(width: UIScreen.main.bounds.width * 0.7) }
+                }) { Text("Upload routes").frame(width: UIScreen.main.bounds.width * 0.7) }
                 .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: false))
             }.padding()
         }
