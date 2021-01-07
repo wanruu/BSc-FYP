@@ -35,23 +35,21 @@ enum sheetSize {
 }*/
 
 struct PlansView: View {
-    @State var locations: [Location]
     @Binding var plans: [Plan]
+    @Binding var planIndex: Int
     
     // height
     @Binding var lastHeight: CGFloat
     @Binding var height: CGFloat
     
-    @Binding var planIndex: Int
-
     var body: some View {
         ZStack {
-            if plans.count == 0 {
+            if plans.isEmpty {
                 NoPlanView(lastHeight: $lastHeight, height: $height)
             } else {
                 // TODO: display more plans
                 if planIndex >= 0 && planIndex < plans.count {
-                    PlanView(locations: locations, plan: $plans[planIndex], lastHeight: $lastHeight, height: $height)
+                    PlanView(plan: plans[planIndex], lastHeight: $lastHeight, height: $height)
                 }
             }
         }
@@ -124,8 +122,7 @@ struct NoPlanView: View {
 }
 
 struct PlanView: View {
-    @State var locations: [Location]
-    @Binding var plan: Plan
+    @State var plan: Plan
     
     @Binding var lastHeight: CGFloat
     @Binding var height: CGFloat
@@ -177,7 +174,7 @@ struct PlanView: View {
             VStack {
                 Spacer()
                 VStack(alignment: .leading, spacing: 0) {
-                    // icon
+                    // drag icon
                     Image(systemName: "line.horizontal.3")
                         .foregroundColor(Color.gray)
                         .padding()
@@ -209,7 +206,7 @@ struct PlanView: View {
                             }.padding()
                             Divider()
                             // steps
-                            Instructions(locations: locations, plan: $plan)
+                            Instructions(plan: $plan)
                             Divider()
                         }
                     }
@@ -347,7 +344,6 @@ struct HeightChart: View {
 }
 
 struct Instructions: View {
-    @State var locations: [Location]
     @Binding var plan: Plan
     
     var body: some View {
@@ -359,6 +355,7 @@ struct Instructions: View {
                     Spacer()
                 }.padding()
             }
+            
             VStack(alignment: .leading, spacing: 0) {
                 ForEach(plan.routes) { route in
                     if route == plan.routes.first! { // first route

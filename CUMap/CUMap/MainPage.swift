@@ -17,8 +17,10 @@ import SwiftUI
 
 // MARK: - MapPage
 struct MainPage: View {
+    // data used to do route planning
     @State var locations: [Location]
     @State var routes: [Route]
+    
     @ObservedObject var locationGetter: LocationGetterModel
     
     // search result
@@ -34,7 +36,7 @@ struct MainPage: View {
         ZStack {
             MapView(plans: $plans, planIndex: $planIndex, locationGetter: locationGetter, lastHeight: $lastHeight, height: $height)
             
-            PlansView(locations: locations, plans: $plans, lastHeight: $lastHeight, height: $height, planIndex: $planIndex)
+            PlansView(plans: $plans, planIndex: $planIndex, lastHeight: $lastHeight, height: $height)
             
             SearchView(locations: locations, routes: routes, plans: $plans, planIndex: $planIndex, locationGetter: locationGetter, mode: $mode, lastHeight: $lastHeight, height: $height)
         }

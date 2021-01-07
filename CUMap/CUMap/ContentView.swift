@@ -17,7 +17,7 @@ struct ContentView: View {
     
     @State var locations: [Location] = []
     @State var routes: [Route] = []
-    @ObservedObject var locationGetter = LocationGetterModel()
+    @StateObject var locationGetter = LocationGetterModel()
     
     @State var loadTasks: [Bool] = [false, false]
     @State var newVersion: [Bool] = [false, false]

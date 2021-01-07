@@ -38,10 +38,14 @@ enum TransMode {
 
 // To control which page to show
 struct SearchView: View {
+    // data used to do route planning
     @State var locations: [Location]
     @State var routes: [Route]
+    
+    // result of route planning
     @Binding var plans: [Plan]
     @Binding var planIndex: Int
+    
     @ObservedObject var locationGetter: LocationGetterModel
     
     @State var startName = ""
@@ -68,7 +72,7 @@ struct SearchView: View {
                 SearchList(locations: locations, placeholder: "To", locationName: $endName, locationId: $endId, keyword: endName, showList: $showEndList)
             } else {
                 // Page 3: search box
-                SearchArea(locations: locations, routes: routes, plans: $plans, planIndex: $planIndex, locationGetter: locationGetter, startName: startName, endName: endName, startId: startId, endId: endId, mode: $mode, showStartList: $showStartList, showEndList: $showEndList)
+                SearchArea(startName: startName, endName: endName, mode: $mode, showStartList: $showStartList, showEndList: $showEndList, locations: locations, routes: routes, locationGetter: locationGetter, startId: startId, endId: endId, plans: $plans, planIndex: $planIndex)
                     .offset(y: height > UIScreen.main.bounds.height * 0.1 ? (UIScreen.main.bounds.height * 0.1 - height) * 2 : 0)
                     .onAppear {
                         if startId != "" && endId != "" {
@@ -83,25 +87,26 @@ struct SearchView: View {
 
 // Search bar: to do route planning
 struct SearchArea: View {
-    @State var locations: [Location]
-    @State var routes: [Route]
-    @Binding var plans: [Plan]
-    @Binding var planIndex: Int
-    @ObservedObject var locationGetter: LocationGetterModel
-    
+    // display data
     @State var startName: String
     @State var endName: String
-    @State var startId: String
-    @State var endId: String
-    
     @Binding var mode: TransMode
+    @State var angle = 0.0 // animation for 􀄬
     
+    // show searchList
     @Binding var showStartList: Bool
     @Binding var showEndList: Bool
-
-    // animation for 􀄬
-    @State var angle = 0.0
     
+    // input for RP
+    @State var locations: [Location]
+    @State var routes: [Route]
+    @ObservedObject var locationGetter: LocationGetterModel
+    @State var startId: String
+    @State var endId: String
+    // output of RP
+    @Binding var plans: [Plan]
+    @Binding var planIndex: Int
+
     var body: some View {
         // find min time for both mode
         var footTime = INF
@@ -189,17 +194,25 @@ struct SearchArea: View {
             }
     }
     private func RP() {
-        if startId == "" || endId == "" {
+        plans = []
+        
+        let startLocs = locations.filter({$0._id == startId})
+        let endLocs = locations.filter({$0._id == endId})
+        if startLocs.count == 0 || endLocs.count == 0 {
             return
         }
-        plans = []
-        let startLoc = locations.filter({$0._id == startId})[0]
-        let endLoc = locations.filter({$0._id == endId})[0]
+        let startLoc = startLocs[0]
+        let endLoc = endLocs[0]
+        
         
         let plan0 = RPDirect(routes: routes, startLoc: startLoc, endLoc: endLoc)
         if plan0 != nil {
-            plans = [plan0!]
-            
+            plans.append(plan0!)
+        }
+        if plans.count > 0 {
+            print(plans[0])
+        } else {
+            print("nil")
         }
         
         /*let plan1 = RPMinDist(locations: locations, routes: routes, startLoc: startLoc, endLoc: endLoc)
@@ -289,7 +302,7 @@ struct SearchArea: View {
 struct SearchList: View {
     @State var locations: [Location]
     
-    var placeholder: String
+    @State var placeholder: String
     @Binding var locationName: String
     @Binding var locationId: String
     @State var keyword: String
@@ -392,14 +405,40 @@ struct SearchOption: View {
 }
 
 func RPDirect(routes: [Route], startLoc: Location, endLoc: Location) -> Plan? {
+    var plan: Plan? = nil
     for route in routes {
         if route.startLoc == startLoc && route.endLoc == endLoc {
-            return Plan(startLoc: startLoc, endLoc: endLoc, routes: [route], dist: INF, time: INF, height: [], type: 0)
+            plan = Plan(startLoc: startLoc, endLoc: endLoc, routes: [route], dist: INF, time: INF, height: [], type: 0)
+            break
         } else if route.startLoc == endLoc && route.endLoc == startLoc {
-            return Plan(startLoc: endLoc, endLoc: startLoc, routes: [route], dist: INF, time: INF, height: [], type: 0)
+            var points = route.points
+            points.reverse()
+            plan = Plan(startLoc: endLoc, endLoc: startLoc, routes: [Route(_id: route._id, startLoc: route.endLoc, endLoc: route.startLoc, points: points, dist: route.dist, type: route.type)], dist: INF, time: INF, height: [], type: 0)
+            break
         }
     }
-    return nil
+    if plan != nil {
+        var totalDist = 0.0 // meters
+        var totalTime = 0.0 // seconds
+        var height: [Double] = []
+        
+        let points = plan!.routes[0].points
+        height.append(points[0].altitude)
+        for i in 0..<points.count - 1 {
+            let dist = distance(start: points[i], end: points[i+1])
+            totalDist += dist
+            if plan!.routes[0].type[0] == 0 {
+                totalTime += dist / footSpeed
+            } else {
+                totalTime += dist / busSpeed
+            }
+            height.append(points[i+1].altitude)
+        }
+        plan!.dist = totalDist
+        plan!.time = totalTime
+        plan!.height = height
+    }
+    return plan
 }
 
 func RPMinDist(locations: [Location], routes: [Route], startLoc: Location, endLoc: Location) -> Plan? {

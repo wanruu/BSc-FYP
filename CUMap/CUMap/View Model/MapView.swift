@@ -1,7 +1,9 @@
 /*
     Map View.
-    - User Current Location
+    - Background Map
     - Search Result: plans
+    - User Current Location
+
  */
 
 import Foundation
@@ -51,13 +53,27 @@ struct MapView: View {
     
     var body: some View {
         ZStack {
+            // background map
             Image("cuhk-campus-map")
                 .resizable()
                 .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
                 .position(x: UIScreen.main.bounds.width / 2 + offset.x, y: UIScreen.main.bounds.height / 2 + offset.y)
-
-            PlansMapView(plans: $plans, planIndex: $planIndex, lastOffset: $lastOffset, offset: $offset, lastScale: $lastScale, scale: $scale)
             
+            // show plans in map
+            ForEach(plans) { plan in
+                let index = plans.firstIndex(where: {$0.id == plan.id})!
+                if index == planIndex { // chosen plan
+                    PlanMapView(plan: plan, opacity: 1, offset: $offset, scale: $scale)
+                } else { // unchosen plan
+                    PlanMapView(plan: plan, opacity: 0.5, offset: $offset, scale: $scale)
+                        .onTapGesture {
+                            print("switch plan")
+                            planIndex = index
+                        }
+                }
+            }
+            
+            // current location
             UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale)
 
         }
@@ -68,32 +84,6 @@ struct MapView: View {
         )
         // gesture
         .gesture(gesture)
-    }
-}
-
-struct PlansMapView: View {
-    @Binding var plans: [Plan]
-    @Binding var planIndex: Int
-    
-    @Binding var lastOffset: Offset
-    @Binding var offset: Offset
-    @Binding var lastScale: CGFloat
-    @Binding var scale: CGFloat
-    
-    var body: some View {
-        ZStack {
-            ForEach(plans) { plan in
-                if plans.firstIndex(where: {$0.id == plan.id}) == planIndex { // chosen plan
-                    PlanMapView(plan: plan, opacity: 1, offset: $offset, scale: $scale)
-                } else { // unchosen plan
-                    PlanMapView(plan: plan, opacity: 0.5, offset: $offset, scale: $scale)
-                        .onTapGesture {
-                            print("switch plan")
-                            planIndex = plans.firstIndex(where: {$0.id == plan.id})!
-                        }
-                }
-            }
-        }
     }
 }
 
@@ -108,6 +98,7 @@ extension DrawPoint: Identifiable {
     }
 }
 
+// draw a plan
 struct PlanMapView: View {
     @State var plan: Plan
     @State var opacity: Double
@@ -115,33 +106,31 @@ struct PlanMapView: View {
     @Binding var scale: CGFloat
     
     var body: some View {
-        // calculate points list to draw
-        let DIST: CGFloat = (innerRadius * 1.5) * maxZoomIn / scale
+        // calculate points list to draw, starting point and ending point may not included
+        let DIST: CGFloat = (innerRadius * 1.5) * maxZoomIn / scale // distance between two point
         var points: [DrawPoint] = []
-
-        var lastX = CGFloat((plan.routes[0].points[0].longitude - centerLg) * lgScale * 2)
-        var lastY = CGFloat((centerLa - plan.routes[0].points[0].latitude) * laScale * 2)
+        
+        points.append(DrawPoint(type: plan.routes[0].type[0], x: CGFloat((plan.routes[0].points[0].longitude - centerLg) * lgScale * 2), y: CGFloat((centerLa - plan.routes[0].points[0].latitude) * laScale * 2)))
         
         var distSoFar: CGFloat = 0
         
         for route in plan.routes {
             for point in route.points {
-                let thisX = CGFloat((point.longitude - centerLg) * lgScale * 2)
-                let thisY = CGFloat((centerLa - point.latitude) * laScale * 2)
+                let lastPoint = points.last!
+                let thisPoint = DrawPoint(type: route.type[0], x: CGFloat((point.longitude - centerLg) * lgScale * 2), y: CGFloat((centerLa - point.latitude) * laScale * 2))
                 
-                let dist = pow((lastX - thisX) * (lastX - thisX) + (lastY - thisY) * (lastY - thisY), 0.5)
+                let dist = pow((lastPoint.x - thisPoint.x) * (lastPoint.x - thisPoint.x) + (lastPoint.y - thisPoint.y) * (lastPoint.y - thisPoint.y), 0.5)
+                
                 if distSoFar + dist < DIST {
                     distSoFar += dist
                 } else {
                     distSoFar = 0
                     // TODO: change color of point by route type
-                    points.append(DrawPoint(type: 0, x: thisX, y: thisY))
+                    points.append(thisPoint)
                 }
-                lastX = thisX
-                lastY = thisY
             }
         }
-        
+
         return
             ForEach(points) { point in
                 Circle()
@@ -151,3 +140,4 @@ struct PlanMapView: View {
             }
     }
 }
+
