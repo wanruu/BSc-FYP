@@ -11,25 +11,6 @@ struct MainPage: View {
             }
         }
     }
-    /*
-    private func loadRoutes() { // load task #2
-        let url = URL(string: server + "/routes")!
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if(error != nil) {
-                showAlert = true
-            }
-            guard let data = data else { return }
-            do {
-                let res = try JSONDecoder().decode([Route].self, from: data)
-                routes = res
-                loadTasks[2] = true
-            } catch let error {
-                showAlert = true
-                print(error)
-            }
-        }.resume()
-    }
- */
 }
 
 struct PageItem: View {
@@ -53,29 +34,27 @@ struct PageItem: View {
 struct MainPagePhone: View {
     // 1 = SCWidth * 0.001
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("Trajectory").font(.title3).bold()
+        VStack(alignment: .leading, spacing: 30) {
             HStack(spacing: 30) {
-                NavigationLink(destination: CollectPage()) {
-                    PageItem(image: "collect", title: "Collect")
+                NavigationLink(destination: TrajPage()) {
+                    PageItem(image: "collect", title: "Trajectory")
                 }
                 NavigationLink(destination: ProcessPage()) {
-                    PageItem(image: "map", title: "Process")
+                    PageItem(image: "map", title: "Process Test")
                 }
             }
-            Text("Location").font(.title3).bold().padding(.top)
-            HStack(spacing: 30) {
-                NavigationLink(destination: LocationPage()) {
-                    PageItem(image: "building", title: "Location")
-                }
+            
+            
+            NavigationLink(destination: LocationPage()) {
+                PageItem(image: "building", title: "Location")
             }
-            Text("Bus").font(.title3).bold().padding(.top)
-            HStack(spacing: 30) {
-                NavigationLink(destination: BusPage()) {
-                    PageItem(image: "building", title: "Bus")
-                }
+            
+
+            NavigationLink(destination: BusPage()) {
+                PageItem(image: "building", title: "Bus")
             }
-            Text("Search").font(.title3).bold().padding(.top)
+            
+            
             /* HStack(spacing: 30) {
                 NavigationLink(destination: SearchPage(locations: $locations, routes: $routes)) {
                     PageItem(image: "building", title: "Search")

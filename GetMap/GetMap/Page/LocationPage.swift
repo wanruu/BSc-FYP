@@ -5,10 +5,12 @@ struct LocationPage: View {
     // locations data
     @State var locations: [Location] = []
     @State var clickedLoc: Location? = nil // clicked location
+    @StateObject var curLocModel = CurLocModel()
     
     // control
     @State var showList = false
     @State var showEditWindow = false
+    @State var showAddWindow = false
     
     // TODO: add alert of unable to connect to server
     
@@ -51,9 +53,9 @@ struct LocationPage: View {
         ZStack {
             // background map
             Image("cuhk-campus-map")
-            .resizable()
-            .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
-            .position(x: centerX + offset.x, y: centerY + offset.y)
+                .resizable()
+                .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
+                .position(x: centerX + offset.x, y: centerY + offset.y)
             
             // locations
             ForEach(locations) { location in
@@ -86,18 +88,33 @@ struct LocationPage: View {
                 EditLocWindow(locations: $locations, id: clickedLoc!._id, name_en: clickedLoc!.name_en, latitude: String(clickedLoc!.latitude), longitude: String(clickedLoc!.longitude), altitude: String(clickedLoc!.altitude), type: String(clickedLoc!.type), showing: $showEditWindow)
             }
             
+            // add window
+            if showAddWindow {
+                NewLocWindow(locations: $locations, curLocModel: curLocModel, showing: $showAddWindow)
+            }
+            
         }
         .onAppear {
             loadLocations()
         }
         // gesture
-        //.contentShape(Rectangle())
         .highPriorityGesture(gesture)
         
         // navigation bar
         .navigationTitle("Location")
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarItems(trailing: Button(action: {showList = true}) {Image(systemName: "list.bullet").imageScale(.large)} )
+        .navigationBarItems(trailing: HStack(spacing: 15) {
+            Button(action: {
+                showAddWindow = true
+                showList = false
+                showEditWindow = false
+            }) {Image(systemName: "plus").imageScale(.large)}
+            Button(action: {
+                showList = true
+                showAddWindow = false
+                showEditWindow = false
+            }) {Image(systemName: "list.bullet").imageScale(.large)}
+        })
         
         // sheet: location list
         .sheet(isPresented: $showList) {
@@ -122,6 +139,7 @@ struct LocationPage: View {
     }
 }
 
+// MARK: - Location List Window
 struct LocationList: View {
     @Binding var locations: [Location]
     @Binding var clickedLoc: Location?
@@ -134,31 +152,29 @@ struct LocationList: View {
     @Binding var lastScale: CGFloat
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                ForEach(locations) { location in
-                    Button(action: {
-                        clickedLoc = location
-                        // move to center
-                        offset.x = -CGFloat((location.longitude - centerLg) * lgScale * 2) * scale
-                        offset.y = -CGFloat((centerLa - location.latitude) * laScale * 2) * scale
-                        lastOffset = offset
-                        
-                        showList = false
-                    }) {
-                        HStack(spacing: 20) {
-                            Image(systemName: location.type == 0 ? "building.2" : "bus").imageScale(.large)
-                            Text(location.name_en)
-                            Spacer()
-                        }
-                    }.buttonStyle(MyButtonStyle2(bgColor: CUPurple))
-                    Divider()
+        List {
+            ForEach(locations) { location in
+                Button(action: {
+                    clickedLoc = location
+                    // move to center
+                    offset.x = -CGFloat((location.longitude - centerLg) * lgScale * 2) * scale
+                    offset.y = -CGFloat((centerLa - location.latitude) * laScale * 2) * scale
+                    lastOffset = offset
+                    
+                    showList = false
+                }) {
+                    HStack(spacing: 20) {
+                        Image(systemName: location.type == 0 ? "building.2" : "bus").imageScale(.large)
+                        Text(location.name_en)
+                        Spacer()
+                    }
                 }
-                .onDelete { offsets in
-                    let index = offsets.first!
-                    deleteLocation(index: index)
-                }
-            }.padding()
+                .buttonStyle(MyButtonStyle2(bgColor: CUPurple))
+            }
+            .onDelete { offsets in
+                let index = offsets.first!
+                deleteLocation(index: index)
+            }
         }
     }
     
@@ -185,8 +201,9 @@ struct LocationList: View {
 }
 
 
-
+// MARK: - Edit Location Window
 struct EditLocWindow: View {
+    
     // need to update after editing successfully
     @Binding var locations: [Location]
     
@@ -198,6 +215,7 @@ struct EditLocWindow: View {
     @State var altitude: String = ""
     @State var type: String = ""
     
+    // showing itself or not
     @Binding var showing: Bool
     
     var body: some View {
@@ -275,6 +293,88 @@ struct EditLocWindow: View {
                 }
             } catch let error {
                 print(error)
+            }
+        }.resume()
+    }
+}
+
+// MARK: - New Location Window
+struct NewLocWindow: View {
+    // need to update after editing successfully
+    @Binding var locations: [Location]
+    
+    @State var locationName: String = ""
+    @State var locationType: String = ""
+    @ObservedObject var curLocModel: CurLocModel
+    
+    @Binding var showing: Bool
+    
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                Rectangle()
+                    .frame(minWidth: geometry.size.width, maxWidth: .infinity, minHeight: geometry.size.height, maxHeight: .infinity, alignment: .center)
+                    .foregroundColor(Color.gray.opacity(0.2))
+                    .edgesIgnoringSafeArea(.all)
+                    .onTapGesture {
+                        showing = false
+                    }
+                VStack(spacing: 20) {
+                    Text("New Location").font(.title2)
+                    VStack {
+                        TextField("Name", text: $locationName)
+                            .padding(10)
+                            .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
+                        TextField("Type", text: $locationType)
+                            .padding(10)
+                            .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
+                    }
+                    HStack {
+                        Button(action: {
+                            addLocation()
+                            showing = false
+                        }) { Text("Confirm") }
+                            .disabled(locationName == "" || locationType == "")
+                            .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: locationName == "" || locationType == ""))
+                        
+                        Button(action: { showing = false }) { Text("Cancel") }
+                            .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: false))
+                    }
+                }
+                .padding(20)
+                .frame(width: geometry.size.width * 0.7, alignment: .center)
+                .background(Color.white)
+                .cornerRadius(5)
+            }
+        }
+    }
+    
+    private func addLocation() {
+        let latitude = curLocModel.current.latitude
+        let longitude = curLocModel.current.longitude
+        let altitude = curLocModel.current.altitude
+        let type = Int(locationType)!
+        let dataStr = "name_en=" + String(locationName) + "&latitude=" + String(latitude)  + "&longitude=" + String(longitude) + "&altitude=" + String(altitude) + "&type=" + String(type)
+        
+        let url = URL(string: server + "/location")!
+        var request = URLRequest(url: url)
+        request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        request.httpMethod = "POST"
+        request.httpBody = dataStr.data(using: String.Encoding.utf8)
+
+        URLSession.shared.dataTask(with: request as URLRequest) { data, response, error in
+            if(error != nil) {
+                print("error")
+            } else {
+                guard let data = data else { return }
+                do {
+                    let location = try JSONDecoder().decode(Location.self, from: data)
+                    locations.append(location)
+                    locationName = ""
+                    locationType = ""
+                } catch let error {
+                    print(error)
+                }
             }
         }.resume()
     }

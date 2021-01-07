@@ -90,3 +90,59 @@ extension LocationGetterModel: CLLocationManagerDelegate {
     }
 }
 
+
+
+// MARK: - only record current location, not about trajs
+class CurLocModel: NSObject, ObservableObject {
+    // current location information
+    @Published var current: Coor3D = Coor3D(latitude: 0, longitude: 0, altitude: 0)
+    // user heading
+    @Published var heading: Double = 0
+
+    override init() {
+        super.init()
+        // delegate
+        manager.delegate = self
+        
+        // minimum distance (m) a device must move horizontally before an update event is generated
+        manager.distanceFilter = 5;
+        
+        // accuracy of location data our app wants to receive
+        manager.desiredAccuracy = kCLLocationAccuracyBest;
+        
+        // always update location
+        manager.requestAlwaysAuthorization()
+        if #available(iOS 9.0, *) {
+            manager.allowsBackgroundLocationUpdates = true
+        }
+        
+        // start updating location
+        manager.startUpdatingLocation()
+        
+        // start updating heading
+        /* TODO: need to verify whether heading information is available */
+        manager.startUpdatingHeading()
+    }
+}
+
+extension CurLocModel: CLLocationManagerDelegate {
+    // successfully update location
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        // ensure able to get location info
+        guard let lastLocation = locations.last else { return }
+        let newLocation = Coor3D(latitude: lastLocation.coordinate.latitude, longitude: lastLocation.coordinate.longitude, altitude: lastLocation.altitude)
+        
+        // update current location
+        current = newLocation
+    }
+    
+    // successfully update heading
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        self.heading = newHeading.trueHeading
+    }
+    
+    // fail
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print(error)
+    }
+}

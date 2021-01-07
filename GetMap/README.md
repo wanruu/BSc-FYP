@@ -88,13 +88,15 @@ Locations data:
 ```swift
 @State var locations: [Location] = []
 @State var clickedLoc: Location? = nil
+@StateObject var curLocModel = CurLocModel() // for getting current location
 ```
 
 Control windows:
 
 ```swift
-@State var showList = false
-@State var showEditWindow = false
+@State var showList = false // sheet: location list
+@State var showEditWindow = false // window: edit a location
+@State var showAddWindow = false // window: add a location
 ```
 
 Gesture:

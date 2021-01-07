@@ -32,7 +32,7 @@
 		B488966625A797E700D8AD47 /* BasicExten.swift in Sources */ = {isa = PBXBuildFile; fileRef = B488966525A797E700D8AD47 /* BasicExten.swift */; };
 		B488966B25A7983800D8AD47 /* MongoRes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B488966A25A7983800D8AD47 /* MongoRes.swift */; };
 		B48F7B76258E87FC00EED1C1 /* LocationGetterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F7B75258E87FC00EED1C1 /* LocationGetterModel.swift */; };
-		B48F7B7B258E8C9000EED1C1 /* CollectPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F7B7A258E8C9000EED1C1 /* CollectPage.swift */; };
+		B48F7B7B258E8C9000EED1C1 /* TrajPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F7B7A258E8C9000EED1C1 /* TrajPage.swift */; };
 		B48F7B80258EACB700EED1C1 /* MapComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F7B7F258EACB700EED1C1 /* MapComponent.swift */; };
 		B48F7BAA259213FE00EED1C1 /* SearchPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F7BA9259213FE00EED1C1 /* SearchPage.swift */; };
 		B4DA2597259CEC01002A0009 /* BusPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DA2596259CEC01002A0009 /* BusPage.swift */; };
@@ -87,7 +87,7 @@
 		B488966525A797E700D8AD47 /* BasicExten.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicExten.swift; sourceTree = "<group>"; };
 		B488966A25A7983800D8AD47 /* MongoRes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MongoRes.swift; sourceTree = "<group>"; };
 		B48F7B75258E87FC00EED1C1 /* LocationGetterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationGetterModel.swift; sourceTree = "<group>"; };
-		B48F7B7A258E8C9000EED1C1 /* CollectPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectPage.swift; sourceTree = "<group>"; };
+		B48F7B7A258E8C9000EED1C1 /* TrajPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrajPage.swift; sourceTree = "<group>"; };
 		B48F7B7F258EACB700EED1C1 /* MapComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapComponent.swift; sourceTree = "<group>"; };
 		B48F7BA9259213FE00EED1C1 /* SearchPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPage.swift; sourceTree = "<group>"; };
 		B4DA2596259CEC01002A0009 /* BusPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusPage.swift; sourceTree = "<group>"; };
@@ -145,10 +145,8 @@
 				B437781D257155C100918432 /* ContentView.swift */,
 				B437784E257155F700918432 /* Constant.swift */,
 				B488963B25A795A600D8AD47 /* Data Structure */,
-				B488962A25A5EDA700D8AD47 /* View Model */,
 				B4DA25A4259D012B002A0009 /* Custom Module */,
 				B4DA259B259CF89E002A0009 /* Style */,
-				B437789D2571589800918432 /* Process */,
 				B43778EF2572C70400918432 /* Page */,
 				B437781F257155C300918432 /* Assets.xcassets */,
 				B4377829257155C300918432 /* Info.plist */,
@@ -165,7 +163,7 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		B437789D2571589800918432 /* Process */ = {
+		B437789D2571589800918432 /* Process Func */ = {
 			isa = PBXGroup;
 			children = (
 				B43778B22571591B00918432 /* DistFunc.swift */,
@@ -175,14 +173,16 @@
 				B437799A257693EF00918432 /* ConnectFunc.swift */,
 				B437799F2577114100918432 /* RouteGenerFunc.swift */,
 			);
-			path = Process;
+			path = "Process Func";
 			sourceTree = "<group>";
 		};
 		B43778EF2572C70400918432 /* Page */ = {
 			isa = PBXGroup;
 			children = (
+				B488962A25A5EDA700D8AD47 /* View Model */,
+				B437789D2571589800918432 /* Process Func */,
 				B43779122572D9AC00918432 /* MainPage.swift */,
-				B48F7B7A258E8C9000EED1C1 /* CollectPage.swift */,
+				B48F7B7A258E8C9000EED1C1 /* TrajPage.swift */,
 				B43778F02572C71B00918432 /* ProcessPage.swift */,
 				B43778F82572C80200918432 /* LocationPage.swift */,
 				B4DA2596259CEC01002A0009 /* BusPage.swift */,
@@ -390,7 +390,7 @@
 				B488964A25A7962400D8AD47 /* Route.swift in Sources */,
 				B43778F92572C80200918432 /* LocationPage.swift in Sources */,
 				B488966625A797E700D8AD47 /* BasicExten.swift in Sources */,
-				B48F7B7B258E8C9000EED1C1 /* CollectPage.swift in Sources */,
+				B48F7B7B258E8C9000EED1C1 /* TrajPage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
