@@ -1,6 +1,6 @@
 #include "represent.h"
 
-#define r 1.5
+#define r 1.2
 #define MinLns 3
 
 #define laScale 111000.0
@@ -37,13 +37,12 @@ int cmp_func_line (const void* line1, const void* line2) {
 
 void generate_represent(line_seg_t* line_segs, int line_segs_size, coor_t* represent, int* represent_size) {
 
+    *represent_size = 0;
+
     if (line_segs_size <= 0) {
         // printf("In function generate_represent, input line_segs has size 0. Hence no represent generated.\n");
-        *represent_size = 0;
         return;
     }
-
-    *represent_size = 0;
 
     // convert line_segs to points: [p1, p2, ..., p2n-1, p2n] where p1, p2 are start and end point of line_segs[0]
     point_t* points = (point_t*) malloc(sizeof(point_t) * 2 * line_segs_size);
@@ -57,7 +56,7 @@ void generate_represent(line_seg_t* line_segs, int line_segs_size, coor_t* repre
     
     // compute average direction vector
     point_t aver_vector = compute_aver_vector(vectors, vectors_size);
-    free(vectors);
+    //free(vectors);
 
 
     // rotate axes so that X axis is parallel to aver_vector 
@@ -68,7 +67,7 @@ void generate_represent(line_seg_t* line_segs, int line_segs_size, coor_t* repre
     for (int i = 0; i < points_size; i++) {
         rotated_points[i] = rotate(points[i], alpha, beta);
     }
-    free(points);
+    //free(points);
 
     
     // lines for sweeping
@@ -93,43 +92,47 @@ void generate_represent(line_seg_t* line_segs, int line_segs_size, coor_t* repre
 
     qsort (rotated_lines, rotated_lines_size, sizeof(point_t*), cmp_func_line);
 
-    // MARK: no problems so far
-
     // start sweeping
-    double last_x_value = -r;
+    double last_x_value = - r;
 
+    // printf("========\n");
     for (int i = 0; i < points_size; i++) { //for point in rotated_points
+
+        // printf("%f\n", rotated_points[i].x);
 
         point_t* values = (point_t*) malloc(sizeof(point_t) * points_size);
         int values_size = 0;
         lines_x_value(rotated_points[i].x, rotated_lines, rotated_lines_size, values, &values_size);
 
+
         if (values_size < MinLns) {
             continue;
         }
+
             
         double diff = rotated_points[i].x - last_x_value;
         last_x_value = rotated_points[i].x;
             
         if (diff >= r) {
 
+            /*for (int j = 0; j < values_size; j++) {
+                printf("%f\n", values[j].x);
+            }
+            printf("\n");*/
+
             // calculate average point_t of values
-            double aver_x, aver_y, aver_z = 0;
+            double aver_y, aver_z = 0;
             for (int j = 0; j < values_size; j ++) {
-                aver_x += values[j].x;
                 aver_y += values[j].y;
                 aver_z += values[j].z;
             }
-            aver_x /= (double)(values_size);
             aver_y /= (double)(values_size);
             aver_z /= (double)(values_size);
             point_t rotated_aver_point;
-            rotated_aver_point.x = aver_x;
+
+            rotated_aver_point.x = rotated_points[i].x;
             rotated_aver_point.y = aver_y;
             rotated_aver_point.z = aver_z;
-
-
-            // printf("%f, %f, %f\n", rotated_aver_point.x, rotated_aver_point.y, rotated_aver_point.z);
 
             // undo rotation
             point_t aver_point = unrotate(rotated_aver_point, alpha, beta);

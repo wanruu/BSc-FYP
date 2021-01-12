@@ -179,6 +179,15 @@ int main (int argc, char *argv[]) {
     int cluster_num = 0;
     cluster(line_segs, line_segs_size, &cluster_num);
 
+    /*printf("[\n");
+    for (int i = 0; i < line_segs_size; i ++) {
+        if (line_segs[i].cluster_id == 5) {
+            printf("LineSeg(start: Coor3D(latitude: %.8f, longitude: %.8f, altitude: %.8f), end: Coor3D(latitude: %.8f, longitude: %.8f, altitude: %.8f), clusterId: %d), \n", 
+            line_segs[i].start.lat, line_segs[i].start.lng, line_segs[i].start.alt, line_segs[i].end.lat, line_segs[i].end.lng, line_segs[i].end.alt, line_segs[i].cluster_id);
+        }
+    }
+    printf("]\n");*/
+
 
     /*
      *  Aim: generate rep_trajs from line_segs.
@@ -202,7 +211,7 @@ int main (int argc, char *argv[]) {
             clusters[line_segs[i].cluster_id - 1].line_segs_size = index + 1;
         }
     }
-    
+
     // for each line_segs_clusters, generate rep_traj for it
     for (int i = 0; i < cluster_num; i++) {
         coor_t* represent = (coor_t*) malloc(sizeof(coor_t) * clusters[i].line_segs_size * 2);
@@ -216,21 +225,21 @@ int main (int argc, char *argv[]) {
         }
     }
 
-
     smooth(rep_trajs, &rep_trajs_size);
 
-    /*for (int i = 0; i < rep_trajs_size; i++) {
-        printf("%d\n", rep_trajs[i].points_num);
-    }*/
-
-
-    // test 
-    /*for (int i = 0; i < rep_trajs_size; i++) {
-        for (int j = 0; j < rep_trajs[i].points_num; j++) {
-            printf("%f, %f, %f\n", rep_trajs[i].points[j].lat, rep_trajs[i].points[j].lng, rep_trajs[i].points[j].alt);
-        }
-    }*/
     
+    // test 
+    printf("[\n");
+    for (int i = 0; i < rep_trajs_size; i++) {
+        printf("[\n");
+        for (int j = 0; j < rep_trajs[i].points_num; j++) {
+            printf("Coor3D(latitude: %f, longitude: %f, altitude: %f), \n", rep_trajs[i].points[j].lat, rep_trajs[i].points[j].lng, rep_trajs[i].points[j].alt);
+        }
+        printf("],\n");
+    }
+    printf("]\n");
+
+
 
     // Release
     mongoc_database_destroy(database);

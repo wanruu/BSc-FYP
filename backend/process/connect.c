@@ -12,7 +12,6 @@
  */
 
 void smooth(traj_t* trajs, int* trajs_size) {
-    // var result = trajs
     
     // Step 1: Find neighbors of each point
     neighbor_trajs_t** neighbor_list = find_neighbors(trajs, *trajs_size);
@@ -106,6 +105,7 @@ void smooth(traj_t* trajs, int* trajs_size) {
             aver_points[id-1].lat += trajs[i].points[j].lat;
             aver_points[id-1].lng += trajs[i].points[j].lng;
             aver_points[id-1].alt += trajs[i].points[j].alt;
+            nums[id-1] += 1;
         }
     }
     for (int i = 0; i < cluster_id - 1; i++) {
@@ -125,12 +125,14 @@ void smooth(traj_t* trajs, int* trajs_size) {
             trajs[i].points[j] = aver_points[id-1];
         }
     }
+
     // also remove repeated point in one traj
-    for (int i = 0; i < *trajs_size; i++) { // for each traj
+    for (int i = 0; i < *trajs_size; i++) { // for each traj: trajs[i]
 
         coor_t* points_after = (coor_t*) malloc(sizeof(coor_t) * trajs[i].points_num);
         int points_num_after = 0;
 
+        // add first point
         points_after[0] = trajs[i].points[0];
         points_num_after++;
         coor_t last_point = trajs[i].points[0];
@@ -139,6 +141,7 @@ void smooth(traj_t* trajs, int* trajs_size) {
             if (!equals(trajs[i].points[index], last_point)) {
                 points_after[points_num_after] = trajs[i].points[index];
                 points_num_after++;
+                last_point = trajs[i].points[index];
             } 
         }
 
@@ -146,8 +149,9 @@ void smooth(traj_t* trajs, int* trajs_size) {
         trajs[i].points_num = points_num_after;
 
     }
+
     // remove traj whose size < 2
-    traj_t* trajs_after = (traj_t*) malloc(sizeof(traj_t) * *trajs_size); 
+    traj_t* trajs_after = (traj_t*) malloc(sizeof(traj_t) * (*trajs_size)); 
     int trajs_size_after = 0; 
 
     for (int index = 0; index < *trajs_size; index++) {
@@ -174,14 +178,6 @@ void smooth(traj_t* trajs, int* trajs_size) {
     }
 
     
-    printf("-----\n");
-    for (int i = 0; i < cluster_id - 1; i++) {
-        if (nums[i] > 2) {
-            printf("%d\n", nums[i]);
-        }
-    }
-    printf("-----\n");
-    
     // Step 5: Connect two traj with same endpoint.
     // This step can decrease num of representative trajs a lot, e.g, from 101 to 17
     coor_t* omit_points = (coor_t*) malloc(sizeof(coor_t) * 300); // crossroad
@@ -195,10 +191,20 @@ void smooth(traj_t* trajs, int* trajs_size) {
     }
 
     int* indexes = connect_index(trajs, *trajs_size, omit_points, omit_points_size);
-    
+
+
+    /*printf("[\n");
+    for (int i = 0; i < *trajs_size; i++) {
+        printf("[\n");
+        for (int j = 0; j < trajs[i].points_num; j++) {
+            printf("Coor3D(latitude: %f, longitude: %f, altitude: %f), \n", trajs[i].points[j].lat, trajs[i].points[j].lng, trajs[i].points[j].alt);
+        }
+        printf("],\n");
+    }
+    printf("]\n");*/
+
     while (indexes[0] != -1 && indexes[1] != -1) {
-        // printf("hiiiiii\n");
-        
+
         traj_t traj1 = trajs[indexes[0]];
         traj_t traj2 = trajs[indexes[1]];
 
@@ -209,77 +215,69 @@ void smooth(traj_t* trajs, int* trajs_size) {
         if (equals(traj1.points[0], traj2.points[0])) {
             for (int i = traj1.points_num - 1; i > 0; i --) {
                 new_traj.points[new_traj.points_num] = traj1.points[i];
-                new_traj.points_num = new_traj.points_num + 1;
+                new_traj.points_num += 1;
             }
             for (int i = 0; i < traj2.points_num; i ++) {
                 new_traj.points[new_traj.points_num] = traj2.points[i];
-                new_traj.points_num = new_traj.points_num + 1;
+                new_traj.points_num += 1;
             }
         } else if (equals(traj1.points[0], traj2.points[traj2.points_num - 1])) {
             for (int i = 0; i < traj2.points_num - 1; i ++) {
                 new_traj.points[new_traj.points_num] = traj2.points[i];
-                new_traj.points_num = new_traj.points_num + 1;
+                new_traj.points_num += 1;
             }
             for (int i = 0; i < traj1.points_num; i ++) {
                 new_traj.points[new_traj.points_num] = traj1.points[i];
-                new_traj.points_num = new_traj.points_num + 1;
+                new_traj.points_num += 1;
             }
         } else if (equals(traj1.points[traj1.points_num - 1], traj2.points[0])) {
             for (int i = 0; i < traj1.points_num - 1; i ++) {
                 new_traj.points[new_traj.points_num] = traj1.points[i];
-                new_traj.points_num = new_traj.points_num + 1;
+                new_traj.points_num += 1;
             }
             for (int i = 0; i < traj2.points_num; i ++) {
                 new_traj.points[new_traj.points_num] = traj2.points[i];
-                new_traj.points_num = new_traj.points_num + 1;
+                new_traj.points_num += 1;
             }
         } else if (equals(traj1.points[traj1.points_num - 1], traj2.points[traj2.points_num - 1])) {
             for (int i = 0; i < traj2.points_num; i ++) {
                 new_traj.points[new_traj.points_num] = traj2.points[i];
-                new_traj.points_num = new_traj.points_num + 1;
+                new_traj.points_num += 1;
             }
 
             for (int i = traj1.points_num - 2; i >= 0; i --) {
                 new_traj.points[new_traj.points_num] = traj1.points[i];
-                new_traj.points_num = new_traj.points_num + 1;
+                new_traj.points_num += 1;
             }
         }
 
-        // move trajs[indexes[0]], trajs[indexes[1]] out of trajs & add new_traj into trajs
+        // move trajs[indexes[0]], trajs[indexes[1]] out of trajs
         traj_t* new_trajs = (traj_t*) malloc(sizeof(traj_t) * (*trajs_size - 1));
         int new_trajs_size = 0;
+
         for (int i = 0; i < *trajs_size; i ++) {
             if (i != indexes[0] && i != indexes[1]) {
                 new_trajs[new_trajs_size] = trajs[i];
                 new_trajs_size ++;
             }
         }
-        new_trajs[new_trajs_size] = new_traj;
-        new_trajs_size ++;
+        // add new_traj into trajs
+        
+            new_trajs[new_trajs_size] = new_traj;
+            new_trajs_size ++;
+        
 
         trajs = new_trajs;
         *trajs_size = new_trajs_size;
+
+
+        // printf("%d\n", *trajs_size);
 
         // update indexes
         indexes = connect_index(trajs, *trajs_size, omit_points, omit_points_size);
     }
 
-    
-    
     printf("%d\n", *trajs_size);
-    
-    /*var points: [Coor3D] = []
-    var repeatCount = 0
-    for traj in result {
-        for point in traj {
-            if !points.contains(point) {
-                points.append(point)
-            } else {
-                repeatCount += 1
-            }
-        }
-    }
-    print("repeat point: \(repeatCount)")*/
 }
 
 
@@ -360,7 +358,7 @@ int* connect_index(traj_t* trajs, int trajs_size, coor_t* omit_points, int omit_
     indexes[1] = -1;
 
     for (int i = 0; i < trajs_size; i++) { // for each traj
-        for (int j = 0; j < trajs[i].points_num; j++) { // for each point
+        for (int j = i + 1; j < trajs_size; j++) { // for next traj
             if (!contains (omit_points, omit_points_size, trajs[i].points[0])) {
                 if (equals(trajs[i].points[0], trajs[j].points[0]) || equals(trajs[i].points[0], trajs[j].points[trajs[j].points_num - 1] )) {
                     indexes[0] = i;
@@ -369,7 +367,7 @@ int* connect_index(traj_t* trajs, int trajs_size, coor_t* omit_points, int omit_
                 }
             }
 
-            if (contains (omit_points, omit_points_size, trajs[i].points[trajs[i].points_num - 1])) {
+            if (!contains (omit_points, omit_points_size, trajs[i].points[trajs[i].points_num - 1])) {
                 if (equals(trajs[i].points[trajs[i].points_num-1], trajs[j].points[0]) || equals(trajs[i].points[trajs[i].points_num-1], trajs[j].points[trajs[j].points_num-1])) {
                     indexes[0] = i;
                     indexes[1] = j;
