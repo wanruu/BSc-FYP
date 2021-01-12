@@ -1,4 +1,4 @@
-/* MARK: Trajectory Partitioning */
+// MARK: Trajectory Partitioning
 
 import Foundation
 

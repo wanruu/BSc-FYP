@@ -341,5 +341,25 @@ app.get('/buses', (req, res) => {
     });
 });
 
+// delete points with -1 altitude in trajectory
+app.delete('/invalid', (req, res) => {
+    TrajectoryModel.findOne({ _id: mongoose.Types.ObjectId(req.body.id) }, (err, result) => {
+        var new_points = [];
+        for (var i = 0; i < result.points.length; i++) {
+            if (result.points[i].altitude != -1) {
+                new_points.push(result.points[i]);
+            }
+        }
+        TrajectoryModel.updateOne({_id: mongoose.Types.ObjectId(req.body.id)}, {$set: {points: new_points}}, (err, result) => {
+            if (err) {
+                console.log(err);
+                res.status(404).send();
+            } else {
+                res.send(result);
+            }
+        })
+    })
+})
+
 http.createServer(app).listen(8000);
 

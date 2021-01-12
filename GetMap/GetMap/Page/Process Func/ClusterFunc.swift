@@ -1,11 +1,11 @@
-/* MARK: Trajectory Clustering */
+// Trajectory Clustering
 
 import Foundation
 
 let e: Double = 13
 let MinLns: Int = 3
 
-/* calculate e-neighborhood for every line segment */
+// calculate e-neighborhood for every line segment
 func neighbor(lineSegs: [LineSeg]) -> [[Int]] {
     var result = [[Int]](repeating: [], count: lineSegs.count)
     for i in 0..<lineSegs.count {
@@ -21,23 +21,23 @@ func neighbor(lineSegs: [LineSeg]) -> [[Int]] {
 }
 func cluster(lineSegs: [LineSeg]) -> [Int] {
     var clusterId = 1
-    /* 0: unclassfied, -1: noise, others: clusterId */
+    // 0: unclassfied, -1: noise, others: clusterId
     var cluster = [Int](repeating: 0, count: lineSegs.count)
-    /* compute neighbor array */
+    // compute neighbor array
     let neighborList = neighbor(lineSegs: lineSegs)
     
-    /* for each path unit */
+    // for each path unit
     for index in 0..<lineSegs.count {
         if(cluster[index] == 0) { // not classfied
             let neighbors = neighborList[index]
-            /* core line segment */
+            // core line segment
             if(neighbors.count + 1 >= MinLns) {
-                /* assgin clusterId to each neighbor */
+                // assgin clusterId to each neighbor
                 cluster[index] = clusterId
                 for neighbor in neighbors {
                     cluster[neighbor] = clusterId
                 }
-                /* expand cluster */
+                // expand cluster
                 var queue = neighbors
                 while(queue.count != 0) {
                     let first = queue[0] // first is the first path unit in queue
@@ -56,13 +56,13 @@ func cluster(lineSegs: [LineSeg]) -> [Int] {
                 }
                 clusterId += 1
             }
-            /* mark as noise */
+            // mark as noise
             else {
                 cluster[index] = -1
             }
         }
     }
-    /* check trajectory cardinality */
+    // check trajectory cardinality
     var cardinality = [Int](repeating: 0, count: clusterId)
     for c in cluster {
         if(c != -1) {

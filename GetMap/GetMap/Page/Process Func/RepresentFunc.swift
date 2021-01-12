@@ -82,7 +82,7 @@ func generateRepresent(lineSegs: [LineSeg]) -> [Coor3D] {
     }
     
     /* start sweeping */
-    var lastXValue = points[0].x - r
+    var lastXValue = -r //points[0].x - r
     for point in rotatedPoints {
         let values = pathUnitXValue(sweepPlane: point.x, lines: rotatedLines)
         if(values.count >= MinLns) {

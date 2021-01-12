@@ -84,6 +84,7 @@ struct ProcessPage: View {
             }
         }
         // gesture
+        .contentShape(Rectangle())
         .gesture(gesture)
         
         .onAppear {

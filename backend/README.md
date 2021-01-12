@@ -7,7 +7,7 @@ Response: json
 ```js
 var LocationSchema = Schema({
   _id: ObjectId,
-	name_en: String, // required
+  name_en: String, // required
   latitude: Number, // required
   longitude: Number, // required
   altitude: Number, // required

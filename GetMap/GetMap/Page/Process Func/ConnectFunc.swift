@@ -214,6 +214,7 @@ func findNeighbors(trajs: [[Coor3D]]) -> [[[(Int, Int)]]] {
             }
         }
     }
+
     return neighbors
 }
 
