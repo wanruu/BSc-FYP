@@ -114,14 +114,6 @@ func smooth(trajs: [[Coor3D]]) -> [[Coor3D]] { // by clustering
         }
     }
     
-    print("-----")
-    for num in nums {
-        if num > 2 {
-            print(num)
-        }
-    }
-    print("-----")
-    
     // Step 5: Connect two traj with same endpoint.
     // This step can decrease num of representative trajs a lot, e.g, from 101 to 17
     var omitPoints: [Coor3D] = [] // crossroad
@@ -163,23 +155,6 @@ func smooth(trajs: [[Coor3D]]) -> [[Coor3D]] { // by clustering
         }
         (index1, index2) = connectIndex(trajs: result, omitPoints: omitPoints)
     }
-
-    
-    
-    print(result.count)
-    
-    var points: [Coor3D] = []
-    var repeatCount = 0
-    for traj in result {
-        for point in traj {
-            if !points.contains(point) {
-                points.append(point)
-            } else {
-                repeatCount += 1
-            }
-        }
-    }
-    print("repeat point: \(repeatCount)")
     
     return result
 }

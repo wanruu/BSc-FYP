@@ -84,7 +84,7 @@ struct RepresentsView: View {
     var body: some View {
         ForEach(trajs, id: \.self) { traj in
             let i = trajs.firstIndex(of: traj)!
-            Text("\(i)").position(x: centerX + CGFloat((traj[0].longitude - centerLg) * lgScale * 2) * scale + offset.x, y: centerY + CGFloat((centerLa - traj[0].latitude) * laScale * 2) * scale + offset.y)
+            // Text("\(i)").position(x: centerX + CGFloat((traj[0].longitude - centerLg) * lgScale * 2) * scale + offset.x, y: centerY + CGFloat((centerLa - traj[0].latitude) * laScale * 2) * scale + offset.y)
             Path { p in
                 for j in 0..<traj.count {
                     let point = CGPoint(
