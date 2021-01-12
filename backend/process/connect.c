@@ -1,6 +1,6 @@
 #include "connect.h"
 
-#define MinDist 20.0
+#define MinDist 22.0
 #define laScale 111000.0
 #define lgScale 85390.0
 
@@ -11,7 +11,7 @@
  *  Test:
  */
 
-void smooth(traj_t* trajs, int* trajs_size) {
+traj_t* smooth(traj_t* trajs, int* trajs_size) {
     
     // Step 1: Find neighbors of each point
     neighbor_trajs_t** neighbor_list = find_neighbors(trajs, *trajs_size);
@@ -168,7 +168,7 @@ void smooth(traj_t* trajs, int* trajs_size) {
         nums[i] = 0;
     }
     for (int i = 0; i < *trajs_size; i++) {
-        for (int j = 0; j < trajs[i].points_num; j++) {
+        for (int j = 0; j < trajs[i].points_num; j++) { // for each point
             int index = first_index_of(aver_points, cluster_id - 1, trajs[i].points[j]);
             if (index != -1) {
                 nums[index] += 1;
@@ -176,7 +176,6 @@ void smooth(traj_t* trajs, int* trajs_size) {
 
         }
     }
-
     
     // Step 5: Connect two traj with same endpoint.
     // This step can decrease num of representative trajs a lot, e.g, from 101 to 17
@@ -190,18 +189,8 @@ void smooth(traj_t* trajs, int* trajs_size) {
         }
     }
 
+
     int* indexes = connect_index(trajs, *trajs_size, omit_points, omit_points_size);
-
-
-    /*printf("[\n");
-    for (int i = 0; i < *trajs_size; i++) {
-        printf("[\n");
-        for (int j = 0; j < trajs[i].points_num; j++) {
-            printf("Coor3D(latitude: %f, longitude: %f, altitude: %f), \n", trajs[i].points[j].lat, trajs[i].points[j].lng, trajs[i].points[j].alt);
-        }
-        printf("],\n");
-    }
-    printf("]\n");*/
 
     while (indexes[0] != -1 && indexes[1] != -1) {
 
@@ -261,23 +250,22 @@ void smooth(traj_t* trajs, int* trajs_size) {
                 new_trajs_size ++;
             }
         }
-        // add new_traj into trajs
+        // add new_traj into trajs    
+        new_trajs[new_trajs_size] = new_traj;
+        new_trajs_size ++;
         
-            new_trajs[new_trajs_size] = new_traj;
-            new_trajs_size ++;
-        
-
         trajs = new_trajs;
         *trajs_size = new_trajs_size;
 
-
-        // printf("%d\n", *trajs_size);
+        
 
         // update indexes
         indexes = connect_index(trajs, *trajs_size, omit_points, omit_points_size);
     }
 
-    printf("%d\n", *trajs_size);
+
+    return trajs;
+
 }
 
 

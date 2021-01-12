@@ -13,7 +13,7 @@ typedef struct {
     int neighbors_num;
 } neighbor_trajs_t; // a neighbor (x, y) = (trajs_indexes[i], points_indexes[i]) -> trajs[x][y]
 
-void smooth(traj_t* trajs, int* trajs_size);
+traj_t* smooth(traj_t* trajs, int* trajs_size);
 
 double coor_t_dist (coor_t p1, coor_t p2);
 
