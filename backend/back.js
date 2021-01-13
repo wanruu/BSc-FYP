@@ -361,5 +361,20 @@ app.delete('/invalid', (req, res) => {
     })
 })
 
+app.all('/process', (req, res) => {
+    console.log("ALL /process - " + Date());
+    var exec = require('child_process').exec;
+
+    var cmdStr = './src/process';
+    
+    exec(cmdStr, (err, stdout, stderr) => {
+        if(err) {
+            res.status(404).send(stderr);
+        } else {
+            res.send(stdout);
+        }
+    });
+});
+
 http.createServer(app).listen(8000);
 
