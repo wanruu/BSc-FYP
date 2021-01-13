@@ -3,9 +3,7 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include "data_struct.h"
-#include "represent.h"
 
 int cmp_func_point (const void* p1, const void* p2);
 int cmp_func_line (const void* line1, const void* line2);
@@ -22,7 +20,6 @@ point_t rotate(point_t point, double alpha, double beta);
 point_t unrotate(point_t point, double alpha, double beta);
 point_t rotate_by_z(point_t point, double angle);
 point_t rotate_by_y(point_t point, double angle);
-
 
 
 #endif

@@ -4,15 +4,13 @@
 #include <mongoc/mongoc.h>
 #include <bson/bson.h>
 #include <math.h>
-#include "queue.h"
+
 #include "data_struct.h"
 #include "part.h"
 #include "cluster.h"
 #include "represent.h"
 #include "connect.h"
-
-#define laScale 111000.0
-#define lgScale 85390.0
+#include "route.h"
 
 #define LOCNUM 300 // now about 20
 #define TRAJNUM 1000 // now 74
@@ -20,6 +18,19 @@
 
 void get_locs (mongoc_collection_t *collection, loc_t *locs, int *locs_size);
 void get_trajs (mongoc_collection_t *collection, traj_t *trajs, int *trajs_size);
+
+char* int_to_str (int x) {
+    int length = snprintf(NULL, 0, "%d", x);
+    char* str = (char*) malloc(sizeof(char) * (length + 1));
+    
+    str[length] = '\0';
+
+    for (int i = length - 1; i >= 0; i --) {
+        str[i] = '0' + (x % 10);
+        x /= 10;
+    }
+    return str;
+}
 
 void get_locs (mongoc_collection_t *collection, loc_t *locs, int *locs_size) {
     const bson_t *doc;
@@ -47,6 +58,9 @@ void get_locs (mongoc_collection_t *collection, loc_t *locs, int *locs_size) {
                     locs[*locs_size].alt = value->value.v_double;
                 } else if (strcmp(key, "type") == 0) {
                     locs[*locs_size].type = value->value.v_int64;
+                } else if (strcmp(key, "_id") == 0) {
+                    bson_oid_t oid = value->value.v_oid;
+                    bson_oid_to_string(&oid, locs[*locs_size].id);
                 }
             }
         }
@@ -110,6 +124,7 @@ int main (int argc, char *argv[]) {
     mongoc_client_t *client;
     mongoc_database_t *database;
     mongoc_collection_t *collection;
+    bson_error_t error;
 
     mongoc_init(); // Initialize libmongoc
     
@@ -217,9 +232,8 @@ int main (int argc, char *argv[]) {
     }
 
     rep_trajs = smooth(rep_trajs, &rep_trajs_size);
-
     // test 
-    printf("[");
+    /*printf("[");
     for (int i = 0; i < rep_trajs_size; i++) {
         printf("[");
         for (int j = 0; j < rep_trajs[i].points_num; j++) {
@@ -227,15 +241,91 @@ int main (int argc, char *argv[]) {
         }
         printf("],\n");
     }
-    printf("]\n");
+    printf("]\n");*/
+
+
+    /*
+     *  Aim: generate routes from rep_trajs.
+     *  Data: 
+     *  Test: 
+     */
+    int routes_size = 0;
+    route_t* routes = generate_routes (rep_trajs, rep_trajs_size, locs, locs_size, &routes_size);
     
+    // test
+    /* for (int i = 0; i < routes_size; i++) {
+        printf("%s\n", routes[i].start_loc.name);
+        printf("%s\n", routes[i].end_loc.name);
+        //for (int j = 0; j < routes[i].points_num; j++) {
+        //    printf("%f ", routes[i].points[j].lat);
+        //}
+        printf("%f\n", routes[i].dist);
+        printf("\n");
+    }*/
 
 
+    /*
+     *  Aim: drop routes table.
+     */
+    collection = mongoc_client_get_collection(client, "CUMap", "routes");
+    if (!mongoc_collection_drop (collection, &error)) {
+        fprintf (stderr, "Delete failed: %s\n", error.message);
+    }
+
+    /*
+     *  Aim: upload routes to mongo.
+     */
+    // collection = mongoc_client_get_collection(client, "CUMap", "routes");
+    
+    for (int i = 0; i < routes_size; i ++) {
+        bson_t* route = bson_new();
+        // startLoc & endLoc
+        bson_oid_t start_id, end_id;
+        bson_oid_init_from_string (&start_id, routes[i].start_loc.id);
+        bson_oid_init_from_string (&end_id, routes[i].end_loc.id);
+
+        bson_append_oid (route, "startLoc", 8, &start_id);
+        bson_append_oid (route, "endLoc", 6, &end_id);
+        
+        // points
+        bson_t* points = bson_new();
+        bson_append_array_begin (route, "points", 6, points);
+        for (int j = 0; j < routes[i].points_num; j++) {
+            bson_t* point = bson_new();
+            char* index = int_to_str(j);
+            bson_append_document_begin (points, index, strlen(index), point);
+            
+            bson_append_double (point, "latitude", 8, routes[i].points[j].lat);
+            bson_append_double (point, "longitude", 9, routes[i].points[j].lng);
+            bson_append_double (point, "altitude", 8, routes[i].points[j].alt);
+            bson_append_document_end (points, point);
+        }
+
+        bson_append_array_end (route, points);
+
+        // dist
+        bson_append_double (route, "dist", 4, routes[i].dist);
+
+        // type
+        bson_t* type = bson_new();
+        bson_append_array_begin (route, "type", 4, type);
+        bson_append_int64 (type, "0", 1, 0);
+        bson_append_array_end (route, type);
+        
+        if (!mongoc_collection_insert (collection, MONGOC_INSERT_NONE, route, NULL, &error)) {
+            fprintf (stderr, "%s\n", error.message);
+        }
+    }
+    
+    
     // Release
     mongoc_database_destroy(database);
+    mongoc_collection_destroy (collection);
     mongoc_client_destroy(client);
     mongoc_cleanup();
     
+    printf("Success.\n");
     return 0;
 }
+
 

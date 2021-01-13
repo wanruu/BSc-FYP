@@ -1,10 +1,5 @@
 #include "dist.h"
 
-#define laScale 111000.0
-#define lgScale 85390.0
-#define min(a,b)(a<b?a:b)
-
-
 // distance function: calculate distance between p1p2 and p3p4
 // return {perpendicular, parallel, angle}
 void compute_distance (coor_t locs[], double* dists) {

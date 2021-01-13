@@ -1,5 +1,5 @@
-process: main.o queue.o dist.o part.o cluster.o data_struct.o represent.o connect.o
-	gcc -o process main.o dist.o part.o cluster.o queue.o data_struct.o represent.o connect.o -I/usr/local/include -lmongoc-1.0 -lbson-1.0
+process: main.o queue.o dist.o part.o cluster.o data_struct.o represent.o connect.o route.o
+	gcc -o process main.o dist.o part.o cluster.o queue.o data_struct.o represent.o connect.o route.o -I/usr/local/include -lmongoc-1.0 -lbson-1.0
 
 main.o: main.c
 	gcc -c main.c 
@@ -24,6 +24,9 @@ represent.o: represent.c represent.h data_struct.h
 
 connect.o: connect.c connect.h data_struct.h queue.h
 	gcc -c connect.c
+
+route.o: route.c route.h data_struct.h
+	gcc -c route.c
 
 # clean
 clean: 

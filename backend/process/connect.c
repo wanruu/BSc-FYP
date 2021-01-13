@@ -1,8 +1,6 @@
 #include "connect.h"
 
 #define MinDist 22.0
-#define laScale 111000.0
-#define lgScale 85390.0
 
 /*
  *  Aim: main func. smooth and connect trajs by clustering.

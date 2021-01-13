@@ -1,3 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define ERROR -99
+
 #ifndef QUEUE_H
 #define QUEUE_H
 

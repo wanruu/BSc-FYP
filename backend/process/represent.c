@@ -3,9 +3,6 @@
 #define r 1.2
 #define MinLns 3
 
-#define laScale 111000.0
-#define lgScale 85390.0
-
 int cmp_func_point (const void* p1, const void* p2) {
     double divide = ((point_t*)p1)->x - ((point_t*)p2)->x;
     if (divide < 0) {

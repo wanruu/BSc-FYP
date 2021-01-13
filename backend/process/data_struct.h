@@ -1,9 +1,14 @@
+#include <math.h>
+
+#define laScale 111000.0
+#define lgScale 85390.0
+#define INF 99999.0
+
 #ifndef DATA_STRUCT
 #define DATA_STRUCT
 
-#include <math.h>
-
 typedef struct {
+    char id[25];
     char name[100];
     double lat;
     double lng;
@@ -17,6 +22,10 @@ typedef struct {
     double alt;
 } coor_t;
 
+double dist_loc_coor (loc_t loc, coor_t point);
+
+double dist_coor_coor (coor_t point1, coor_t point2);
+
 typedef struct {
     coor_t* points;
     int points_num;
@@ -27,6 +36,14 @@ typedef struct {
     double y;
     double z;
 } point_t;
+
+point_t plus (point_t p1, point_t p2);
+point_t minus (point_t p1, point_t p2);
+point_t divide (point_t p_in, double num);
+point_t multi (point_t p_in, double num);
+double dot_product (point_t p1, point_t p2);
+double dist (point_t start, point_t end);
+
 
 typedef struct {
     coor_t start;
@@ -44,11 +61,6 @@ typedef struct {
     int line_segs_size;
 } line_segs_cluster_t;
 
-point_t plus (point_t p1, point_t p2);
-point_t minus (point_t p1, point_t p2);
-point_t divide (point_t p_in, double num);
-point_t multi (point_t p_in, double num);
-double dot_product (point_t p1, point_t p2);
-double dist (point_t start, point_t end);
+
 
 #endif

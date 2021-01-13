@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "queue.h"
-
-#define ERROR -99
 
 queue_t* create_queue() {
     queue_t* queue = (queue_t*) malloc(sizeof(queue_t));

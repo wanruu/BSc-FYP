@@ -1,8 +1,5 @@
 #include "part.h"
 
-#define laScale 111000.0
-#define lgScale 85390.0
-
 double log2(double n) {
     return log(n) / log(2);
 }
