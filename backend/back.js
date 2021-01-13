@@ -2,7 +2,7 @@
 var mongoose = require('mongoose');
 var express = require('express');
 var bodyParser = require('body-parser');
-var session = require('express-session');
+// var session = require('express-session');
 var http = require('http');
 var cors = require('cors');
 
@@ -11,10 +11,10 @@ var app = express();
 app.use(bodyParser.urlencoded({extended: false}), bodyParser.json());
 
 // session
-app.use(session({
+/*app.use(session({
     secret: 'CUMap',
     cookie: { maxAge: 1000*60*60 }
-}));
+}));*/
 
 // cors
 app.use(cors());
