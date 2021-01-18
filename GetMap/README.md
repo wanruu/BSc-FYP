@@ -1,3 +1,9 @@
+# UI Design
+
+The screen is divided by a navigation bar and one of the pages.
+
+Navigation bar 
+
 # View Model
 
 ## 1 UserPoint.swift
@@ -109,3 +115,4 @@ Gesture:
 ```
 
 ## 4 
+

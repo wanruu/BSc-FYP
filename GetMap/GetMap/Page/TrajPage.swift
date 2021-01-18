@@ -69,16 +69,6 @@ struct TrajPage: View {
                 }
             }
         }
-        // navigation bar
-        .navigationTitle("Collect")
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarItems(trailing:
-            Button(action: {
-                // TODO: add process button action
-            }) {
-                Image(systemName: "gearshape").imageScale(.large)
-            }
-        )
     }
 }
 

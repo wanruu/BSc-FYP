@@ -41,5 +41,20 @@ struct MyButtonStyle2: ButtonStyle {
             .foregroundColor(.primary)
             .animation(.spring())
     }
+}
+
+// press: white -> bgColor, size doesn't change
+struct MyButtonStyle3: ButtonStyle {
+    var bgColor: Color
     
+    func makeBody(configuration: Self.Configuration) -> some View {
+        configuration.label
+            .padding()
+            .background(
+                Rectangle()
+                    .fill(bgColor.opacity(configuration.isPressed ? 1 : 0))
+                    .animation(.spring())
+            )
+            .foregroundColor(.primary)
+    }
 }

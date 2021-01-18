@@ -2,77 +2,107 @@ import Foundation
 import SwiftUI
 
 struct MainPage: View {
-    var body: some View {
-        NavigationView {
-            if UIDevice.current.localizedModel == "iPad" {
-                MainPagePad()
-            } else if UIDevice.current.localizedModel == "iPhone" {
-                MainPagePhone()
-            }
-        }
-    }
-}
-
-struct PageItem: View {
-    @State var image: String
-    @State var title: String
+    
+    @State var page: String = "Trajectory"
+    
     var body: some View {
         ZStack {
-            Image(image)
-                .resizable()
-                .frame(width: SCWidth * 0.25, height: SCWidth * 0.25)
-                .cornerRadius(SCWidth * 0.05)
-            Text(title)
-                .foregroundColor(Color.white)
-                .shadow(color: Color.black, radius: SCWidth * 0.003, x: SCWidth * 0.003, y: SCWidth * 0.003)
-                .font(.system(size: SCWidth * 0.055, weight: .bold, design: .rounded))
-                .offset(y: SCWidth * 0.06)
+            if page == "Trajectory" {
+                TrajPage()
+            } else if page == "Location" {
+                LocationPage()
+            } else if page == "Bus" {
+                BusPage()
+            }
+            Navi(page: $page)
         }
     }
 }
 
-struct MainPagePhone: View {
-    // 1 = SCWidth * 0.001
+struct Navi: View {
+
+    @Binding var page: String
+    
+    // offset of dropdown page options
+    @State var offset: CGFloat = -UIScreen.main.bounds.height
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 30) {
-            HStack(spacing: 30) {
-                NavigationLink(destination: TrajPage()) {
-                    PageItem(image: "collect", title: "Trajectory")
+        GeometryReader { geometry in
+            VStack (spacing: 0) {
+                // safe area
+                Color.white.frame(width: geometry.size.width, height: geometry.safeAreaInsets.bottom, alignment: .center)
+                        
+                // current page
+                Button(action: {
+                    if offset == -UIScreen.main.bounds.height {
+                        offset = 0
+                    } else {
+                        offset = -UIScreen.main.bounds.height
+                    }
+                }) {
+                    Text(page)
+                        .foregroundColor(.black)
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .padding()
+                        .frame(width: geometry.size.width, alignment: .center)
                 }
-                NavigationLink(destination: ProcessPage()) {
-                    PageItem(image: "map", title: "Process Test")
+                .frame(width: geometry.size.width, alignment: .center)
+                .background(Color.white)
+                Divider().background(Color.white)
+                
+                // dropdown option
+                VStack (spacing: 0) {
+                    // option 1: traj
+                    Button(action: {
+                        page = "Trajectory"
+                        offset = -UIScreen.main.bounds.height
+                    }) {
+                        Text("Trajectory")
+                            .foregroundColor(.black)
+                            .font(.system(size: 18, design: .rounded))
+                            .frame(width: geometry.size.width, alignment: .center)
+                    }
+                    .background(Color.white)
+                    .buttonStyle(MyButtonStyle3(bgColor: CUPurple.opacity(0.5)))
+                    Divider()
+                    
+                    // option 2: location
+                    Button(action: {
+                        page = "Location"
+                        offset = -UIScreen.main.bounds.height
+                    }) {
+                        Text("Location")
+                            .foregroundColor(.black)
+                            .font(.system(size: 18, design: .rounded))
+                            .frame(width: geometry.size.width, alignment: .center)
+                    }
+                    .background(Color.white)
+                    .buttonStyle(MyButtonStyle3(bgColor: CUPurple.opacity(0.5)))
+                    Divider()
+                    
+                    // option 3: bus
+                    Button(action: {
+                        page = "Bus"
+                        offset = -UIScreen.main.bounds.height
+                    }) {
+                        Text("Bus")
+                            .foregroundColor(.black)
+                            .font(.system(size: 18, design: .rounded))
+                            .frame(width: geometry.size.width, alignment: .center)
+                    }
+                    .background(Color.white)
+                    .buttonStyle(MyButtonStyle3(bgColor: CUPurple.opacity(0.5)))
+                    Divider()
                 }
+                .background(Color.white)
+                .zIndex(-10)
+                .frame(width: geometry.size.width, alignment: .center)
+                .offset(y: offset)
+                .animation(Animation.easeInOut)
             }
-            
-            
-            NavigationLink(destination: LocationPage()) {
-                PageItem(image: "building", title: "Location")
-            }
-            
-
-            NavigationLink(destination: BusPage()) {
-                PageItem(image: "building", title: "Bus")
-            }
-            
-            
-            /* HStack(spacing: 30) {
-                NavigationLink(destination: SearchPage(locations: $locations, routes: $routes)) {
-                    PageItem(image: "building", title: "Search")
-                }
-            }*/
         }
+        .edgesIgnoringSafeArea(.top)
     }
 }
 
-struct MainPagePad: View {
-    var body: some View {
-        NavigationView {
-            List {
-                // NavigationLink(destination: MapPage(locations: $locations, trajectories: $trajectories)) { Text("Map") }
-                // NavigationLink(destination: LocationPage(locations: $locations)) { Text("Location") }
-            }
-            .navigationTitle("Home")
-            .navigationBarTitleDisplayMode(.inline)
-        }
-    }
-}
+

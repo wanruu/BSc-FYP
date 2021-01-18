@@ -82,6 +82,19 @@ struct LocationPage: View {
                     y: centerY + CGFloat((centerLa - location.latitude)*laScale*2) * scale + offset.y - SCWidth * 0.05
                 )
             }
+            HStack(spacing: 15) {
+                Button(action: {
+                    showAddWindow = true
+                    showList = false
+                    showEditWindow = false
+                }) {Image(systemName: "plus").imageScale(.large)}
+                Button(action: {
+                    showList = true
+                    showAddWindow = false
+                    showEditWindow = false
+                }) {Image(systemName: "list.bullet").imageScale(.large)}
+            }
+            .position(x: centerX, y: centerY)
             
             // edit window
             if showEditWindow && clickedLoc != nil {
@@ -92,29 +105,12 @@ struct LocationPage: View {
             if showAddWindow {
                 NewLocWindow(locations: $locations, curLocModel: curLocModel, showing: $showAddWindow)
             }
-            
         }
         .onAppear {
             loadLocations()
         }
         // gesture
         .highPriorityGesture(gesture)
-        
-        // navigation bar
-        .navigationTitle("Location")
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarItems(trailing: HStack(spacing: 15) {
-            Button(action: {
-                showAddWindow = true
-                showList = false
-                showEditWindow = false
-            }) {Image(systemName: "plus").imageScale(.large)}
-            Button(action: {
-                showList = true
-                showAddWindow = false
-                showEditWindow = false
-            }) {Image(systemName: "list.bullet").imageScale(.large)}
-        })
         
         // sheet: location list
         .sheet(isPresented: $showList) {

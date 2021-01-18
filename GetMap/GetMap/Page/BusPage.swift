@@ -5,53 +5,53 @@ struct BusPage: View {
     @State var buses: [Bus] = []
     @State var showSheet: Bool = false
     var body: some View {
-        VStack {
-            List(buses) { bus in
-                VStack(alignment: .leading) {
-                    HStack {
-                        Text(bus.id).font(.title2)
-                        Text(bus.name_en).font(.title2)
-                        Text(bus.name_ch)
-                    }
-                    
-                    HStack {
-                        if bus.serviceDay == 0 {
-                            Text("Mon - Sat")
-                        } else if bus.serviceDay == 1 {
-                            Text("Sun & Public Holidays")
-                        } else {
-                            Text("Teaching days only")
+        ZStack {
+            VStack {
+                List(buses) { bus in
+                    VStack(alignment: .leading) {
+                        HStack {
+                            Text(bus.id).font(.title2)
+                            Text(bus.name_en).font(.title2)
+                            Text(bus.name_ch)
                         }
-                        Text(bus.serviceHour)
-                    }
-                    
-                    HStack {
-                        Text("Departs hourly at")
-                        ForEach(bus.departTime) { value in
-                            Text("\(value)")
+                        
+                        HStack {
+                            if bus.serviceDay == 0 {
+                                Text("Mon - Sat")
+                            } else if bus.serviceDay == 1 {
+                                Text("Sun & Public Holidays")
+                            } else {
+                                Text("Teaching days only")
+                            }
+                            Text(bus.serviceHour)
                         }
-                        Text("mins")
-                    }
-                    VStack {
-                        ForEach(bus.special) { rule in
-                            HStack {
-                                Text("Buses departing at \(rule.departTime) minutes will")
-                                rule.stop ? nil : Text("not")
-                                Text("stop at \(rule.busStop)")
+                        
+                        HStack {
+                            Text("Departs hourly at")
+                            ForEach(bus.departTime) { value in
+                                Text("\(value)")
+                            }
+                            Text("mins")
+                        }
+                        VStack {
+                            ForEach(bus.special) { rule in
+                                HStack {
+                                    Text("Buses departing at \(rule.departTime) minutes will")
+                                    rule.stop ? nil : Text("not")
+                                    Text("stop at \(rule.busStop)")
+                                }
                             }
                         }
                     }
                 }
             }
+            Button(action: { showSheet = true }) {
+                Image(systemName: "plus.circle").imageScale(.large)
+            }.position(x: centerX, y: centerY)
         }
         .onAppear {
             loadBuses()
         }
-        .navigationTitle(Text("Bus Route"))
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarItems(trailing: Button(action: { showSheet = true }) {
-            Image(systemName: "plus.circle").imageScale(.large)
-        })
         .sheet(isPresented: $showSheet) {
             NewBusSheet(buses: $buses)
         }
