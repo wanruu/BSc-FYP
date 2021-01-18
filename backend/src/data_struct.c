@@ -7,7 +7,6 @@ double dist_loc_coor (loc_t loc, coor_t point) {
     return pow(diff_x*diff_x + diff_y*diff_y + diff_z*diff_z, 0.5);
 }
 
-
 double dist_coor_coor (coor_t point1, coor_t point2) {
     double diff_x = (point1.lat - point2.lat) * laScale;
     double diff_y = (point1.lng - point2.lng) * lgScale;

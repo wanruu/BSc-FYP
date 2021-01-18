@@ -19,11 +19,12 @@
 - [ ] Ensure altitude uploaded to server is not -1?
 - [ ] Add bus data, how?
 - [ ] Unify colors
+- [ ] Adjust UI structure of main page
 
 ## backend
 
 - [x] Configure Tecent cloud server
 
-- [ ] Complete route.c, to generate more routes
+- [x] Complete route.c, to generate more routes
 
-- [ ] Move complete process procedure to cloud server
+- [x] Move complete process procedure to cloud server

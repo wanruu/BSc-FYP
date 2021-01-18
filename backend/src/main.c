@@ -232,17 +232,6 @@ int main (int argc, char *argv[]) {
     }
 
     rep_trajs = smooth(rep_trajs, &rep_trajs_size);
-    // test 
-    /*printf("[");
-    for (int i = 0; i < rep_trajs_size; i++) {
-        printf("[");
-        for (int j = 0; j < rep_trajs[i].points_num; j++) {
-            printf("Coor3D(latitude: %f, longitude: %f, altitude: %f), ", rep_trajs[i].points[j].lat, rep_trajs[i].points[j].lng, rep_trajs[i].points[j].alt);
-        }
-        printf("],\n");
-    }
-    printf("]\n");*/
-
 
     /*
      *  Aim: generate routes from rep_trajs.
@@ -276,6 +265,7 @@ int main (int argc, char *argv[]) {
      *  Aim: upload routes to mongo.
      */
     // collection = mongoc_client_get_collection(client, "CUMap", "routes");
+    printf("%d\n", routes_size);
     
     for (int i = 0; i < routes_size; i ++) {
         bson_t* route = bson_new();

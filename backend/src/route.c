@@ -2,77 +2,198 @@
 
 #define MIN_DIST 20
 
+/*
+ *  Aim: generate routes.
+ *  In: trajs, trajs_size, locs, locs_size.
+ *  Out: routes, routes_size.
+ *  Test: OK????
+ */
+
 route_t* generate_routes (traj_t* trajs, int trajs_size, loc_t* locs, int locs_size, int* routes_size) {
     
+    // Step 0: prepare output.
     route_t* routes = (route_t*) malloc(sizeof(route_t) * locs_size * locs_size);
     *routes_size = 0;
     
-    // Step 1: preprocess. split trajs
+    // Step 1: preprocess. 
+    
+    // find the closest point for each loc.
     coor_t* closest_points = (coor_t*) malloc(sizeof(coor_t) * locs_size);
     for (int i = 0; i < locs_size; i ++) {
         closest_points[i] = find_closest_point(locs[i], trajs, trajs_size);
     }
-    
+    // split trajs by closest points.
     int processed_trajs_size = trajs_size;
     traj_t* processed_trajs = split_trajs(trajs, &processed_trajs_size, closest_points, locs_size);
 
-    // test
-    /*printf("[");
-    for (int i = 0; i < processed_trajs_size; i++) {
-        printf("[");
-        for (int j = 0; j < processed_trajs[i].points_num; j++) {
-            printf("Coor3D(latitude: %f, longitude: %f, altitude: %f), ", processed_trajs[i].points[j].lat, processed_trajs[i].points[j].lng, processed_trajs[i].points[j].alt);
-        }
-        printf("],\n");
-    }
-    printf("]\n");*/
 
-    // Step 2: add direct route between two locations to route
-    for (int i = 0; i < processed_trajs_size; i++) { // for each traj in processed_trajs
-
-        traj_t traj = processed_trajs[i];
-        if (traj.points_num < 2) {
-            continue;
-        }
-
-        int start_index = first_index_of (closest_points, locs_size, traj.points[0]);
-        int end_index = first_index_of (closest_points, locs_size, traj.points[traj.points_num - 1]);
-
-        if (start_index == -1 || end_index == -1 || start_index == end_index) {
-            continue;
-        }
-
-        //construct a route
-        routes[*routes_size].start_loc = locs[start_index];
-        routes[*routes_size].end_loc = locs[end_index];
-
-        routes[*routes_size].points = (coor_t*) malloc(sizeof(coor_t) * (traj.points_num + 2));
-        routes[*routes_size].points_num = traj.points_num + 2;
-        routes[*routes_size].points[0].lat = locs[start_index].lat;
-        routes[*routes_size].points[0].lng = locs[start_index].lng;
-        routes[*routes_size].points[0].alt = locs[start_index].alt;
-        for (int j = 0; j < traj.points_num; j ++) {
-            routes[*routes_size].points[j+1] = traj.points[j];
-        }
-        routes[*routes_size].points[traj.points_num + 1].lat = locs[end_index].lat;
-        routes[*routes_size].points[traj.points_num + 1].lng = locs[end_index].lng;
-        routes[*routes_size].points[traj.points_num + 1].alt = locs[end_index].alt;
-
-        double dist = 0;
-        for (int j = 0; j < traj.points_num - 1; j ++) {
-            dist += dist_coor_coor(routes[*routes_size].points[j], routes[*routes_size].points[j+1]);
-        }
-        routes[*routes_size].dist = dist;
-
-        *routes_size = *routes_size + 1;
+    // Step 2: try to connect trajs as much as possible
+    int* is_trajs_marked = (int*) malloc (sizeof(int) * processed_trajs_size);
+    for (int i = 0; i < processed_trajs_size; i ++) {
+        is_trajs_marked[i] = 0;
     }
 
-    // Step 3: remove checked traj in step 2
-    
-    
+    route_t cur_route;
+    cur_route.points_num = 0;
+
+    find_routes (processed_trajs, processed_trajs_size, is_trajs_marked, locs, locs_size, closest_points, routes, routes_size, cur_route);
+
     return routes;
 }
 
+void find_routes (traj_t* trajs, int trajs_size, int* is_trajs_marked, loc_t* locs, int locs_size, coor_t* closest_points, route_t* routes, int* routes_size, route_t cur_route) {
+
+    // if start loc and end loc of cur_route is determined
+    int has_start, has_end;
+    if (cur_route.points_num == 0) {
+        has_start = 0;
+        has_end = 0;
+    } else {
+        has_start = first_index_of (closest_points, locs_size, cur_route.points[0]) != -1;
+        has_end = first_index_of (closest_points, locs_size, cur_route.points[cur_route.points_num - 1]) != -1;
+    }
+    
+
+    if ( has_start && has_end ) { 
+
+        cur_route.start_loc = locs[first_index_of (closest_points, locs_size, cur_route.points[0])];
+        cur_route.end_loc = locs[first_index_of (closest_points, locs_size, cur_route.points[cur_route.points_num - 1])];
+
+        for (int i = 0; i < *routes_size; i ++) {
+            if ((strcmp(routes[i].start_loc.id, cur_route.end_loc.id) == 0 && strcmp(routes[i].end_loc.id, cur_route.start_loc.id) == 0) || 
+                (strcmp(routes[i].start_loc.id, cur_route.start_loc.id) == 0 && strcmp(routes[i].end_loc.id, cur_route.end_loc.id) == 0) ) {
+                return;
+            }
+        }
+        // compute distance
+        double dist = 0;
+        for (int i = 0; i < cur_route.points_num - 1; i ++) {
+            dist += dist_coor_coor (cur_route.points[i], cur_route.points[i + 1]);
+        }
+        cur_route.dist = dist;
+
+        append_route (routes, routes_size, cur_route);
+        
+        return;
+    }
+
+    for (int i = 0; i < trajs_size; i ++) { // for each traj
+        if (is_trajs_marked[i]) {
+            continue;
+        }
+
+        int start_index = first_index_of (closest_points, locs_size, trajs[i].points[0]);
+        int end_index = first_index_of (closest_points, locs_size, trajs[i].points[trajs[i].points_num - 1]);
+
+        if ( !has_start && !has_end ) { // cur_route empty
+            if (start_index != -1 || end_index != -1) {
+                cur_route.points = trajs[i].points;
+                cur_route.points_num = trajs[i].points_num;
+                is_trajs_marked[i] = 1;
+                find_routes (trajs, trajs_size, is_trajs_marked, locs, locs_size, closest_points, routes, routes_size, cur_route);
+                cur_route.points_num = 0;
+                is_trajs_marked[i] = 0;
+            }
+        }
+    
+        else if ( has_start && !has_end ) { // cur_route has only start_loc
+
+            if ( equals (cur_route.points[cur_route.points_num - 1], trajs[i].points[0]) ) { 
+
+                coor_t* new_points = (coor_t*) malloc (sizeof(coor_t) * (cur_route.points_num + trajs[i].points_num - 1));
+                int new_points_num = cur_route.points_num + trajs[i].points_num - 1;
+                for (int j = 0; j < cur_route.points_num; j ++) {
+                    new_points[j] = cur_route.points[j];
+                }
+                for (int j = cur_route.points_num; j < cur_route.points_num + trajs[i].points_num - 1; j ++) {
+                    new_points[j] = trajs[i].points[j - cur_route.points_num + 1];
+                }
+
+                cur_route.points = new_points;
+                cur_route.points_num = new_points_num;
+                is_trajs_marked[i] = 1;
+                find_routes (trajs, trajs_size, is_trajs_marked, locs, locs_size, closest_points, routes, routes_size, cur_route);
+                cur_route.points_num = cur_route.points_num - trajs[i].points_num + 1;
+                is_trajs_marked[i] = 0;
+
+            } else if ( equals (cur_route.points[cur_route.points_num - 1], trajs[i].points[trajs[i].points_num - 1]) ) {
+
+                coor_t* new_points = (coor_t*) malloc (sizeof(coor_t) * (cur_route.points_num + trajs[i].points_num - 1));
+                int new_points_num = cur_route.points_num + trajs[i].points_num - 1;
+                for (int j = 0; j < cur_route.points_num; j ++) {
+                    new_points[j] = cur_route.points[j];
+                }
+                for (int j = cur_route.points_num; j < cur_route.points_num + trajs[i].points_num - 1; j ++) {
+                    new_points[j] = trajs[i].points[cur_route.points_num + trajs[i].points_num - 2 - j];
+                }
+
+                cur_route.points = new_points;
+                cur_route.points_num = new_points_num;
+                is_trajs_marked[i] = 1;
+                find_routes (trajs, trajs_size, is_trajs_marked, locs, locs_size, closest_points, routes, routes_size, cur_route);
+                cur_route.points_num = cur_route.points_num - trajs[i].points_num + 1;
+                is_trajs_marked[i] = 0;
+            }
+        }
+
+        else if ( !has_start && has_end ) { // cur_route has only end_loc
+
+            if (equals (cur_route.points[0], trajs[i].points[0]) ) {
+
+                coor_t* new_points = (coor_t*) malloc (sizeof(coor_t) * (cur_route.points_num + trajs[i].points_num - 1));
+                int new_points_num = cur_route.points_num + trajs[i].points_num - 1;
+                for (int j = 0; j < trajs[i].points_num; j ++) {
+                    new_points[j] = trajs[i].points[trajs[i].points_num - 1 - j];
+                }
+                for (int j = trajs[i].points_num; j < cur_route.points_num + trajs[i].points_num - 1; j ++) {
+                    new_points[j] = cur_route.points[j - trajs[i].points_num + 1];
+                }
+                cur_route.points = new_points;
+                cur_route.points_num = new_points_num;
+                is_trajs_marked[i] = 1;
+                find_routes (trajs, trajs_size, is_trajs_marked, locs, locs_size, closest_points, routes, routes_size, cur_route);
+                cur_route.points_num = cur_route.points_num - trajs[i].points_num + 1;
+                is_trajs_marked[i] = 0;
+
+            } else if (equals (cur_route.points[0], trajs[i].points[trajs[i].points_num - 1])) {
+
+                coor_t* new_points = (coor_t*) malloc (sizeof(coor_t) * (cur_route.points_num + trajs[i].points_num - 1));
+                int new_points_num = cur_route.points_num + trajs[i].points_num - 1;
+                
+                for (int j = 0; j < trajs[i].points_num; j ++) {
+                    new_points[j] = trajs[i].points[j];
+                }
+                for (int j = trajs[i].points_num; j < cur_route.points_num + trajs[i].points_num - 1; j ++) {
+                    new_points[j] = cur_route.points[j - trajs[i].points_num + 1];
+                }
+                cur_route.points = new_points;
+                cur_route.points_num = new_points_num;
+                is_trajs_marked[i] = 1;
+                find_routes (trajs, trajs_size, is_trajs_marked, locs, locs_size, closest_points, routes, routes_size, cur_route);
+                cur_route.points_num = cur_route.points_num - trajs[i].points_num + 1;
+                is_trajs_marked[i] = 0;
+            }
+        } 
+    }
+}
+
+
+
+void append_route (route_t* routes, int* routes_size, route_t route) {
+
+    routes[*routes_size].start_loc = route.start_loc;
+    routes[*routes_size].end_loc = route.end_loc;
+
+    routes[*routes_size].points = (coor_t*) malloc (sizeof(coor_t) * route.points_num);
+    for (int i = 0; i < route.points_num; i ++) {
+        routes[*routes_size].points[i] = route.points[i];
+    }
+    routes[*routes_size].points_num = route.points_num;
+
+    routes[*routes_size].dist = route.dist;
+
+    *routes_size = *routes_size + 1;
+}
 
 /*
  *  Aim: split trajs with given points

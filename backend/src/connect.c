@@ -412,9 +412,4 @@ int equals (coor_t point1, coor_t point2) {
 }
 
 
-// traj1 can be replaced by traj2
-//int can_be_replaced (traj_t traj1, traj_t traj2) {
-//    if (contains ())
-//}
-
 
