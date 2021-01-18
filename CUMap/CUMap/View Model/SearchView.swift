@@ -29,7 +29,7 @@
 import Foundation
 import SwiftUI
 
-let INF: Double = 9999999
+let INF: Double = 99999
 
 enum TransMode {
     case bus
@@ -117,79 +117,88 @@ struct SearchArea: View {
             }
         }
         
-        return
-            VStack(spacing: 20) {
-                // search box
-                HStack {
-                    VStack(spacing: 12) {
-                        Text(startLoc == nil ? "From" : startLoc!.name_en)
-                            .foregroundColor(startLoc == nil ? .gray : .black)
-                            .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                            .contentShape(Rectangle())
-                            .padding()
-                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 0.8))
-                            .onTapGesture { showStartList = true }
-                        Text(endLoc == nil ? "To" : endLoc!.name_en)
-                            .foregroundColor(endLoc == nil ? .gray : .black)
-                            .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                            .contentShape(Rectangle())
-                            .padding()
-                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 0.8))
-                            .onTapGesture { showEndList = true }
-                    }
-                    Image(systemName: "arrow.up.arrow.down")
-                        .imageScale(.large)
-                        .rotationEffect(.degrees(angle))
-                        .animation(Animation.easeInOut(duration: 0.1))
-                        .padding(.leading)
-                        .onTapGesture {
-                            angle = 180 - angle
-                            // swap
-                            let tmp = startLoc
-                            startLoc = endLoc
-                            endLoc = tmp
-                            RP()
+        return GeometryReader { geometery in
+            VStack {
+                VStack(spacing: 20) {
+                    // safe area
+                    Color.white.frame(width: geometery.size.width, height: geometery.safeAreaInsets.bottom, alignment: .center)
+                    
+                    // search box
+                    HStack {
+                        VStack(spacing: 12) {
+                            Text(startLoc == nil ? "From" : startLoc!.name_en)
+                                .foregroundColor(startLoc == nil ? .gray : .black)
+                                .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                                .contentShape(Rectangle())
+                                .padding()
+                                .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 0.8))
+                                .onTapGesture { showStartList = true }
+                            Text(endLoc == nil ? "To" : endLoc!.name_en)
+                                .foregroundColor(endLoc == nil ? .gray : .black)
+                                .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                                .contentShape(Rectangle())
+                                .padding()
+                                .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 0.8))
+                                .onTapGesture { showEndList = true }
                         }
+                        Image(systemName: "arrow.up.arrow.down")
+                            .imageScale(.large)
+                            .rotationEffect(.degrees(angle))
+                            .animation(Animation.easeInOut(duration: 0.1))
+                            .padding(.leading)
+                            .onTapGesture {
+                                angle = 180 - angle
+                                let tmp = startLoc
+                                startLoc = endLoc
+                                endLoc = tmp
+                                RP()
+                            }
+                    }
+                    .padding(.horizontal)
+
+                    // select mode
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 30) {
+                            HStack {
+                                Image(systemName: "bus").foregroundColor(Color.black.opacity(0.7))
+                                if startLoc != nil && endLoc != nil {
+                                    busTime == INF ? Text("—") : Text("\(Int(busTime / 60)) min")
+                                }
+                            }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 5)
+                            .background(mode == .bus ? CUPurple.opacity(0.2) : nil)
+                            .cornerRadius(20)
+                            .onTapGesture { mode = .bus }
+                            HStack {
+                                Image(systemName: "figure.walk").foregroundColor(Color.black.opacity(0.7))
+                                if startLoc != nil && endLoc != nil {
+                                    footTime == INF ? Text("—") : Text("\(Int(footTime) / 60) min")
+                                }
+                            }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 5)
+                            .background(mode == .foot ? CUPurple.opacity(0.2) : nil)
+                            .cornerRadius(20)
+                            .onTapGesture { mode = .foot }
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom)
+                    
                 }
-                // select mode
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 30) {
-                        HStack {
-                            Image(systemName: "bus").foregroundColor(Color.black.opacity(0.7))
-                            if startLoc != nil && endLoc != nil {
-                                busTime == INF ? Text("—") : Text("\(Int(busTime / 60)) min")
-                            }
-                        }
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 5)
-                        .background(mode == .bus ? CUPurple.opacity(0.2) : nil)
-                        .cornerRadius(20)
-                        .onTapGesture { mode = .bus }
-                        
-                        HStack {
-                            Image(systemName: "figure.walk").foregroundColor(Color.black.opacity(0.7))
-                            if startLoc != nil && endLoc != nil {
-                                footTime == INF ? Text("—") : Text("\(Int(footTime) / 60) min")
-                            }
-                        }
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 5)
-                        .background(mode == .foot ? CUPurple.opacity(0.2) : nil)
-                        .cornerRadius(20)
-                        .onTapGesture { mode = .foot }
-                    }
+                
+                .frame(width: geometery.size.width)
+                .background(Color.white)
+                .clipped()
+                .shadow(radius: 4)
+                .onAppear() {
+                    RP()
                 }
             }
-            // size and color
-            .padding()
-            .frame(width: UIScreen.main.bounds.width < UIScreen.main.bounds.height ? UIScreen.main.bounds.width : UIScreen.main.bounds.width / 2, height: UIScreen.main.bounds.width < UIScreen.main.bounds.height ? UIScreen.main.bounds.height * 0.28 : UIScreen.main.bounds.height * 0.5, alignment: .bottom)
-            .background(Color.white)
-            .clipped()
-            .shadow(radius: 4)
-            .ignoresSafeArea(.all, edges: .top)
-            .onAppear() {
-                RP()
-            }
+            Spacer()
+            
+        }.edgesIgnoringSafeArea(.top)
     }
     private func RP() {
         // clear result
