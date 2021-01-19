@@ -7,32 +7,23 @@ import SwiftUI
     􀍷: smallcircle.fill.circle
     􀢙: record.circle
     􀁟: exclamationmark.circle.fill
- */
 
-/*
        small                  medium               large
  ------------------    ------------------    -----------------
  |     Search     |    |                |    -----------------
  |                |    |                |    |      􀌇       |
- ------------------    |       Map      |    |               |
- |       􀌇       |    |                |    |               |
+ ------------------    |      Map       |    |               |
+ |                |    |                |    |               |
  |                |    |                |    |               |
  |                |    ------------------    |               |
- |       Map      |    |       􀌇       |    |SCHeight * 0.9 |
+ |       Map      |    |       􀌇       |    |               |
  |                |    |                |    |               |
- |                |    |  SCHeight*0.4  |    |               |
+ |                |    |                |    |               |
  |                |    |                |    |               |
  ------------------    |                |    |               |
- |  SCHeight*0.1  |    |                |    |               |
+ |       􀌇       |    |                |    |               |
  ------------------    ------------------    -----------------
  */
-
-/*
-enum sheetSize {
-    case small
-    case medium
-    case large
-}*/
 
 // height of plansView sheet
 let smallH = UIScreen.main.bounds.height * 0.25
@@ -70,8 +61,8 @@ struct NoPlanView: View {
             .onChanged { value in
                 if lastHeight + value.startLocation.y - value.location.y < 0 {
                     height = 0
-                } else if lastHeight + value.startLocation.y - value.location.y > UIScreen.main.bounds.height * 0.9 {
-                    height = UIScreen.main.bounds.height * 0.9
+                } else if lastHeight + value.startLocation.y - value.location.y > largeH {
+                    height = largeH
                 } else {
                     height = lastHeight + value.startLocation.y - value.location.y
                 }
@@ -104,22 +95,24 @@ struct NoPlanView: View {
             }
     }
     var body: some View {
-        VStack {
-            Spacer()
+        GeometryReader { geometry in
             VStack {
-                Image(systemName: "line.horizontal.3")
-                    .foregroundColor(Color.gray)
-                    .padding()
-                Text("No results").font(.title2)
+                Spacer()
+                VStack {
+                    Image(systemName: "line.horizontal.3")
+                        .foregroundColor(Color.gray)
+                        .padding()
+                    Text("No results").font(.title2)
+                }
+                .frame(width: geometry.size.width, height: largeH, alignment: .top)
+                .background(RoundedCorners(color: .white, tl: 15, tr: 15, bl: 0, br: 0))
+                .clipped()
+                .shadow(radius: 4)
             }
-            .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.9, alignment: .top)
-            .background(RoundedCorners(color: .white, tl: 15, tr: 15, bl: 0, br: 0))
-            .clipped()
-            .shadow(radius: 4)
+            .ignoresSafeArea(.all, edges: .bottom)
+            .offset(y: largeH - height)
+            .gesture(drag)
         }
-        .ignoresSafeArea(.all, edges: .bottom)
-        .offset(y: UIScreen.main.bounds.height * 0.9 - height)
-        .gesture(drag)
     }
 }
 
@@ -134,8 +127,8 @@ struct PlanView: View {
             .onChanged { value in
                 if lastHeight + value.startLocation.y - value.location.y < 0 {
                     height = 0
-                } else if lastHeight + value.startLocation.y - value.location.y > UIScreen.main.bounds.height * 0.9 {
-                    height = UIScreen.main.bounds.height * 0.9
+                } else if lastHeight + value.startLocation.y - value.location.y > largeH {
+                    height = largeH
                 } else {
                     height = lastHeight + value.startLocation.y - value.location.y
                 }
@@ -208,15 +201,15 @@ struct PlanView: View {
                             Instructions(plan: $plan)
                             Divider()
                         }
-                    }
+                    }.gesture(DragGesture())
                 }
-                .frame(width: geometry.size.width, height: UIScreen.main.bounds.height * 0.9, alignment: .top)
+                .frame(width: geometry.size.width, height: largeH, alignment: .top)
                 .background(RoundedCorners(color: .white, tl: 15, tr: 15, bl: 0, br: 0))
                 .clipped()
                 .shadow(radius: 4)
             }
             .ignoresSafeArea(.all, edges: .bottom)
-            .offset(y: UIScreen.main.bounds.height * 0.9 - height)
+            .offset(y: largeH - height)
             .gesture(drag)
         }
     }
