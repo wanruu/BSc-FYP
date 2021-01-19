@@ -15,7 +15,6 @@ struct MyButtonStyle: ButtonStyle {
     var disabled: Bool
     func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
-            .padding()
             .background(
                 disabled ?
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -39,7 +38,6 @@ struct MyButtonStyle2: ButtonStyle {
     
     func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
-            .padding()
             .background(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .fill(bgColor.opacity(configuration.isPressed ? 0.7 : 0))

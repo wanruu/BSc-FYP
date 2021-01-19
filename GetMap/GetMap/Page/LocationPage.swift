@@ -82,20 +82,37 @@ struct LocationPage: View {
                     y: centerY + CGFloat((centerLa - location.latitude)*laScale*2) * scale + offset.y - SCWidth * 0.05
                 )
             }
-            HStack(spacing: 15) {
-                Button(action: {
-                    showAddWindow = true
-                    showList = false
-                    showEditWindow = false
-                }) {Image(systemName: "plus").imageScale(.large)}
+            
+            // add & list button
+            VStack(spacing: 0) {
                 Button(action: {
                     showList = true
                     showAddWindow = false
                     showEditWindow = false
-                }) {Image(systemName: "list.bullet").imageScale(.large)}
+                }) {
+                    Image(systemName: "list.bullet")
+                        .resizable()
+                        .frame(width: SCWidth * 0.05, height: SCWidth * 0.04)
+                        .padding(SCWidth * 0.03)
+                        .padding(.vertical, SCWidth * 0.005)
+                }
+                Divider().frame(width: SCWidth * 0.11)
+                Button(action: {
+                    showAddWindow = true
+                    showList = false
+                    showEditWindow = false
+                }) {
+                    Image(systemName: "plus")
+                        .resizable()
+                        .frame(width: SCWidth * 0.05, height: SCWidth * 0.05)
+                        .padding(SCWidth * 0.03)
+                }
             }
-            .position(x: centerX, y: centerY)
-            
+            .background(Color.white)
+            .cornerRadius(SCWidth * 0.015)
+            .shadow(radius: 10)
+            .offset(x: SCWidth * 0.38, y: -SCHeight * 0.5 + SCWidth * 0.44)
+
             // edit window
             if showEditWindow && clickedLoc != nil {
                 EditLocWindow(locations: $locations, id: clickedLoc!._id, name_en: clickedLoc!.name_en, latitude: String(clickedLoc!.latitude), longitude: String(clickedLoc!.longitude), altitude: String(clickedLoc!.altitude), type: String(clickedLoc!.type), showing: $showEditWindow)
@@ -156,16 +173,15 @@ struct LocationList: View {
                     offset.x = -CGFloat((location.longitude - centerLg) * lgScale * 2) * scale
                     offset.y = -CGFloat((centerLa - location.latitude) * laScale * 2) * scale
                     lastOffset = offset
-                    
                     showList = false
                 }) {
-                    HStack(spacing: 20) {
+                    HStack(spacing: SCWidth * 0.04) {
                         Image(systemName: location.type == 0 ? "building.2" : "bus").imageScale(.large)
                         Text(location.name_en)
                         Spacer()
-                    }
+                    }.padding(SCWidth * 0.02)
                 }
-                .buttonStyle(MyButtonStyle2(bgColor: CUPurple))
+                .buttonStyle(MyButtonStyle2(bgColor: CUPurple.opacity(0.8)))
             }
             .onDelete { offsets in
                 let index = offsets.first!
@@ -224,46 +240,54 @@ struct EditLocWindow: View {
                     .onTapGesture {
                         showing = false
                     }
-                VStack(spacing: 20) {
-                    Text("Edit Location").font(.title2)
+                VStack(spacing: geometry.size.width * 0.05) {
+                    Text("Edit Location").font(.system(size: 20, weight: .bold, design: .rounded))
                     VStack(alignment: .leading) {
                         TextField("ID", text: $id)
-                            .padding(10)
+                            .padding(geometry.size.width * 0.025)
                             .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
                             .disabled(true)
                             .foregroundColor(.gray)
 
                         TextField("Name", text: $name_en)
-                            .padding(10)
+                            .padding(geometry.size.width * 0.025)
                             .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
                         TextField("latitude", text: $latitude)
-                            .padding(10)
+                            .padding(geometry.size.width * 0.025)
                             .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
                         TextField("longitude", text: $longitude)
-                            .padding(10)
+                            .padding(geometry.size.width * 0.025)
                             .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
                         TextField("altitude", text: $altitude)
-                            .padding(10)
+                            .padding(geometry.size.width * 0.025)
                             .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
                         TextField("Type", text: $type)
-                            .padding(10)
+                            .padding(geometry.size.width * 0.025)
                             .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
                     }
                     HStack {
                         Button(action: {
                             editLocation()
                             showing = false
-                        }) { Text("Submit") }
+                        }) {
+                            Text("Submit")
+                                .padding(geometry.size.width * 0.03)
+                                .frame(width: geometry.size.width * 0.25)
+                        }
                         .disabled(Double(latitude) == nil || Double(longitude) == nil || Double(altitude) == nil || Int(type) == nil)
                         .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: Double(latitude) == nil || Double(longitude) == nil || Double(altitude) == nil || Int(type) == nil))
 
                         Button(action: {
                             showing = false
-                        }) { Text("Cancel") }
+                        }) {
+                            Text("Cancel")
+                                .padding(geometry.size.width * 0.03)
+                                .frame(width: geometry.size.width * 0.25)
+                        }
                         .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: false))
                     }
                 }
-                .padding(20)
+                .padding(geometry.size.width * 0.05)
                 .frame(width: geometry.size.width * 0.88, alignment: .center)
                 .background(Color.white)
                 .cornerRadius(5)
@@ -308,6 +332,7 @@ struct NewLocWindow: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
+                // gray backgound
                 Rectangle()
                     .frame(minWidth: geometry.size.width, maxWidth: .infinity, minHeight: geometry.size.height, maxHeight: .infinity, alignment: .center)
                     .foregroundColor(Color.gray.opacity(0.2))
@@ -315,32 +340,46 @@ struct NewLocWindow: View {
                     .onTapGesture {
                         showing = false
                     }
-                VStack(spacing: 20) {
-                    Text("New Location").font(.title2)
-                    VStack {
+                
+                // window content
+                VStack(spacing: geometry.size.width * 0.05) {
+                    Text("New Location").font(.system(size: 20, weight: .bold, design: .rounded))
+                    
+                    VStack(spacing: geometry.size.width * 0.025) {
                         TextField("Name", text: $locationName)
-                            .padding(10)
+                            .padding(geometry.size.width * 0.025)
                             .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
                         TextField("Type", text: $locationType)
-                            .padding(10)
+                            .padding(geometry.size.width * 0.025)
                             .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
                     }
+                    
                     HStack {
                         Button(action: {
                             addLocation()
                             showing = false
-                        }) { Text("Confirm") }
+                        }) {
+                            Text("Confirm")
+                                .padding(geometry.size.width * 0.03)
+                                .frame(width: geometry.size.width * 0.25)
+                        }
                             .disabled(locationName == "" || locationType == "")
                             .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: locationName == "" || locationType == ""))
-                        
-                        Button(action: { showing = false }) { Text("Cancel") }
+                        Button(action: {
+                            showing = false
+                        }) {
+                            Text("Cancel")
+                                .padding(geometry.size.width * 0.03)
+                                .frame(width: geometry.size.width * 0.25)
+                        }
                             .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: false))
                     }
                 }
-                .padding(20)
+                .padding(.vertical, geometry.size.width * 0.05)
+                .padding(.horizontal, geometry.size.width * 0.08)
                 .frame(width: geometry.size.width * 0.7, alignment: .center)
                 .background(Color.white)
-                .cornerRadius(5)
+                .cornerRadius(geometry.size.width * 0.03)
             }
         }
     }
