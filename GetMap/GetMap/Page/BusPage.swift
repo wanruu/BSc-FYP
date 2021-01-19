@@ -188,13 +188,7 @@ struct NewBusSheet: View {
                     // Part 2: Name
                     VStack(alignment: .leading, spacing: 10) {
                         Text("English Name").bold()
-                        TextField("e.g. Train Station", text: $name_en)
-                            .padding()
-                            .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
-                    }
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Chinese Name").bold()
-                        TextField("e.g. 大學站", text: $name_ch)
+                        TextField("e.g. Night Service", text: $name_en)
                             .padding()
                             .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
                     }

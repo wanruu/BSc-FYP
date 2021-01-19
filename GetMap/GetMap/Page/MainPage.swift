@@ -25,20 +25,13 @@ struct Navi: View {
     
     // offset of dropdown page options
     @State var offset: CGFloat = -UIScreen.main.bounds.height
-
+    
     var body: some View {
         GeometryReader { geometry in
             VStack (spacing: 0) {
-                // safe area
-                Color.white.frame(width: geometry.size.width, height: geometry.safeAreaInsets.bottom, alignment: .center)
-                        
                 // current page
                 Button(action: {
-                    if offset == -UIScreen.main.bounds.height {
-                        offset = 0
-                    } else {
-                        offset = -UIScreen.main.bounds.height
-                    }
+                    offset = offset == -UIScreen.main.bounds.height ? 0 : -UIScreen.main.bounds.height
                 }) {
                     Text(page)
                         .foregroundColor(.black)
@@ -47,6 +40,7 @@ struct Navi: View {
                         .frame(width: geometry.size.width, alignment: .center)
                 }
                 .frame(width: geometry.size.width, alignment: .center)
+                .padding(.top, geometry.size.height * 0.05)
                 .background(Color.white)
                 Divider().background(Color.white)
                 
@@ -65,7 +59,6 @@ struct Navi: View {
                     .background(Color.white)
                     .buttonStyle(MyButtonStyle3(bgColor: CUPurple.opacity(0.5)))
                     Divider()
-                    
                     // option 2: location
                     Button(action: {
                         page = "Location"
@@ -79,7 +72,6 @@ struct Navi: View {
                     .background(Color.white)
                     .buttonStyle(MyButtonStyle3(bgColor: CUPurple.opacity(0.5)))
                     Divider()
-                    
                     // option 3: bus
                     Button(action: {
                         page = "Bus"
@@ -100,6 +92,7 @@ struct Navi: View {
                 .offset(y: offset)
                 .animation(Animation.easeInOut)
             }
+            
         }
         .edgesIgnoringSafeArea(.top)
     }

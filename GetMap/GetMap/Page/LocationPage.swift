@@ -240,29 +240,29 @@ struct EditLocWindow: View {
                     .onTapGesture {
                         showing = false
                     }
-                VStack(spacing: geometry.size.width * 0.05) {
-                    Text("Edit Location").font(.system(size: 20, weight: .bold, design: .rounded))
+                VStack(spacing: geometry.size.width * 0.03) {
+                    //Text("Edit Location").font(.system(size: 20, weight: .bold, design: .rounded))
                     VStack(alignment: .leading) {
                         TextField("ID", text: $id)
-                            .padding(geometry.size.width * 0.025)
+                            .padding(geometry.size.width * 0.02)
                             .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
                             .disabled(true)
                             .foregroundColor(.gray)
 
                         TextField("Name", text: $name_en)
-                            .padding(geometry.size.width * 0.025)
+                            .padding(geometry.size.width * 0.02)
                             .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
                         TextField("latitude", text: $latitude)
-                            .padding(geometry.size.width * 0.025)
+                            .padding(geometry.size.width * 0.02)
                             .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
                         TextField("longitude", text: $longitude)
-                            .padding(geometry.size.width * 0.025)
+                            .padding(geometry.size.width * 0.02)
                             .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
                         TextField("altitude", text: $altitude)
-                            .padding(geometry.size.width * 0.025)
+                            .padding(geometry.size.width * 0.02)
                             .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
                         TextField("Type", text: $type)
-                            .padding(geometry.size.width * 0.025)
+                            .padding(geometry.size.width * 0.02)
                             .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
                     }
                     HStack {
