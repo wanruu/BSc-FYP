@@ -23,7 +23,7 @@
 		B488965C25A7973300D8AD47 /* LineSeg.swift in Sources */ = {isa = PBXBuildFile; fileRef = B488965B25A7973300D8AD47 /* LineSeg.swift */; };
 		B488966125A7976000D8AD47 /* Offset.swift in Sources */ = {isa = PBXBuildFile; fileRef = B488966025A7976000D8AD47 /* Offset.swift */; };
 		B488966625A797E700D8AD47 /* BasicExten.swift in Sources */ = {isa = PBXBuildFile; fileRef = B488966525A797E700D8AD47 /* BasicExten.swift */; };
-		B488966B25A7983800D8AD47 /* MongoRes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B488966A25A7983800D8AD47 /* MongoRes.swift */; };
+		B488966B25A7983800D8AD47 /* HttpRes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B488966A25A7983800D8AD47 /* HttpRes.swift */; };
 		B48F7B76258E87FC00EED1C1 /* LocationGetterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F7B75258E87FC00EED1C1 /* LocationGetterModel.swift */; };
 		B48F7B7B258E8C9000EED1C1 /* TrajPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F7B7A258E8C9000EED1C1 /* TrajPage.swift */; };
 		B48F7B80258EACB700EED1C1 /* MapComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F7B7F258EACB700EED1C1 /* MapComponent.swift */; };
@@ -71,7 +71,7 @@
 		B488965B25A7973300D8AD47 /* LineSeg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineSeg.swift; sourceTree = "<group>"; };
 		B488966025A7976000D8AD47 /* Offset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Offset.swift; sourceTree = "<group>"; };
 		B488966525A797E700D8AD47 /* BasicExten.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicExten.swift; sourceTree = "<group>"; };
-		B488966A25A7983800D8AD47 /* MongoRes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MongoRes.swift; sourceTree = "<group>"; };
+		B488966A25A7983800D8AD47 /* HttpRes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpRes.swift; sourceTree = "<group>"; };
 		B48F7B75258E87FC00EED1C1 /* LocationGetterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationGetterModel.swift; sourceTree = "<group>"; };
 		B48F7B7A258E8C9000EED1C1 /* TrajPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrajPage.swift; sourceTree = "<group>"; };
 		B48F7B7F258EACB700EED1C1 /* MapComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapComponent.swift; sourceTree = "<group>"; };
@@ -183,7 +183,7 @@
 				B488965B25A7973300D8AD47 /* LineSeg.swift */,
 				B488966025A7976000D8AD47 /* Offset.swift */,
 				B488966525A797E700D8AD47 /* BasicExten.swift */,
-				B488966A25A7983800D8AD47 /* MongoRes.swift */,
+				B488966A25A7983800D8AD47 /* HttpRes.swift */,
 			);
 			path = "Data Structure";
 			sourceTree = "<group>";
@@ -334,7 +334,7 @@
 				B488963D25A795BB00D8AD47 /* Location.swift in Sources */,
 				B48F7BAA259213FE00EED1C1 /* SearchPage.swift in Sources */,
 				B4DA25A6259D0170002A0009 /* CheckBox.swift in Sources */,
-				B488966B25A7983800D8AD47 /* MongoRes.swift in Sources */,
+				B488966B25A7983800D8AD47 /* HttpRes.swift in Sources */,
 				B488965C25A7973300D8AD47 /* LineSeg.swift in Sources */,
 				B488964525A7960200D8AD47 /* Trajectory.swift in Sources */,
 				B43779132572D9AC00918432 /* MainPage.swift in Sources */,

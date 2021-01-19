@@ -371,7 +371,11 @@ app.all('/process', (req, res) => {
         if(err) {
             res.status(404).send(stderr);
         } else {
-            res.send(stdout);
+            if (stdout.includes("Success")) {
+                res.send({ok: 1});
+            } else {
+                res.send({ok: 0});
+            }
         }
     });
 });

@@ -8,6 +8,8 @@ struct TrajPage: View {
     // Updating and recording location
     @StateObject var locationGetter = LocationGetterModel()
     @State var isRecording = true // if locations are being recorded
+    @State var buttonScale: CGFloat = 0.8 // scale of rectangle of record button
+    @State var showAlert = false
 
     // gesture
     @State var lastOffset = Offset(x: 0, y: 0)
@@ -59,46 +61,53 @@ struct TrajPage: View {
             // current location
             UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale)
             
-            // tool bar
             VStack {
                 Spacer()
-                HStack(spacing: 30) {
-                    RecordButton(locationGetter: locationGetter, isRecording: $isRecording)
-                    DeleteButton(locationGetter: locationGetter)
+                HStack (spacing: SCWidth * 0.1) {
+                    // record button
+                    ZStack {
+                        // outer gray circle
+                        Circle()
+                            .stroke(Color.gray, style: StrokeStyle(lineWidth: SCWidth * 0.008))
+                            .frame(width: SCWidth * 0.1, height: SCWidth * 0.1)
+                        
+                        // inner red circle
+                        if isRecording {
+                            Button(action: {
+                                showAlert = true
+                                isRecording.toggle()
+                            }) {
+                                Circle().fill(Color.red).frame(width: SCWidth * 0.085, height: SCWidth * 0.085)
+                            }
+                            .buttonStyle(ZoomOutStyle())
+                            .scaleEffect(isRecording ? buttonScale : 1)
+                            .animation(Animation.linear(duration: 1.3).repeatForever(autoreverses: true))
+                            .onAppear { buttonScale = buttonScale == 0.8 ? 0.5 : 0.7 }
+                        } else {
+                            Button(action: {
+                                isRecording.toggle()
+                            }) {
+                                Circle()
+                                    .fill(Color.red)
+                                    .frame(width: SCWidth * 0.085, height: SCWidth * 0.085)
+                            }
+                            .buttonStyle(ZoomOutStyle())
+                        }
+                    }
+                    // process button
+                    Button(action: {
+                        process()
+                    }) {
+                        Text("Process")
+                            .foregroundColor(.black)
+                            .font(.system(size: 25, weight: .bold, design: .rounded))
+                    }.buttonStyle(ZoomOutStyle())
                 }
             }
         }
-    }
-}
-
-// MARK: - Tool Bar
-struct RecordButton: View {
-    @ObservedObject var locationGetter: LocationGetterModel
-    @Binding var isRecording: Bool
-    
-    var body: some View {
-        Button(action: {
-            isRecording ? uploadTrajs() : startRecord()
-            isRecording = !isRecording
-        }) {
-            isRecording ?
-                Image(systemName: "stop.circle")
-                    .resizable()
-                    .frame(width: SCWidth * 0.08, height: SCWidth * 0.08, alignment: .center)
-                    .foregroundColor(CUPurple) :
-                Image(systemName: "largecircle.fill.circle")
-                    .resizable()
-                    .frame(width: SCWidth * 0.08, height: SCWidth * 0.08, alignment: .center)
-                    .foregroundColor(CUPurple)
+        .alert(isPresented: $showAlert) {
+            Alert(title: Text("Upload or discard recorded data?"), primaryButton: .default(Text("Upload"), action: { uploadTrajs() }), secondaryButton: .default(Text("Discard"), action: { cleanRecord() }))
         }
-        .frame(width: SCWidth * 0.1, height: SCWidth * 0.1, alignment: .center)
-    }
-    
-    private func startRecord() {
-        locationGetter.trajs = []
-        locationGetter.trajs.append([])
-        locationGetter.trajsIndex = 0
-        locationGetter.trajs[0].append(locationGetter.current)
     }
     
     private func uploadTrajs() {
@@ -133,21 +142,28 @@ struct RecordButton: View {
             }
         }.resume()
     }
-}
-
-struct DeleteButton: View {
-    @ObservedObject var locationGetter: LocationGetterModel
-    var body: some View {
-        Button(action: {
-            locationGetter.trajs = []
-            locationGetter.trajs.append([])
-            locationGetter.trajsIndex = 0
-            locationGetter.trajs[0].append(locationGetter.current)
-        }) {
-            Image(systemName: "trash")
-                .resizable()
-                .frame(width: SCWidth * 0.08, height: SCWidth * 0.08, alignment: .center)
-                .foregroundColor(CUPurple)
-        }.frame(width: SCWidth * 0.1, height: SCWidth * 0.1, alignment: .center)
+    
+    private func cleanRecord() {
+        locationGetter.trajs = []
+        locationGetter.trajs.append([])
+        locationGetter.trajsIndex = 0
+        locationGetter.trajs[0].append(locationGetter.current)
+    }
+    
+    private func process() {
+        let url = URL(string: server + "/process")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data else { return }
+            do {
+                let res = try JSONDecoder().decode(ProcessResult.self, from: data)
+                if res.ok == 1 {
+                    print("success")
+                }
+            } catch let error {
+                print(error)
+            }
+        }.resume()
     }
 }
