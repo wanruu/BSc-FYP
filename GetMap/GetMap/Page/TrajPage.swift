@@ -9,7 +9,6 @@ struct TrajPage: View {
     @StateObject var locationGetter = LocationGetterModel()
     @State var isRecording = true // if locations are being recorded
 
-    
     // gesture
     @State var lastOffset = Offset(x: 0, y: 0)
     @State var offset = Offset(x: 0, y: 0)

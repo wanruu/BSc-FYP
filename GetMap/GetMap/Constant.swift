@@ -15,7 +15,7 @@ let INF = 999999.0
 
 /* center */
 let centerX = SCWidth/2
-let centerY = SCHeight/2 - 100
+let centerY = SCHeight/2
 
 let centerLa = 22.419915 // +: down
 let centerLg = 114.20774 // +: left

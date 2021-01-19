@@ -13,15 +13,8 @@
 		B4377823257155C300918432 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B4377822257155C300918432 /* Preview Assets.xcassets */; };
 		B437784F257155F700918432 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437784E257155F700918432 /* Constant.swift */; };
 		B43778822571581B00918432 /* UserPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778812571581B00918432 /* UserPoint.swift */; };
-		B43778AE2571590C00918432 /* ClusterFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778AD2571590C00918432 /* ClusterFunc.swift */; };
-		B43778B32571591B00918432 /* DistFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778B22571591B00918432 /* DistFunc.swift */; };
-		B43778B82571593000918432 /* PartFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778B72571593000918432 /* PartFunc.swift */; };
-		B43778BD2571594400918432 /* RepresentFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778BC2571594400918432 /* RepresentFunc.swift */; };
-		B43778F12572C71B00918432 /* ProcessPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778F02572C71B00918432 /* ProcessPage.swift */; };
 		B43778F92572C80200918432 /* LocationPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43778F82572C80200918432 /* LocationPage.swift */; };
 		B43779132572D9AC00918432 /* MainPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43779122572D9AC00918432 /* MainPage.swift */; };
-		B437799B257693EF00918432 /* ConnectFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437799A257693EF00918432 /* ConnectFunc.swift */; };
-		B43779A02577114100918432 /* RouteGenerFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437799F2577114100918432 /* RouteGenerFunc.swift */; };
 		B488963D25A795BB00D8AD47 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = B488963C25A795BB00D8AD47 /* Location.swift */; };
 		B488964525A7960200D8AD47 /* Trajectory.swift in Sources */ = {isa = PBXBuildFile; fileRef = B488964425A7960200D8AD47 /* Trajectory.swift */; };
 		B488964A25A7962400D8AD47 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = B488964925A7962400D8AD47 /* Route.swift */; };
@@ -68,15 +61,8 @@
 		B4377839257155C300918432 /* GetMapUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GetMapUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B437784E257155F700918432 /* Constant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
 		B43778812571581B00918432 /* UserPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPoint.swift; sourceTree = "<group>"; };
-		B43778AD2571590C00918432 /* ClusterFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterFunc.swift; sourceTree = "<group>"; };
-		B43778B22571591B00918432 /* DistFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistFunc.swift; sourceTree = "<group>"; };
-		B43778B72571593000918432 /* PartFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PartFunc.swift; sourceTree = "<group>"; };
-		B43778BC2571594400918432 /* RepresentFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepresentFunc.swift; sourceTree = "<group>"; };
-		B43778F02572C71B00918432 /* ProcessPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessPage.swift; sourceTree = "<group>"; };
 		B43778F82572C80200918432 /* LocationPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPage.swift; sourceTree = "<group>"; };
 		B43779122572D9AC00918432 /* MainPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPage.swift; sourceTree = "<group>"; };
-		B437799A257693EF00918432 /* ConnectFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectFunc.swift; sourceTree = "<group>"; };
-		B437799F2577114100918432 /* RouteGenerFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteGenerFunc.swift; sourceTree = "<group>"; };
 		B488963C25A795BB00D8AD47 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		B488964425A7960200D8AD47 /* Trajectory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trajectory.swift; sourceTree = "<group>"; };
 		B488964925A7962400D8AD47 /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
@@ -144,7 +130,6 @@
 				B437781B257155C100918432 /* GetMapApp.swift */,
 				B437781D257155C100918432 /* ContentView.swift */,
 				B437784E257155F700918432 /* Constant.swift */,
-				B483DCAF25AE07520020498F /* Removed */,
 				B488963B25A795A600D8AD47 /* Data Structure */,
 				B43778EF2572C70400918432 /* Page */,
 				B437781F257155C300918432 /* Assets.xcassets */,
@@ -162,19 +147,6 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		B437789D2571589800918432 /* Process Func */ = {
-			isa = PBXGroup;
-			children = (
-				B43778B22571591B00918432 /* DistFunc.swift */,
-				B43778B72571593000918432 /* PartFunc.swift */,
-				B43778AD2571590C00918432 /* ClusterFunc.swift */,
-				B43778BC2571594400918432 /* RepresentFunc.swift */,
-				B437799A257693EF00918432 /* ConnectFunc.swift */,
-				B437799F2577114100918432 /* RouteGenerFunc.swift */,
-			);
-			path = "Process Func";
-			sourceTree = "<group>";
-		};
 		B43778EF2572C70400918432 /* Page */ = {
 			isa = PBXGroup;
 			children = (
@@ -187,15 +159,6 @@
 				B48F7BA9259213FE00EED1C1 /* SearchPage.swift */,
 			);
 			path = Page;
-			sourceTree = "<group>";
-		};
-		B483DCAF25AE07520020498F /* Removed */ = {
-			isa = PBXGroup;
-			children = (
-				B43778F02572C71B00918432 /* ProcessPage.swift */,
-				B437789D2571589800918432 /* Process Func */,
-			);
-			path = Removed;
 			sourceTree = "<group>";
 		};
 		B488962A25A5EDA700D8AD47 /* View Model */ = {
@@ -362,17 +325,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B43778BD2571594400918432 /* RepresentFunc.swift in Sources */,
-				B43778AE2571590C00918432 /* ClusterFunc.swift in Sources */,
 				B488966125A7976000D8AD47 /* Offset.swift in Sources */,
 				B48F7B80258EACB700EED1C1 /* MapComponent.swift in Sources */,
-				B43778F12572C71B00918432 /* ProcessPage.swift in Sources */,
-				B43778B82571593000918432 /* PartFunc.swift in Sources */,
 				B4DA259D259CF8B7002A0009 /* ButtonStyle.swift in Sources */,
-				B437799B257693EF00918432 /* ConnectFunc.swift in Sources */,
-				B43778B32571591B00918432 /* DistFunc.swift in Sources */,
 				B488964F25A7969400D8AD47 /* Bus.swift in Sources */,
-				B43779A02577114100918432 /* RouteGenerFunc.swift in Sources */,
 				B48F7B76258E87FC00EED1C1 /* LocationGetterModel.swift in Sources */,
 				B437784F257155F700918432 /* Constant.swift in Sources */,
 				B488963D25A795BB00D8AD47 /* Location.swift in Sources */,

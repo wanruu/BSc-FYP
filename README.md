@@ -16,6 +16,5 @@
 - [ ] Ensure altitude uploaded to server is not -1?
 - [ ] Add bus data, how?
 - [ ] Unify colors
-- [ ] Fix magnification gesture bug: current location not move with map
 
 ## Backend
