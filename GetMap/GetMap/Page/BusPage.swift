@@ -3,9 +3,119 @@ import SwiftUI
 
 struct BusPage: View {
     @State var buses: [Bus] = []
+    
     @State var showSheet: Bool = false
+    @State var sheetType: Int = -1 // 0: bus list, 1: new bus
+    
+    // gesture
+    @State var offset: Offset = Offset(x: 0, y: 0)
+    @State var lastOffset: Offset = Offset(x: 0, y: 0)
+    @State var scale: CGFloat = minZoomOut
+    @State var lastScale: CGFloat = minZoomOut
+    var gesture: some Gesture {
+        SimultaneousGesture(
+            MagnificationGesture()
+                .onChanged { value in
+                    var tmpScale = lastScale * value.magnitude
+                    if(tmpScale < minZoomOut) {
+                        tmpScale = minZoomOut
+                    } else if(tmpScale > maxZoomIn) {
+                        tmpScale = maxZoomIn
+                    }
+                    scale = tmpScale
+                    offset = lastOffset * tmpScale / lastScale
+                }
+                .onEnded { _ in
+                    lastScale = scale
+                    lastOffset.x = offset.x
+                    lastOffset.y = offset.y
+                },
+            DragGesture()
+                .onChanged{ value in
+                    offset.x = lastOffset.x + value.location.x - value.startLocation.x
+                    offset.y = lastOffset.y + value.location.y - value.startLocation.y
+                }
+                .onEnded{ _ in
+                    lastOffset.x = offset.x
+                    lastOffset.y = offset.y
+                }
+            )
+    }
+    
     var body: some View {
-        ZStack {
+        GeometryReader { geometry in
+            ZStack {
+                // background map
+                Image("cuhk-campus-map")
+                    .resizable()
+                    .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
+                    .position(x: centerX + offset.x, y: centerY + offset.y)
+                    .gesture(gesture)
+                
+                VStack(spacing: 0) {
+                    Button(action: {
+                        sheetType = 0
+                        showSheet = true
+                    }) {
+                        Image(systemName: "list.bullet")
+                            .resizable()
+                            .frame(width: SCWidth * 0.05, height: SCWidth * 0.04)
+                            .padding(SCWidth * 0.03)
+                            .padding(.vertical, SCWidth * 0.005)
+                    }
+                    Divider().frame(width: SCWidth * 0.11)
+                    Button(action: {
+                        sheetType = 1
+                        showSheet = true
+                    }) {
+                        Image(systemName: "plus")
+                            .resizable()
+                            .frame(width: SCWidth * 0.05, height: SCWidth * 0.05)
+                            .padding(SCWidth * 0.03)
+                    }
+                }
+                .background(Color.white)
+                .cornerRadius(SCWidth * 0.015)
+                .shadow(radius: 10)
+                .offset(x: SCWidth * 0.38, y: -SCHeight * 0.5 + SCWidth * 0.44)
+            }
+            .onAppear {
+                loadBuses()
+            }
+            .sheet(isPresented: $showSheet) {
+                Sheets(buses: $buses, type: $sheetType)
+            }
+        }
+    }
+    private func loadBuses() {
+        let url = URL(string: server + "/buses")!
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data else { return }
+            do {
+                buses = try JSONDecoder().decode([Bus].self, from: data)
+            } catch let error {
+                print(error)
+            }
+        }.resume()
+    }
+}
+
+struct Sheets: View {
+    @Binding var buses: [Bus]
+    @Binding var type: Int
+    var body: some View {
+        if type == 0 {
+            BusList(buses: $buses)
+        } else if type == 1 {
+            NewBusSheet(buses: $buses)
+        }
+    }
+}
+
+struct BusList: View {
+    @Binding var buses: [Bus]
+    var body: some View {
+        NavigationView {
             VStack {
                 List(buses) { bus in
                     VStack(alignment: .leading) {
@@ -45,27 +155,8 @@ struct BusPage: View {
                     }
                 }
             }
-            Button(action: { showSheet = true }) {
-                Image(systemName: "plus.circle").imageScale(.large)
-            }.position(x: centerX, y: centerY)
+            .navigationTitle(Text("Bus List"))
         }
-        .onAppear {
-            loadBuses()
-        }
-        .sheet(isPresented: $showSheet) {
-            NewBusSheet(buses: $buses)
-        }
-    }
-    private func loadBuses() {
-        let url = URL(string: server + "/buses")!
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            guard let data = data else { return }
-            do {
-                buses = try JSONDecoder().decode([Bus].self, from: data)
-            } catch let error {
-                print(error)
-            }
-        }.resume()
     }
 }
 
@@ -156,7 +247,7 @@ struct NewBusSheet: View {
                             Button(action: {
                                 departTimes.append(Int(departTime)!)
                                 departTime = ""
-                            }) { Image(systemName: "checkmark") }
+                            }) { Image(systemName: "checkmark").padding() }
                             .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: departTime == ""))
                             .disabled(departTime == "")
                         }
@@ -176,7 +267,7 @@ struct NewBusSheet: View {
                     serviceDay = 0
                     departTimes = []
                     departTime = ""
-                }) { Text("Confirm") }
+                }) { Text("Confirm").padding() }
                 .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: false))
                 .disabled(false)
                 

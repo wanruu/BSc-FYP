@@ -3,7 +3,7 @@ import SwiftUI
 
 struct MainPage: View {
     
-    @State var page: String = "Location"
+    @State var page: String = "Bus"
     
     var body: some View {
         ZStack {
