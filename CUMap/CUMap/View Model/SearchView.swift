@@ -72,11 +72,11 @@ struct SearchView: View {
             } else {
                 // Page 3: search box
                 SearchArea(startLoc: $startLoc, endLoc: $endLoc, routes: routes, plans: $plans, planIndex: $planIndex, showStartList: $showStartList, showEndList: $showEndList, mode: $mode)
-                    .offset(y: height > UIScreen.main.bounds.height * 0.1 ? (UIScreen.main.bounds.height * 0.1 - height) * 2 : 0)
+                    .offset(y: height > smallH ? (smallH - height) * 2 : 0)
                     .onAppear {
                         if startLoc != nil && endLoc != nil {
-                            lastHeight = UIScreen.main.bounds.height * 0.1
-                            height = UIScreen.main.bounds.height * 0.1
+                            lastHeight = smallH
+                            height = smallH
                         }
                     }
             }

@@ -34,6 +34,11 @@ enum sheetSize {
     case large
 }*/
 
+// height of plansView sheet
+let smallH = UIScreen.main.bounds.height * 0.25
+let mediumH = UIScreen.main.bounds.height * 0.55
+let largeH = UIScreen.main.bounds.height * 0.9
+
 struct PlansView: View {
     @Binding var plans: [Plan]
     @Binding var planIndex: Int
@@ -49,7 +54,7 @@ struct PlansView: View {
             } else {
                 // TODO: display more plans
                 if planIndex >= 0 && planIndex < plans.count {
-                    PlanView(plan: plans[planIndex], lastHeight: $lastHeight, height: $height)
+                    PlanView(plan: $plans[planIndex], lastHeight: $lastHeight, height: $height)
                 }
             }
         }
@@ -74,10 +79,7 @@ struct NoPlanView: View {
             .onEnded { value in
                 // whether scroll up or down
                 let up = value.startLocation.y - value.location.y > 0
-                let smallH = UIScreen.main.bounds.height * 0.1
-                let mediumH = UIScreen.main.bounds.height * 0.4
-                let largeH = UIScreen.main.bounds.height * 0.9
-                
+
                 withAnimation() {
                     if lastHeight == largeH { // large
                         if height > (mediumH + largeH) / 2 { // still large
@@ -122,7 +124,7 @@ struct NoPlanView: View {
 }
 
 struct PlanView: View {
-    @State var plan: Plan
+    @Binding var plan: Plan
     
     @Binding var lastHeight: CGFloat
     @Binding var height: CGFloat
@@ -141,9 +143,6 @@ struct PlanView: View {
             .onEnded { value in
                 // whether scroll up or down
                 let up = value.startLocation.y - value.location.y > 0
-                let smallH = UIScreen.main.bounds.height * 0.1
-                let mediumH = UIScreen.main.bounds.height * 0.4
-                let largeH = UIScreen.main.bounds.height * 0.9
                 
                 withAnimation() {
                     if lastHeight == largeH { // large

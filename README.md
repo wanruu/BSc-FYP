@@ -9,7 +9,7 @@
 - [ ] Make it able to search route from/to current location
 - [x] Fix Textfield height in Searcharea. In case that input too long
 - [ ] Unify colors
-- [ ] Fix bug: when switch start and end point in navigation, height diagram not changed
+- [x] Fix bug: when switch start and end point in navigation, height diagram not changed
 - [ ] Implement func of switching among plans
 - [ ] Implement func of route planning to show more plans, how?
 
