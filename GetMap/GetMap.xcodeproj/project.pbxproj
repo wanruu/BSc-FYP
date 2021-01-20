@@ -30,7 +30,6 @@
 		B48F7BAA259213FE00EED1C1 /* SearchPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F7BA9259213FE00EED1C1 /* SearchPage.swift */; };
 		B4DA2597259CEC01002A0009 /* BusPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DA2596259CEC01002A0009 /* BusPage.swift */; };
 		B4DA259D259CF8B7002A0009 /* ButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DA259C259CF8B7002A0009 /* ButtonStyle.swift */; };
-		B4DA25A6259D0170002A0009 /* CheckBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DA25A5259D0170002A0009 /* CheckBox.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,7 +77,6 @@
 		B48F7BA9259213FE00EED1C1 /* SearchPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPage.swift; sourceTree = "<group>"; };
 		B4DA2596259CEC01002A0009 /* BusPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusPage.swift; sourceTree = "<group>"; };
 		B4DA259C259CF8B7002A0009 /* ButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyle.swift; sourceTree = "<group>"; };
-		B4DA25A5259D0170002A0009 /* CheckBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBox.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,7 +162,6 @@
 		B488962A25A5EDA700D8AD47 /* View Model */ = {
 			isa = PBXGroup;
 			children = (
-				B4DA25A5259D0170002A0009 /* CheckBox.swift */,
 				B48F7B75258E87FC00EED1C1 /* LocationGetterModel.swift */,
 				B43778812571581B00918432 /* UserPoint.swift */,
 				B48F7B7F258EACB700EED1C1 /* MapComponent.swift */,
@@ -333,7 +330,6 @@
 				B437784F257155F700918432 /* Constant.swift in Sources */,
 				B488963D25A795BB00D8AD47 /* Location.swift in Sources */,
 				B48F7BAA259213FE00EED1C1 /* SearchPage.swift in Sources */,
-				B4DA25A6259D0170002A0009 /* CheckBox.swift in Sources */,
 				B488966B25A7983800D8AD47 /* HttpRes.swift in Sources */,
 				B488965C25A7973300D8AD47 /* LineSeg.swift in Sources */,
 				B488964525A7960200D8AD47 /* Trajectory.swift in Sources */,

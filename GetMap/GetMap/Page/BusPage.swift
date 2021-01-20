@@ -164,122 +164,85 @@ struct NewBusSheet: View {
     @Binding var buses: [Bus]
     @State var id = ""
     @State var name_en = ""
-    @State var name_ch = ""
     
-    @State var startHour = "00:00"
-    @State var endHour = "00:00"
+    @State var startDate = Date()
+    @State var endDate = Date()
     
     @State var serviceDay = 0
     
-    @State var departTimes: [Int] = []
-    @State var departTime = ""
+    @State var departs: [String] = []
+    @State var depart: String = ""
     
     var body: some View {
         NavigationView {
-            ScrollView(.vertical, showsIndicators: true) {
-                VStack(alignment: .leading, spacing: 20) {
-                    // Part 1: ID
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("RouteID").bold()
-                        TextField("e.g. 1a", text: $id)
-                            .padding()
-                            .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
-                    }
-                    // Part 2: Name
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("English Name").bold()
-                        TextField("e.g. Night Service", text: $name_en)
-                            .padding()
-                            .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
-                    }
-                    // Part 3: Service time
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Service time").bold()
-                        HStack {
-                            TimeTextField(time: $startHour)
-                            Text("-")
-                            TimeTextField(time: $endHour)
-                        }
-                        HStack {
-                            CheckBox(options: ["Mon - Sat", "Sun & Public Holiday", "Teaching Days Only"], checked: $serviceDay, spacing: 15)
-                            Spacer()
-                        }
-                        .padding()
-                        .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
-                    }
-                    // Part 4: Depart time
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Departs Hourly at").bold()
-                        ScrollView(.horizontal, showsIndicators: true) {
-                            HStack {
-                                ForEach(departTimes) { time in
-                                    HStack(spacing: 20) {
-                                        Text(String(time))
-                                        Image(systemName: "minus.circle.fill")
-                                            .foregroundColor(.red)
-                                            .onTapGesture {
-                                                let index = departTimes.firstIndex(of: time)!
-                                                departTimes.remove(at: index)
-                                            }
-                                    }
-                                    .padding()
-                                    .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
-                                }
-                            }
-                        }
-                        
-                        HStack {
-                            TextField("", text: $departTime)
-                                .keyboardType(.numberPad)
-                                .padding()
-                                .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
-                                .onChange(of: departTime) { _ in
-                                    if departTime.count > 2 {
-                                        departTime = String(departTime.prefix(2))
-                                    }
-                                }
-                            Button(action: {
-                                departTimes.append(Int(departTime)!)
-                                departTime = ""
-                            }) { Image(systemName: "checkmark").padding() }
-                            .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: departTime == ""))
-                            .disabled(departTime == "")
-                        }
-                        
-                    }
-                }.padding()
+            List {
+                Section(header: Text("Basic")) {
+                    TextField("ID", text: $id)
+                    TextField("Name", text: $name_en)
+                }
                 
-                // submit button
+                Section(header: Text("Service")) {
+                    Picker(selection: $serviceDay, label: Text("Service Day")) {
+                        Text("Mon - Sat").tag(0)
+                        Text("Sun & Public Holiday").tag(1)
+                        Text("Teaching Days Only").tag(2)
+                    }
+                    DatePicker("Start at", selection: $startDate, displayedComponents: .hourAndMinute)
+                    DatePicker("End at", selection: $endDate, displayedComponents: .hourAndMinute)
+                }
+                
+                Section(header: Text("Departure")) {
+                    ForEach(departs) { depart in
+                        Text(depart)
+                    }.onDelete(perform: { index in
+                        departs.remove(at: index.first!)
+                    })
+                    HStack {
+                        TextField("", text: $depart)
+                        Button(action: {
+                            departs.append(depart)
+                            depart = ""
+                        }) {
+                            Text("Add")
+                        }
+                    }
+                }
+                
                 Button(action: {
                     createBus()
-                    // clear
                     id = ""
                     name_en = ""
-                    name_ch = ""
-                    startHour = "00:00"
-                    endHour = "00:00"
                     serviceDay = 0
-                    departTimes = []
-                    departTime = ""
-                }) { Text("Confirm").padding() }
-                .buttonStyle(MyButtonStyle(bgColor: CUPurple, disabled: false))
-                .disabled(false)
+                    departs = []
+                }) {
+                    HStack {
+                        Spacer()
+                        Text("Confirm")
+                        Spacer()
+                    }
+                }
+                .disabled(id.isEmpty || name_en.isEmpty || departs.isEmpty)
                 
             }
-            .navigationTitle(Text("New Bus Route"))
-        }
-        .onTapGesture {
-            hideKeyboard()
+            .listStyle(GroupedListStyle())
+            .navigationTitle(Text("New Bus"))
         }
     }
     private func createBus() {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .none
+        dateFormatter.timeStyle = .short
+        dateFormatter.locale = NSLocale(localeIdentifier: "en_GB") as Locale
+        let start = dateFormatter.string(from: startDate)
+        let end = dateFormatter.string(from: endDate)
+
         let data: [String: Any] = [
             "id": id,
             "name_en": name_en,
-            "name_ch": name_ch,
-            "serviceHour": startHour + "-" + endHour,
+            "name_ch": "",
+            "serviceHour": start + "-" + end,
             "serviceDay": serviceDay,
-            "departTime": departTimes
+            "departTime": departs
         ]
         let jsonData = try? JSONSerialization.data(withJSONObject: data)
         let url = URL(string: server + "/bus")!
@@ -298,30 +261,5 @@ struct NewBusSheet: View {
             }
         }.resume()
         
-    }
-}
-
-struct TimeTextField: View {
-    @Binding var time: String
-    
-    var body: some View {
-        TextField("", text: $time, onEditingChanged: { _ in
-            if time.count == 5 && time[time.index(time.startIndex, offsetBy: 2)] == ":" {
-                time = String(time.prefix(2)) + String(time.suffix(2))
-            } else if time.count == 4 {
-                time = time.prefix(2) + ":" + time.suffix(2)
-            }
-        })
-            .keyboardType(.numberPad)
-        
-            .padding()
-            .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.8))
-        
-            .onChange(of: time) { _ in
-                if time.count > 4 && time[time.index(time.startIndex, offsetBy: 2)] != ":"  {
-                    time = String(time.suffix(4))
-                    
-                }
-            }
     }
 }
