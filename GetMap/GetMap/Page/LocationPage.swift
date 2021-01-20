@@ -5,7 +5,7 @@ struct LocationPage: View {
     // locations data
     @State var locations: [Location] = []
     @State var clickedLoc: Location? = nil // clicked location
-    @StateObject var curLocModel = CurLocModel()
+    @Binding var current: Coor3D
     
     // control
     @State var showList = false
@@ -120,7 +120,7 @@ struct LocationPage: View {
             
             // add window
             if showAddWindow {
-                NewLocWindow(locations: $locations, curLocModel: curLocModel, showing: $showAddWindow)
+                NewLocWindow(current: $current, locations: $locations, showing: $showAddWindow)
             }
         }
         .onAppear {
@@ -322,11 +322,10 @@ struct EditLocWindow: View {
 struct NewLocWindow: View {
     // need to update after editing successfully
     @Binding var locations: [Location]
+    @Binding var current: Coor3D
     
     @State var locationName: String = ""
     @State var locationType: String = ""
-    @ObservedObject var curLocModel: CurLocModel
-    
     @Binding var showing: Bool
     
     var body: some View {
@@ -385,9 +384,9 @@ struct NewLocWindow: View {
     }
     
     private func addLocation() {
-        let latitude = curLocModel.current.latitude
-        let longitude = curLocModel.current.longitude
-        let altitude = curLocModel.current.altitude
+        let latitude = current.latitude
+        let longitude = current.longitude
+        let altitude = current.altitude
         let type = Int(locationType)!
         let dataStr = "name_en=" + String(locationName) + "&latitude=" + String(latitude)  + "&longitude=" + String(longitude) + "&altitude=" + String(altitude) + "&type=" + String(type)
         

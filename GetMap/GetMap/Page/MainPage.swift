@@ -2,15 +2,14 @@ import Foundation
 import SwiftUI
 
 struct MainPage: View {
-    
     @State var page: String = "Bus"
-    
+    @StateObject var locationGetter = LocationGetterModel()
     var body: some View {
         ZStack {
             if page == "Trajectory" {
-                TrajPage()
+                TrajPage(locationGetter: locationGetter)
             } else if page == "Location" {
-                LocationPage()
+                LocationPage(current: $locationGetter.current)
             } else if page == "Bus" {
                 BusPage()
             }

@@ -4,9 +4,8 @@ import Foundation
 import SwiftUI
 
 struct TrajPage: View {
-    
     // Updating and recording location
-    @StateObject var locationGetter = LocationGetterModel()
+    @ObservedObject var locationGetter: LocationGetterModel
     @State var isRecording = true // if locations are being recorded
     @State var buttonScale: CGFloat = 0.8 // scale of rectangle of record button
     @State var showAlert = false
@@ -65,34 +64,38 @@ struct TrajPage: View {
                 Spacer()
                 HStack (spacing: SCWidth * 0.1) {
                     // record button
-                    ZStack {
-                        // outer gray circle
-                        Circle()
-                            .stroke(Color.gray, style: StrokeStyle(lineWidth: SCWidth * 0.008))
-                            .frame(width: SCWidth * 0.1, height: SCWidth * 0.1)
-                        
-                        // inner red circle
-                        if isRecording {
-                            Button(action: {
-                                showAlert = true
-                                isRecording.toggle()
-                            }) {
-                                Circle().fill(Color.red).frame(width: SCWidth * 0.085, height: SCWidth * 0.085)
-                            }
-                            .buttonStyle(ZoomOutStyle())
-                            .scaleEffect(isRecording ? buttonScale : 1)
-                            .animation(Animation.linear(duration: 1.3).repeatForever(autoreverses: true))
-                            .onAppear { buttonScale = buttonScale == 0.8 ? 0.5 : 0.7 }
-                        } else {
-                            Button(action: {
-                                isRecording.toggle()
-                            }) {
+                    if isRecording {
+                        Button(action: {
+                            showAlert = true
+                            isRecording.toggle()
+                        }) {
+                            ZStack {
+                                Circle()
+                                    .stroke(Color.gray, style: StrokeStyle(lineWidth: SCWidth * 0.008))
+                                    .frame(width: SCWidth * 0.1, height: SCWidth * 0.1)
                                 Circle()
                                     .fill(Color.red)
                                     .frame(width: SCWidth * 0.085, height: SCWidth * 0.085)
-                            }
-                            .buttonStyle(ZoomOutStyle())
+                                    .scaleEffect(buttonScale)
+                                    .animation(Animation.linear(duration: 1.3).repeatForever(autoreverses: true))
+                                }
+                                .contentShape(Circle())
                         }
+                        .buttonStyle(ZoomOutStyle())
+                        .onAppear { buttonScale = buttonScale == 0.8 ? 0.5 : 0.7 }
+                    } else {
+                        Button(action: {
+                            isRecording.toggle()
+                        }) {
+                            ZStack {
+                                Circle()
+                                    .stroke(Color.gray, style: StrokeStyle(lineWidth: SCWidth * 0.008))
+                                    .frame(width: SCWidth * 0.1, height: SCWidth * 0.1)
+                                Circle()
+                                    .fill(Color.red)
+                                    .frame(width: SCWidth * 0.085, height: SCWidth * 0.085)
+                                }
+                        }.buttonStyle(ZoomOutStyle())
                     }
                     // process button
                     Button(action: {
@@ -100,7 +103,7 @@ struct TrajPage: View {
                     }) {
                         Text("Process")
                             .foregroundColor(.black)
-                            .font(.system(size: 25, weight: .bold, design: .rounded))
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
                     }.buttonStyle(ZoomOutStyle())
                 }
             }
