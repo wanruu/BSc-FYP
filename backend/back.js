@@ -309,6 +309,18 @@ app.get('/routes', (req, res) => {
 /* *************************************************************** */
 
 // BUS
+app.delete('/bus', (req, res) => {
+    console.log("DELETE /bus - " + Date());
+    BusModel.deleteOne({id: req.body.id}, (err, result) => {
+        if(err) {
+            console.log(err);
+            res.status(404).send();
+        } else {
+            res.send(result);
+        }
+    });
+});
+
 app.post('/bus', (req, res) => {
     console.log("POST /bus - " + Date());
     var newBus = {
@@ -340,6 +352,8 @@ app.get('/buses', (req, res) => {
         }
     });
 });
+
+
 
 // delete points with -1 altitude in trajectory
 app.delete('/invalid', (req, res) => {

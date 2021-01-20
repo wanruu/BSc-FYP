@@ -52,6 +52,7 @@ struct BusPage: View {
                     .position(x: centerX + offset.x, y: centerY + offset.y)
                     .gesture(gesture)
                 
+                // control button
                 VStack(spacing: 0) {
                     Button(action: {
                         sheetType = 0
@@ -112,17 +113,18 @@ struct Sheets: View {
     }
 }
 
+// bus list sheet
 struct BusList: View {
     @Binding var buses: [Bus]
+    
     var body: some View {
         NavigationView {
-            VStack {
-                List(buses) { bus in
+            List {
+                ForEach(buses) { bus in
                     VStack(alignment: .leading) {
                         HStack {
                             Text(bus.id).font(.title2)
                             Text(bus.name_en).font(.title2)
-                            Text(bus.name_ch)
                         }
                         
                         HStack {
@@ -154,12 +156,36 @@ struct BusList: View {
                         }
                     }
                 }
+                .onDelete(perform: { index in
+                    deleteBus(index: index.first!)
+                })
             }
             .navigationTitle(Text("Bus List"))
         }
     }
+    private func deleteBus(index: Int) {
+        let dataStr = "id=" + buses[index].id
+        let url = URL(string: server + "/bus")!
+        var request = URLRequest(url: url)
+        request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        request.httpMethod = "DELETE"
+        request.httpBody = dataStr.data(using: String.Encoding.utf8)
+        
+        URLSession.shared.dataTask(with: request as URLRequest) { data, response, error in
+            guard let data = data else { return }
+            do {
+                let res = try JSONDecoder().decode(DeleteResult.self, from: data)
+                if(res.deletedCount == 1) {
+                    buses.remove(at: index)
+                }
+            } catch let error {
+                print(error)
+            }
+        }.resume()
+    }
 }
 
+// new bus sheet
 struct NewBusSheet: View {
     @Binding var buses: [Bus]
     @State var id = ""
