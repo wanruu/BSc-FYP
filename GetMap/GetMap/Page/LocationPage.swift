@@ -120,7 +120,7 @@ struct LocationPage: View {
             
             // add window
             if showAddWindow {
-                NewLocWindow(current: $current, locations: $locations, showing: $showAddWindow)
+                NewLocWindow(locations: $locations, current: $current, showing: $showAddWindow)
             }
         }
         .onAppear {
