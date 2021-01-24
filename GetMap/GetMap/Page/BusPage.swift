@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 
 struct BusPage: View {
+    @State var stops: [Location] = []
     @State var buses: [Bus] = []
     
     @State var showSheet: Bool = false
@@ -82,9 +83,10 @@ struct BusPage: View {
             }
             .onAppear {
                 loadBuses()
+                loadLocations()
             }
             .sheet(isPresented: $showSheet) {
-                Sheets(buses: $buses, type: $sheetType)
+                Sheets(stops: $stops, buses: $buses, type: $sheetType)
             }
         }
     }
@@ -99,16 +101,37 @@ struct BusPage: View {
             }
         }.resume()
     }
+    private func loadLocations() {
+        let url = URL(string: server + "/locations")!
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if(error != nil) {
+                // showAlert = true
+            }
+            guard let data = data else { return }
+            do {
+                let locations = try JSONDecoder().decode([Location].self, from: data)
+                for location in locations {
+                    if location.type == 1 {
+                        stops.append(location)
+                    }
+                }
+            } catch let error {
+                // showAlert = true
+                print(error)
+            }
+        }.resume()
+    }
 }
 
 struct Sheets: View {
+    @Binding var stops: [Location]
     @Binding var buses: [Bus]
     @Binding var type: Int
     var body: some View {
         if type == 0 {
             BusList(buses: $buses)
         } else if type == 1 {
-            NewBusSheet(buses: $buses)
+            NewBusSheet(stops: $stops, buses: $buses)
         }
     }
 }
@@ -183,21 +206,25 @@ struct BusList: View {
             }
         }.resume()
     }
+    
 }
 
 // new bus sheet
 struct NewBusSheet: View {
+    @Binding var stops: [Location]
     @Binding var buses: [Bus]
+    
     @State var id = ""
     @State var name_en = ""
     
-    @State var startDate = Date()
-    @State var endDate = Date()
-    
     @State var serviceDay = 0
+    @State var startTime = Date()
+    @State var endTime = Date()
     
     @State var departs: [String] = []
     @State var depart: String = ""
+    
+    @State var chosenStops: [Location] = []
     
     var body: some View {
         NavigationView {
@@ -213,25 +240,40 @@ struct NewBusSheet: View {
                         Text("Sun & Public Holiday").tag(1)
                         Text("Teaching Days Only").tag(2)
                     }
-                    DatePicker("Start at", selection: $startDate, displayedComponents: .hourAndMinute)
-                    DatePicker("End at", selection: $endDate, displayedComponents: .hourAndMinute)
+                    DatePicker("Start at", selection: $startTime, displayedComponents: .hourAndMinute)
+                    DatePicker("End at", selection: $endTime, displayedComponents: .hourAndMinute)
                 }
                 
-                Section(header: Text("Departure")) {
+                Section(header: Text("Departure Hourly at")) {
                     ForEach(departs) { depart in
                         Text(depart)
                     }.onDelete(perform: { index in
                         departs.remove(at: index.first!)
                     })
                     HStack {
-                        TextField("", text: $depart)
+                        TextField("", text: $depart).keyboardType(.numberPad)
                         Button(action: {
                             departs.append(depart)
                             depart = ""
                         }) {
                             Text("Add")
-                        }
+                        }.disabled(depart.isEmpty)
                     }
+                }
+                
+                Section(header: Text("Stops")) {
+                    ForEach(chosenStops) { stop in
+                        Text(stop.name_en)
+                    }.onDelete(perform: { index in
+                        chosenStops.remove(at: index.first!)
+                    })
+                    
+                    NavigationLink(destination: StopList(stops: $stops, chosenStops: $chosenStops), label: {
+                        HStack {
+                            Image(systemName: "plus.circle.fill").imageScale(.large).foregroundColor(.green)
+                            Text("New")
+                        }
+                    })
                 }
                 
                 Button(action: {
@@ -240,6 +282,7 @@ struct NewBusSheet: View {
                     name_en = ""
                     serviceDay = 0
                     departs = []
+                    chosenStops = []
                 }) {
                     HStack {
                         Spacer()
@@ -259,15 +302,20 @@ struct NewBusSheet: View {
         dateFormatter.dateStyle = .none
         dateFormatter.timeStyle = .short
         dateFormatter.locale = NSLocale(localeIdentifier: "en_GB") as Locale
-        let start = dateFormatter.string(from: startDate)
-        let end = dateFormatter.string(from: endDate)
+        let start = dateFormatter.string(from: startTime)
+        let end = dateFormatter.string(from: endTime)
+        
+        var stopIds: [String] = []
+        for stop in chosenStops {
+            stopIds.append(stop._id)
+        }
 
         let data: [String: Any] = [
             "id": id,
             "name_en": name_en,
-            "name_ch": "",
             "serviceHour": start + "-" + end,
             "serviceDay": serviceDay,
+            "stops": stopIds,
             "departTime": departs
         ]
         let jsonData = try? JSONSerialization.data(withJSONObject: data)
@@ -287,5 +335,28 @@ struct NewBusSheet: View {
             }
         }.resume()
         
+    }
+}
+
+struct StopList: View {
+    @Environment(\.presentationMode) var mode
+    @Binding var stops: [Location]
+    @Binding var chosenStops: [Location]
+    
+    var body: some View {
+        VStack {
+            
+            List {
+                ForEach(stops) { stop in
+                    Button(action: {
+                        chosenStops.append(stop)
+                        self.mode.wrappedValue.dismiss()
+                    }) {
+                        Text(stop.name_en)
+                    }
+                }
+            }
+            
+        }
     }
 }

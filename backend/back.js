@@ -46,18 +46,21 @@ var RouteSchema = Schema({
     startLoc: { type: Schema.Types.ObjectId, ref: 'Location' },
     endLoc: { type: Schema.Types.ObjectId, ref: 'Location' },
     points: [{ latitude: Number, longitude: Number, altitude: Number }],
-    dist: { type: Number, require: true },
-    type: [ Number ]
+    dist: { type: Number, require: true }
 });
 var BusSchema = Schema({
     id: { type: String, require: true, unique: true }, // 1a, 1b, 2, 3, 4, 5, 6a, 6b, 7, 8, light
     name_en: String,
-    name_ch: String,
     serviceHour: { type: String, require: true }, // eg. 07:40-18:40
     serviceDay: { type: Number, require: true }, // 0: Mon-Sat, 1: Sun&PH, 2: teach
     stops: [{ type: Schema.Types.ObjectId, ref: 'Location' }], // locations the bus pass by
     departTime: [{ type: Number, require: true }], // depart hourly at (mins)
-    special: [{ departTime: Number, busStop: { type: Schema.Types.ObjectId, ref: 'Location' }, stop: Boolean }]
+});
+var BusRouteSchema = Schema({
+    startLoc: { type: Schema.Types.ObjectId, ref: 'Location' },
+    endLoc: { type: Schema.Types.ObjectId, ref: 'Location' },
+    points: [{ latitude: Number, longitude: Number, altitude: Number }],
+    dist: { type: Number, require: true }
 });
 var VersionSchema = Schema({
     database: { type: String, require: true, unique: true},
@@ -270,8 +273,7 @@ app.post('/route', (req, res) => {
         startLoc: mongoose.Types.ObjectId(req.body.startId), 
         endLoc: mongoose.Types.ObjectId(req.body.endId), 
         points: req.body.points,
-        dist: req.body.dist,
-        type: req.body.type
+        dist: req.body.dist
     }
     RouteModel.create(conditions, (err, result) => {
         if(err) {
@@ -323,12 +325,16 @@ app.delete('/bus', (req, res) => {
 
 app.post('/bus', (req, res) => {
     console.log("POST /bus - " + Date());
+    var stops = [];
+    for (var i = 0; i < req.body.stops.length; i ++) {
+        stops.push(mongoose.Types.ObjectId(req.body.stops[i]));
+    }
     var newBus = {
         id: req.body.id,
         name_en: req.body.name_en,
-        name_ch: req.body.name_ch,
         serviceHour: req.body.serviceHour,
         serviceDay: req.body.serviceDay,
+        stops: stops,
         departTime: req.body.departTime
     };
     BusModel.create(newBus, (err, result) => {
