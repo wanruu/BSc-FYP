@@ -33,7 +33,7 @@ struct Route {
     var endLoc: Location
     var points: [Coor3D]
     var dist: Double
-    var type: [Int]
+    var type: Int
 }
 extension Route: Identifiable, Equatable, Codable {
     public var id: String {

@@ -46,7 +46,8 @@ var RouteSchema = Schema({
     startLoc: { type: Schema.Types.ObjectId, ref: 'Location' },
     endLoc: { type: Schema.Types.ObjectId, ref: 'Location' },
     points: [{ latitude: Number, longitude: Number, altitude: Number }],
-    dist: { type: Number, require: true }
+    dist: { type: Number, require: true },
+    type: { type: Number, require: true }
 });
 var BusSchema = Schema({
     id: { type: String, require: true, unique: true }, // 1a, 1b, 2, 3, 4, 5, 6a, 6b, 7, 8, light
@@ -55,12 +56,6 @@ var BusSchema = Schema({
     serviceDay: { type: Number, require: true }, // 0: Mon-Sat, 1: Sun&PH, 2: teach
     stops: [{ type: Schema.Types.ObjectId, ref: 'Location' }], // locations the bus pass by
     departTime: [{ type: Number, require: true }], // depart hourly at (mins)
-});
-var BusRouteSchema = Schema({
-    startLoc: { type: Schema.Types.ObjectId, ref: 'Location' },
-    endLoc: { type: Schema.Types.ObjectId, ref: 'Location' },
-    points: [{ latitude: Number, longitude: Number, altitude: Number }],
-    dist: { type: Number, require: true }
 });
 var VersionSchema = Schema({
     database: { type: String, require: true, unique: true},
@@ -273,14 +268,14 @@ app.post('/route', (req, res) => {
         startLoc: mongoose.Types.ObjectId(req.body.startId), 
         endLoc: mongoose.Types.ObjectId(req.body.endId), 
         points: req.body.points,
-        dist: req.body.dist
+        dist: req.body.dist,
+        type: req.body.type
     }
     RouteModel.create(conditions, (err, result) => {
         if(err) {
             console.log(err);
             res.status(404).send();
         } else {
-            console.log(result);
             res.send(result);
         }
     });

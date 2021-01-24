@@ -254,12 +254,17 @@ int main (int argc, char *argv[]) {
 
 
     /*
-     *  Aim: drop routes table.
+     *  Aim: drop routes table. -> delete route whose type is 0
      */
     collection = mongoc_client_get_collection(client, "CUMap", "routes");
-    if (!mongoc_collection_drop (collection, &error)) {
+    bson_t *doc = bson_new();
+    bson_append_int64 (doc, "type", 4, 0);
+    if (!mongoc_collection_remove (collection, MONGOC_REMOVE_NONE, doc, NULL, &error)) {
         fprintf (stderr, "Delete failed: %s\n", error.message);
     }
+    /*if (!mongoc_collection_drop (collection, &error)) {
+        fprintf (stderr, "Delete failed: %s\n", error.message);
+    }*/
 
     /*
      *  Aim: upload routes to mongo.
@@ -297,10 +302,13 @@ int main (int argc, char *argv[]) {
         bson_append_double (route, "dist", 4, routes[i].dist);
 
         // type
+        bson_append_int64 (route, "type", 4, 0);
+        /* 
         bson_t* type = bson_new();
         bson_append_array_begin (route, "type", 4, type);
         bson_append_int64 (type, "0", 1, 0);
         bson_append_array_end (route, type);
+        */
         
         if (!mongoc_collection_insert (collection, MONGOC_INSERT_NONE, route, NULL, &error)) {
             fprintf (stderr, "%s\n", error.message);

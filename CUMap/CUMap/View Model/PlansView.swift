@@ -358,7 +358,7 @@ struct Instructions: View {
                         }.padding()
                     }
                     
-                    if route.type == [0] {
+                    if route.type == 0 {
                         HStack(spacing: 20) {
                             Image(systemName: "figure.walk").frame(width: 20)
                             Text("Walk for \(Int(route.dist/footSpeed/60)) min (\(Int(route.dist)) m)")

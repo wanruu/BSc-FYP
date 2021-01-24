@@ -110,14 +110,14 @@ struct PlanMapView: View {
         let DIST: CGFloat = (innerRadius * 1.5) * maxZoomIn / scale // distance between two point
         var points: [DrawPoint] = []
         
-        points.append(DrawPoint(type: plan.routes[0].type[0], x: CGFloat((plan.routes[0].points[0].longitude - centerLg) * lgScale * 2), y: CGFloat((centerLa - plan.routes[0].points[0].latitude) * laScale * 2)))
+        points.append(DrawPoint(type: plan.routes[0].type, x: CGFloat((plan.routes[0].points[0].longitude - centerLg) * lgScale * 2), y: CGFloat((centerLa - plan.routes[0].points[0].latitude) * laScale * 2)))
         
         var distSoFar: CGFloat = 0
         
         for route in plan.routes {
             for point in route.points {
                 let lastPoint = points.last!
-                let thisPoint = DrawPoint(type: route.type[0], x: CGFloat((point.longitude - centerLg) * lgScale * 2), y: CGFloat((centerLa - point.latitude) * laScale * 2))
+                let thisPoint = DrawPoint(type: route.type, x: CGFloat((point.longitude - centerLg) * lgScale * 2), y: CGFloat((centerLa - point.latitude) * laScale * 2))
                 
                 let dist = pow((lastPoint.x - thisPoint.x) * (lastPoint.x - thisPoint.x) + (lastPoint.y - thisPoint.y) * (lastPoint.y - thisPoint.y), 0.5)
                 

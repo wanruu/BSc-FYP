@@ -428,7 +428,7 @@ func RPDirect(routes: [Route], startLoc: Location, endLoc: Location) -> Plan? {
         for i in 0..<points.count - 1 {
             let dist = distance(start: points[i], end: points[i+1])
             totalDist += dist
-            if plan!.routes[0].type[0] == 0 {
+            if plan!.routes[0].type == 0 {
                 totalTime += dist / footSpeed
             } else {
                 totalTime += dist / busSpeed
