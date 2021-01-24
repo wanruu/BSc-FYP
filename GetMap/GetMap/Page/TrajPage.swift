@@ -6,7 +6,7 @@ import SwiftUI
 struct TrajPage: View {
     // Updating and recording location
     @ObservedObject var locationGetter: LocationGetterModel
-    @State var isRecording = true // if locations are being recorded
+    @State var isRecording = false // if locations are being recorded
     @State var buttonScale: CGFloat = 0.8 // scale of rectangle of record button
     @State var showAlert = false
 
@@ -85,6 +85,7 @@ struct TrajPage: View {
                         .onAppear { buttonScale = buttonScale == 0.8 ? 0.5 : 0.7 }
                     } else {
                         Button(action: {
+                            cleanRecord()
                             isRecording.toggle()
                         }) {
                             ZStack {
