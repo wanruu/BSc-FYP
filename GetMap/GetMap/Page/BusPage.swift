@@ -168,15 +168,6 @@ struct BusList: View {
                             }
                             Text("mins")
                         }
-                        VStack {
-                            ForEach(bus.special) { rule in
-                                HStack {
-                                    Text("Buses departing at \(rule.departTime) minutes will")
-                                    rule.stop ? nil : Text("not")
-                                    Text("stop at \(rule.busStop)")
-                                }
-                            }
-                        }
                     }
                 }
                 .onDelete(perform: { index in
