@@ -9,8 +9,6 @@
 - [ ] Make it able to search route from/to current location
 - [ ] Unify colors
 - [ ] Implement func of switching among plans
-- [ ] Implement func of route planning to show more plans, how?
-- [ ] safe area
 
 ## GetMap
 
