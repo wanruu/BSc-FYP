@@ -165,28 +165,31 @@ struct LocationList: View {
     @Binding var lastScale: CGFloat
     
     var body: some View {
-        List {
-            ForEach(locations) { location in
-                Button(action: {
-                    clickedLoc = location
-                    // move to center
-                    offset.x = -CGFloat((location.longitude - centerLg) * lgScale * 2) * scale
-                    offset.y = -CGFloat((centerLa - location.latitude) * laScale * 2) * scale
-                    lastOffset = offset
-                    showList = false
-                }) {
-                    HStack(spacing: SCWidth * 0.04) {
-                        Image(systemName: location.type == 0 ? "building.2" : "bus").imageScale(.large)
-                        Text(location.name_en)
-                        Spacer()
-                    }.padding(SCWidth * 0.02)
+        NavigationView {
+            List {
+                ForEach(locations) { location in
+                    Button(action: {
+                        clickedLoc = location
+                        // move to center
+                        offset.x = -CGFloat((location.longitude - centerLg) * lgScale * 2) * scale
+                        offset.y = -CGFloat((centerLa - location.latitude) * laScale * 2) * scale
+                        lastOffset = offset
+                        showList = false
+                    }) {
+                        HStack(spacing: SCWidth * 0.04) {
+                            Image(systemName: location.type == 0 ? "building.2" : "bus").imageScale(.large)
+                            Text(location.name_en)
+                            Spacer()
+                        }.padding(SCWidth * 0.02)
+                    }
+                    .buttonStyle(MyButtonStyle2(bgColor: CUPurple.opacity(0.8)))
                 }
-                .buttonStyle(MyButtonStyle2(bgColor: CUPurple.opacity(0.8)))
+                .onDelete { offsets in
+                    let index = offsets.first!
+                    deleteLocation(index: index)
+                }
             }
-            .onDelete { offsets in
-                let index = offsets.first!
-                deleteLocation(index: index)
-            }
+            .navigationTitle("Location List")
         }
     }
     

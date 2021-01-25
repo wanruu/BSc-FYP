@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 struct MainPage: View {
-    @State var page: String = "Bus"
+    @State var page: String = "Trajectory"
     @StateObject var locationGetter = LocationGetterModel()
     var body: some View {
         ZStack {
@@ -40,7 +40,8 @@ struct Navi: View {
                 }
                 .frame(width: geometry.size.width, alignment: .center)
                 .padding(.top, geometry.size.height * 0.05)
-                .background(Color.white)
+                .background(Color(red: 0.96, green: 0.96, blue: 0.96))
+                
                 Divider().background(Color.white)
                 
                 // dropdown option
@@ -91,7 +92,6 @@ struct Navi: View {
                 .offset(y: offset)
                 .animation(Animation.easeInOut)
             }
-            
         }
         .edgesIgnoringSafeArea(.top)
     }

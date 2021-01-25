@@ -105,6 +105,10 @@ struct TrajPage: View {
                         Text("Process")
                             .foregroundColor(.black)
                             .font(.system(size: 20, weight: .bold, design: .rounded))
+                            .padding(10)
+                            .background(Color.white)
+                            .cornerRadius(10)
+                            .shadow(radius: 5)
                     }.buttonStyle(ZoomOutStyle())
                 }
             }
