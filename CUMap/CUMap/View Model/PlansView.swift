@@ -164,19 +164,15 @@ struct PlanView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     // drag icon
                     HStack {
-                        Button(action: {
-                            planIndex = planIndex == 0 ? plans.count - 1 : planIndex - 1
-                        }) {
+                        Button(action: { planIndex -= 1 }) {
                             Image(systemName: "arrow.left")
-                        }
+                        }.disabled(planIndex == 0)
                         Spacer()
                         Image(systemName: "line.horizontal.3").foregroundColor(Color.gray)
                         Spacer()
-                        Button(action: {
-                            planIndex = planIndex == plans.count - 1 ? 0 : planIndex + 1
-                        }) {
+                        Button(action: { planIndex += 1 }) {
                             Image(systemName: "arrow.right")
-                        }
+                        }.disabled(planIndex == plans.count - 1)
                         
                     }.padding()
                     
