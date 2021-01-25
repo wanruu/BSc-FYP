@@ -13,9 +13,7 @@
             􀝓 ???
             􀝈 ???
         ------------------------------------
-*/
-
-/*
+ 
     􀄬: arrow.up.arrow.down
     􀝈: bus
     􀝢: figure.walk
@@ -62,24 +60,22 @@ struct SearchView: View {
     @State var showEndList = false
     
     var body: some View {
-        GeometryReader { geometry in
-            if showStartList {
-                // Page 1: search starting point
-                SearchList(placeholder: "From", keyword: startLoc == nil ? "" : startLoc!.name_en, locationGetter: locationGetter, locations: locations, location: $startLoc, showList: $showStartList)
-            } else if showEndList {
-                // Page 2: search ending point
-                SearchList(placeholder: "To", keyword: endLoc == nil ? "" : endLoc!.name_en, locationGetter: locationGetter, locations: locations, location: $endLoc, showList: $showEndList)
-            } else {
-                // Page 3: search box
-                SearchArea(startLoc: $startLoc, endLoc: $endLoc, routes: routes, plans: $plans, planIndex: $planIndex, showStartList: $showStartList, showEndList: $showEndList, mode: $mode)
-                    .offset(y: height > smallH ? (smallH - height) * 2 : 0)
-                    .onAppear {
-                        if startLoc != nil && endLoc != nil {
-                            lastHeight = smallH
-                            height = smallH
-                        }
+        if showStartList {
+            // Page 1: search starting point
+            SearchList(placeholder: "From", keyword: startLoc == nil ? "" : startLoc!.name_en, locationGetter: locationGetter, locations: locations, location: $startLoc, showList: $showStartList)
+        } else if showEndList {
+            // Page 2: search ending point
+            SearchList(placeholder: "To", keyword: endLoc == nil ? "" : endLoc!.name_en, locationGetter: locationGetter, locations: locations, location: $endLoc, showList: $showEndList)
+        } else {
+            // Page 3: search box
+            SearchArea(locations: locations, startLoc: $startLoc, endLoc: $endLoc, routes: routes, plans: $plans, planIndex: $planIndex, showStartList: $showStartList, showEndList: $showEndList, mode: $mode)
+                .offset(y: height > smallH ? (smallH - height) * 2 : 0)
+                .onAppear {
+                    if startLoc != nil && endLoc != nil {
+                        lastHeight = smallH
+                        height = smallH
                     }
-            }
+                }
         }
     }
 }
@@ -88,6 +84,7 @@ struct SearchView: View {
 struct SearchArea: View {
 
     // input for RP
+    @State var locations: [Location]
     @Binding var startLoc: Location?
     @Binding var endLoc: Location?
     @State var routes: [Route]
@@ -154,6 +151,7 @@ struct SearchArea: View {
                                 RP()
                             }
                     }
+                    .padding(.top)
                     .padding(.horizontal)
 
                     // select mode
@@ -208,98 +206,20 @@ struct SearchArea: View {
             return
         }
         
-        let plan0 = RPDirect(routes: routes, startLoc: startLoc!, endLoc: endLoc!)
-        if plan0 != nil {
-            plans.append(plan0!)
-        }
-        if plans.count > 0 {
-            print(plans[0])
-        } else {
-            print("nil")
-        }
+        // TODO: deal with current location
         
-        /*let plan1 = RPMinDist(locations: locations, routes: routes, startLoc: startLoc, endLoc: endLoc)
+        let plan1 = RPMinDist(locations: locations, routes: routes, startLoc: startLoc!, endLoc: endLoc!)
         if plan1 != nil {
             plans.append(plan1!)
-        }*/
-        /*let plan2 = RPMinTime(locations: locations, routes: routes, startId: startId, endId: endId)
+        }
+        let plan2 = RPMinTime(locations: locations, routes: routes, startLoc: startLoc!, endLoc: endLoc!)
         if plan2 != nil {
             plans.append(plan2!)
-        }*/
+        }
+        print(plans.count)
         
         planIndex = 0
     }
-    
-    /* private func dij() {
-        if startId == "" || endId == "" {
-            return
-        }
-        // TODO: deal with current location
-        
-        
-        // Step 1: clean up result
-        plans = []
-        
-        // Step 2: initialize minDist & vertex set & queue
-        let startIndex = indexOf(id: startId)
-        let endIndex = indexOf(id: endId)
-        
-        var minDist = [Plan](repeating: Plan(startId: startId, endId: endId, routes: [], dist: INF, time: INF, type: 0), count: locations.count) // distance from start location to every location
-        var checked = [Bool](repeating: false, count: locations.count)
-        minDist[startIndex].dist = 0
-        minDist[startIndex].time = 0
-        
-        // Step 3: start
-        while checked.filter({$0 == true}).count != checked.count { // not all have been checked
-            // find the index of min dist who hasn't been checked
-            var cur = -1
-            var min = INF + 1.0
-            for i in 0..<checked.count {
-                if !checked[i] && minDist[i].dist < min {
-                    cur = i
-                    min = minDist[i].dist
-                }
-            }
-            
-            for route in routes {
-                if route.startId == locations[cur].id {
-                    let next = indexOf(id: route.endId)
-                    if minDist[next].dist > minDist[cur].dist + route.dist { // update
-                        minDist[next].dist = minDist[cur].dist + route.dist
-                        minDist[next].routes = minDist[cur].routes + [route]
-                        let time = route.type == 0 ? route.dist / footSpeed : route.dist / busSpeed
-                        minDist[next].time = minDist[cur].time + time
-                    }
-                } else if route.endId == locations[cur].id {
-                    let next = indexOf(id: route.startId)
-                    if minDist[next].dist > minDist[cur].dist + route.dist { // update
-                        var points = route.points
-                        points.reverse()
-                        minDist[next].dist = minDist[cur].dist + route.dist
-                        minDist[next].routes = minDist[cur].routes + [Route(id: route.id, startId: route.endId, endId: route.startId, points: points, dist: route.dist, type: route.type)]
-                        let time = route.type == 0 ? route.dist / footSpeed : route.dist / busSpeed
-                        minDist[next].time = minDist[cur].time + time
-                    }
-                }
-            }
-            checked[cur] = true
-        }
-        
-        // Step 4: find the result
-        if minDist[endIndex].routes.count > 1 {
-            plans.append(minDist[endIndex])
-        }
-    }
-    
-    private func indexOf(id: String) -> Int {
-        for i in 0..<locations.count {
-            if locations[i].id == id {
-                return i
-            }
-        }
-        return -1
-    }*/
-    
 }
 
 struct SearchList: View {
@@ -404,45 +324,11 @@ struct SearchList: View {
     }
 }
 
-func RPDirect(routes: [Route], startLoc: Location, endLoc: Location) -> Plan? {
-    var plan: Plan? = nil
-    for route in routes {
-        if route.startLoc == startLoc && route.endLoc == endLoc {
-            plan = Plan(startLoc: startLoc, endLoc: endLoc, routes: [route], dist: INF, time: INF, ascent: 0, type: 0)
-            break
-        } else if route.startLoc == endLoc && route.endLoc == startLoc {
-            var points = route.points
-            points.reverse()
-            plan = Plan(startLoc: endLoc, endLoc: startLoc, routes: [Route(_id: route._id, startLoc: route.endLoc, endLoc: route.startLoc, points: points, dist: route.dist, type: route.type)], dist: INF, time: INF, ascent: 0, type: 0)
-            break
-        }
-    }
-    if plan != nil {
-        var totalDist = 0.0 // meters
-        var totalTime = 0.0 // seconds
-        
-        // TODO: calculate ascent
-        var ascent: Double = 0
-        
-        let points = plan!.routes[0].points
-        for i in 0..<points.count - 1 {
-            let dist = distance(start: points[i], end: points[i+1])
-            totalDist += dist
-            if plan!.routes[0].type == 0 {
-                totalTime += dist / footSpeed
-            } else {
-                totalTime += dist / busSpeed
-            }
-        }
-        plan!.dist = totalDist
-        plan!.time = totalTime
-        plan!.ascent = ascent
-    }
-    return plan
-}
 
+// MARK: - function for route planning
 func RPMinDist(locations: [Location], routes: [Route], startLoc: Location, endLoc: Location) -> Plan? {
     // Step 1: preprocessing
+    var plan: Plan? = nil
     var plans = [Plan](repeating: Plan(startLoc: startLoc, endLoc: endLoc, routes: [], dist: INF, time: INF, ascent: 0, type: 0), count: locations.count) // plan from startLoc to any other locations
     
     var checked = [Bool](repeating: false, count: locations.count) // at beginning, all locations are not checked
@@ -490,82 +376,95 @@ func RPMinDist(locations: [Location], routes: [Route], startLoc: Location, endLo
     }
     // Step 4: find the result
     if plans[endIndex].routes.count > 1 {
-        return plans[endIndex]
+        plan = plans[endIndex]
     }
     
-    return nil
+    
+    if plan != nil {
+        var totalDist = 0.0 // meters
+        var totalTime = 0.0 // seconds
+        
+        // TODO: calculate ascent
+        var ascent: Double = 0
+        
+        for route in plan!.routes {
+            totalDist += route.dist
+            if route.type == 0 {
+                totalTime += route.dist / footSpeed
+            } else {
+                totalTime += route.dist / busSpeed
+            }
+        }
+
+        plan!.dist = totalDist
+        plan!.time = totalTime
+        plan!.ascent = ascent
+    }
+    
+    
+    return plan
 }
 
-/*
-func RPMinTime(locations: [Location], routes: [Route], startId: String, endId: String) -> Plan? {
-    // Step 1: preprocessing
 
-    // avoid exception
-    if startId == "" || endId == "" {
-        return nil
-    }
-    let startIndex = indexOf(id: startId, locations: locations)
-    let endIndex = indexOf(id: endId, locations: locations)
-    if startIndex == -1 || endIndex == -1 {
-        return nil
-    }
+func RPMinTime(locations: [Location], routes: [Route], startLoc: Location, endLoc: Location) -> Plan? {
+    var plan: Plan? = nil
     
-    // Step 2: initialize minTime & vertex set & queue
-    var plans = [Plan](repeating: Plan(startId: startId, endId: endId, routes: [], dist: INF, time: INF, type: 0), count: locations.count)
-    var checked = [Bool](repeating: false, count: locations.count)
-    plans[startIndex].dist = 0
+    // Step 1: preprocessing
+    var plans = [Plan](repeating: Plan(startLoc: startLoc, endLoc: endLoc, routes: [], dist: INF, time: INF, ascent: 0, type: 0), count: locations.count) // plan from startLoc to any other locations
+    
+    var checked = [Bool](repeating: false, count: locations.count) // at beginning, all locations are not checked
+    
+    // Step 2: set dist and time to 0 for startLoc
+    let startIndex = locations.firstIndex(of: startLoc)!
+    let endIndex = locations.firstIndex(of: endLoc)!
     plans[startIndex].time = 0
+    plans[startIndex].dist = 0
     
     // Step 3: start
     while checked.filter({$0 == true}).count != checked.count { // not all have been checked
         // find the index of min dist who hasn't been checked
-        var cur = -1
-        var min = INF + 1.0
+        var index = -1
+        var minTime = INF + 1.0
         for i in 0..<checked.count {
-            if !checked[i] && plans[i].time < min {
-                cur = i
-                min = plans[i].time
+            if !checked[i] && plans[i].time < minTime {
+                index = i
+                minTime = plans[i].time
             }
+        }
+        let curLoc = locations[index]
+        if index == endIndex {
+            break
         }
         
         for route in routes {
             let time = route.type == 0 ? route.dist / footSpeed : route.dist / busSpeed
 
-            if route.startId == locations[cur].id {
-                let next = indexOf(id: route.endId, locations: locations)
-                if plans[next].time > plans[cur].time + time { // update
-                    plans[next].time = plans[cur].time + time
-                    plans[next].dist = plans[cur].dist + route.dist
-                    plans[next].routes = plans[cur].routes + [route]
+            if route.startLoc.id == curLoc.id {
+                let endLocIndex = locations.firstIndex(of: route.endLoc)!
+                if plans[endLocIndex].time > plans[index].time + time {
+                    plans[endLocIndex].time = plans[index].time + time
+                    plans[endLocIndex].dist = plans[index].dist + route.dist
+                    plans[endLocIndex].routes = plans[index].routes + [route]
                 }
-            } else if route.endId == locations[cur].id {
-                let next = indexOf(id: route.startId, locations: locations)
-                if plans[next].time > plans[cur].time + time { // update
-                    plans[next].time = plans[cur].time + time
-                    plans[next].dist = plans[cur].dist + route.dist
-                    
+            } else if route.endLoc.id == curLoc.id {
+                
+                let startLocIndex = locations.firstIndex(of: route.startLoc)!
+                if plans[startLocIndex].time > plans[index].time + time {
                     var points = route.points
                     points.reverse()
-                    plans[next].routes = plans[cur].routes + [Route(_id: route.id, startId: route.endId, endId: route.startId, points: points, dist: route.dist, type: route.type)]
+                    plans[startLocIndex].dist = plans[index].dist + route.dist
+                    plans[startLocIndex].time = plans[index].time + time
+                    plans[startLocIndex].routes = plans[index].routes + [Route(_id: route.id, startLoc: route.endLoc, endLoc: route.startLoc, points: points, dist: route.dist, type: route.type)]
                 }
             }
         }
-        checked[cur] = true
+        checked[index] = true
     }
     // Step 4: find the result
     if plans[endIndex].routes.count > 1 {
-        return plans[endIndex]
+        plan = plans[endIndex]
     }
     
-    return nil
+    return plan
 }
- */
 
-func indexOf(id: String, locations: [Location]) -> Int {
-    for i in 0..<locations.count {
-        if locations[i].id == id {
-            return i
-        }
-    }
-    return -1
-}

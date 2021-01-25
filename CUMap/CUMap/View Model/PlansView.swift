@@ -39,15 +39,10 @@ struct PlansView: View {
     @Binding var height: CGFloat
     
     var body: some View {
-        ZStack {
-            if plans.isEmpty {
-                NoPlanView(lastHeight: $lastHeight, height: $height)
-            } else {
-                // TODO: display more plans
-                if planIndex >= 0 && planIndex < plans.count {
-                    PlanView(plan: $plans[planIndex], lastHeight: $lastHeight, height: $height)
-                }
-            }
+        if plans.isEmpty {
+            NoPlanView(lastHeight: $lastHeight, height: $height)
+        } else if planIndex >= 0 && planIndex < plans.count {
+            PlanView(plans: $plans, planIndex: $planIndex, lastHeight: $lastHeight, height: $height)
         }
     }
 }
@@ -117,7 +112,8 @@ struct NoPlanView: View {
 }
 
 struct PlanView: View {
-    @Binding var plan: Plan
+    @Binding var plans: [Plan]
+    @Binding var planIndex: Int
     
     @Binding var lastHeight: CGFloat
     @Binding var height: CGFloat
@@ -167,22 +163,35 @@ struct PlanView: View {
                 Spacer()
                 VStack(alignment: .leading, spacing: 0) {
                     // drag icon
-                    Image(systemName: "line.horizontal.3")
-                        .foregroundColor(Color.gray)
-                        .padding()
-                        .frame(width: geometry.size.width, alignment: .center)
+                    HStack {
+                        Button(action: {
+                            planIndex = planIndex == 0 ? plans.count - 1 : planIndex - 1
+                        }) {
+                            Image(systemName: "arrow.left")
+                        }
+                        Spacer()
+                        Image(systemName: "line.horizontal.3").foregroundColor(Color.gray)
+                        Spacer()
+                        Button(action: {
+                            planIndex = planIndex == plans.count - 1 ? 0 : planIndex + 1
+                        }) {
+                            Image(systemName: "arrow.right")
+                        }
+                        
+                    }.padding()
+                    
                     // title
                     HStack {
-                        Text("\(Int(plan.time/60))").font(.title2).bold()
+                        Text("\(Int(plans[planIndex].time/60))").font(.title2).bold()
                         Text("min").font(.title2)
-                        Text("(\(Int(plan.dist)) m)").font(.title3).foregroundColor(Color.gray)
+                        Text("(\(Int(plans[planIndex].dist)) m)").font(.title3).foregroundColor(Color.gray)
                     }.padding(.horizontal).padding(.bottom)
                     Divider()
                     
                     ScrollView(.vertical, showsIndicators: false) {
                         VStack(spacing: 0) {
                             // chart
-                            HeightChart(plan: $plan)
+                            HeightChart(plan: $plans[planIndex])
                                 .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.25, alignment: .center)
                                 .padding(.vertical)
                                 
@@ -198,7 +207,7 @@ struct PlanView: View {
                             }.padding()
                             Divider()
                             // steps
-                            Instructions(plan: $plan)
+                            Instructions(plan: $plans[planIndex])
                             Divider()
                         }
                     }.gesture(DragGesture())
