@@ -1,100 +1,90 @@
 import Foundation
 import SwiftUI
 
+enum Page {
+    case traj
+    case loc
+    case bus
+}
+
+
 struct MainPage: View {
-    @State var page: String = "Trajectory"
+    @State var page: Page = .traj
+    @State var showMenu: Bool = false
     @StateObject var locationGetter = LocationGetterModel()
+    
     var body: some View {
-        ZStack {
-            if page == "Trajectory" {
-                TrajPage(locationGetter: locationGetter)
-            } else if page == "Location" {
-                LocationPage(current: $locationGetter.current)
-            } else if page == "Bus" {
-                BusPage()
+        NavigationView {
+            ZStack {
+                switch page {
+                    case .traj: TrajPage(locationGetter: locationGetter)
+                    case .loc: LocationPage(current: $locationGetter.current)
+                    case .bus: BusPage()
+                }
+                
+                MenuView(page: $page, showMenu: $showMenu)
+                    .offset(x: showMenu ? 0 : -UIScreen.main.bounds.width * 0.4)
+                    .animation(.easeIn)
             }
-            Navi(page: $page)
+            .navigationBarTitle(Text(pageTitle()), displayMode: .inline)
+            .navigationBarItems(leading: Button(action: {
+                showMenu.toggle()
+            }) {
+                Image(systemName: "list.bullet").imageScale(.large)
+            })
+        }
+    }
+    
+    private func pageTitle() -> String {
+        switch page {
+            case .traj: return "Trajectory"
+            case .loc: return "Location"
+            case .bus: return "Bus"
         }
     }
 }
 
-struct Navi: View {
-
-    @Binding var page: String
-    
-    // offset of dropdown page options
-    @State var offset: CGFloat = -UIScreen.main.bounds.height
+struct MenuView: View {
+    @Binding var page: Page
+    @Binding var showMenu: Bool
     
     var body: some View {
-        GeometryReader { geometry in
-            VStack (spacing: 0) {
-                // current page
+        GeometryReader { geo in
+            VStack(alignment: .leading, spacing: 0) {
+                Divider()
+                
                 Button(action: {
-                    offset = offset == -UIScreen.main.bounds.height ? 0 : -UIScreen.main.bounds.height
+                    page = .traj
+                    showMenu.toggle()
                 }) {
-                    Text(page)
-                        .foregroundColor(.black)
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
-                        .padding()
-                        .frame(width: geometry.size.width, alignment: .center)
-                }
-                .frame(width: geometry.size.width, alignment: .center)
-                .padding(.top, geometry.size.height * 0.05)
-                .background(Color(red: 0.96, green: 0.96, blue: 0.96))
+                    Text("Trajectory").frame(width: geo.size.width * 0.4)
+                }.buttonStyle(MyButtonStyle3(bgColor: Color.gray.opacity(0.5)))
                 
-                Divider().background(Color.white)
+                Divider()
                 
-                // dropdown option
-                VStack (spacing: 0) {
-                    // option 1: traj
-                    Button(action: {
-                        page = "Trajectory"
-                        offset = -UIScreen.main.bounds.height
-                    }) {
-                        Text("Trajectory")
-                            .foregroundColor(.black)
-                            .font(.system(size: 18, design: .rounded))
-                            .frame(width: geometry.size.width, alignment: .center)
-                    }
-                    .background(Color.white)
-                    .buttonStyle(MyButtonStyle3(bgColor: CUPurple.opacity(0.5)))
-                    Divider()
-                    // option 2: location
-                    Button(action: {
-                        page = "Location"
-                        offset = -UIScreen.main.bounds.height
-                    }) {
-                        Text("Location")
-                            .foregroundColor(.black)
-                            .font(.system(size: 18, design: .rounded))
-                            .frame(width: geometry.size.width, alignment: .center)
-                    }
-                    .background(Color.white)
-                    .buttonStyle(MyButtonStyle3(bgColor: CUPurple.opacity(0.5)))
-                    Divider()
-                    // option 3: bus
-                    Button(action: {
-                        page = "Bus"
-                        offset = -UIScreen.main.bounds.height
-                    }) {
-                        Text("Bus")
-                            .foregroundColor(.black)
-                            .font(.system(size: 18, design: .rounded))
-                            .frame(width: geometry.size.width, alignment: .center)
-                    }
-                    .background(Color.white)
-                    .buttonStyle(MyButtonStyle3(bgColor: CUPurple.opacity(0.5)))
-                    Divider()
-                }
-                .background(Color.white)
-                .zIndex(-10)
-                .frame(width: geometry.size.width, alignment: .center)
-                .offset(y: offset)
-                .animation(Animation.easeInOut)
+                Button(action: {
+                    page = .loc
+                    showMenu.toggle()
+                }) {
+                    Text("Location").frame(width: geo.size.width * 0.4)
+                }.buttonStyle(MyButtonStyle3(bgColor: Color.gray.opacity(0.5)))
+                
+                Divider()
+                
+                Button(action: {
+                    page = .bus
+                    showMenu.toggle()
+                }) {
+                    Text("Bus").frame(width: geo.size.width * 0.4)
+                }.buttonStyle(MyButtonStyle3(bgColor: Color.gray.opacity(0.5)))
+                
+                Divider()
             }
+            .frame(maxWidth: geo.size.width * 0.4, maxHeight: .infinity, alignment: .top)
+            .background(Color.white)
+            .clipped()
+            .shadow(radius: showMenu ? 10 : 0)
+            .ignoresSafeArea(.container, edges: .bottom)
         }
-        .edgesIgnoringSafeArea(.top)
     }
 }
-
-
