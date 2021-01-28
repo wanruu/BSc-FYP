@@ -4,6 +4,7 @@ import SwiftUI
 struct BusPage: View {
     @State var stops: [Location] = []
     @State var buses: [Bus] = []
+    @State var routes: [Route] = []
     
     @State var showSheet: Bool = false
     @State var sheetType: Int = -1 // 0: bus list, 1: new bus
@@ -44,51 +45,53 @@ struct BusPage: View {
     }
     
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                // background map
-                Image("cuhk-campus-map")
-                    .resizable()
-                    .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
-                    .position(x: centerX + offset.x, y: centerY + offset.y)
-                    .gesture(gesture)
-                
-                // control button
-                VStack(spacing: 0) {
-                    Button(action: {
-                        sheetType = 0
-                        showSheet = true
-                    }) {
-                        Image(systemName: "list.bullet")
-                            .resizable()
-                            .frame(width: SCWidth * 0.05, height: SCWidth * 0.04)
-                            .padding(SCWidth * 0.03)
-                            .padding(.vertical, SCWidth * 0.005)
-                    }
-                    Divider().frame(width: SCWidth * 0.11)
-                    Button(action: {
-                        sheetType = 1
-                        showSheet = true
-                    }) {
-                        Image(systemName: "plus")
-                            .resizable()
-                            .frame(width: SCWidth * 0.05, height: SCWidth * 0.05)
-                            .padding(SCWidth * 0.03)
-                    }
+        ZStack {
+            // background map
+            Image("cuhk-campus-map")
+                .resizable()
+                .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
+                .position(x: centerX + offset.x, y: centerY + offset.y)
+                .gesture(gesture)
+            
+            
+            // control button
+            VStack(spacing: 0) {
+                Button(action: {
+                    sheetType = 0
+                    showSheet = true
+                }) {
+                    Image(systemName: "list.bullet")
+                        .resizable()
+                        .frame(width: SCWidth * 0.05, height: SCWidth * 0.04)
+                        .padding(SCWidth * 0.03)
+                        .padding(.vertical, SCWidth * 0.005)
                 }
-                .background(Color.white)
-                .cornerRadius(SCWidth * 0.015)
-                .shadow(radius: 10)
-                .offset(x: SCWidth * 0.38, y: -SCHeight * 0.5 + SCWidth * 0.44)
+                Divider().frame(width: SCWidth * 0.11)
+                Button(action: {
+                    sheetType = 1
+                    showSheet = true
+                }) {
+                    Image(systemName: "plus")
+                        .resizable()
+                        .frame(width: SCWidth * 0.05, height: SCWidth * 0.05)
+                        .padding(SCWidth * 0.03)
+                }
             }
-            .onAppear {
-                loadBuses()
-                loadLocations()
-            }
-            .sheet(isPresented: $showSheet) {
-                Sheets(stops: $stops, buses: $buses, type: $sheetType)
-            }
+            .background(Color.white)
+            .cornerRadius(SCWidth * 0.015)
+            .shadow(radius: 10)
+            .offset(x: SCWidth * 0.38, y: -SCHeight * 0.5 + SCWidth * 0.44)
+            
+            SearchSheet(stops: $stops, routes: $routes)
         }
+        .onAppear {
+            loadBuses()
+            loadLocations()
+        }
+        .sheet(isPresented: $showSheet) {
+            Sheets(stops: $stops, buses: $buses, type: $sheetType)
+        }
+        
     }
     private func loadBuses() {
         let url = URL(string: server + "/buses")!
@@ -104,9 +107,6 @@ struct BusPage: View {
     private func loadLocations() {
         let url = URL(string: server + "/locations")!
         URLSession.shared.dataTask(with: url) { data, response, error in
-            if(error != nil) {
-                // showAlert = true
-            }
             guard let data = data else { return }
             do {
                 let locations = try JSONDecoder().decode([Location].self, from: data)
@@ -116,10 +116,81 @@ struct BusPage: View {
                     }
                 }
             } catch let error {
-                // showAlert = true
                 print(error)
             }
         }.resume()
+    }
+}
+
+
+// MARK: - Sheet
+
+// search sheet
+struct SearchSheet: View {
+    // input for route planning
+    @Binding var stops: [Location]
+    @State var startStop: Location? = nil
+    @State var endStop: Location? = nil
+    
+    // output of route planning
+    @Binding var routes: [Route]
+    
+    // gesture
+    @State var lastOffset: CGFloat = 0
+    @State var offset: CGFloat = 0
+    
+    var body: some View {
+        GeometryReader { geo in
+            VStack {
+                Spacer()
+                
+                // sheet content
+                VStack {
+                    Image(systemName: "line.horizontal.3").foregroundColor(.gray).padding()
+                    
+                    Text(startStop == nil ? "From" : startStop!.name_en)
+                        
+                }
+                .frame(width: geo.size.width, height: geo.size.height * 0.9, alignment: .top)
+                .background(RoundedCorners(color: .white, tl: 15, tr: 15, bl: 0, br: 0))
+                .offset(y: offset)
+                .clipped()
+                .shadow(radius: 10)
+                
+            }
+            .ignoresSafeArea(.container, edges: .bottom)
+            .gesture(DragGesture()
+                .onChanged{ value in
+                    if lastOffset + value.location.y - value.startLocation.y < 0 {
+                        offset = 0
+                    } else {
+                        offset = lastOffset + value.location.y - value.startLocation.y
+                    }
+                    
+                }
+                .onEnded{ _ in
+                    lastOffset = offset
+            })
+            
+        }
+    }
+}
+struct StopListForSearch: View {
+    @Binding var stops: [Location]
+    @Binding var chosenStop: Location
+    
+    var body: some View {
+        VStack {
+            List {
+                ForEach(stops) { stop in
+                    Button(action: {
+                        chosenStop = stop
+                    }) {
+                        Text(stop.name_en)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -129,7 +200,7 @@ struct Sheets: View {
     @Binding var type: Int
     var body: some View {
         if type == 0 {
-            BusList(buses: $buses)
+            BusListSheet(buses: $buses)
         } else if type == 1 {
             NewBusSheet(stops: $stops, buses: $buses)
         }
@@ -137,7 +208,7 @@ struct Sheets: View {
 }
 
 // bus list sheet
-struct BusList: View {
+struct BusListSheet: View {
     @Binding var buses: [Bus]
     
     var body: some View {
@@ -336,7 +407,6 @@ struct StopList: View {
     
     var body: some View {
         VStack {
-            
             List {
                 ForEach(stops) { stop in
                     Button(action: {
@@ -347,7 +417,6 @@ struct StopList: View {
                     }
                 }
             }
-            
         }
     }
 }
