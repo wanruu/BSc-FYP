@@ -50,7 +50,7 @@ var RouteSchema = Schema({
     type: { type: Number, require: true }
 });
 var BusSchema = Schema({
-    id: { type: String, require: true, unique: true }, // 1a, 1b, 2, 3, 4, 5, 6a, 6b, 7, 8, light
+    id: { type: String, require: true }, // 1a, 1b, 2, 3, 4, 5, 6a, 6b, 7, 8, light
     name_en: String,
     serviceHour: { type: String, require: true }, // eg. 07:40-18:40
     serviceDay: { type: Number, require: true }, // 0: Mon-Sat, 1: Sun&PH, 2: teach
