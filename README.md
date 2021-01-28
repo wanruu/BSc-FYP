@@ -7,13 +7,11 @@
 - [ ] Adjust distance between points when showing plan in map
 - [ ] Add location mark when showing plan in map
 - [ ] Make it able to search route from/to current location
-- [ ] Unify colors
 - [ ] Implement func of switching among plans
 
 ## GetMap
 
 - [ ] Ensure altitude uploaded to server is not -1?
 - [ ] Add bus data, how?
-- [ ] Unify colors
 
 ## Backend
