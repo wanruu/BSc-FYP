@@ -30,7 +30,8 @@ struct MainPage: View {
             .navigationBarItems(leading: Button(action: {
                 showMenu.toggle()
             }) {
-                Image(systemName: "list.bullet").imageScale(.large)
+                // Image(systemName: "list.bullet").imageScale(.large)
+                Text("Menu")
             })
         }
     }
