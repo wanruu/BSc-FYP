@@ -7,6 +7,9 @@ struct BusPage: View {
     @State var buses: [Bus] = []
     @State var routes: [Route] = []
     
+    @State var startStop: Location? = nil
+    @State var endStop: Location? = nil
+    
     // searching result
     @State var results: [Route] = []
     @State var selectedResult: Route? = nil
@@ -84,14 +87,21 @@ struct BusPage: View {
                         .frame(width: SCWidth * 0.05, height: SCWidth * 0.05)
                         .padding(SCWidth * 0.03)
                 }
+                Divider().frame(width: SCWidth * 0.11)
+                Button(action: {
+                    sheetType = 2
+                    showSheet = true
+                }) {
+                    Image(systemName: "magnifyingglass")
+                        .resizable()
+                        .frame(width: SCWidth * 0.05, height: SCWidth * 0.05)
+                        .padding(SCWidth * 0.03)
+                }
             }
             .background(Color.white)
             .cornerRadius(SCWidth * 0.015)
             .shadow(radius: 10)
             .offset(x: SCWidth * 0.38, y: -SCHeight * 0.5 + SCWidth * 0.44)
-            
-            // search sheet
-            SearchSheet(locations: $locations, routes: $routes, results: $results, selectedResult: $selectedResult)
         }
         .onAppear {
             loadBuses()
@@ -99,7 +109,7 @@ struct BusPage: View {
             loadRoutes()
         }
         .sheet(isPresented: $showSheet) {
-            Sheets(locations: $locations, buses: $buses, type: $sheetType)
+            Sheets(locations: $locations, buses: $buses, routes: $routes, startStop: $startStop, endStop: $endStop, results: $results, selectedResult: $selectedResult, type: $sheetType)
         }
         
     }
@@ -183,160 +193,101 @@ struct RoutesView: View {
 }
 
 // MARK: - Sheet
+struct Sheets: View {
+    @Binding var locations: [Location]
+    @Binding var buses: [Bus]
+    @Binding var routes: [Route]
+    
+    @Binding var startStop: Location?
+    @Binding var endStop: Location?
+    
+    @Binding var results: [Route]
+    @Binding var selectedResult: Route?
+    
+    @Binding var type: Int
+    
+    var body: some View {
+        if type == 0 {
+            BusListSheet(buses: $buses)
+        } else if type == 1 {
+            NewBusSheet(locations: $locations, buses: $buses)
+        } else if type == 2 {
+            SearchSheet(locations: $locations, routes: $routes, startStop: $startStop, endStop: $endStop, results: $results, selectedResult: $selectedResult)
+        }
+    }
+}
+
 // search sheet
 struct SearchSheet: View {
     // input for route planning
     @Binding var locations: [Location]
     @Binding var routes: [Route]
-    @State var startStop: Location? = nil
-    @State var endStop: Location? = nil
+    @Binding var startStop: Location?
+    @Binding var endStop: Location?
     
     // output of route planning
     @Binding var results: [Route]
     @Binding var selectedResult: Route?
     
-    @State var page: Int = 0
-    
-    // gesture
-    @State var lastOffset: CGFloat = 0
-    @State var offset: CGFloat = 0
-    
     var body: some View {
-        GeometryReader { geo in
-            VStack {
-                Spacer()
+        NavigationView {
+            List {
+                Section {
+                    NavigationLink(destination: StopListForSearch(text: "", locations: $locations, chosenStop: $startStop), label: {
+                        startStop == nil ? Text("From").foregroundColor(.gray) : Text(startStop!.name_en).foregroundColor(.black)
+                    })
+                    NavigationLink(destination: StopListForSearch(text: "", locations: $locations, chosenStop: $endStop), label: {
+                        endStop == nil ? Text("To").foregroundColor(.gray) : Text(endStop!.name_en).foregroundColor(.black)
+                    })
+                }
                 
-                // sheet content
-                VStack {
-                    Image(systemName: "line.horizontal.3").foregroundColor(.gray).padding()
-
-                        
-                    switch page {
-                        // search area
-                        case 0:
-                            VStack(alignment: .leading) {
-                                Text(startStop == nil ? "From" : startStop!.name_en)
-                                    .foregroundColor(startStop == nil ? .gray : .black)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .contentShape(Rectangle())
-                                    .padding()
-                                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.gray, lineWidth: 0.5))
-                                    .onTapGesture {
-                                        page = 1
-                                        offset = 0
-                                        lastOffset = 0
-                                    }
-                                Text(endStop == nil ? "To" : endStop!.name_en)
-                                    .foregroundColor(endStop == nil ? .gray : .black)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .contentShape(Rectangle())
-                                    .padding()
-                                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.gray, lineWidth: 0.5))
-                                    .onTapGesture {
-                                        page = 2
-                                        offset = 0
-                                        lastOffset = 0
-                                    }
-                                ScrollView {
-                                    VStack(alignment: .leading, spacing: 0) {
-                                        
-                                        Divider()
-                                        Text("\(routes.filter({ $0.type == 1 && $0.startLoc == startStop && $0.endLoc == endStop }).count) result(s) in database").font(.title2).bold().padding(.vertical)
-                                        Divider()
-                                        ForEach(routes) { route in
-                                            if route.type == 1 && route.startLoc == startStop && route.endLoc == endStop {
-                                                HStack {
-                                                    VStack(alignment: .leading) {
-                                                        Text("ID: \(route._id)")
-                                                        Text("Distance: \(route.dist) m")
-                                                    }
-                                                    Spacer()
-                                                    Image(systemName: "trash")
-                                                        .foregroundColor(.red)
-                                                        .onTapGesture {
-                                                            deleteRoute(route: route)
-                                                        }
-                                                }
-                                                .frame(maxWidth: .infinity)
-                                                .padding(.vertical)
-                                                Divider()
-                                            }
-                                        }
-                                        
-                                        
-                                        Text("\(results.count) result(s) by DFS").font(.title2).bold().padding(.vertical)
-                                        Divider()
-                                        ForEach(results) { route in
-                                            HStack {
-                                                VStack(alignment: .leading) {
-                                                    Text("ID: \(route._id)")
-                                                    Text("Distance: \(route.dist) m")
-                                                }
-                                                Spacer()
-                                                route == selectedResult ? Image(systemName: "checkmark").foregroundColor(.green) : nil
-                                            }
-                                            .frame(maxWidth: .infinity)
-                                            .padding(.vertical)
-                                            .onTapGesture {
-                                                selectedResult = route
-                                            }
-                                            Divider()
-                                        }
-                                        
-                                        Button(action: {
-                                            uploadBusRoute()
-                                        }) {
-                                            Text("Save as a bus route").padding().frame(maxWidth: .infinity)
-                                        }
-                                        .buttonStyle(MyButtonStyle(bgColor: Color.gray.opacity(0.5), disabled: selectedResult == nil))
-                                        .disabled(selectedResult == nil)
-                                        .padding(.top)
-                                        
-                                    }.padding()
+                Section(header: Text("Database")) {
+                    ForEach(routes) { route in
+                        if route.type == 1 && route.startLoc == startStop && route.endLoc == endStop {
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text("ID: \(route._id)")
+                                    Text("Distance: \(route.dist) m")
                                 }
-                                .disabled(offset != 0)
-                                
+                                Spacer()
+                                Image(systemName: "trash")
+                                    .foregroundColor(.red)
+                                    .onTapGesture {
+                                        deleteRoute(route: route)
+                                    }
                             }
-                            .padding(.horizontal)
-                            .onAppear {
-                                findAllRoutes()
-                            }
-                    
-                        // start stop list
-                        case 1: StopListForSearch(text: startStop == nil ? "" : startStop!.name_en, locations: $locations, chosenStop: $startStop, page: $page).disabled(offset != 0)
-                        
-                        // end stop list
-                        default: StopListForSearch(text: endStop == nil ? "" : endStop!.name_en, locations: $locations, chosenStop: $endStop, page: $page).disabled(offset != 0)
+                        }
                     }
                 }
-                .frame(width: geo.size.width, height: geo.size.height, alignment: .top)
-                .background(RoundedCorners(color: .white, tl: 15, tr: 15, bl: 0, br: 0))
-                .offset(y: offset)
-                .animation(.easeInOut)
-                .clipped()
-                .shadow(radius: 10)
+                
+                Section(header: Text("Searching Result")) {
+                    ForEach(results) { route in
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text("ID: \(route._id)")
+                                Text("Distance: \(route.dist) m")
+                            }
+                            Spacer()
+                            route == selectedResult ? Image(systemName: "checkmark").foregroundColor(.green) : nil
+                        }
+                        .onTapGesture {
+                            selectedResult = route
+                        }
+                    }
+                }
+                
+                Button(action: {
+                    uploadBusRoute()
+                }) {
+                    Text("Save as a bus route")
+                }
+                .disabled(selectedResult == nil)
             }
-            .ignoresSafeArea(.container, edges: .bottom)
-            .gesture(DragGesture()
-                // 3 size: geo.size.height * 0.3, geo.size.height * 0.5, geo.size.height
-                // corres offset: geo.size.height * 0.7, geo.size.height * 0.5, 0
-                .onChanged{ value in
-                    if lastOffset + value.location.y - value.startLocation.y < 0 {
-                        offset = 0
-                    } else {
-                        offset = lastOffset + value.location.y - value.startLocation.y
-                    }
-                }
-                .onEnded{ _ in
-                    if offset < geo.size.height * 0.25 {
-                        offset = 0
-                    } else if offset > geo.size.height * 0.6 {
-                        offset = geo.size.height * 0.7
-                    } else {
-                        offset = geo.size.height * 0.5
-                    }
-                    lastOffset = offset
-            })
+            .onAppear {
+                findAllRoutes()
+            }
+            .listStyle(GroupedListStyle())
+            .navigationTitle("Search for routes")
         }
     }
     
@@ -460,7 +411,31 @@ struct SearchSheet: View {
 }
 
 
-
+struct StopListForSearch: View {
+    @Environment(\.presentationMode) var mode
+    @State var text: String
+    @Binding var locations: [Location]
+    @Binding var chosenStop: Location?
+    
+    var body: some View {
+        VStack {
+            TextField("", text: $text)
+            List {
+                ForEach(locations) { location in
+                    if location.type == 1 && ( text.isEmpty || location.name_en.lowercased().contains(text.lowercased()) ) {
+                        Button(action: {
+                            chosenStop = location
+                            self.mode.wrappedValue.dismiss()
+                        }) {
+                            Text(location.name_en)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+/*
 struct StopListForSearch: View {
     @State var text: String
     @Binding var locations: [Location]
@@ -497,20 +472,8 @@ struct StopListForSearch: View {
             }
         }.padding(.horizontal)
     }
-}
+}*/
 
-struct Sheets: View {
-    @Binding var locations: [Location]
-    @Binding var buses: [Bus]
-    @Binding var type: Int
-    var body: some View {
-        if type == 0 {
-            BusListSheet(buses: $buses)
-        } else if type == 1 {
-            NewBusSheet(locations: $locations, buses: $buses)
-        }
-    }
-}
 
 // bus list sheet
 struct BusListSheet: View {
