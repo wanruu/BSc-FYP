@@ -26,6 +26,17 @@ route_t* generate_routes (traj_t* trajs, int trajs_size, loc_t* locs, int locs_s
     int processed_trajs_size = trajs_size;
     traj_t* processed_trajs = split_trajs(trajs, &processed_trajs_size, closest_points, locs_size);
 
+    // test: print processed_trajs
+    /*printf("[\n");
+    for (int i = 0; i < processed_trajs_size; i++) {
+        printf("[");
+        for (int j = 0; j < processed_trajs[i].points_num; j ++) {
+            printf("Coor3D(latitude: %f, longitude: %f, altitude: %f), ", 
+                processed_trajs[i].points[j].lat, processed_trajs[i].points[j].lng, processed_trajs[i].points[j].alt);
+        }
+        printf("],\n");
+    }
+    printf("]\n");*/
 
     // Step 2: try to connect trajs as much as possible
     int* is_trajs_marked = (int*) malloc (sizeof(int) * processed_trajs_size);

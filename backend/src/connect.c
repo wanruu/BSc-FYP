@@ -1,6 +1,6 @@
 #include "connect.h"
 
-#define MinDist 22.0
+#define MinDist 26.0
 
 /*
  *  Aim: main func. smooth and connect trajs by clustering.
