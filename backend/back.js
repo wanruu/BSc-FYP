@@ -265,13 +265,25 @@ app.delete('/trajectory', (req, res) => {
 app.post('/route', (req, res) => {
     console.log("POST /route - " + Date());
     var conditions = {
-        startLoc: mongoose.Types.ObjectId(req.body.startId), 
-        endLoc: mongoose.Types.ObjectId(req.body.endId), 
+        startLoc: mongoose.Types.ObjectId(req.body.startLoc._id), 
+        endLoc: mongoose.Types.ObjectId(req.body.endLoc._id), 
         points: req.body.points,
         dist: req.body.dist,
         type: req.body.type
     }
     RouteModel.create(conditions, (err, result) => {
+        if(err) {
+            console.log(err);
+            res.status(404).send();
+        } else {
+            res.send({ _id: result._id, startLoc: req.body.startLoc, endLoc: req.body.endLoc, dist: result.dist, type: result.type, points: result.points });
+        }
+    });
+});
+
+app.delete('/route', (req, res) => {
+    console.log("DELETE /route - " + Date());
+    RouteModel.deleteOne({ _id: mongoose.Types.ObjectId(req.body.id)}, (err, result) => {
         if(err) {
             console.log(err);
             res.status(404).send();
