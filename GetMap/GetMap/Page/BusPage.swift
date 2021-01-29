@@ -2,9 +2,11 @@ import Foundation
 import SwiftUI
 
 struct BusPage: View {
-    @State var stops: [Location] = []
+    @State var locations: [Location] = []
     @State var buses: [Bus] = []
     @State var routes: [Route] = []
+    @State var results: [Route] = []
+    @State var resultIndex: Int = 0
     
     @State var showSheet: Bool = false
     @State var sheetType: Int = -1 // 0: bus list, 1: new bus
@@ -54,6 +56,8 @@ struct BusPage: View {
                 .gesture(gesture)
             
             
+            RoutesView(routes: $results, routeIndex: $resultIndex, offset: $offset, scale: $scale)
+            
             // control button
             VStack(spacing: 0) {
                 Button(action: {
@@ -82,14 +86,15 @@ struct BusPage: View {
             .shadow(radius: 10)
             .offset(x: SCWidth * 0.38, y: -SCHeight * 0.5 + SCWidth * 0.44)
             
-            SearchSheet(stops: $stops, routes: $routes)
+            SearchSheet(locations: $locations, routes: $routes, results: $results, resultIndex: $resultIndex)
         }
         .onAppear {
             loadBuses()
             loadLocations()
+            loadRoutes()
         }
         .sheet(isPresented: $showSheet) {
-            Sheets(stops: $stops, buses: $buses, type: $sheetType)
+            Sheets(locations: $locations, buses: $buses, type: $sheetType)
         }
         
     }
@@ -109,12 +114,18 @@ struct BusPage: View {
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data else { return }
             do {
-                let locations = try JSONDecoder().decode([Location].self, from: data)
-                for location in locations {
-                    if location.type == 1 {
-                        stops.append(location)
-                    }
-                }
+                locations = try JSONDecoder().decode([Location].self, from: data)
+            } catch let error {
+                print(error)
+            }
+        }.resume()
+    }
+    private func loadRoutes() {
+        let url = URL(string: server + "/routes")!
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data else { return }
+            do {
+                routes = try JSONDecoder().decode([Route].self, from: data)
             } catch let error {
                 print(error)
             }
@@ -122,18 +133,65 @@ struct BusPage: View {
     }
 }
 
+struct RoutesView: View {
+    @Binding var routes: [Route]
+    @Binding var routeIndex: Int
+    @Binding var offset: Offset
+    @Binding var scale: CGFloat
+    
+    var body: some View {
+        ZStack {
+            ForEach(routes) { route in
+                Path { p in
+                    for i in 0..<route.points.count {
+                        let point = CGPoint(
+                            x: centerX + CGFloat((route.points[i].longitude - centerLg) * lgScale * 2) * scale + offset.x,
+                            y: centerY + CGFloat((centerLa - route.points[i].latitude) * laScale * 2) * scale + offset.y)
+                        if i == 0 {
+                            p.move(to: point)
+                        } else {
+                            p.addLine(to: point)
+                        }
+                    }
+                }
+                .stroke(Color.gray, lineWidth: 4)
+            }
+            ForEach(routes) { route in
+                if routes.firstIndex(of: route)! == routeIndex {
+                    Path { p in
+                        for i in 0..<route.points.count {
+                            let point = CGPoint(
+                                x: centerX + CGFloat((route.points[i].longitude - centerLg) * lgScale * 2) * scale + offset.x,
+                                y: centerY + CGFloat((centerLa - route.points[i].latitude) * laScale * 2) * scale + offset.y)
+                            if i == 0 {
+                                p.move(to: point)
+                            } else {
+                                p.addLine(to: point)
+                            }
+                        }
+                    }
+                    .stroke(CUPurple, lineWidth: 4)
+                }
+            }
+        }
+    }
+}
 
 // MARK: - Sheet
 
 // search sheet
 struct SearchSheet: View {
     // input for route planning
-    @Binding var stops: [Location]
+    @Binding var locations: [Location]
+    @Binding var routes: [Route]
     @State var startStop: Location? = nil
     @State var endStop: Location? = nil
     
     // output of route planning
-    @Binding var routes: [Route]
+    @Binding var results: [Route]
+    @Binding var resultIndex: Int
+    
+    @State var page: Int = 0
     
     // gesture
     @State var lastOffset: CGFloat = 0
@@ -147,13 +205,70 @@ struct SearchSheet: View {
                 // sheet content
                 VStack {
                     Image(systemName: "line.horizontal.3").foregroundColor(.gray).padding()
-                    
-                    Text(startStop == nil ? "From" : startStop!.name_en)
                         
+                    switch page {
+                        // search area
+                        case 0:
+                            VStack(alignment: .leading) {
+                                Text(startStop == nil ? "From" : startStop!.name_en)
+                                    .foregroundColor(startStop == nil ? .gray : .black)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .contentShape(Rectangle())
+                                    .padding()
+                                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.gray, lineWidth: 0.5))
+                                    .onTapGesture {
+                                        page = 1
+                                    }
+                                Text(endStop == nil ? "To" : endStop!.name_en)
+                                    .foregroundColor(endStop == nil ? .gray : .black)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .contentShape(Rectangle())
+                                    .padding()
+                                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.gray, lineWidth: 0.5))
+                                    .onTapGesture {
+                                        page = 2
+                                    }
+                                
+                                Text("\(results.count) result(s)").padding()
+                                HStack {
+                                    Button(action: {
+                                        resultIndex -= 1
+                                    }) {
+                                        Image(systemName: "arrow.left")
+                                    }.disabled(resultIndex == 0)
+                                    Spacer()
+                                    
+                                    Button(action: {
+                                        uploadBusRoute()
+                                    }) {
+                                        Text("Save as a bus route").padding()
+                                    }
+                                    .disabled(resultIndex >= results.count)
+                                    
+                                    Spacer()
+                                    Button(action: {
+                                        resultIndex += 1
+                                    }) {
+                                        Image(systemName: "arrow.right")
+                                    }.disabled(resultIndex >= results.count - 1)
+                                }.padding()
+                            }
+                            .padding(.horizontal)
+                            .onAppear {
+                                findAllRoutes()
+                            }
+                    
+                        // start stop list
+                        case 1: StopListForSearch(locations: $locations, chosenStop: $startStop, page: $page)
+                        
+                        // end stop list
+                        default: StopListForSearch(locations: $locations, chosenStop: $endStop, page: $page)
+                    }
                 }
-                .frame(width: geo.size.width, height: geo.size.height * 0.9, alignment: .top)
+                .frame(width: geo.size.width, height: geo.size.height, alignment: .top)
                 .background(RoundedCorners(color: .white, tl: 15, tr: 15, bl: 0, br: 0))
                 .offset(y: offset)
+                .animation(.easeInOut)
                 .clipped()
                 .shadow(radius: 10)
                 
@@ -166,7 +281,6 @@ struct SearchSheet: View {
                     } else {
                         offset = lastOffset + value.location.y - value.startLocation.y
                     }
-                    
                 }
                 .onEnded{ _ in
                     lastOffset = offset
@@ -174,35 +288,137 @@ struct SearchSheet: View {
             
         }
     }
-}
-struct StopListForSearch: View {
-    @Binding var stops: [Location]
-    @Binding var chosenStop: Location
     
-    var body: some View {
-        VStack {
-            List {
-                ForEach(stops) { stop in
-                    Button(action: {
-                        chosenStop = stop
-                    }) {
-                        Text(stop.name_en)
-                    }
+    private func findAllRoutes() {
+        guard startStop != nil && endStop != nil else {
+            return
+        }
+        
+        results = []
+        resultIndex = 0
+        
+        let route = Route(_id: "", startLoc: nil, endLoc: nil, points: [], dist: 0, type: 1)
+        checkNextRoute(curResult: route)
+        
+        for i in 0..<results.count {
+            results[i]._id = String(i)
+        }
+       
+    }
+    
+    // DFS
+    private func checkNextRoute(curResult: Route) {
+        if curResult.startLoc == startStop && curResult.endLoc == endStop {
+            results.append(curResult)
+            return
+        }
+        
+        if curResult.startLoc == nil { // to find the first route
+            for i in 0..<routes.count {
+                if routes[i].startLoc == startStop {
+                    var curResult = curResult
+                    curResult.startLoc = routes[i].startLoc
+                    curResult.endLoc = routes[i].endLoc
+                    curResult.points = routes[i].points
+                    curResult.dist = routes[i].dist
+                    checkNextRoute(curResult: curResult)
+                } else if routes[i].endLoc == startStop {
+                    var curResult = curResult
+                    curResult.startLoc = routes[i].endLoc
+                    curResult.endLoc = routes[i].startLoc
+                    curResult.points = routes[i].points.reversed()
+                    curResult.dist = routes[i].dist
+                    checkNextRoute(curResult: curResult)
+                }
+            }
+        } else {
+            for i in 0..<routes.count {
+                if routes[i].startLoc == curResult.endLoc {
+                    if isOverlapped(points1: curResult.points, points2: routes[i].points) { continue }
+                    var curResult = curResult
+                    curResult.endLoc = routes[i].endLoc
+                    curResult.points += routes[i].points
+                    curResult.dist += routes[i].dist
+                    checkNextRoute(curResult: curResult)
+                } else if routes[i].endLoc == curResult.endLoc {
+                    if isOverlapped(points1: curResult.points, points2: routes[i].points) { continue }
+                    var curResult = curResult
+                    curResult.endLoc = routes[i].startLoc
+                    curResult.points += routes[i].points.reversed()
+                    curResult.dist += routes[i].dist
+                    checkNextRoute(curResult: curResult)
                 }
             }
         }
     }
+    
+    private func isOverlapped(points1: [Coor3D], points2: [Coor3D]) -> Bool {
+        var count = 0
+        for p in points1 {
+            if points2.contains(p) {
+                count += 1
+            }
+            if count >= 2 {
+                return true
+            }
+        }
+        return false
+    }
+    
+    private func uploadBusRoute() {
+        
+    }
+}
+
+
+
+struct StopListForSearch: View {
+    @State var text: String = ""
+    @Binding var locations: [Location]
+    @Binding var chosenStop: Location?
+    @Binding var page: Int
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            HStack {
+                Image(systemName: "arrow.left").onTapGesture {
+                    page = 0
+                }
+                TextField("To", text: $text)
+                text.isEmpty ? nil : Image(systemName: "xmark").onTapGesture {
+                    text = ""
+                }
+            }
+            .padding()
+            .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.gray, lineWidth: 0.5))
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 0) {
+                    ForEach(locations) { location in
+                        if location.type == 1 && ( text.isEmpty || location.name_en.lowercased().contains(text.lowercased())) {
+                            Button(action: {
+                                chosenStop = location
+                                page = 0
+                            }) {
+                                Text(location.name_en).frame(maxWidth: .infinity, alignment: .leading).padding()
+                            }.buttonStyle(MyButtonStyle2(bgColor: Color.gray.opacity(0.5)))
+                            Divider()
+                        }
+                    }
+                }
+            }
+        }.padding(.horizontal)
+    }
 }
 
 struct Sheets: View {
-    @Binding var stops: [Location]
+    @Binding var locations: [Location]
     @Binding var buses: [Bus]
     @Binding var type: Int
     var body: some View {
         if type == 0 {
             BusListSheet(buses: $buses)
         } else if type == 1 {
-            NewBusSheet(stops: $stops, buses: $buses)
+            NewBusSheet(locations: $locations, buses: $buses)
         }
     }
 }
@@ -273,7 +489,7 @@ struct BusListSheet: View {
 
 // new bus sheet
 struct NewBusSheet: View {
-    @Binding var stops: [Location]
+    @Binding var locations: [Location]
     @Binding var buses: [Bus]
     
     @State var id = ""
@@ -330,7 +546,7 @@ struct NewBusSheet: View {
                         chosenStops.remove(at: index.first!)
                     })
                     
-                    NavigationLink(destination: StopList(stops: $stops, chosenStops: $chosenStops), label: {
+                    NavigationLink(destination: StopList(locations: $locations, chosenStops: $chosenStops), label: {
                         HStack {
                             Image(systemName: "plus.circle.fill").imageScale(.large).foregroundColor(.green)
                             Text("New")
@@ -402,18 +618,20 @@ struct NewBusSheet: View {
 
 struct StopList: View {
     @Environment(\.presentationMode) var mode
-    @Binding var stops: [Location]
+    @Binding var locations: [Location]
     @Binding var chosenStops: [Location]
     
     var body: some View {
         VStack {
             List {
-                ForEach(stops) { stop in
-                    Button(action: {
-                        chosenStops.append(stop)
-                        self.mode.wrappedValue.dismiss()
-                    }) {
-                        Text(stop.name_en)
+                ForEach(locations) { location in
+                    if location.type == 1 {
+                        Button(action: {
+                            chosenStops.append(location)
+                            self.mode.wrappedValue.dismiss()
+                        }) {
+                            Text(location.name_en)
+                        }
                     }
                 }
             }

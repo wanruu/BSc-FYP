@@ -2,8 +2,8 @@ import Foundation
 
 struct Route {
     var _id: String
-    var startLoc: Location
-    var endLoc: Location
+    var startLoc: Location?
+    var endLoc: Location?
     var points: [Coor3D]
     var dist: Double
     var type: Int
