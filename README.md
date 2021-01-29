@@ -12,5 +12,10 @@
 ## GetMap
 
 - [ ] Ensure altitude uploaded to server is not -1?
+- [ ] Show result of process
 
 ## Backend
+
+- [ ] Why are process results different between MacOS & Linux?
+- [ ] Process bug: not all routes are found
+- [ ] 
