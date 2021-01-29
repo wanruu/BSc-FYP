@@ -298,13 +298,21 @@ struct EditLocWindow: View {
         }
     }
     private func editLocation() {
-        let dataStr = "id=\(id)&name_en=\(name_en)&latitude=\(latitude)&longitude=\(longitude)&altitude=\(altitude)&type=\(type)"
+        let data: [String: Any] = [
+            "id": id,
+            "name_en": name_en,
+            "latitude": latitude,
+            "longitude": longitude,
+            "altitude": altitude,
+            "type": type
+        ]
+        let jsonData = try? JSONSerialization.data(withJSONObject: data)
         
         let url = URL(string: server + "/location")!
         var request = URLRequest(url: url)
-        request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "PUT"
-        request.httpBody = dataStr.data(using: String.Encoding.utf8)
+        request.httpBody = jsonData
 
         URLSession.shared.dataTask(with: request as URLRequest) { data, response, error in
             guard let data = data else { return }
@@ -387,17 +395,21 @@ struct NewLocWindow: View {
     }
     
     private func addLocation() {
-        let latitude = current.latitude
-        let longitude = current.longitude
-        let altitude = current.altitude
-        let type = Int(locationType)!
-        let dataStr = "name_en=" + String(locationName) + "&latitude=" + String(latitude)  + "&longitude=" + String(longitude) + "&altitude=" + String(altitude) + "&type=" + String(type)
+        let data: [String: Any] = [
+            "name_en": locationName,
+            "latitude": current.latitude,
+            "longitude": current.longitude,
+            "altitude": current.altitude,
+            "type": locationType
+        ]
+        let jsonData = try? JSONSerialization.data(withJSONObject: data)
+        
         
         let url = URL(string: server + "/location")!
         var request = URLRequest(url: url)
-        request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "POST"
-        request.httpBody = dataStr.data(using: String.Encoding.utf8)
+        request.httpBody = jsonData
 
         URLSession.shared.dataTask(with: request as URLRequest) { data, response, error in
             if(error != nil) {
