@@ -2,12 +2,16 @@ import Foundation
 import SwiftUI
 
 struct BusPage: View {
+    // data loaded from server
     @State var locations: [Location] = []
     @State var buses: [Bus] = []
     @State var routes: [Route] = []
-    @State var results: [Route] = []
-    @State var resultIndex: Int = 0
     
+    // searching result
+    @State var results: [Route] = []
+    @State var selectedResult: Route? = nil
+    
+    // sheet management
     @State var showSheet: Bool = false
     @State var sheetType: Int = -1 // 0: bus list, 1: new bus
     
@@ -55,8 +59,8 @@ struct BusPage: View {
                 .position(x: centerX + offset.x, y: centerY + offset.y)
                 .gesture(gesture)
             
-            
-            RoutesView(routes: $results, routeIndex: $resultIndex, offset: $offset, scale: $scale)
+            // generated routes
+            RoutesView(routes: $results, seletedRoute: $selectedResult, offset: $offset, scale: $scale)
             
             // control button
             VStack(spacing: 0) {
@@ -86,7 +90,8 @@ struct BusPage: View {
             .shadow(radius: 10)
             .offset(x: SCWidth * 0.38, y: -SCHeight * 0.5 + SCWidth * 0.44)
             
-            SearchSheet(locations: $locations, routes: $routes, results: $results, resultIndex: $resultIndex)
+            // search sheet
+            SearchSheet(locations: $locations, routes: $routes, results: $results, selectedResult: $selectedResult)
         }
         .onAppear {
             loadBuses()
@@ -133,9 +138,10 @@ struct BusPage: View {
     }
 }
 
+// display routes in map
 struct RoutesView: View {
     @Binding var routes: [Route]
-    @Binding var routeIndex: Int
+    @Binding var seletedRoute: Route?
     @Binding var offset: Offset
     @Binding var scale: CGFloat
     
@@ -156,29 +162,27 @@ struct RoutesView: View {
                 }
                 .stroke(Color.gray, lineWidth: 4)
             }
-            ForEach(routes) { route in
-                if routes.firstIndex(of: route)! == routeIndex {
-                    Path { p in
-                        for i in 0..<route.points.count {
-                            let point = CGPoint(
-                                x: centerX + CGFloat((route.points[i].longitude - centerLg) * lgScale * 2) * scale + offset.x,
-                                y: centerY + CGFloat((centerLa - route.points[i].latitude) * laScale * 2) * scale + offset.y)
-                            if i == 0 {
-                                p.move(to: point)
-                            } else {
-                                p.addLine(to: point)
-                            }
+            if seletedRoute != nil {
+                Path { p in
+                    for i in 0..<seletedRoute!.points.count {
+                        let point = CGPoint(
+                            x: centerX + CGFloat((seletedRoute!.points[i].longitude - centerLg) * lgScale * 2) * scale + offset.x,
+                            y: centerY + CGFloat((centerLa - seletedRoute!.points[i].latitude) * laScale * 2) * scale + offset.y)
+                        if i == 0 {
+                            p.move(to: point)
+                        } else {
+                            p.addLine(to: point)
                         }
                     }
-                    .stroke(CUPurple, lineWidth: 4)
                 }
+                .stroke(CUPurple, lineWidth: 4)
+                
             }
         }
     }
 }
 
 // MARK: - Sheet
-
 // search sheet
 struct SearchSheet: View {
     // input for route planning
@@ -189,7 +193,7 @@ struct SearchSheet: View {
     
     // output of route planning
     @Binding var results: [Route]
-    @Binding var resultIndex: Int
+    @Binding var selectedResult: Route?
     
     @State var page: Int = 0
     
@@ -205,6 +209,7 @@ struct SearchSheet: View {
                 // sheet content
                 VStack {
                     Image(systemName: "line.horizontal.3").foregroundColor(.gray).padding()
+
                         
                     switch page {
                         // search area
@@ -218,6 +223,8 @@ struct SearchSheet: View {
                                     .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.gray, lineWidth: 0.5))
                                     .onTapGesture {
                                         page = 1
+                                        offset = 0
+                                        lastOffset = 0
                                     }
                                 Text(endStop == nil ? "To" : endStop!.name_en)
                                     .foregroundColor(endStop == nil ? .gray : .black)
@@ -227,31 +234,68 @@ struct SearchSheet: View {
                                     .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.gray, lineWidth: 0.5))
                                     .onTapGesture {
                                         page = 2
+                                        offset = 0
+                                        lastOffset = 0
                                     }
+                                ScrollView {
+                                    VStack(alignment: .leading, spacing: 0) {
+                                        
+                                        Divider()
+                                        Text("\(routes.filter({ $0.type == 1 && $0.startLoc == startStop && $0.endLoc == endStop }).count) result(s) in database").font(.title2).bold().padding(.vertical)
+                                        Divider()
+                                        ForEach(routes) { route in
+                                            if route.type == 1 && route.startLoc == startStop && route.endLoc == endStop {
+                                                HStack {
+                                                    VStack(alignment: .leading) {
+                                                        Text("ID: \(route._id)")
+                                                        Text("Distance: \(route.dist) m")
+                                                    }
+                                                    Spacer()
+                                                    Image(systemName: "trash")
+                                                        .foregroundColor(.red)
+                                                        .onTapGesture {
+                                                            deleteRoute(route: route)
+                                                        }
+                                                }
+                                                .frame(maxWidth: .infinity)
+                                                .padding(.vertical)
+                                                Divider()
+                                            }
+                                        }
+                                        
+                                        
+                                        Text("\(results.count) result(s) by DFS").font(.title2).bold().padding(.vertical)
+                                        Divider()
+                                        ForEach(results) { route in
+                                            HStack {
+                                                VStack(alignment: .leading) {
+                                                    Text("ID: \(route._id)")
+                                                    Text("Distance: \(route.dist) m")
+                                                }
+                                                Spacer()
+                                                route == selectedResult ? Image(systemName: "checkmark").foregroundColor(.green) : nil
+                                            }
+                                            .frame(maxWidth: .infinity)
+                                            .padding(.vertical)
+                                            .onTapGesture {
+                                                selectedResult = route
+                                            }
+                                            Divider()
+                                        }
+                                        
+                                        Button(action: {
+                                            uploadBusRoute()
+                                        }) {
+                                            Text("Save as a bus route").padding().frame(maxWidth: .infinity)
+                                        }
+                                        .buttonStyle(MyButtonStyle(bgColor: Color.gray.opacity(0.5), disabled: selectedResult == nil))
+                                        .disabled(selectedResult == nil)
+                                        .padding(.top)
+                                        
+                                    }.padding()
+                                }
+                                .disabled(offset != 0)
                                 
-                                Text("\(results.count) result(s)").padding()
-                                HStack {
-                                    Button(action: {
-                                        resultIndex -= 1
-                                    }) {
-                                        Image(systemName: "arrow.left")
-                                    }.disabled(resultIndex == 0)
-                                    Spacer()
-                                    
-                                    Button(action: {
-                                        uploadBusRoute()
-                                    }) {
-                                        Text("Save as a bus route").padding()
-                                    }
-                                    .disabled(resultIndex >= results.count)
-                                    
-                                    Spacer()
-                                    Button(action: {
-                                        resultIndex += 1
-                                    }) {
-                                        Image(systemName: "arrow.right")
-                                    }.disabled(resultIndex >= results.count - 1)
-                                }.padding()
                             }
                             .padding(.horizontal)
                             .onAppear {
@@ -259,10 +303,10 @@ struct SearchSheet: View {
                             }
                     
                         // start stop list
-                        case 1: StopListForSearch(locations: $locations, chosenStop: $startStop, page: $page)
+                        case 1: StopListForSearch(text: startStop == nil ? "" : startStop!.name_en, locations: $locations, chosenStop: $startStop, page: $page).disabled(offset != 0)
                         
                         // end stop list
-                        default: StopListForSearch(locations: $locations, chosenStop: $endStop, page: $page)
+                        default: StopListForSearch(text: endStop == nil ? "" : endStop!.name_en, locations: $locations, chosenStop: $endStop, page: $page).disabled(offset != 0)
                     }
                 }
                 .frame(width: geo.size.width, height: geo.size.height, alignment: .top)
@@ -271,10 +315,11 @@ struct SearchSheet: View {
                 .animation(.easeInOut)
                 .clipped()
                 .shadow(radius: 10)
-                
             }
             .ignoresSafeArea(.container, edges: .bottom)
             .gesture(DragGesture()
+                // 3 size: geo.size.height * 0.3, geo.size.height * 0.5, geo.size.height
+                // corres offset: geo.size.height * 0.7, geo.size.height * 0.5, 0
                 .onChanged{ value in
                     if lastOffset + value.location.y - value.startLocation.y < 0 {
                         offset = 0
@@ -283,9 +328,15 @@ struct SearchSheet: View {
                     }
                 }
                 .onEnded{ _ in
+                    if offset < geo.size.height * 0.25 {
+                        offset = 0
+                    } else if offset > geo.size.height * 0.6 {
+                        offset = geo.size.height * 0.7
+                    } else {
+                        offset = geo.size.height * 0.5
+                    }
                     lastOffset = offset
             })
-            
         }
     }
     
@@ -294,20 +345,20 @@ struct SearchSheet: View {
             return
         }
         
+        // clear result
         results = []
-        resultIndex = 0
         
-        let route = Route(_id: "", startLoc: nil, endLoc: nil, points: [], dist: 0, type: 1)
-        checkNextRoute(curResult: route)
-        
+        // find routes recursively
+        checkNextRoute(curResult: Route(_id: "", startLoc: nil, endLoc: nil, points: [], dist: 0, type: 1), routes: routes.filter({$0.type == 0}))
         for i in 0..<results.count {
-            results[i]._id = String(i)
+            results[i]._id = String(i + 1)
         }
-       
+        
+        selectedResult = results.first
     }
     
-    // DFS
-    private func checkNextRoute(curResult: Route) {
+    // DFS recursion
+    private func checkNextRoute(curResult: Route, routes: [Route]) {
         if curResult.startLoc == startStop && curResult.endLoc == endStop {
             results.append(curResult)
             return
@@ -321,14 +372,14 @@ struct SearchSheet: View {
                     curResult.endLoc = routes[i].endLoc
                     curResult.points = routes[i].points
                     curResult.dist = routes[i].dist
-                    checkNextRoute(curResult: curResult)
+                    checkNextRoute(curResult: curResult, routes: routes)
                 } else if routes[i].endLoc == startStop {
                     var curResult = curResult
                     curResult.startLoc = routes[i].endLoc
                     curResult.endLoc = routes[i].startLoc
                     curResult.points = routes[i].points.reversed()
                     curResult.dist = routes[i].dist
-                    checkNextRoute(curResult: curResult)
+                    checkNextRoute(curResult: curResult, routes: routes)
                 }
             }
         } else {
@@ -339,14 +390,14 @@ struct SearchSheet: View {
                     curResult.endLoc = routes[i].endLoc
                     curResult.points += routes[i].points
                     curResult.dist += routes[i].dist
-                    checkNextRoute(curResult: curResult)
+                    checkNextRoute(curResult: curResult, routes: routes)
                 } else if routes[i].endLoc == curResult.endLoc {
                     if isOverlapped(points1: curResult.points, points2: routes[i].points) { continue }
                     var curResult = curResult
                     curResult.endLoc = routes[i].startLoc
                     curResult.points += routes[i].points.reversed()
                     curResult.dist += routes[i].dist
-                    checkNextRoute(curResult: curResult)
+                    checkNextRoute(curResult: curResult, routes: routes)
                 }
             }
         }
@@ -366,14 +417,52 @@ struct SearchSheet: View {
     }
     
     private func uploadBusRoute() {
+        let jsonData = try? JSONEncoder().encode(selectedResult)
         
+        let url = URL(string: server + "/route")!
+        var request = URLRequest(url: url)
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpMethod = "POST"
+        request.httpBody = jsonData
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data else { return }
+            do {
+                let route = try JSONDecoder().decode(Route.self, from: data)
+                routes.append(route)
+            } catch let error {
+                print(error)
+            }
+        }.resume()
+    }
+    
+    private func deleteRoute(route: Route) {
+        let data = ["id": route._id]
+        let jsonData = try? JSONSerialization.data(withJSONObject: data)
+        let url = URL(string: server + "/route")!
+        var request = URLRequest(url: url)
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpMethod = "DELETE"
+        request.httpBody = jsonData
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data else { return }
+            do {
+                let res = try JSONDecoder().decode(DeleteResult.self, from: data)
+                if res.deletedCount == 1 {
+                    routes.remove(at: routes.firstIndex(of: route)!)
+                }
+            } catch let error {
+                print(error)
+            }
+        }.resume()
     }
 }
 
 
 
 struct StopListForSearch: View {
-    @State var text: String = ""
+    @State var text: String
     @Binding var locations: [Location]
     @Binding var chosenStop: Location?
     @Binding var page: Int

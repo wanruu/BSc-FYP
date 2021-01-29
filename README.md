@@ -12,6 +12,5 @@
 ## GetMap
 
 - [ ] Ensure altitude uploaded to server is not -1?
-- [ ] Add bus data, how?
 
 ## Backend
