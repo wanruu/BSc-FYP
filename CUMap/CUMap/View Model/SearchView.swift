@@ -63,10 +63,10 @@ struct SearchView: View {
     var body: some View {
         if showStartList {
             // Page 1: search starting point
-            SearchList(placeholder: "From", keyword: startLoc == nil ? "" : startLoc!.name_en, locationGetter: locationGetter, locations: locations, location: $startLoc, showList: $showStartList)
+            SearchList(placeholder: "From", keyword: startLoc == nil ? "" : startLoc!.name_en, locations: locations, showCurrent: endLoc == nil || endLoc!._id != "current", location: $startLoc, showList: $showStartList)
         } else if showEndList {
             // Page 2: search ending point
-            SearchList(placeholder: "To", keyword: endLoc == nil ? "" : endLoc!.name_en, locationGetter: locationGetter, locations: locations, location: $endLoc, showList: $showEndList)
+            SearchList(placeholder: "To", keyword: endLoc == nil ? "" : endLoc!.name_en, locations: locations, showCurrent: startLoc == nil || startLoc!._id != "current", location: $endLoc, showList: $showEndList)
         } else {
             // Page 3: search box
             SearchArea(locations: locations, startLoc: $startLoc, endLoc: $endLoc, routes: routes, buses: buses, plans: $plans, planIndex: $planIndex, showStartList: $showStartList, showEndList: $showEndList, mode: $mode)
@@ -201,14 +201,20 @@ struct SearchArea: View {
         }.edgesIgnoringSafeArea(.top)
     }
     private func RP() {
-        // clear result
+        // Clear result
         plans = []
         
-        if startLoc == nil || endLoc == nil {
-            return
-        }
+        if startLoc == nil || endLoc == nil { return }
         
-        // TODO: deal with current location
+        // Deal with current location
+        var newLocs = locations
+        var newRoutes = routes
+        if startLoc!._id == "current" {
+            newLocs.append(startLoc!)
+        } else if endLoc!._id == "current" {
+            newLocs.append(endLoc!)
+        }
+        // self.location = Location(_id: "current", name_en: "Your Location", latitude: locationGetter.current.latitude, longitude: locationGetter.current.longitude, altitude: locationGetter.current.altitude, type: 0)
         
         let plan1 = RPMinDist(locations: locations, routes: routes, startLoc: startLoc!, endLoc: endLoc!)
         if plan1 != nil {
@@ -230,8 +236,8 @@ struct SearchList: View {
     @State var keyword: String
     
     // location list
-    @ObservedObject var locationGetter: LocationGetterModel
     @State var locations: [Location]
+    @State var showCurrent: Bool
     
     // chosen location
     @Binding var location: Location?
@@ -276,9 +282,8 @@ struct SearchList: View {
                     ScrollView {
                         VStack(spacing: 0) {
                             // current location
-                            Button(action: {
-                                // TODO: change type of current location
-                                self.location = Location(_id: "current", name_en: "Your Location", latitude: locationGetter.current.latitude, longitude: locationGetter.current.longitude, altitude: locationGetter.current.altitude, type: 0)
+                            showCurrent ? Button(action: {
+                                self.location = Location(_id: "current", name_en: "Your Location", latitude: -1, longitude: -1, altitude: -1, type: 0)
                                 showList = false
                             }) {
                                 HStack(spacing: 20) {
@@ -289,7 +294,7 @@ struct SearchList: View {
                                     Text("Your Location")
                                     Spacer()
                                 }.padding(.horizontal)
-                            }.buttonStyle(MyButtonStyle())
+                            }.buttonStyle(MyButtonStyle()) : nil
                             
                             Divider().padding(.horizontal)
                             // other locations
