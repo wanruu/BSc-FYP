@@ -436,12 +436,13 @@ app.all('/process', (req, res) => {
     
     exec(cmdStr, (err, stdout, stderr) => {
         if(err) {
-            res.status(404).send(stderr);
+            console.log(err);
+            res.send({"n": 0, "ok": 0});
         } else {
             if (stdout.includes("\"ok\": 1")) {
                 res.send(JSON.parse(stdout));
             } else {
-                res.send(JSON.parse({"n": 0, "ok": 0}));
+                res.send({"n": 0, "ok": 0});
             }
         }
     });
