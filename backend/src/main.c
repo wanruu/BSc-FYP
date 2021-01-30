@@ -283,8 +283,6 @@ int main (int argc, char *argv[]) {
      *  Aim: upload routes to mongo.
      */
     // collection = mongoc_client_get_collection(client, "CUMap", "routes");
-    printf("%d\n", routes_size);
-    
     for (int i = 0; i < routes_size; i ++) {
         bson_t* route = bson_new();
         // startLoc & endLoc
@@ -335,7 +333,7 @@ int main (int argc, char *argv[]) {
     mongoc_client_destroy(client);
     mongoc_cleanup();
     
-    printf("Success.\n");
+    printf("{\"n\": %d, \"ok\": 1}", routes_size);
     return 0;
 }
 

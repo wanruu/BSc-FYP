@@ -13,5 +13,6 @@ struct PutResult: Codable {
 }
 
 struct ProcessResult: Codable {
+    var n: Int
     var ok: Int
 }

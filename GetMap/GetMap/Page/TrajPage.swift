@@ -166,9 +166,7 @@ struct TrajPage: View {
             guard let data = data else { return }
             do {
                 let res = try JSONDecoder().decode(ProcessResult.self, from: data)
-                if res.ok == 1 {
-                    print("success")
-                }
+                print(res)
             } catch let error {
                 print(error)
             }
