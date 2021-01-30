@@ -8,8 +8,13 @@ struct TrajPage: View {
     @ObservedObject var locationGetter: LocationGetterModel
     @State var isRecording = false // if locations are being recorded
     @State var buttonScale: CGFloat = 0.8 // scale of rectangle of record button
+    
     @State var showAlert = false
-
+    
+    // for process alert
+    @State var showProcessAlert = false
+    @State var processText = ""
+    
     // gesture
     @State var lastOffset = Offset(x: 0, y: 0)
     @State var offset = Offset(x: 0, y: 0)
@@ -112,6 +117,7 @@ struct TrajPage: View {
                     }.buttonStyle(ZoomOutStyle())
                 }
             }
+            showProcessAlert ? ProcessAlert(showing: $showProcessAlert, text: $processText) : nil
         }
         .alert(isPresented: $showAlert) {
             Alert(title: Text("Upload or discard recorded data?"), primaryButton: .default(Text("Upload"), action: { uploadTrajs() }), secondaryButton: .default(Text("Discard"), action: { cleanRecord() }))
@@ -159,17 +165,74 @@ struct TrajPage: View {
     }
     
     private func process() {
+        showProcessAlert = true
+        processText = ""
+        
         let url = URL(string: server + "/process")!
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
         URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data else { return }
+            if error != nil {
+                processText = "Error!"
+                return
+            }
+            guard let data = data else { processText = "Error!"; return }
             do {
                 let res = try JSONDecoder().decode(ProcessResult.self, from: data)
-                print(res)
+                if res.ok == 1 {
+                    processText = "\(res.n) routes generated!"
+                } else {
+                    processText = "Error!"
+                }
             } catch let error {
+                processText = "Error!"
                 print(error)
             }
         }.resume()
+    }
+}
+
+struct ProcessAlert: View {
+    @Binding var showing: Bool
+    @Binding var text: String
+    
+    @State var angle: Double = 0
+    
+    var body: some View {
+        ZStack {
+            // background
+            Color.gray.opacity(0.25).frame(maxWidth: .infinity, maxHeight: .infinity).ignoresSafeArea(.all).disabled(true)
+            
+            // content
+            VStack(spacing: 0) {
+                if text.isEmpty {
+                    Image(systemName: "arrow.triangle.2.circlepath").imageScale(.large)
+                        .rotationEffect(Angle(degrees: angle))
+                        .animation(Animation.linear(duration: 1).repeatForever(autoreverses: false))
+                        .onAppear {
+                            angle += 180
+                        }.padding(.vertical, 20)
+                } else {
+                    Text(text).font(.headline).padding(.vertical, 20)
+                }
+                
+                Divider()
+                
+                Button(action: {
+                    showing.toggle()
+                }) {
+                    Text("OK")
+                        .foregroundColor(text.isEmpty ? .gray : .blue)
+                        .frame(width: SCWidth * 0.65, alignment: .center)
+                        .padding(10)
+                }
+                .buttonStyle(MyButtonStyle3(bgColor: Color.gray.opacity(0.3)))
+                .disabled(text.isEmpty)
+            }
+            .frame(width: SCWidth * 0.65, alignment: .center)
+            .background(RoundedCorners(color: Color.white, tl: 10, tr: 10, bl: 10, br: 10))
+            .clipped()
+            .shadow(radius: 6)
+        }
     }
 }

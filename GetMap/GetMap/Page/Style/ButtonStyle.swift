@@ -55,7 +55,6 @@ struct MyButtonStyle3: ButtonStyle {
     
     func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
-            .padding()
             .background(
                 Rectangle()
                     .fill(bgColor.opacity(configuration.isPressed ? 1 : 0))

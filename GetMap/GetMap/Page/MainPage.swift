@@ -9,7 +9,7 @@ enum Page {
 
 
 struct MainPage: View {
-    @State var page: Page = .bus
+    @State var page: Page = .traj
     @State var showMenu: Bool = false
     @StateObject var locationGetter = LocationGetterModel()
     
