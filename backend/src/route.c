@@ -1,6 +1,6 @@
 #include "route.h"
 
-#define MIN_DIST 20
+#define MIN_DIST 25
 
 /*
  *  Aim: generate routes.
@@ -21,6 +21,7 @@ route_t* generate_routes (traj_t* trajs, int trajs_size, loc_t* locs, int locs_s
     coor_t* closest_points = (coor_t*) malloc(sizeof(coor_t) * locs_size);
     for (int i = 0; i < locs_size; i ++) {
         closest_points[i] = find_closest_point(locs[i], trajs, trajs_size);
+        // printf("%s %d\n", locs[i].name, closest_points[i].lat != -1);
     }
     // split trajs by closest points.
     int processed_trajs_size = trajs_size;
