@@ -16,6 +16,9 @@
 
 ## Backend
 
-- [ ] Why are process results different between MacOS & Linux?
-- [ ] 
+
+
+## All
+
+- [ ] Deal with http response with error != nil
 
