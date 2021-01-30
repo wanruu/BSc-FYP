@@ -147,7 +147,7 @@ struct SearchArea: View {
                             .animation(Animation.easeInOut(duration: 0.1))
                             .padding(.leading)
                             .onTapGesture {
-                                angle = 180 - angle
+                                angle += 180
                                 let tmp = startLoc
                                 startLoc = endLoc
                                 endLoc = tmp
@@ -174,7 +174,7 @@ struct SearchArea: View {
                             HStack {
                                 Image(systemName: "figure.walk").foregroundColor(Color.black.opacity(0.7))
                                 if startLoc != nil && endLoc != nil {
-                                    footTime == INF ? Text("—") : Text("\(Int(footTime) / 60) min")
+                                    footTime == INF ? Text("—") : Text("\(Int(footTime)) min")
                                 }
                             }
                             .padding(.horizontal, 8)
