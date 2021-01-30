@@ -163,7 +163,7 @@ struct SearchArea: View {
                             HStack {
                                 Image(systemName: "bus").foregroundColor(Color.black.opacity(0.7))
                                 if startLoc != nil && endLoc != nil {
-                                    busTime == INF ? Text("—") : Text("\(Int(busTime / 60)) min")
+                                    busTime == INF ? Text("—") : Text("\(Int(busTime)) min")
                                 }
                             }
                             .padding(.horizontal, 8)

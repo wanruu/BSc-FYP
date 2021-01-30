@@ -178,7 +178,7 @@ struct PlanView: View {
                     
                     // title
                     HStack {
-                        Text("\(Int(plans[planIndex].time/60))").font(.title2).bold()
+                        Text("\(Int(plans[planIndex].time))").font(.title2).bold()
                         Text("min").font(.title2)
                         Text("(\(Int(plans[planIndex].dist)) m)").font(.title3).foregroundColor(Color.gray)
                     }.padding(.horizontal).padding(.bottom)
