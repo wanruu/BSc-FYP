@@ -58,7 +58,7 @@ struct TrajPage: View {
                 .gesture(gesture)
 
             // recording trajectory
-            if isRecording { // TODO: need judge isRecording?
+            if isRecording {
                 UserPathsView(locationGetter: locationGetter, offset: $offset, scale: $scale)
             }
             
@@ -69,7 +69,7 @@ struct TrajPage: View {
                 Spacer()
                 HStack (spacing: SCWidth * 0.1) {
                     // record button
-                    if isRecording {
+                    if isRecording { // to stop recording
                         Button(action: {
                             showAlert = true
                             isRecording.toggle()
@@ -88,7 +88,7 @@ struct TrajPage: View {
                         }
                         .buttonStyle(ZoomOutStyle())
                         .onAppear { buttonScale = buttonScale == 0.8 ? 0.5 : 0.7 }
-                    } else {
+                    } else { // to start recording
                         Button(action: {
                             cleanRecord()
                             isRecording.toggle()
@@ -120,7 +120,7 @@ struct TrajPage: View {
             showProcessAlert ? ProcessAlert(showing: $showProcessAlert, text: $processText) : nil
         }
         .alert(isPresented: $showAlert) {
-            Alert(title: Text("Upload or discard recorded data?"), primaryButton: .default(Text("Upload"), action: { uploadTrajs() }), secondaryButton: .default(Text("Discard"), action: { cleanRecord() }))
+            Alert(title: Text("Upload or discard recorded data?"), primaryButton: .default(Text("Upload"), action: { uploadTrajs() }), secondaryButton: .destructive(Text("Discard"), action: { cleanRecord() }))
         }
     }
     
