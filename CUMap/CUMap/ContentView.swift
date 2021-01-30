@@ -17,16 +17,17 @@ struct ContentView: View {
     
     @State var locations: [Location] = []
     @State var routes: [Route] = []
+    @State var buses: [Bus] = []
     @StateObject var locationGetter = LocationGetterModel()
     
-    @State var loadTasks: [Bool] = [false, false]
-    @State var newVersion: [Bool] = [false, false]
+    @State var loadTasks: [Bool] = [false, false, false]
+    @State var newVersion: [Bool] = [false, false, false]
     @State var showAlert = false
     
     var body: some View {
         ZStack {
             loadTasks.filter{$0 == true}.count != loadTasks.count ? LoadPage(tasks: $loadTasks) : nil
-            loadTasks.filter{$0 == true}.count != loadTasks.count ? nil : MainPage(locations: locations, routes: routes, locationGetter: locationGetter)
+            loadTasks.filter{$0 == true}.count != loadTasks.count ? nil : MainPage(locations: locations, routes: routes, buses: buses, locationGetter: locationGetter)
         }
         .alert(isPresented: $showAlert) {
             Alert(
@@ -75,6 +76,7 @@ struct ContentView: View {
                 switch i {
                     case 0: loadLocations()
                     case 1: loadRoutes()
+                    case 2: loadBuses()
                     default: return
                 }
             }
@@ -109,6 +111,23 @@ struct ContentView: View {
                 showAlert = true
                 print(error)
                 print("task 1")
+            }
+        }.resume()
+    }
+    private func loadBuses() { // load task #2
+        let url = URL(string: server + "/buses")!
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if(error != nil) {
+                showAlert = true
+            }
+            guard let data = data else { return }
+            do {
+                buses = try JSONDecoder().decode([Bus].self, from: data)
+                loadTasks[2] = true
+            } catch let error {
+                showAlert = true
+                print(error)
+                print("task 2")
             }
         }.resume()
     }

@@ -43,6 +43,7 @@ struct SearchView: View {
     @State var startLoc: Location? = nil
     @State var endLoc: Location? = nil
     @State var routes: [Route]
+    @State var buses: [Bus]
     
     // result of route planning
     @Binding var plans: [Plan]
@@ -68,7 +69,7 @@ struct SearchView: View {
             SearchList(placeholder: "To", keyword: endLoc == nil ? "" : endLoc!.name_en, locationGetter: locationGetter, locations: locations, location: $endLoc, showList: $showEndList)
         } else {
             // Page 3: search box
-            SearchArea(locations: locations, startLoc: $startLoc, endLoc: $endLoc, routes: routes, plans: $plans, planIndex: $planIndex, showStartList: $showStartList, showEndList: $showEndList, mode: $mode)
+            SearchArea(locations: locations, startLoc: $startLoc, endLoc: $endLoc, routes: routes, buses: buses, plans: $plans, planIndex: $planIndex, showStartList: $showStartList, showEndList: $showEndList, mode: $mode)
                 .offset(y: height > smallH ? (smallH - height) * 2 : 0)
                 .onAppear {
                     if startLoc != nil && endLoc != nil {
@@ -88,6 +89,7 @@ struct SearchArea: View {
     @Binding var startLoc: Location?
     @Binding var endLoc: Location?
     @State var routes: [Route]
+    @State var buses: [Bus]
 
     // output of RP
     @Binding var plans: [Plan]

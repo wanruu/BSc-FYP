@@ -20,6 +20,7 @@ struct MainPage: View {
     // data used to do route planning
     @State var locations: [Location]
     @State var routes: [Route]
+    @State var buses: [Bus]
     
     @ObservedObject var locationGetter: LocationGetterModel
     
@@ -38,7 +39,7 @@ struct MainPage: View {
             
             PlansView(plans: $plans, planIndex: $planIndex, lastHeight: $lastHeight, height: $height)
             
-            SearchView(locationGetter: locationGetter, locations: locations, routes: routes, plans: $plans, planIndex: $planIndex, mode: $mode, lastHeight: $lastHeight, height: $height)
+            SearchView(locationGetter: locationGetter, locations: locations, routes: routes, buses: buses, plans: $plans, planIndex: $planIndex, mode: $mode, lastHeight: $lastHeight, height: $height)
         }
     }
 }
