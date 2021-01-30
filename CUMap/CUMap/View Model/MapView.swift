@@ -11,7 +11,7 @@ import SwiftUI
 
 struct MapView: View {
     @Binding var plans: [Plan]
-    @Binding var planIndex: Int
+    @Binding var chosenPlan: Plan?
     @ObservedObject var locationGetter: LocationGetterModel
     
     @Binding var lastHeight: CGFloat
@@ -61,17 +61,14 @@ struct MapView: View {
             
             // show plans in map
             ForEach(plans) { plan in
-                let index = plans.firstIndex(where: {$0.id == plan.id})!
-                if index == planIndex { // chosen plan
-                    PlanMapView(plan: plan, opacity: 1, offset: $offset, scale: $scale)
-                } else { // unchosen plan
-                    PlanMapView(plan: plan, opacity: 0.5, offset: $offset, scale: $scale)
-                        .onTapGesture {
-                            print("switch plan")
-                            planIndex = index
-                        }
-                }
+                PlanMapView(plan: plan, opacity: 0.3, offset: $offset, scale: $scale)
+                    .onTapGesture {
+                        print("switch plan")
+                        chosenPlan = plan
+                    }
+                
             }
+            chosenPlan != nil ? PlanMapView(plan: chosenPlan!, opacity: 1, offset: $offset, scale: $scale) : nil
             
             // current location
             UserPoint(locationGetter: locationGetter, offset: $offset, scale: $scale)

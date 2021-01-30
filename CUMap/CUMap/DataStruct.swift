@@ -56,7 +56,7 @@ struct Plan {
 }
 extension Plan: Identifiable {
     public var id: String {
-        "\(self.startLoc?._id)\(self.endLoc?._id)\(self.dist)\(self.time)\(self.type)"
+        "\(String(describing: self.startLoc?._id))\(String(describing: self.endLoc?._id))\(self.dist)\(self.time)\(self.type)"
     }
 }
 

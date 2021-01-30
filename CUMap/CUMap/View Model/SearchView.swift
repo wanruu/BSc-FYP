@@ -47,7 +47,7 @@ struct SearchView: View {
     
     // result of route planning
     @Binding var plans: [Plan]
-    @Binding var planIndex: Int
+    @Binding var chosenPlan: Plan?
     
     // decide which plan to display
     @Binding var mode: TransMode
@@ -69,7 +69,7 @@ struct SearchView: View {
             SearchList(placeholder: "To", keyword: endLoc == nil ? "" : endLoc!.name_en, locations: locations, showCurrent: startLoc == nil || startLoc!._id != "current", location: $endLoc, showList: $showEndList)
         } else {
             // Page 3: search box
-            SearchArea(locations: locations, startLoc: $startLoc, endLoc: $endLoc, routes: routes, buses: buses, current: $locationGetter.current, plans: $plans, planIndex: $planIndex, showStartList: $showStartList, showEndList: $showEndList, mode: $mode)
+            SearchArea(locations: locations, startLoc: $startLoc, endLoc: $endLoc, routes: routes, buses: buses, current: $locationGetter.current, plans: $plans, chosenPlan: $chosenPlan, showStartList: $showStartList, showEndList: $showEndList, mode: $mode)
                 .offset(y: height > smallH ? (smallH - height) * 2 : 0)
                 .onAppear {
                     if startLoc != nil && endLoc != nil {
@@ -94,7 +94,7 @@ struct SearchArea: View {
 
     // output of RP
     @Binding var plans: [Plan]
-    @Binding var planIndex: Int
+    @Binding var chosenPlan: Plan?
     
     // show searchList
     @Binding var showStartList: Bool
@@ -170,7 +170,10 @@ struct SearchArea: View {
                             .padding(.vertical, 5)
                             .background(mode == .bus ? CUPurple.opacity(0.2) : nil)
                             .cornerRadius(20)
-                            .onTapGesture { mode = .bus }
+                            .onTapGesture {
+                                mode = .bus
+                                chosenPlan = plans.first(where: {$0.type == 1})
+                            }
                             HStack {
                                 Image(systemName: "figure.walk").foregroundColor(Color.black.opacity(0.7))
                                 if startLoc != nil && endLoc != nil {
@@ -181,7 +184,10 @@ struct SearchArea: View {
                             .padding(.vertical, 5)
                             .background(mode == .foot ? CUPurple.opacity(0.2) : nil)
                             .cornerRadius(20)
-                            .onTapGesture { mode = .foot }
+                            .onTapGesture {
+                                mode = .foot
+                                chosenPlan = plans.first(where: {$0.type == 0})
+                            }
                         }
                     }
                     .padding(.horizontal)
@@ -204,7 +210,6 @@ struct SearchArea: View {
     private func RP() {
         // Clear result
         plans = []
-        planIndex = 0
         
         // Deal with nil input
         if startLoc == nil || endLoc == nil { return }
@@ -254,7 +259,14 @@ struct SearchArea: View {
         
         // Searching for route plans
         checkNextRoute(plan: Plan(startLoc: nil, endLoc: nil, routes: [], dist: 0, time: 0, ascent: 0, type: 0), locs: newLocs, routes: newRoutes)
-
+        
+        if plans.isEmpty {
+            chosenPlan = nil
+        } else if mode == .bus {
+            chosenPlan = plans.first(where: {$0.type == 1})
+        } else {
+            chosenPlan = plans.first(where: {$0.type == 0})
+        }
     }
     
     // DFS recursion
