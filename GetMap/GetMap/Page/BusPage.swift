@@ -186,7 +186,6 @@ struct RoutesView: View {
                     }
                 }
                 .stroke(CUPurple, lineWidth: 4)
-                
             }
         }
     }
@@ -233,10 +232,10 @@ struct SearchSheet: View {
         NavigationView {
             List {
                 Section {
-                    NavigationLink(destination: StopListForSearch(text: "", locations: $locations, chosenStop: $startStop), label: {
+                    NavigationLink(destination: StopListForSearch(text: startStop == nil ? "" : startStop!.name_en, locations: $locations, chosenStop: $startStop), label: {
                         startStop == nil ? Text("From").foregroundColor(.gray) : Text(startStop!.name_en).foregroundColor(.black)
                     })
-                    NavigationLink(destination: StopListForSearch(text: "", locations: $locations, chosenStop: $endStop), label: {
+                    NavigationLink(destination: StopListForSearch(text: endStop == nil ? "" : endStop!.name_en, locations: $locations, chosenStop: $endStop), label: {
                         endStop == nil ? Text("To").foregroundColor(.gray) : Text(endStop!.name_en).foregroundColor(.black)
                     })
                 }
@@ -250,11 +249,8 @@ struct SearchSheet: View {
                                     Text("Distance: \(route.dist) m")
                                 }
                                 Spacer()
-                                Image(systemName: "trash")
-                                    .foregroundColor(.red)
-                                    .onTapGesture {
-                                        deleteRoute(route: route)
-                                    }
+                                Image(systemName: "trash").foregroundColor(.red)
+                                    .onTapGesture { deleteRoute(route: route) }
                             }
                         }
                     }
@@ -270,18 +266,11 @@ struct SearchSheet: View {
                             Spacer()
                             route == selectedResult ? Image(systemName: "checkmark").foregroundColor(.green) : nil
                         }
-                        .onTapGesture {
-                            selectedResult = route
-                        }
+                        .onTapGesture { selectedResult = route }
                     }
                 }
                 
-                Button(action: {
-                    uploadBusRoute()
-                }) {
-                    Text("Save as a bus route")
-                }
-                .disabled(selectedResult == nil)
+                Button(action: { uploadBusRoute() }) { Text("Save as a bus route") } .disabled(selectedResult == nil)
             }
             .onAppear {
                 findAllRoutes()
@@ -301,8 +290,12 @@ struct SearchSheet: View {
         
         // find routes recursively
         checkNextRoute(curResult: Route(_id: "", startLoc: nil, endLoc: nil, points: [], dist: 0, type: 1), routes: routes.filter({$0.type == 0}))
+        let formatter = DateFormatter()
+        formatter.locale = Locale.init(identifier: "zh_CN")
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        
         for i in 0..<results.count {
-            results[i]._id = String(i + 1)
+            results[i]._id = formatter.string(from: Date()) + " " + String(i + 1)
         }
         
         selectedResult = results.first
@@ -419,7 +412,13 @@ struct StopListForSearch: View {
     
     var body: some View {
         VStack {
-            TextField("", text: $text)
+            HStack {
+                Image(systemName: "magnifyingglass")
+                TextField("", text: $text)
+                text.isEmpty ? nil : Image(systemName: "xmark").onTapGesture { text = "" }
+            }
+            .padding(10).overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.5)).padding(.horizontal)
+                
             List {
                 ForEach(locations) { location in
                     if location.type == 1 && ( text.isEmpty || location.name_en.lowercased().contains(text.lowercased()) ) {
@@ -435,45 +434,6 @@ struct StopListForSearch: View {
         }
     }
 }
-/*
-struct StopListForSearch: View {
-    @State var text: String
-    @Binding var locations: [Location]
-    @Binding var chosenStop: Location?
-    @Binding var page: Int
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Image(systemName: "arrow.left").onTapGesture {
-                    page = 0
-                }
-                TextField("To", text: $text)
-                text.isEmpty ? nil : Image(systemName: "xmark").onTapGesture {
-                    text = ""
-                }
-            }
-            .padding()
-            .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.gray, lineWidth: 0.5))
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 0) {
-                    ForEach(locations) { location in
-                        if location.type == 1 && ( text.isEmpty || location.name_en.lowercased().contains(text.lowercased())) {
-                            Button(action: {
-                                chosenStop = location
-                                page = 0
-                            }) {
-                                Text(location.name_en).frame(maxWidth: .infinity, alignment: .leading).padding()
-                            }.buttonStyle(MyButtonStyle2(bgColor: Color.gray.opacity(0.5)))
-                            Divider()
-                        }
-                    }
-                }
-            }
-        }.padding(.horizontal)
-    }
-}*/
-
 
 // bus list sheet
 struct BusListSheet: View {
@@ -598,7 +558,7 @@ struct NewBusSheet: View {
                         chosenStops.remove(at: index.first!)
                     })
                     
-                    NavigationLink(destination: StopList(locations: $locations, chosenStops: $chosenStops), label: {
+                    NavigationLink(destination: StopListForBus(locations: $locations, chosenStops: $chosenStops), label: {
                         HStack {
                             Image(systemName: "plus.circle.fill").imageScale(.large).foregroundColor(.green)
                             Text("New")
@@ -668,16 +628,25 @@ struct NewBusSheet: View {
     }
 }
 
-struct StopList: View {
+struct StopListForBus: View {
     @Environment(\.presentationMode) var mode
     @Binding var locations: [Location]
     @Binding var chosenStops: [Location]
     
+    @State var text = ""
+    
     var body: some View {
         VStack {
+            HStack {
+                Image(systemName: "magnifyingglass")
+                TextField("", text: $text)
+                text.isEmpty ? nil : Image(systemName: "xmark").onTapGesture { text = "" }
+            }
+            .padding(10).overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.5)).padding(.horizontal)
+            
             List {
                 ForEach(locations) { location in
-                    if location.type == 1 {
+                    if location.type == 1  && ( text.isEmpty || location.name_en.lowercased().contains(text.lowercased()) ) {
                         Button(action: {
                             chosenStops.append(location)
                             self.mode.wrappedValue.dismiss()
