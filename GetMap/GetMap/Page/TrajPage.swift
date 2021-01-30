@@ -225,6 +225,7 @@ struct ProcessAlert: View {
                         .foregroundColor(text.isEmpty ? .gray : .blue)
                         .frame(width: SCWidth * 0.65, alignment: .center)
                         .padding(10)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(MyButtonStyle3(bgColor: Color.gray.opacity(0.3)))
                 .disabled(text.isEmpty)
