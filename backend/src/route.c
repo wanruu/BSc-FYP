@@ -21,7 +21,7 @@ route_t* generate_routes (traj_t* trajs, int trajs_size, loc_t* locs, int locs_s
     coor_t* closest_points = (coor_t*) malloc(sizeof(coor_t) * locs_size);
     for (int i = 0; i < locs_size; i ++) {
         closest_points[i] = find_closest_point(locs[i], trajs, trajs_size);
-        // printf("%s %d\n", locs[i].name, closest_points[i].lat != -1);
+        // printf("%s, %f %f %f\n", locs[i].name, closest_points[i].lat, closest_points[i].lng, closest_points[i].alt);
     }
     // split trajs by closest points.
     int processed_trajs_size = trajs_size;
@@ -49,6 +49,34 @@ route_t* generate_routes (traj_t* trajs, int trajs_size, loc_t* locs, int locs_s
     cur_route.points_num = 0;
 
     find_routes (processed_trajs, processed_trajs_size, is_trajs_marked, locs, locs_size, closest_points, routes, routes_size, cur_route);
+
+    // Step 3: if closest points of two locs are the same, generate a new route
+    for (int i = 0; i < locs_size; i ++) {
+        for (int j = i + 1; j < locs_size; j ++) {
+            if (closest_points[i].lat != -1 && equals(closest_points[i], closest_points[j])) {
+                // printf("%s %s\n", locs[i].name, locs[j].name);
+                routes[*routes_size].start_loc = locs[i];
+                routes[*routes_size].end_loc = locs[j];
+
+                // generate 3 points averagely
+                coor_t* points = (coor_t*) malloc(sizeof(coor_t) * 3);
+                points[0].lat = locs[i].lat;
+                points[0].lng = locs[i].lng;
+                points[0].alt = locs[i].alt;
+                points[1].lat = (locs[i].lat + locs[j].lat) / 2;
+                points[1].lng = (locs[i].lng + locs[j].lng) / 2;
+                points[1].alt = (locs[i].alt + locs[j].alt) / 2;
+                points[2].lat = locs[j].lat;
+                points[2].lng = locs[j].lng;
+                points[2].alt = locs[j].alt;
+                routes[*routes_size].points = points;
+                routes[*routes_size].points_num = 3;
+
+                routes[*routes_size].dist = dist_coor_coor(points[0], points[1]) + dist_coor_coor(points[1], points[2]);
+                *routes_size = *routes_size + 1;
+            }
+        }
+    }
 
     return routes;
 }
