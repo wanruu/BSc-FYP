@@ -358,7 +358,7 @@ struct Instructions: View {
                     if route == plan.routes.first! { // first route
                         HStack(spacing: 20) {
                             Image(systemName: "circlebadge").imageScale(.large).frame(width: 20)
-                            Text(plan.startLoc.name_en).font(.title3)
+                            Text(plan.startLoc!.name_en).font(.title3)
                             Spacer()
                         }.padding()
                     }

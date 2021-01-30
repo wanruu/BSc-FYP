@@ -46,8 +46,8 @@ extension Route: Identifiable, Equatable, Codable {
 
 // MARK: - A plan
 struct Plan {
-    var startLoc: Location
-    var endLoc: Location
+    var startLoc: Location?
+    var endLoc: Location?
     var routes: [Route]
     var dist: Double // meters
     var time: Double // seconds
@@ -56,7 +56,7 @@ struct Plan {
 }
 extension Plan: Identifiable {
     public var id: String {
-        "\(self.startLoc._id)\(self.endLoc._id)\(self.dist)\(self.time)\(self.type)"
+        "\(self.startLoc?._id)\(self.endLoc?._id)\(self.dist)\(self.time)\(self.type)"
     }
 }
 

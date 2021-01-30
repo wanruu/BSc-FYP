@@ -69,7 +69,7 @@ struct SearchView: View {
             SearchList(placeholder: "To", keyword: endLoc == nil ? "" : endLoc!.name_en, locations: locations, showCurrent: startLoc == nil || startLoc!._id != "current", location: $endLoc, showList: $showEndList)
         } else {
             // Page 3: search box
-            SearchArea(locations: locations, startLoc: $startLoc, endLoc: $endLoc, routes: routes, buses: buses, plans: $plans, planIndex: $planIndex, showStartList: $showStartList, showEndList: $showEndList, mode: $mode)
+            SearchArea(locations: locations, startLoc: $startLoc, endLoc: $endLoc, routes: routes, buses: buses, current: $locationGetter.current, plans: $plans, planIndex: $planIndex, showStartList: $showStartList, showEndList: $showEndList, mode: $mode)
                 .offset(y: height > smallH ? (smallH - height) * 2 : 0)
                 .onAppear {
                     if startLoc != nil && endLoc != nil {
@@ -90,6 +90,7 @@ struct SearchArea: View {
     @Binding var endLoc: Location?
     @State var routes: [Route]
     @State var buses: [Bus]
+    @Binding var current: Coor3D
 
     // output of RP
     @Binding var plans: [Plan]
@@ -203,31 +204,126 @@ struct SearchArea: View {
     private func RP() {
         // Clear result
         plans = []
+        planIndex = 0
         
+        // Deal with nil input
         if startLoc == nil || endLoc == nil { return }
         
         // Deal with current location
+        let curLoc = Location(_id: "current", name_en: "Your Location", latitude: current.latitude, longitude: current.longitude, altitude: current.altitude, type: 0)
         var newLocs = locations
-        var newRoutes = routes
-        if startLoc!._id == "current" {
-            newLocs.append(startLoc!)
-        } else if endLoc!._id == "current" {
-            newLocs.append(endLoc!)
+        var newRoutes: [Route] = []
+        if startLoc!._id == "current" || endLoc!._id == "current" {
+            if startLoc!._id == "current" { startLoc = curLoc }
+            if endLoc!._id == "current" { endLoc = curLoc }
+            // newLocs
+            newLocs.append(curLoc)
+            // newRoutes
+            for route in routes {
+                if route.type != 0 { newRoutes.append(route); continue } // only consider route on foot
+                // find point holding minDist from curLoc in a route
+                var index = -1
+                var minDist = INF
+                for i in 0..<route.points.count {
+                    if distance(location: curLoc, point: route.points[i]) < minDist {
+                        minDist = distance(location: curLoc, point: route.points[i])
+                        index = i
+                    }
+                }
+                // print("min: \(minDist)")
+                if minDist > 30 {
+                    newRoutes.append(route)
+                } else {
+                    // split route
+                    var route1 = Route(_id: route._id + "1", startLoc: route.startLoc, endLoc: curLoc, points: Array(route.points[0...index]), dist: 0, type: 0)
+                    var route2 = Route(_id: route._id + "2", startLoc: curLoc, endLoc: route.endLoc, points: Array(route.points[index..<route.points.count]), dist: 0, type: 0)
+                    // calculate distance
+                    for i in 0...route1.points.count - 2 {
+                        route1.dist += distance(start: route1.points[i], end: route1.points[i + 1]);
+                    }
+                    for i in 0...route2.points.count - 2 {
+                        route2.dist += distance(start: route2.points[i], end: route2.points[i + 1]);
+                    }
+                    newRoutes.append(route1)
+                    newRoutes.append(route2)
+                }
+            }
+        } else {
+            newRoutes = routes
         }
-        // self.location = Location(_id: "current", name_en: "Your Location", latitude: locationGetter.current.latitude, longitude: locationGetter.current.longitude, altitude: locationGetter.current.altitude, type: 0)
         
-        let plan1 = RPMinDist(locations: locations, routes: routes, startLoc: startLoc!, endLoc: endLoc!)
-        if plan1 != nil {
-            plans.append(plan1!)
-        }
-        let plan2 = RPMinTime(locations: locations, routes: routes, startLoc: startLoc!, endLoc: endLoc!)
-        if plan2 != nil {
-            plans.append(plan2!)
-        }
-        print(plans.count)
-        
-        planIndex = 0
+        // Searching for route plans
+        checkNextRoute(plan: Plan(startLoc: nil, endLoc: nil, routes: [], dist: 0, time: 0, ascent: 0, type: 0), locs: newLocs, routes: newRoutes)
+
     }
+    
+    // DFS recursion
+    private func checkNextRoute(plan: Plan, locs: [Location], routes: [Route]) {
+        if plan.startLoc == startLoc && plan.endLoc == endLoc {
+            print("== new plan ==")
+            plans.append(plan)
+            return
+        }
+        
+        if plan.startLoc == nil { // to find the first route
+            for route in routes {
+                if route.startLoc == startLoc {
+                    var plan = plan
+                    plan.startLoc = route.startLoc
+                    plan.endLoc = route.endLoc
+                    plan.routes.append(route)
+                    plan.dist += route.dist
+                    plan.time += route.type == 0 ? route.dist/footSpeed/60 : route.dist/busSpeed/60
+                    plan.type = (plan.type == 1 || route.type == 1) ? 1 : 0
+                    checkNextRoute(plan: plan, locs: locs, routes: routes)
+                } else if route.endLoc == startLoc && route.type == 0 {
+                    var plan = plan
+                    plan.startLoc = route.endLoc
+                    plan.endLoc = route.startLoc
+                    plan.routes.append(Route(_id: route._id, startLoc: route.endLoc, endLoc: route.startLoc, points: route.points.reversed(), dist: route.dist, type: route.type))
+                    plan.dist += route.dist
+                    plan.time += route.dist / footSpeed / 60 // must be on foot
+                    checkNextRoute(plan: plan, locs: locs, routes: routes)
+                }
+            }
+        } else { // continue to find following routes
+            for route in routes {
+                if route.startLoc == plan.endLoc {
+                    if isOverlapped(plan: plan, points: route.points) { continue }
+                    var plan = plan
+                    plan.endLoc = route.endLoc
+                    plan.routes.append(route)
+                    plan.dist += route.dist
+                    plan.time += route.type == 0 ? route.dist/footSpeed/60 : route.dist/busSpeed/60
+                    plan.type = (plan.type == 1 || route.type == 1) ? 1 : 0
+                    checkNextRoute(plan: plan, locs: locs, routes: routes)
+                } else if route.endLoc == plan.endLoc && route.type == 0 {
+                    if isOverlapped(plan: plan, points: route.points) { continue }
+                    var plan = plan
+                    plan.endLoc = route.startLoc
+                    plan.routes.append(Route(_id: route._id, startLoc: route.endLoc, endLoc: route.startLoc, points: route.points.reversed(), dist: route.dist, type: route.type))
+                    plan.dist += route.dist
+                    plan.time += route.dist / footSpeed / 60 // must be on foot
+                    checkNextRoute(plan: plan, locs: locs, routes: routes)
+                }
+            }
+        }
+    }
+    private func isOverlapped(plan: Plan, points: [Coor3D]) -> Bool {
+        var count = 0
+        for point in points {
+            for route in plan.routes {
+                if route.points.contains(point) {
+                    count += 1
+                }
+                if count >= 2 {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+    
 }
 
 struct SearchList: View {
@@ -296,7 +392,7 @@ struct SearchList: View {
                                 }.padding(.horizontal)
                             }.buttonStyle(MyButtonStyle()) : nil
                             
-                            Divider().padding(.horizontal)
+                            showCurrent ? Divider().padding(.horizontal) : nil
                             // other locations
                             ForEach(locations) { location in
                                 if keyword == "" || location.name_en.lowercased().contains(keyword.lowercased()) {
@@ -397,9 +493,9 @@ func RPMinDist(locations: [Location], routes: [Route], startLoc: Location, endLo
         for route in plan!.routes {
             totalDist += route.dist
             if route.type == 0 {
-                totalTime += route.dist / footSpeed
+                totalTime += route.dist / footSpeed / 60
             } else {
-                totalTime += route.dist / busSpeed
+                totalTime += route.dist / busSpeed / 60
             }
         }
 
@@ -412,7 +508,7 @@ func RPMinDist(locations: [Location], routes: [Route], startLoc: Location, endLo
     return plan
 }
 
-
+/*
 func RPMinTime(locations: [Location], routes: [Route], startLoc: Location, endLoc: Location) -> Plan? {
     var plan: Plan? = nil
     
@@ -475,3 +571,4 @@ func RPMinTime(locations: [Location], routes: [Route], startLoc: Location, endLo
     return plan
 }
 
+*/
