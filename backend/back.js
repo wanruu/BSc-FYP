@@ -236,6 +236,7 @@ app.post('/trajectories', (req, res) => {
         res.send(value);
     });
 });
+
 app.get('/trajectories', (req, res) => {
     console.log("GET /trajectories - " + Date());
     TrajectoryModel.find({}, (err, result) => {
@@ -247,6 +248,45 @@ app.get('/trajectories', (req, res) => {
         }
     });
 });
+
+// test
+/*
+app.get('/trajectories', (req, res) => {
+    console.log("GET /trajectories - " + Date());
+    TrajectoryModel.find({}, (err, result) => {
+        if(err) {
+            console.log(err);
+            res.status(404).send();
+        } else {
+            for (let i in result) {
+                if (result[i].points.length < 2) {
+                    continue;
+                }
+                let p1 = result[i].points[result[i].points.length - 1];
+                let p2 = result[i].points[result[i].points.length - 2];
+                let dist = Math.pow((p1.altitude - p2.altitude) * (p1.altitude - p2.altitude) +
+                            (p1.latitude - p2.latitude) * 111000 * (p1.latitude - p2.latitude) * 111000 + 
+                            (p1.longitude - p2.longitude) * 85390 * (p1.longitude - p2.longitude) * 85390, 0.5);
+                if (dist > 100) {
+                    console.log(dist);
+
+                    var points = [];
+                    for (let j = 0 ; j < result[i].points.length - 2; j ++) {
+                        points.push(result[i].points[j]);
+                    }
+
+                    TrajectoryModel.updateOne({ _id: result[i]._id } , {$set: {points: points}}, (err, result1) => {
+                        console.log(result1);
+                        res.send(result);
+                    });
+
+                }
+            }
+        }
+    });
+});
+*/
+
 app.delete('/trajectory', (req, res) => {
     console.log("DELETE /trajectory - " + Date());
     TrajectoryModel.deleteOne({_id: mongoose.Types.ObjectId(req.body.id)}, (err, result) => {
