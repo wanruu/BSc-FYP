@@ -262,6 +262,20 @@ struct SearchArea: View {
         // Searching for route plans
         checkNextRoute(plan: Plan(startLoc: nil, endLoc: nil, routes: [], dist: 0, time: 0, ascent: 0, type: 0), locs: newLocs, routes: newRoutes)
         
+        // clean repeated plan with type 1
+        for plan in plans {
+            if plan.type != 1 {
+                continue
+            }
+            for route in plan.routes {
+                if route.type == 0 && !routes.filter({$0.type == 1 && $0.startLoc == route.startLoc && $0.endLoc == route.endLoc}).isEmpty {
+                    let index = plans.firstIndex(where: {$0.id == plan.id})!
+                    plans.remove(at: index)
+                    break
+                }
+            }
+        }
+        
         chosenPlan = nil
         /*if plans.isEmpty {
             chosenPlan = nil
