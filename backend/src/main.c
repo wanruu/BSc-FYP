@@ -231,6 +231,8 @@ int main (int argc, char *argv[]) {
         }
     }
 
+
+
     rep_trajs = smooth(rep_trajs, &rep_trajs_size);
 
     // test: print rep_trajs
@@ -244,7 +246,6 @@ int main (int argc, char *argv[]) {
         printf("],\n");
     }
     printf("]\n");*/
-
 
     /*
      *  Aim: generate routes from rep_trajs.
