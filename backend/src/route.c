@@ -1,6 +1,6 @@
 #include "route.h"
 
-#define MIN_DIST 25
+#define MIN_DIST 40
 
 /*
  *  Aim: generate routes.
@@ -54,7 +54,7 @@ route_t* generate_routes (traj_t* trajs, int trajs_size, loc_t* locs, int locs_s
     for (int i = 0; i < locs_size; i ++) {
         for (int j = i + 1; j < locs_size; j ++) {
             if (closest_points[i].lat != -1 && equals(closest_points[i], closest_points[j])) {
-                // printf("%s %s\n", locs[i].name, locs[j].name);
+                // printf("%s | %s\n", locs[i].name, locs[j].name);
                 routes[*routes_size].start_loc = locs[i];
                 routes[*routes_size].end_loc = locs[j];
 
@@ -113,7 +113,7 @@ void find_routes (traj_t* trajs, int trajs_size, int* is_trajs_marked, loc_t* lo
         cur_route.dist = dist;
 
         append_route (routes, routes_size, cur_route);
-        
+        // printf("%s | %s\n", cur_route.start_loc.name, cur_route.end_loc.name);
         return;
     }
 
