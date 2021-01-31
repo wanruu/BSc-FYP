@@ -138,6 +138,8 @@ struct PlansView: View {
                                     }
                                 }
                             }
+                            .frame(height: height - geometry.safeAreaInsets.bottom * 2)
+                            .gesture(DragGesture()) // prevent changing height when scrolling
                         }
                     } else if chosenPlan == nil && mode == .bus {
                         if plans.filter({$0.type == 1}).isEmpty {
@@ -164,10 +166,45 @@ struct PlansView: View {
                                     }
                                 }
                             }
+                            .frame(height: height - geometry.safeAreaInsets.bottom * 2)
+                            .gesture(DragGesture()) // prevent changing height when scrolling
                         }
-                    } else {
-                        PlanView(chosenPlan: chosenPlan)
-                            .disabled(height != largeH)
+                    } else { // display a plan
+                        // title
+                        HStack {
+                            Text("\(Int(chosenPlan!.time))").font(.title2).bold()
+                            Text("min").font(.title2)
+                            Text("(\(Int(chosenPlan!.dist)) m)").font(.title3).foregroundColor(Color.gray)
+                            Spacer()
+                        }.padding(.horizontal).padding(.bottom)
+                        Divider()
+                        
+                        ScrollView(.vertical) {
+                            VStack(spacing: 0) {
+                                // chart
+                                HeightChart(plan: chosenPlan)
+                                    .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.25, alignment: .center)
+                                    .padding(.vertical)
+                                Divider()
+
+                                // Alert
+                                HStack(spacing: 20) {
+                                    Image(systemName: "exclamationmark.circle.fill")
+                                        .imageScale(.large)
+                                        .foregroundColor(CUYellow)
+                                    Text("The estimated time to arrive may not be accurate.")
+                                    Spacer()
+                                }.padding()
+                                Divider()
+                                // steps
+                                Instructions(plan: chosenPlan)
+                                Divider()
+                            }
+                        }
+                        .padding(.bottom, geometry.safeAreaInsets.bottom)
+                        .frame(height: height - geometry.safeAreaInsets.bottom * 2)
+                        .gesture(DragGesture()) // prevent changing height when scrolling
+
                     }
                     // content ending here
                 }
@@ -179,49 +216,6 @@ struct PlansView: View {
             .ignoresSafeArea(.all, edges: .bottom)
             .offset(y: largeH - height)
             .gesture(drag)
-        }
-    }
-}
-
-struct PlanView: View {
-    @State var chosenPlan: Plan?
-    
-    var body: some View {
-        chosenPlan == nil ? nil :
-        GeometryReader { geometry in
-            VStack(alignment: .leading, spacing: 0) {
-                // title
-                HStack {
-                    Text("\(Int(chosenPlan!.time))").font(.title2).bold()
-                    Text("min").font(.title2)
-                    Text("(\(Int(chosenPlan!.dist)) m)").font(.title3).foregroundColor(Color.gray)
-                }.padding(.horizontal).padding(.bottom)
-                Divider()
-                
-                ScrollView(.vertical, showsIndicators: false) {
-                    VStack(spacing: 0) {
-                        // chart
-                        HeightChart(plan: chosenPlan)
-                            .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.25, alignment: .center)
-                            .padding(.vertical)
-                            
-                        Divider()
-                    }
-                    VStack(alignment: .leading, spacing: 0) {
-                        // Alert
-                        HStack(spacing: 20) {
-                            Image(systemName: "exclamationmark.circle.fill")
-                                .imageScale(.large)
-                                .foregroundColor(CUYellow)
-                            Text("The estimated time to arrive may not be accurate.")
-                        }.padding()
-                        Divider()
-                        // steps
-                        Instructions(plan: chosenPlan)
-                        Divider()
-                    }
-                }
-            }
         }
     }
 }
