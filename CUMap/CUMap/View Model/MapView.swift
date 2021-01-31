@@ -59,15 +59,15 @@ struct MapView: View {
                 .frame(width: 3200 * scale, height: 3200 * 25 / 20 * scale, alignment: .center)
                 .position(x: UIScreen.main.bounds.width / 2 + offset.x, y: UIScreen.main.bounds.height / 2 + offset.y)
             
-            // show plans in map
-            ForEach(plans) { plan in
-                PlanMapView(plan: plan, opacity: 0.3, offset: $offset, scale: $scale)
+            // TODO: show plans in map
+            /*ForEach(plans) { plan in
+                PlanMapView(plan: plan, opacity: 0, offset: $offset, scale: $scale)
                     .onTapGesture {
                         print("switch plan")
                         chosenPlan = plan
                     }
                 
-            }
+            }*/
             chosenPlan != nil ? PlanMapView(plan: chosenPlan!, opacity: 1, offset: $offset, scale: $scale) : nil
             
             // current location
