@@ -37,7 +37,7 @@ struct MainPage: View {
         ZStack {
             MapView(plans: $plans, chosenPlan: $chosenPlan, locationGetter: locationGetter, lastHeight: $lastHeight, height: $height)
             
-            PlansView(plans: $plans, chosenPlan: $chosenPlan, lastHeight: $lastHeight, height: $height)
+            PlansView(plans: $plans, chosenPlan: $chosenPlan, mode: $mode, lastHeight: $lastHeight, height: $height)
             
             SearchView(locationGetter: locationGetter, locations: locations, routes: routes, buses: buses, plans: $plans, chosenPlan: $chosenPlan, mode: $mode, lastHeight: $lastHeight, height: $height)
         }

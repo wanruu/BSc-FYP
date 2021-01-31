@@ -34,24 +34,13 @@ struct PlansView: View {
     @Binding var plans: [Plan]
     @Binding var chosenPlan: Plan?
     
+    @Binding var mode: TransMode
+    
     // height
     @Binding var lastHeight: CGFloat
     @Binding var height: CGFloat
     
-    var body: some View {
-        // TODO: show more plans
-        if chosenPlan == nil {
-            NoPlanView(lastHeight: $lastHeight, height: $height)
-        } else {
-            PlanView(chosenPlan: $chosenPlan, lastHeight: $lastHeight, height: $height)
-        }
-    }
-}
-
-struct NoPlanView: View {
-    @Binding var lastHeight: CGFloat
-    @Binding var height: CGFloat
-    
+    // gesture
     var drag: some Gesture {
         DragGesture()
             .onChanged { value in
@@ -90,6 +79,7 @@ struct NoPlanView: View {
                 lastHeight = height
             }
     }
+    
     var body: some View {
         GeometryReader { geometry in
             VStack {
@@ -98,7 +88,32 @@ struct NoPlanView: View {
                     Image(systemName: "line.horizontal.3")
                         .foregroundColor(Color.gray)
                         .padding()
-                    Text("No results").font(.title2)
+                    
+                    // content starting here
+                    if plans.isEmpty {
+                        Text("No Results")
+                    } else if chosenPlan == nil && mode == .foot {
+                        List {
+                            ForEach(plans) { plan in
+                                if plan.type == 0 {
+                                    Text("\(plan.time) min (\(plan.dist) m)")
+                                        .onTapGesture { chosenPlan = plan }
+                                }
+                            }
+                        }
+                    } else if chosenPlan == nil && mode == .bus {
+                        List {
+                            ForEach(plans) { plan in
+                                if plan.type == 1 {
+                                    Text("\(plan.time) min (\(plan.dist) m)")
+                                        .onTapGesture { chosenPlan = plan }
+                                }
+                            }
+                        }
+                    } else {
+                        PlanView(chosenPlan: chosenPlan)
+                    }
+                    // content ending here
                 }
                 .frame(width: geometry.size.width, height: largeH, alignment: .top)
                 .background(RoundedCorners(color: .white, tl: 15, tr: 15, bl: 0, br: 0))
@@ -113,99 +128,44 @@ struct NoPlanView: View {
 }
 
 struct PlanView: View {
-    // @Binding var plan: [Plan]
-    @Binding var chosenPlan: Plan?
-    
-    @Binding var lastHeight: CGFloat
-    @Binding var height: CGFloat
-    
-    var drag: some Gesture {
-        DragGesture()
-            .onChanged { value in
-                if lastHeight + value.startLocation.y - value.location.y < 0 {
-                    height = 0
-                } else if lastHeight + value.startLocation.y - value.location.y > largeH {
-                    height = largeH
-                } else {
-                    height = lastHeight + value.startLocation.y - value.location.y
-                }
-            }
-            .onEnded { value in
-                // whether scroll up or down
-                let up = value.startLocation.y - value.location.y > 0
-                
-                withAnimation() {
-                    if lastHeight == largeH { // large
-                        if height > (mediumH + largeH) / 2 { // still large
-                            height = up ? largeH : mediumH
-                        } else {
-                            height = height < (smallH + mediumH) / 2 ? smallH : mediumH
-                        }
-                    } else if lastHeight == smallH { // small
-                        if height < (smallH + mediumH) / 2 { // still small
-                            height = up ? mediumH : smallH
-                        } else {
-                            height = height > (mediumH + largeH) / 2 ? largeH : mediumH
-                        }
-                    } else { // medium
-                        if height >= (smallH + mediumH) / 2 && height <= (mediumH + largeH) / 2 { // still medium
-                            height = up ? largeH : smallH
-                        }
-                        height = height > (mediumH + largeH) / 2 ? largeH : smallH
-                    }
-                }
-                lastHeight = height
-            }
-    }
+    @State var chosenPlan: Plan?
     
     var body: some View {
+        chosenPlan == nil ? nil :
         GeometryReader { geometry in
-            VStack {
-                Spacer()
-                VStack(alignment: .leading, spacing: 0) {
-                    // drag icon
-                    Image(systemName: "line.horizontal.3").foregroundColor(Color.gray).padding()
-                    
-                    // title
-                    HStack {
-                        Text("\(Int(chosenPlan!.time))").font(.title2).bold()
-                        Text("min").font(.title2)
-                        Text("(\(Int(chosenPlan!.dist)) m)").font(.title3).foregroundColor(Color.gray)
-                    }.padding(.horizontal).padding(.bottom)
-                    Divider()
-                    
-                    ScrollView(.vertical, showsIndicators: false) {
-                        VStack(spacing: 0) {
-                            // chart
-                            HeightChart(plan: $chosenPlan)
-                                .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.25, alignment: .center)
-                                .padding(.vertical)
-                                
-                            Divider()
-                        }
-                        VStack(alignment: .leading, spacing: 0) {
-                            // Alert
-                            HStack(spacing: 20) {
-                                Image(systemName: "exclamationmark.circle.fill")
-                                    .imageScale(.large)
-                                    .foregroundColor(CUYellow)
-                                Text("The estimated time to arrive may not be accurate.")
-                            }.padding()
-                            Divider()
-                            // steps
-                            Instructions(plan: $chosenPlan)
-                            Divider()
-                        }
-                    }.gesture(DragGesture())
+            VStack(alignment: .leading, spacing: 0) {
+                // title
+                HStack {
+                    Text("\(Int(chosenPlan!.time))").font(.title2).bold()
+                    Text("min").font(.title2)
+                    Text("(\(Int(chosenPlan!.dist)) m)").font(.title3).foregroundColor(Color.gray)
+                }.padding(.horizontal).padding(.bottom)
+                Divider()
+                
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        // chart
+                        HeightChart(plan: chosenPlan)
+                            .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.25, alignment: .center)
+                            .padding(.vertical)
+                            
+                        Divider()
+                    }
+                    VStack(alignment: .leading, spacing: 0) {
+                        // Alert
+                        HStack(spacing: 20) {
+                            Image(systemName: "exclamationmark.circle.fill")
+                                .imageScale(.large)
+                                .foregroundColor(CUYellow)
+                            Text("The estimated time to arrive may not be accurate.")
+                        }.padding()
+                        Divider()
+                        // steps
+                        Instructions(plan: chosenPlan)
+                        Divider()
+                    }
                 }
-                .frame(width: geometry.size.width, height: largeH, alignment: .top)
-                .background(RoundedCorners(color: .white, tl: 15, tr: 15, bl: 0, br: 0))
-                .clipped()
-                .shadow(radius: 4)
             }
-            .ignoresSafeArea(.all, edges: .bottom)
-            .offset(y: largeH - height)
-            .gesture(drag)
         }
     }
 }
@@ -232,7 +192,7 @@ struct PlanView: View {
 
  */
 struct HeightChart: View {
-    @Binding var plan: Plan?
+    @State var plan: Plan?
     
     var body: some View {
         // find max, min altitude
@@ -331,7 +291,7 @@ struct HeightChart: View {
 }
 
 struct Instructions: View {
-    @Binding var plan: Plan?
+    @State var plan: Plan?
     
     var body: some View {
         ZStack {

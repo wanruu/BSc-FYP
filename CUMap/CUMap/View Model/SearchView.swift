@@ -172,7 +172,8 @@ struct SearchArea: View {
                             .cornerRadius(20)
                             .onTapGesture {
                                 mode = .bus
-                                chosenPlan = plans.first(where: {$0.type == 1})
+                                chosenPlan = nil
+                                // chosenPlan = plans.first(where: {$0.type == 1})
                             }
                             HStack {
                                 Image(systemName: "figure.walk").foregroundColor(Color.black.opacity(0.7))
@@ -186,7 +187,8 @@ struct SearchArea: View {
                             .cornerRadius(20)
                             .onTapGesture {
                                 mode = .foot
-                                chosenPlan = plans.first(where: {$0.type == 0})
+                                chosenPlan = nil
+                                // chosenPlan = plans.first(where: {$0.type == 0})
                             }
                         }
                     }
@@ -260,13 +262,14 @@ struct SearchArea: View {
         // Searching for route plans
         checkNextRoute(plan: Plan(startLoc: nil, endLoc: nil, routes: [], dist: 0, time: 0, ascent: 0, type: 0), locs: newLocs, routes: newRoutes)
         
-        if plans.isEmpty {
+        chosenPlan = nil
+        /*if plans.isEmpty {
             chosenPlan = nil
         } else if mode == .bus {
             chosenPlan = plans.first(where: {$0.type == 1})
         } else {
             chosenPlan = plans.first(where: {$0.type == 0})
-        }
+        }*/
     }
     
     // DFS recursion
