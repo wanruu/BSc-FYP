@@ -355,6 +355,32 @@ app.get('/routes', (req, res) => {
     });
 });
 
+app.get('/routes_dev', (req, res) => {
+    console.log("GET /routes_dev - " + Date());
+    var conditions = [
+        {
+            path: 'startLoc',
+            select: '_id name_en latitude longitude altitude type'
+        },
+        {
+            path: 'endLoc',
+            select: '_id name_en latitude longitude altitude type'
+        }
+    ];
+    RouteModel.find({}).populate(conditions).exec((err, result) => {
+        if(err) {
+            console.log(err);
+            res.status(404).send();
+        } else {
+            var str = "";
+            for (let i in result) {
+                str += result[i].startLoc.name_en + " - " + result[i].endLoc.name_en + " " + result[i].type + "</br>";
+            }
+            res.send(str);
+        }
+    });
+});
+
 /* *************************************************************** */
 
 // BUS
