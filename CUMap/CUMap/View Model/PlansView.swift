@@ -34,6 +34,8 @@ struct PlansView: View {
     @Binding var plans: [Plan]
     @Binding var chosenPlan: Plan?
     
+    @State var departDate: Date = Date()
+    
     @Binding var mode: TransMode
     
     // height
@@ -115,11 +117,24 @@ struct PlansView: View {
                         if plans.filter({$0.type == 0}).isEmpty {
                             Text("No results")
                         } else {
-                            List {
-                                ForEach(plans) { plan in
-                                    if plan.type == 0 {
-                                        Text("\(plan.time) min (\(plan.dist) m)")
-                                            .onTapGesture { chosenPlan = plan }
+                            ScrollView {
+                                VStack(spacing: 0) {
+                                    Divider()
+                                    ForEach(plans) { plan in
+                                        if plan.type == 0 {
+                                            // TODO: change display of walk plan
+                                            Button(action: {
+                                                chosenPlan = plan
+                                            }) {
+                                                HStack {
+                                                    Spacer()
+                                                    Text("\(Int(plan.time)) min (\(Int(plan.dist)) m)")
+                                                    Text(">").bold()
+                                                }.padding()
+                                            }.buttonStyle(MyButtonStyle2(bgColor: Color.gray.opacity(0.3)))
+                                            
+                                            Divider()
+                                        }
                                     }
                                 }
                             }
@@ -128,17 +143,31 @@ struct PlansView: View {
                         if plans.filter({$0.type == 1}).isEmpty {
                             Text("No results")
                         } else {
-                            List {
-                                ForEach(plans) { plan in
-                                    if plan.type == 1 {
-                                        Text("\(plan.time) min (\(plan.dist) m)")
-                                            .onTapGesture { chosenPlan = plan }
+                            DatePicker("Depart at", selection: $departDate).padding(.horizontal)
+                            ScrollView {
+                                VStack(spacing: 0) {
+                                    Divider()
+                                    ForEach(plans) { plan in
+                                        if plan.type == 1 {
+                                            // TODO: change display of bus plan
+                                            Button(action: {
+                                                chosenPlan = plan
+                                            }) {
+                                                HStack {
+                                                    Spacer()
+                                                    Text("\(Int(plan.time)) min (\(Int(plan.dist)) m)")
+                                                    Text(">").bold()
+                                                }.padding()
+                                            }.buttonStyle(MyButtonStyle2(bgColor: Color.gray.opacity(0.3)))
+                                            Divider()
+                                        }
                                     }
                                 }
                             }
                         }
                     } else {
                         PlanView(chosenPlan: chosenPlan)
+                            .disabled(height != largeH)
                     }
                     // content ending here
                 }
