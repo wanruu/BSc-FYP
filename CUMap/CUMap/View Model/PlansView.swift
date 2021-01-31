@@ -138,6 +138,7 @@ struct PlansView: View {
                                     }
                                 }
                             }
+                            .padding(.bottom, geometry.safeAreaInsets.bottom)
                             .frame(height: height - geometry.safeAreaInsets.bottom * 2)
                             .gesture(DragGesture()) // prevent changing height when scrolling
                         }
@@ -201,7 +202,6 @@ struct PlansView: View {
                                 Divider()
                             }
                         }
-                        .padding(.bottom, geometry.safeAreaInsets.bottom)
                         .frame(height: height - geometry.safeAreaInsets.bottom * 2)
                         .gesture(DragGesture()) // prevent changing height when scrolling
 

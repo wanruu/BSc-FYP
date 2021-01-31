@@ -303,7 +303,7 @@ struct SearchArea: View {
         } else { // continue to find following routes
             for route in routes {
                 if route.startLoc == plan.endLoc {
-                    if isOverlapped(plan: plan, points: route.points) { continue }
+                    if !plan.routes.filter({$0.startLoc == route.endLoc || $0.endLoc == route.endLoc}).isEmpty { continue }
                     var plan = plan
                     plan.endLoc = route.endLoc
                     plan.routes.append(route)
@@ -312,7 +312,7 @@ struct SearchArea: View {
                     plan.type = (plan.type == 1 || route.type == 1) ? 1 : 0
                     checkNextRoute(plan: plan, locs: locs, routes: routes)
                 } else if route.endLoc == plan.endLoc && route.type == 0 {
-                    if isOverlapped(plan: plan, points: route.points) { continue }
+                    if !plan.routes.filter({$0.startLoc == route.startLoc || $0.endLoc == route.startLoc}).isEmpty { continue }
                     var plan = plan
                     plan.endLoc = route.startLoc
                     plan.routes.append(Route(_id: route._id, startLoc: route.endLoc, endLoc: route.startLoc, points: route.points.reversed(), dist: route.dist, type: route.type))
@@ -323,21 +323,6 @@ struct SearchArea: View {
             }
         }
     }
-    private func isOverlapped(plan: Plan, points: [Coor3D]) -> Bool {
-        var count = 0
-        for point in points {
-            for route in plan.routes {
-                if route.points.contains(point) {
-                    count += 1
-                }
-                if count >= 2 {
-                    return true
-                }
-            }
-        }
-        return false
-    }
-    
 }
 
 struct SearchList: View {
