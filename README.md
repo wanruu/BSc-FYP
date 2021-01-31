@@ -2,11 +2,9 @@
 
 ## CUMap
 
-- [ ] UI compatibility in different device
 - [ ] Adjust distance between points when showing plan in map
 - [ ] Add location mark when showing plan in map
 - [ ] Combine routes in plan
-- [ ] Fix bug: overlapped routes in RP() with bus
 
 ## GetMap
 
@@ -15,9 +13,11 @@
 
 ## Backend
 
-
+- [ ] A small idea: assign each location to a cluster, and only save the route between clusters other than locations.
+- [ ] Update back code in cloud server.
 
 ## All
 
 - [ ] Deal with http response with error != nil
+- [ ] UI compatibility in different device
 
