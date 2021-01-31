@@ -202,7 +202,8 @@ struct PlansView: View {
                                 Divider()
                             }
                         }
-                        .frame(height: height - geometry.safeAreaInsets.bottom * 2)
+                        .padding(.bottom, geometry.safeAreaInsets.bottom)
+                        .frame(maxHeight: height - geometry.safeAreaInsets.bottom * 2)
                         .gesture(DragGesture()) // prevent changing height when scrolling
 
                     }
@@ -380,11 +381,9 @@ struct Instructions: View {
 
                     HStack(spacing: 20) {
                         if route == plan!.routes.last! { // last route
-                            Image(systemName: "smallcircle.fill.circle")
-                        } else if route.endLoc.type == 0 {
-                            Image(systemName: "building.2")
+                            Image(systemName: "smallcircle.fill.circle").frame(width: 20)
                         } else {
-                            Image(systemName: "bus")
+                            Image(systemName: "circlebadge").imageScale(.large).frame(width: 20)
                         }
                         Text(route.endLoc.name_en).font(.title3)
                         Spacer()
