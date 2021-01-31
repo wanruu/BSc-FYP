@@ -15,13 +15,3 @@ struct MyButtonStyle: ButtonStyle {
             .animation(.spring())
     }
 }
-
-// white -> bgColor
-struct MyButtonStyle2: ButtonStyle {
-    @State var bgColor: Color
-    func makeBody(configuration: Self.Configuration) -> some View {
-        configuration.label
-            .background(bgColor.opacity(configuration.isPressed ? 1 : 0))
-            .animation(.spring())
-    }
-}

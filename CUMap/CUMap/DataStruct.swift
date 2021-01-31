@@ -46,8 +46,8 @@ extension Route: Identifiable, Equatable, Codable {
 
 // MARK: - A plan
 struct Plan {
-    var startLoc: Location?
-    var endLoc: Location?
+    var startLoc: Location
+    var endLoc: Location
     var routes: [Route]
     var dist: Double // meters
     var time: Double // seconds
@@ -56,18 +56,8 @@ struct Plan {
 }
 extension Plan: Identifiable {
     public var id: String {
-        "\(String(describing: self.startLoc?._id))\(String(describing: self.endLoc?._id))\(self.dist)\(self.time)\(self.type)"
+        "\(self.startLoc._id)\(self.endLoc._id)\(self.dist)\(self.time)\(self.type)"
     }
-}
-
-// MARK: - bus
-struct Bus: Codable, Identifiable {
-    var id: String
-    var name_en: String
-    var serviceHour: String
-    var serviceDay: Int
-    var stops: [String]
-    var departTime: [Int]
 }
 
 // MARK: - Version

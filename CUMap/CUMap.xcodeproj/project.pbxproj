@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		20CC4E4D25BE80BC0055E38C /* MenuTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20CC4E4C25BE80BC0055E38C /* MenuTab.swift */; };
+		20CC4E9F25BE8D6E0055E38C /* Home.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20CC4E9E25BE8D6E0055E38C /* Home.swift */; };
 		B408C5AC257BC43B006AFDAB /* MainPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B408C5AB257BC43B006AFDAB /* MainPage.swift */; };
 		B408C5B7257BC4C4006AFDAB /* DataStruct.swift in Sources */ = {isa = PBXBuildFile; fileRef = B408C5B6257BC4C4006AFDAB /* DataStruct.swift */; };
 		B408C5BF257BC5F7006AFDAB /* LoadPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B408C5BE257BC5F7006AFDAB /* LoadPage.swift */; };
@@ -53,6 +55,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		20CC4E4C25BE80BC0055E38C /* MenuTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuTab.swift; sourceTree = "<group>"; };
+		20CC4E9E25BE8D6E0055E38C /* Home.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Home.swift; sourceTree = "<group>"; };
 		B408C5AB257BC43B006AFDAB /* MainPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPage.swift; sourceTree = "<group>"; };
 		B408C5B6257BC4C4006AFDAB /* DataStruct.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStruct.swift; sourceTree = "<group>"; };
 		B408C5BE257BC5F7006AFDAB /* LoadPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadPage.swift; sourceTree = "<group>"; };
@@ -191,6 +195,7 @@
 			children = (
 				B408C5BE257BC5F7006AFDAB /* LoadPage.swift */,
 				B408C5AB257BC43B006AFDAB /* MainPage.swift */,
+				20CC4E9E25BE8D6E0055E38C /* Home.swift */,
 			);
 			name = Page;
 			sourceTree = "<group>";
@@ -202,6 +207,7 @@
 				B4DA258025991B9B002A0009 /* SearchView.swift */,
 				B4DA25782599119E002A0009 /* MapView.swift */,
 				B4DA2588259965C2002A0009 /* PlansView.swift */,
+				20CC4E4C25BE80BC0055E38C /* MenuTab.swift */,
 			);
 			path = "View Model";
 			sourceTree = "<group>";
@@ -363,7 +369,9 @@
 				B4DA25792599119E002A0009 /* MapView.swift in Sources */,
 				B408C5D9257BD9AF006AFDAB /* CDPath+CoreDataClass.swift in Sources */,
 				B408C5D6257BD9AF006AFDAB /* CDLocation+CoreDataProperties.swift in Sources */,
+				20CC4E4D25BE80BC0055E38C /* MenuTab.swift in Sources */,
 				B408C5D7257BD9AF006AFDAB /* CDPoint+CoreDataClass.swift in Sources */,
+				20CC4E9F25BE8D6E0055E38C /* Home.swift in Sources */,
 				B4E4264A2583AC7D006009D6 /* UserPoint.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
