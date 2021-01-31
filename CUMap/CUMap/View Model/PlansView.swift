@@ -85,28 +85,55 @@ struct PlansView: View {
             VStack {
                 Spacer()
                 VStack {
-                    Image(systemName: "line.horizontal.3")
-                        .foregroundColor(Color.gray)
-                        .padding()
+                    if chosenPlan == nil {
+                        Image(systemName: "line.horizontal.3")
+                            .foregroundColor(Color.gray)
+                            .padding()
+                    } else {
+                        HStack {
+                            Button(action: {
+                                chosenPlan = nil
+                            }) {
+                                HStack {
+                                    Image(systemName: "arrow.uturn.backward")
+                                    Text("Back")
+                                }
+                            }
+                            Spacer()
+                            Image(systemName: "line.horizontal.3")
+                                .foregroundColor(Color.gray)
+                            Spacer()
+                            HStack {
+                                Image(systemName: "arrow.uturn.backward")
+                                Text("Back")
+                            }.hidden()
+                        }.padding()
+                    }
                     
                     // content starting here
-                    if plans.isEmpty {
-                        Text("No Results")
-                    } else if chosenPlan == nil && mode == .foot {
-                        List {
-                            ForEach(plans) { plan in
-                                if plan.type == 0 {
-                                    Text("\(plan.time) min (\(plan.dist) m)")
-                                        .onTapGesture { chosenPlan = plan }
+                    if chosenPlan == nil && mode == .foot {
+                        if plans.filter({$0.type == 0}).isEmpty {
+                            Text("No results")
+                        } else {
+                            List {
+                                ForEach(plans) { plan in
+                                    if plan.type == 0 {
+                                        Text("\(plan.time) min (\(plan.dist) m)")
+                                            .onTapGesture { chosenPlan = plan }
+                                    }
                                 }
                             }
                         }
                     } else if chosenPlan == nil && mode == .bus {
-                        List {
-                            ForEach(plans) { plan in
-                                if plan.type == 1 {
-                                    Text("\(plan.time) min (\(plan.dist) m)")
-                                        .onTapGesture { chosenPlan = plan }
+                        if plans.filter({$0.type == 1}).isEmpty {
+                            Text("No results")
+                        } else {
+                            List {
+                                ForEach(plans) { plan in
+                                    if plan.type == 1 {
+                                        Text("\(plan.time) min (\(plan.dist) m)")
+                                            .onTapGesture { chosenPlan = plan }
+                                    }
                                 }
                             }
                         }
