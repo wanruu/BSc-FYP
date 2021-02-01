@@ -4,7 +4,7 @@
 
 - [ ] Adjust distance between points when showing plan in map
 - [ ] Add location mark when showing plan in map
-- [ ] Combine routes in plan
+- [ ] diff format when displaying plan with diff type
 
 ## GetMap
 
@@ -14,7 +14,6 @@
 ## Backend
 
 - [ ] A small idea: assign each location to a cluster, and only save the route between clusters other than locations.
-- [ ] Update back code in cloud server.
 
 ## All
 
