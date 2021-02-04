@@ -195,6 +195,15 @@ int main (int argc, char *argv[]) {
     int cluster_num = 0;
     cluster(line_segs, line_segs_size, &cluster_num);
 
+    // test
+    FILE *fp;
+    fp = fopen("./draw/line_segs.txt", "w");
+    for (int i = 0; i < line_segs_size; i++) {
+        fprintf(fp, "%d\n", line_segs[i].cluster_id);
+        fprintf(fp, "%f %f\n", line_segs[i].start.lat, line_segs[i].start.lng);
+        fprintf(fp, "%f %f\n", line_segs[i].end.lat, line_segs[i].end.lng);
+        fprintf(fp, "\n");
+    }
 
     /*
      *  Aim: generate rep_trajs from line_segs.
@@ -232,35 +241,18 @@ int main (int argc, char *argv[]) {
         }
     }
 
-    // test: print rep_trajs
-    /*FILE *fp;
-    fp = fopen("output.txt", "w");
-    fprintf(fp, "[\n");
-    for (int i = 0; i < rep_trajs_size; i++) {
-        fprintf(fp, "[");
-        for (int j = 0; j < rep_trajs[i].points_num; j ++) {
-            fprintf(fp, "Coor3D(latitude: %f, longitude: %f, altitude: %f), ", 
-                rep_trajs[i].points[j].lat, rep_trajs[i].points[j].lng, rep_trajs[i].points[j].alt);
-        }
-        fprintf(fp, "],\n");
-    }
-    fprintf(fp, "]\n");*/
-
     rep_trajs = smooth(rep_trajs, &rep_trajs_size);
 
-    // test: print rep_trajs
-    FILE *fp;
+    /*FILE *fp;
     fp = fopen("output.txt", "w");
-    fprintf(fp, "[\n");
     for (int i = 0; i < rep_trajs_size; i++) {
-        fprintf(fp, "[");
         for (int j = 0; j < rep_trajs[i].points_num; j ++) {
-            fprintf(fp, "Coor3D(latitude: %f, longitude: %f, altitude: %f), ", 
-                rep_trajs[i].points[j].lat, rep_trajs[i].points[j].lng, rep_trajs[i].points[j].alt);
+            fprintf(fp, "%f %f\n", rep_trajs[i].points[j].lat, rep_trajs[i].points[j].lng);
         }
-        fprintf(fp, "],\n");
-    }
-    fprintf(fp, "]\n");
+        fprintf(fp, "\n");
+    }*/
+
+
 
     /*
      *  Aim: generate routes from rep_trajs.
