@@ -14,7 +14,7 @@ double MDLPar(coor_t* traj, int start_index, int end_index) {
     double diffY = (traj[start_index].lng - traj[end_index].lng) * lgScale;
     double diffZ = traj[start_index].alt - traj[end_index].alt;
 
-    double* dists = (double*)malloc(sizeof(double) * 4);
+    double* dists = (double*) malloc(sizeof(double) * 4);
     for (int index = start_index; index < end_index; index++) {
         coor_t locs[4] = {traj[start_index], traj[end_index], traj[index], traj[index+1]};
         compute_distance(locs, dists);
@@ -43,13 +43,12 @@ double MDLNotPar(coor_t* traj, int start_index, int end_index) {
  *  Aim: patition a traj into cp.
  *  In: traj, points_num.
  *  Out: cp, cp_num.
- *  Test: done & OK. By verifying patition part in main.c.
  */
 void partition_traj(coor_t* traj, int points_num, coor_t* cp, int* cp_num) {
     // add starting point to cp
     cp[0] = traj[0];
     *cp_num = *cp_num + 1;
-    
+
     int start_index = 0;
     int length = 1;
 

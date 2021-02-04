@@ -64,7 +64,7 @@ void compute_distance (coor_t locs[], double* dists) {
 
 // weighted distance
 double weighted_distance (coor_t locs[]) {
-    double* dists = (double*) malloc(sizeof(double)*3);
+    double* dists = (double*) malloc(sizeof(double) * 3);
     compute_distance(locs, dists);
     // TODO: change the weight
     return 0.9 * dists[0] + dists[1] + dists[2];

@@ -7,7 +7,6 @@
  *  Aim: calculate e-neighborhood for every line segment.
  *  In: line_segs, line_segs_size.
  *  Out: neighbors.
- *  Test: done & OK. By verifying neighbors for each line seg.
  */
 
 void get_neighbors(line_seg_t* line_segs, int line_segs_size, neighbor_t* neighbors) {
@@ -36,7 +35,6 @@ void get_neighbors(line_seg_t* line_segs, int line_segs_size, neighbor_t* neighb
  *  Aim: assign cluster_id to each line_segs.
  *  In: line_segs, line_segs_size.
  *  Out: line_segs, cluster_num;
- *  Test: done & OK. By verifying clustering result.
  */
 
 void cluster(line_seg_t* line_segs, int line_segs_size, int* cluster_num) {

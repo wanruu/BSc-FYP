@@ -136,21 +136,13 @@ int main (int argc, char *argv[]) {
     database = mongoc_client_get_database(client, "CUMap");
 
     /*
-     *  Aim: get locations data in db.
-     *  Data: locs, locs_size(num of locs).
-     *  Test: OK.
+     *  Aim: get locations & trajectories data in db.
      */
     collection = mongoc_client_get_collection(client, "CUMap", "locations");
     loc_t *locs = (loc_t*) malloc(sizeof(loc_t) * LOCNUM);
     int locs_size = 0;
     get_locs(collection, locs, &locs_size);
 
-
-    /*
-     *  Aim: get trajectories data in db.
-     *  Data: trajs, trajs_size(num of trajs).
-     *  Test: OK.
-     */
     collection = mongoc_client_get_collection(client, "CUMap", "trajectories");
     traj_t *trajs = (traj_t*) malloc(sizeof(traj_t) * TRAJNUM);
     for (int i = 0; i < TRAJNUM; i++) {
@@ -159,31 +151,46 @@ int main (int argc, char *argv[]) {
     int trajs_size = 0;
     get_trajs(collection, trajs, &trajs_size);
 
+    // test
+    /*FILE *fp_trajs;
+    fp_trajs = fopen("./draw/trajs.txt", "w");
+    for (int i = 0; i < trajs_size; i++) {
+        for (int j = 0; j < trajs[i].points_num; j ++) {
+            fprintf(fp_trajs, "%f %f\n", trajs[i].points[j].lat, trajs[i].points[j].lng);
+        }
+        fprintf(fp_trajs, "\n");
+    }*/
+
 
     /*
      *  Aim: partition trajs into line_segs.
      *  Data: cp(characteristic points), cp_num ->line_segs, line_segs_size.
-     *  Test: OK. By verifying the num of line_segs.
      */
     line_seg_t* line_segs = (line_seg_t*) malloc(sizeof(line_seg_t) * LINESEGNUM);
     int line_segs_size = 0;
-    
     for (int traj_index = 0; traj_index < trajs_size; traj_index++) {
         if (trajs[traj_index].points_num < 2) {
             continue;
         }
-
         coor_t* cp = (coor_t*) malloc(sizeof(coor_t) * (trajs[traj_index].points_num + 1));
         int cp_num = 0;
-        
         partition_traj(trajs[traj_index].points, trajs[traj_index].points_num, cp, &cp_num);
-        
         for (int cp_index = 0; cp_index < cp_num - 1; cp_index ++) {
             line_segs[line_segs_size].start = cp[cp_index];
             line_segs[line_segs_size].end = cp[cp_index+1];
             line_segs[line_segs_size].cluster_id = 0;
             line_segs_size++;
         }
+    }
+
+    // test
+    FILE *fp;
+    fp = fopen("./draw/line_segs.txt", "w");
+    for (int i = 0; i < line_segs_size; i++) {
+        fprintf(fp, "%d\n", line_segs[i].cluster_id);
+        fprintf(fp, "%f %f\n", line_segs[i].start.lat, line_segs[i].start.lng);
+        fprintf(fp, "%f %f\n", line_segs[i].end.lat, line_segs[i].end.lng);
+        fprintf(fp, "\n");
     }
     
     /*
@@ -196,14 +203,14 @@ int main (int argc, char *argv[]) {
     cluster(line_segs, line_segs_size, &cluster_num);
 
     // test
-    FILE *fp;
+    /*FILE *fp;
     fp = fopen("./draw/line_segs.txt", "w");
     for (int i = 0; i < line_segs_size; i++) {
         fprintf(fp, "%d\n", line_segs[i].cluster_id);
         fprintf(fp, "%f %f\n", line_segs[i].start.lat, line_segs[i].start.lng);
         fprintf(fp, "%f %f\n", line_segs[i].end.lat, line_segs[i].end.lng);
         fprintf(fp, "\n");
-    }
+    }*/
 
     /*
      *  Aim: generate rep_trajs from line_segs.
@@ -240,6 +247,7 @@ int main (int argc, char *argv[]) {
             rep_trajs_size += 1;
         }
     }
+
 
     rep_trajs = smooth(rep_trajs, &rep_trajs_size);
 
