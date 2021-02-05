@@ -8,8 +8,7 @@
 
 ## GetMap
 
-- [ ] Ensure altitude uploaded to server is not -1?
-- [ ] bug: Menu disappears when moving
+
 
 ## Backend
 
