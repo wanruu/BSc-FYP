@@ -129,7 +129,9 @@ struct TrajPage: View {
         for traj in locationGetter.trajs {
             var points: [[String: Any]] = []
             for point in traj {
-                points.append(["latitude": point.latitude, "longitude": point.longitude, "altitude": point.altitude])
+                if point.altitude != -1 {
+                    points.append(["latitude": point.latitude, "longitude": point.longitude, "altitude": point.altitude])
+                }
             }
             if points.count > 1 {
                 trajs.append(points)
