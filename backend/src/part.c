@@ -24,7 +24,7 @@ double MDLPar(coor_t* traj, int start_index, int end_index) {
 
     double LH = log2(pow(diffX * diffX + diffY * diffY + diffZ * diffZ, 0.5));
     double LH_D = log2(angle_sum) + log2(perp_sum);
-    return LH + 0.08 * LH_D;
+    return LH + 0.1 * LH_D;
 }
 
 double MDLNotPar(coor_t* traj, int start_index, int end_index) {

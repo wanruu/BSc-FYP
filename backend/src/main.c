@@ -1,6 +1,3 @@
-// gcc process.c -I/usr/local/include -lmongoc-1.0 -lbson-1.0
-// ./a.out 
-
 #include <mongoc/mongoc.h>
 #include <bson/bson.h>
 #include <math.h>
@@ -184,14 +181,14 @@ int main (int argc, char *argv[]) {
     }
 
     // test
-    FILE *fp;
+    /*FILE *fp;
     fp = fopen("./draw/line_segs.txt", "w");
     for (int i = 0; i < line_segs_size; i++) {
         fprintf(fp, "%d\n", line_segs[i].cluster_id);
         fprintf(fp, "%f %f\n", line_segs[i].start.lat, line_segs[i].start.lng);
         fprintf(fp, "%f %f\n", line_segs[i].end.lat, line_segs[i].end.lng);
         fprintf(fp, "\n");
-    }
+    }*/
     
     /*
      *  Aim: cluster line_segs by assigning cluster_id to them.
@@ -203,19 +200,18 @@ int main (int argc, char *argv[]) {
     cluster(line_segs, line_segs_size, &cluster_num);
 
     // test
-    /*FILE *fp;
+    FILE *fp;
     fp = fopen("./draw/line_segs.txt", "w");
     for (int i = 0; i < line_segs_size; i++) {
         fprintf(fp, "%d\n", line_segs[i].cluster_id);
         fprintf(fp, "%f %f\n", line_segs[i].start.lat, line_segs[i].start.lng);
         fprintf(fp, "%f %f\n", line_segs[i].end.lat, line_segs[i].end.lng);
         fprintf(fp, "\n");
-    }*/
+    }
 
     /*
      *  Aim: generate rep_trajs from line_segs.
-     *  Data: rep_trajs_size, rep_trajs.
-     *  Test: 
+     *  Data: rep_trajs_size, rep_trajs. 
      */
     int rep_trajs_size = 0;
     traj_t* rep_trajs = (traj_t*) malloc(sizeof(traj_t) * TRAJNUM);
@@ -248,38 +244,47 @@ int main (int argc, char *argv[]) {
         }
     }
 
+    // test
+    /*FILE *fp_rep;
+    fp_rep = fopen("./draw/rep.txt", "w");
+    for (int i = 0; i < rep_trajs_size; i++) {
+        for (int j = 0; j < rep_trajs[i].points_num; j ++) {
+            fprintf(fp_rep, "%f %f\n", rep_trajs[i].points[j].lat, rep_trajs[i].points[j].lng);
+        }
+        fprintf(fp_rep, "\n");
+    }*/
+
 
     rep_trajs = smooth(rep_trajs, &rep_trajs_size);
 
-    /*FILE *fp;
-    fp = fopen("output.txt", "w");
+    // test
+    FILE *fp_rep;
+    fp_rep = fopen("./draw/rep.txt", "w");
     for (int i = 0; i < rep_trajs_size; i++) {
         for (int j = 0; j < rep_trajs[i].points_num; j ++) {
-            fprintf(fp, "%f %f\n", rep_trajs[i].points[j].lat, rep_trajs[i].points[j].lng);
+            fprintf(fp_rep, "%f %f\n", rep_trajs[i].points[j].lat, rep_trajs[i].points[j].lng);
         }
-        fprintf(fp, "\n");
-    }*/
+        fprintf(fp_rep, "\n");
+    }
 
 
 
     /*
      *  Aim: generate routes from rep_trajs.
      *  Data: 
-     *  Test: 
      */
     int routes_size = 0;
     route_t* routes = generate_routes (rep_trajs, rep_trajs_size, locs, locs_size, &routes_size);
     
     // test
-    /* for (int i = 0; i < routes_size; i++) {
-        printf("%s\n", routes[i].start_loc.name);
-        printf("%s\n", routes[i].end_loc.name);
-        //for (int j = 0; j < routes[i].points_num; j++) {
-        //    printf("%f ", routes[i].points[j].lat);
-        //}
-        printf("%f\n", routes[i].dist);
-        printf("\n");
-    }*/
+    FILE *fp_route;
+    fp_route = fopen("./draw/route.txt", "w");
+    for (int i = 0; i < routes_size; i++) {
+        for (int j = 0; j < routes[i].points_num; j++) {
+            fprintf(fp_route, "%f %f\n", routes[i].points[j].lat, routes[i].points[j].lng);
+        }
+        fprintf(fp_route, "\n");
+    }
 
 
     /*
@@ -291,9 +296,7 @@ int main (int argc, char *argv[]) {
     if (!mongoc_collection_remove (collection, MONGOC_REMOVE_NONE, doc, NULL, &error)) {
         fprintf (stderr, "Delete failed: %s\n", error.message);
     }
-    /*if (!mongoc_collection_drop (collection, &error)) {
-        fprintf (stderr, "Delete failed: %s\n", error.message);
-    }*/
+
 
     /*
      *  Aim: upload routes to mongo.

@@ -16,7 +16,7 @@ while True:
     except Exception as e:
         break
     if str == "\n":
-        if id != -1:
+        if id > 0 and abs(x[0] - x[1]) < 100:
             plt.plot(y, x, color = colors[int(id % number_of_colors)])
         x = []
         y = []
