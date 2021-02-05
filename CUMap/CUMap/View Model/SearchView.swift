@@ -238,18 +238,22 @@ struct SearchArea: View {
                     }
                 }
                 // print("min: \(minDist)")
-                if minDist > 30 {
+                if minDist > 100 {
                     newRoutes.append(route)
                 } else {
                     // split route
                     var route1 = Route(_id: route._id + "1", startLoc: route.startLoc, endLoc: curLoc, points: Array(route.points[0...index]), dist: 0, type: 0)
                     var route2 = Route(_id: route._id + "2", startLoc: curLoc, endLoc: route.endLoc, points: Array(route.points[index..<route.points.count]), dist: 0, type: 0)
                     // calculate distance
-                    for i in 0...route1.points.count - 2 {
-                        route1.dist += distance(start: route1.points[i], end: route1.points[i + 1]);
+                    if route1.points.count > 1 {
+                        for i in 0...route1.points.count - 2 {
+                            route1.dist += distance(start: route1.points[i], end: route1.points[i + 1]);
+                        }
                     }
-                    for i in 0...route2.points.count - 2 {
-                        route2.dist += distance(start: route2.points[i], end: route2.points[i + 1]);
+                    if route2.points.count > 1 {
+                        for i in 0...route2.points.count - 2 {
+                            route2.dist += distance(start: route2.points[i], end: route2.points[i + 1]);
+                        }
                     }
                     newRoutes.append(route1)
                     newRoutes.append(route2)
