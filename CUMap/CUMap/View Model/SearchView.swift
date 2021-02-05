@@ -210,13 +210,13 @@ struct SearchArea: View {
         }.edgesIgnoringSafeArea(.top)
     }
     private func RP() {
-        // Clear result
+        // Step 1: Clear result
         plans = []
         
-        // Deal with nil input
+        // Step 2: Deal with nil input
         if startLoc == nil || endLoc == nil { return }
         
-        // Deal with current location
+        // Step 3: Deal with current location
         let curLoc = Location(_id: "current", name_en: "Your Location", latitude: current.latitude, longitude: current.longitude, altitude: current.altitude, type: 0)
         var newLocs = locations
         var newRoutes: [Route] = []
@@ -238,7 +238,7 @@ struct SearchArea: View {
                     }
                 }
                 // print("min: \(minDist)")
-                if minDist > 100 {
+                if minDist > 100 { // TODO: what if cant find closest point?
                     newRoutes.append(route)
                 } else {
                     // split route
@@ -255,18 +255,36 @@ struct SearchArea: View {
                             route2.dist += distance(start: route2.points[i], end: route2.points[i + 1]);
                         }
                     }
-                    newRoutes.append(route1)
-                    newRoutes.append(route2)
+                    let index1: Int? = newRoutes.firstIndex(where: {
+                        ($0.startLoc == route1.startLoc && $0.endLoc == route1.endLoc) || ($0.startLoc == route1.endLoc && $0.endLoc == route1.startLoc)
+                    })
+                    let index2: Int? = newRoutes.firstIndex(where: {
+                        ($0.startLoc == route2.startLoc && $0.endLoc == route2.endLoc) || ($0.startLoc == route2.endLoc && $0.endLoc == route2.startLoc)
+                    })
+                    
+                    if index1 == nil {
+                        newRoutes.append(route1)
+                    } else if newRoutes[index1!].dist > route1.dist {
+                        newRoutes.remove(at: index1!)
+                        newRoutes.append(route1)
+                    }
+                    
+                    if index2 == nil {
+                        newRoutes.append(route2)
+                    } else if newRoutes[index2!].dist > route2.dist {
+                        newRoutes.remove(at: index2!)
+                        newRoutes.append(route2)
+                    }
                 }
             }
         } else {
             newRoutes = routes
         }
         
-        // Searching for route plans
+        // Step 4: Searching for route plans
         checkNextRoute(plan: Plan(startLoc: nil, endLoc: nil, routes: [], dist: 0, time: 0, ascent: 0, type: 0), locs: newLocs, routes: newRoutes)
         
-        // clean repeated plan with type 1
+        // Step 5: clean repeated plan with type 1
         for plan in plans {
             if plan.type != 1 {
                 continue
@@ -280,14 +298,8 @@ struct SearchArea: View {
             }
         }
         
+        
         chosenPlan = nil
-        /*if plans.isEmpty {
-            chosenPlan = nil
-        } else if mode == .bus {
-            chosenPlan = plans.first(where: {$0.type == 1})
-        } else {
-            chosenPlan = plans.first(where: {$0.type == 0})
-        }*/
     }
     
     // DFS recursion
