@@ -149,14 +149,14 @@ int main (int argc, char *argv[]) {
     get_trajs(collection, trajs, &trajs_size);
 
     // test
-    /*FILE *fp_trajs;
+    FILE *fp_trajs;
     fp_trajs = fopen("./draw/trajs.txt", "w");
     for (int i = 0; i < trajs_size; i++) {
         for (int j = 0; j < trajs[i].points_num; j ++) {
             fprintf(fp_trajs, "%f %f\n", trajs[i].points[j].lat, trajs[i].points[j].lng);
         }
         fprintf(fp_trajs, "\n");
-    }*/
+    }
 
 
     /*
