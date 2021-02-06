@@ -134,20 +134,19 @@ struct PlansView: View {
                                 VStack(spacing: 0) {
                                     Divider()
                                     ForEach(walkPlans) { plan in
-                                        if plan.type == 0 {
-                                            // TODO: change display of walk plan
-                                            Button(action: {
-                                                chosenPlan = plan
-                                            }) {
-                                                HStack {
-                                                    Spacer()
-                                                    Text("\(Int(plan.time)) min (\(Int(plan.dist)) m)")
-                                                    Text(">").bold()
-                                                }.padding()
-                                            }.buttonStyle(MyButtonStyle2(bgColor: Color.gray.opacity(0.3)))
-                                            
-                                            Divider()
-                                        }
+                                        // TODO: change display of walk plan
+                                        Button(action: {
+                                            chosenPlan = plan
+                                        }) {
+                                            HStack {
+                                                Spacer()
+                                                Text("\(Int(plan.time)) min (\(Int(plan.dist)) m)")
+                                                Text(">").bold()
+                                            }
+                                            .padding()
+                                            .contentShape(Rectangle())
+                                        }.buttonStyle(MyButtonStyle2(bgColor: Color.gray.opacity(0.3)))
+                                        Divider()
                                     }
                                 }
                             }

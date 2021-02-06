@@ -482,7 +482,9 @@ struct SearchList: View {
                                         
                                     Text("Your Location")
                                     Spacer()
-                                }.padding(.horizontal)
+                                }
+                                .padding(.horizontal)
+                                .contentShape(Rectangle())
                             }.buttonStyle(MyButtonStyle()) : nil
                             
                             showCurrent ? Divider().padding(.horizontal) : nil
@@ -505,9 +507,10 @@ struct SearchList: View {
                                             }
                                             Text(location.name_en)
                                             Spacer()
-                                        }.padding(.horizontal)
+                                        }
+                                        .padding(.horizontal)
+                                        .contentShape(Rectangle())
                                     }.buttonStyle(MyButtonStyle())
-                                    
                                     Divider().padding(.horizontal)
                                 }
                             }
