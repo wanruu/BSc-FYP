@@ -357,8 +357,12 @@ struct SearchArea: View {
     }
     
     private func isOverlapped(points1: [Coor3D], points2: [Coor3D]) -> Bool {
+        var count = 0
         for point in points2 {
             if points1.contains(point) {
+                count += 1
+            }
+            if count == 3 {
                 return true
             }
         }
