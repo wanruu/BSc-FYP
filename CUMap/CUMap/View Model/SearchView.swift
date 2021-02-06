@@ -222,6 +222,8 @@ struct SearchArea: View {
     private func RP() {
         // Step 1: Clear result
         plans = []
+        busPlans = []
+        walkPlans = []
         
         // Step 2: Deal with nil input
         if startLoc == nil || endLoc == nil { return }
@@ -295,7 +297,36 @@ struct SearchArea: View {
         checkNextRoute(plan: Plan(startLoc: nil, endLoc: nil, routes: [], dist: 0, time: 0, ascent: 0, type: 0), locs: newLocs, routes: newRoutes)
         
         // Step 5: process plans
-        processPlans()
+        // if a bus plan contains a walking route which can be replaced by taking bus, remove that plan
+        for plan in plans {
+            if plan.type != 1 { continue }
+            for route in plan.routes {
+                if route.type == 0 && !routes.filter({$0.type == 1 && $0.startLoc == route.startLoc && $0.endLoc == route.endLoc}).isEmpty {
+                    let index = plans.firstIndex(where: {$0.id == plan.id})!
+                    plans.remove(at: index)
+                    break
+                }
+            }
+        }
+        
+        // combine walking route in bus plan
+        for i in 0..<plans.count {
+            if plans[i].type != 1 {
+                continue
+            }
+            
+            var j = 0
+            while j < plans[i].routes.count - 1 {
+                if plans[i].routes[j].type == 0 && plans[i].routes[j+1].type == 0 {
+                    let newRoute = Route(_id: plans[i].routes[j]._id + plans[i].routes[j+1]._id, startLoc: plans[i].routes[j].startLoc, endLoc: plans[i].routes[j+1].endLoc, points: plans[i].routes[j].points + plans[i].routes[j+1].points, dist: plans[i].routes[j].dist + plans[i].routes[j+1].dist, type: 0)
+                    plans[i].routes.remove(at: j)
+                    plans[i].routes.remove(at: j)
+                    plans[i].routes.insert(newRoute, at: j)
+                } else {
+                    j += 1
+                }
+            }
+        }
         
         // Step 6: generate walk/bus plans
         for plan in plans {
@@ -306,6 +337,23 @@ struct SearchArea: View {
             }
         }
         
+        // Step 7: combine adjacent same bus
+        for i in 0..<busPlans.count {
+            var j = 0
+            while j < busPlans[i].busIds.count - 1 {
+                if busPlans[i].busIds[j] != nil && busPlans[i].busIds[j] == busPlans[i].busIds[j+1] {
+                    let route1 = busPlans[i].plan.routes[j]
+                    let route2 = busPlans[i].plan.routes[j+1]
+                    let newRoute = Route(_id: route1._id + route2._id, startLoc: route1.startLoc, endLoc: route2.endLoc, points: route1.points + route2.points, dist: route1.dist + route2.dist, type: 1)
+                    busPlans[i].busIds.remove(at: j)
+                    busPlans[i].plan.routes.remove(at: j)
+                    busPlans[i].plan.routes.remove(at: j)
+                    busPlans[i].plan.routes.insert(newRoute, at: j)
+                } else {
+                    j += 1
+                }
+            }
+        }
         chosenPlan = nil
     }
     
@@ -402,39 +450,7 @@ struct SearchArea: View {
         return false
     }
     
-    private func processPlans() {
-        // if a bus plan contains a walking route which can be replaced by taking bus, remove that plan
-        for plan in plans {
-            if plan.type != 1 { continue }
-            for route in plan.routes {
-                if route.type == 0 && !routes.filter({$0.type == 1 && $0.startLoc == route.startLoc && $0.endLoc == route.endLoc}).isEmpty {
-                    let index = plans.firstIndex(where: {$0.id == plan.id})!
-                    plans.remove(at: index)
-                    break
-                }
-            }
-        }
-        
-        // combine walking route in bus plan
-        for i in 0..<plans.count {
-            if plans[i].type != 1 {
-                continue
-            }
-            
-            var j = 0
-            while j < plans[i].routes.count - 1 {
-                if plans[i].routes[j].type == 0 && plans[i].routes[j+1].type == 0 {
-                    let newRoute = Route(_id: plans[i].routes[j]._id + plans[i].routes[j+1]._id, startLoc: plans[i].routes[j].startLoc, endLoc: plans[i].routes[j+1].endLoc, points: plans[i].routes[j].points + plans[i].routes[j+1].points, dist: plans[i].routes[j].dist + plans[i].routes[j+1].dist, type: 0)
-                    plans[i].routes.remove(at: j)
-                    plans[i].routes.remove(at: j)
-                    plans[i].routes.insert(newRoute, at: j)
-                } else {
-                    j += 1
-                }
-            }
-        }
-    }
-    
+    // MARK: - find bus plans
     @State var result: [BusPlan] = []
     
     private func planToBusPlans(plan: Plan) -> [BusPlan] {
