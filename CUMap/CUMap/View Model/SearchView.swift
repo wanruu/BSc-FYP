@@ -27,8 +27,6 @@
 import Foundation
 import SwiftUI
 
-let INF: Double = 99999
-
 enum TransMode {
     case bus
     case foot
@@ -40,13 +38,16 @@ struct SearchView: View {
     // data used to do route planning
     @ObservedObject var locationGetter: LocationGetterModel
     @State var locations: [Location]
-    @State var startLoc: Location? = nil
-    @State var endLoc: Location? = nil
     @State var routes: [Route]
     @State var buses: [Bus]
     
+    @State var startLoc: Location? = nil
+    @State var endLoc: Location? = nil
+    
     // result of route planning
-    @Binding var plans: [Plan]
+    // @Binding var plans: [Plan]
+    @Binding var busPlans: [BusPlan]
+    @Binding var walkPlans: [Plan]
     @Binding var chosenPlan: Plan?
     
     // decide which plan to display
@@ -69,7 +70,7 @@ struct SearchView: View {
             SearchList(placeholder: "To", keyword: endLoc == nil ? "" : endLoc!.name_en, locations: locations, showCurrent: startLoc == nil || startLoc!._id != "current", location: $endLoc, showList: $showEndList)
         } else {
             // Page 3: search box
-            SearchArea(locations: locations, startLoc: $startLoc, endLoc: $endLoc, routes: routes, buses: buses, current: $locationGetter.current, plans: $plans, chosenPlan: $chosenPlan, showStartList: $showStartList, showEndList: $showEndList, mode: $mode)
+            SearchArea(locations: locations, startLoc: $startLoc, endLoc: $endLoc, routes: routes, buses: buses, current: $locationGetter.current, busPlans: $busPlans, walkPlans: $walkPlans, chosenPlan: $chosenPlan, showStartList: $showStartList, showEndList: $showEndList, mode: $mode)
                 .offset(y: height > smallH ? (smallH - height) * 2 : 0)
                 .onAppear {
                     if startLoc != nil && endLoc != nil {
@@ -93,7 +94,10 @@ struct SearchArea: View {
     @Binding var current: Coor3D
 
     // output of RP
-    @Binding var plans: [Plan]
+    // @Binding var plans: [Plan]
+    @State var plans: [Plan] = [] // just for keep data temply
+    @Binding var busPlans: [BusPlan]
+    @Binding var walkPlans: [Plan]
     @Binding var chosenPlan: Plan?
     
     // show searchList
@@ -108,14 +112,20 @@ struct SearchArea: View {
         // find min time for both mode
         var footTime = INF
         var busTime = INF
-        for plan in plans {
+        for plan in busPlans {
+            busTime = min(busTime, plan.plan.time)
+        }
+        for plan in walkPlans {
+            footTime = min(footTime, plan.time)
+        }
+        /*for plan in plans {
             if plan.type == 0 && plan.time < footTime {
                 footTime = plan.time
             }
             if plan.type == 1 && plan.time < busTime {
                 busTime = plan.time
             }
-        }
+        }*/
         
         return GeometryReader { geometery in
             VStack {
@@ -287,6 +297,14 @@ struct SearchArea: View {
         // Step 5: process plans
         processPlans()
         
+        // Step 6: generate walk/bus plans
+        for plan in plans {
+            if plan.type == 0 {
+                walkPlans.append(plan)
+            } else {
+                busPlans += planToBusPlans(plan: plan)
+            }
+        }
         
         chosenPlan = nil
     }
@@ -417,6 +435,55 @@ struct SearchArea: View {
         }
     }
     
+    @State var result: [BusPlan] = []
+    
+    private func planToBusPlans(plan: Plan) -> [BusPlan] {
+        // find bus id sequence of plan.routes
+        var busIds: [[String]] = [[String]] (repeating: [], count: plan.routes.count) // in plan.routes order
+        for i in 0..<plan.routes.count { // for each bus route
+            if plan.routes[i].type == 0 { continue }
+            let filteredBuses = buses.filter({ hasRoute(bus: $0, route: plan.routes[i])})
+            for filteredBus in filteredBuses {
+                busIds[i].append(filteredBus.id)
+            }
+        }
+        if plan.routes.filter({ $0.type == 0 }).count != busIds.filter({ $0.isEmpty }).count {
+            return []
+        }
+        
+        // generate bus plan
+        result = []
+        busIdsToPlan(plan: plan, busIds: busIds, busIdsIndex: 0, curPlan: BusPlan(plan: plan, busIds: []))
+        return result
+    }
+    
+    private func hasRoute(bus: Bus, route: Route) -> Bool {
+        for i in 0..<bus.stops.count - 1 {
+            if bus.stops[i] == route.startLoc._id && bus.stops[i+1] == route.endLoc._id {
+                return true
+            }
+        }
+        return false
+    }
+    
+    private func busIdsToPlan(plan: Plan, busIds: [[String]], busIdsIndex: Int, curPlan: BusPlan) {
+        var curPlan = curPlan
+        if busIdsIndex >= busIds.count {
+            result.append(curPlan)
+            return
+        }
+        
+        for i in busIdsIndex..<busIds.count {
+            if busIds[i].isEmpty {
+                curPlan.busIds.append(nil)
+            } else {
+                for busId in busIds[i] {
+                    busIdsToPlan(plan: plan, busIds: busIds, busIdsIndex: i+1, curPlan: BusPlan(plan: curPlan.plan, busIds: curPlan.busIds + [busId]))
+                }
+                break
+            }
+        }
+    }
 }
 
 struct SearchList: View {

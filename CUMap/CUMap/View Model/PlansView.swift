@@ -32,7 +32,9 @@ let largeH = UIScreen.main.bounds.height * 0.9
 
 struct PlansView: View {
     @State var buses: [Bus]
-    @Binding var plans: [Plan]
+    // @Binding var plans: [Plan]
+    @Binding var busPlans: [BusPlan]
+    @Binding var walkPlans: [Plan]
     @Binding var chosenPlan: Plan?
     
     @State var departDate: Date = Date()
@@ -84,19 +86,7 @@ struct PlansView: View {
     }
     
     var body: some View {
-        // process plans
-        var walkPlans: [Plan] = []
-        var busPlans: [BusPlan] = []
-        
-        for plan in plans {
-            if plan.type == 0 {
-                walkPlans.append(plan)
-            } else {
-                busPlans += planToBusPlans(plan: plan)
-            }
-        }
-        
-        return GeometryReader { geometry in
+        GeometryReader { geometry in
             VStack {
                 Spacer()
                 VStack {
@@ -257,56 +247,7 @@ struct PlansView: View {
             .gesture(drag)
         }
     }
-
-    private func planToBusPlans(plan: Plan) -> [BusPlan] {
-        // find bus id sequence of plan.routes
-        var busIds: [[String]] = [[String]] (repeating: [], count: plan.routes.count) // in plan.routes order
-        for i in 0..<plan.routes.count { // for each bus route
-            if plan.routes[i].type == 0 { continue }
-            let filteredBuses = buses.filter({ hasRoute(bus: $0, route: plan.routes[i])})
-            for filteredBus in filteredBuses {
-                busIds[i].append(filteredBus.id)
-            }
-        }
-        if plan.routes.filter({ $0.type == 0 }).count != busIds.filter({ $0.isEmpty }).count {
-            return []
-        }
-        
-        // generate bus plan
-        result = []
-        busIdsToPlan(plan: plan, busIds: busIds, busIdsIndex: 0, curPlan: BusPlan(plan: plan, busIds: []))
-        return result
-    }
-    
-    private func hasRoute(bus: Bus, route: Route) -> Bool {
-        for i in 0..<bus.stops.count - 1 {
-            if bus.stops[i] == route.startLoc._id && bus.stops[i+1] == route.endLoc._id {
-                return true
-            }
-        }
-        return false
-    }
-    
-    private func busIdsToPlan(plan: Plan, busIds: [[String]], busIdsIndex: Int, curPlan: BusPlan) {
-        var curPlan = curPlan
-        if busIdsIndex >= busIds.count {
-            result.append(curPlan)
-            return
-        }
-        
-        for i in busIdsIndex..<busIds.count {
-            if busIds[i].isEmpty {
-                curPlan.busIds.append(nil)
-            } else {
-                for busId in busIds[i] {
-                    busIdsToPlan(plan: plan, busIds: busIds, busIdsIndex: i+1, curPlan: BusPlan(plan: curPlan.plan, busIds: curPlan.busIds + [busId]))
-                }
-                break
-            }
-        }
-    }
 }
-var result: [BusPlan] = []
 
 /*
  |<---- width ----->|

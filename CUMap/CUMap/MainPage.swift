@@ -17,7 +17,7 @@ import SwiftUI
 
 // MARK: - MapPage
 struct MainPage: View {
-    // data used to do route planning
+    // data from server
     @State var locations: [Location]
     @State var routes: [Route]
     @State var buses: [Bus]
@@ -25,7 +25,8 @@ struct MainPage: View {
     @ObservedObject var locationGetter: LocationGetterModel
     
     // search result
-    @State var plans: [Plan] = []
+    @State var busPlans: [BusPlan] = []
+    @State var walkPlans: [Plan] = []
     @State var chosenPlan: Plan? = nil
     @State var mode: TransMode = .bus
     
@@ -35,11 +36,11 @@ struct MainPage: View {
     
     var body: some View {
         ZStack {
-            MapView(plans: $plans, chosenPlan: $chosenPlan, locationGetter: locationGetter, lastHeight: $lastHeight, height: $height)
+            MapView(chosenPlan: $chosenPlan, locationGetter: locationGetter, lastHeight: $lastHeight, height: $height)
             
-            PlansView(buses: buses, plans: $plans, chosenPlan: $chosenPlan, mode: $mode, lastHeight: $lastHeight, height: $height)
+            PlansView(buses: buses, busPlans: $busPlans, walkPlans: $walkPlans, chosenPlan: $chosenPlan, mode: $mode, lastHeight: $lastHeight, height: $height)
             
-            SearchView(locationGetter: locationGetter, locations: locations, routes: routes, buses: buses, plans: $plans, chosenPlan: $chosenPlan, mode: $mode, lastHeight: $lastHeight, height: $height)
+            SearchView(locationGetter: locationGetter, locations: locations, routes: routes, buses: buses, busPlans: $busPlans, walkPlans: $walkPlans, chosenPlan: $chosenPlan, mode: $mode, lastHeight: $lastHeight, height: $height)
         }
     }
 }

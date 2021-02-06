@@ -57,3 +57,5 @@ let BUS_COLORS: [String?: Color] = [
 // Speed: m/s
 let busSpeed = 3.0
 let footSpeed = 0.9
+
+let INF: Double = 99999

@@ -10,7 +10,6 @@ import Foundation
 import SwiftUI
 
 struct MapView: View {
-    @Binding var plans: [Plan]
     @Binding var chosenPlan: Plan?
     @ObservedObject var locationGetter: LocationGetterModel
     
