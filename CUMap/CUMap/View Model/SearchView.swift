@@ -317,7 +317,11 @@ struct SearchArea: View {
                     plan.endLoc = route.endLoc
                     plan.routes.append(route)
                     plan.dist += route.dist
-                    plan.time += route.type == 0 ? route.dist/footSpeed/60 : route.dist/busSpeed/60
+                    if route.type == 0 {
+                        plan.time += route.dist/footSpeed/60
+                    } else {
+                        plan.time += route.dist/busSpeed/60 + 0.25
+                    }
                     plan.type = (plan.type == 1 || route.type == 1) ? 1 : 0
                     checkNextRoute(plan: plan, locs: locs, routes: routes)
                 } else if route.endLoc == startLoc && route.type == 0 {
@@ -339,7 +343,12 @@ struct SearchArea: View {
                     plan.endLoc = route.endLoc
                     plan.routes.append(route)
                     plan.dist += route.dist
-                    plan.time += route.type == 0 ? route.dist/footSpeed/60 : route.dist/busSpeed/60
+                    if route.type == 0 {
+                        plan.time += route.dist/footSpeed/60
+                    } else {
+                        plan.time += route.dist/busSpeed/60 + 0.25
+                    }
+                    // plan.time += route.type == 0 ? route.dist/footSpeed/60 : route.dist/busSpeed/60
                     plan.type = (plan.type == 1 || route.type == 1) ? 1 : 0
                     checkNextRoute(plan: plan, locs: locs, routes: routes)
                 } else if route.endLoc == plan.endLoc && route.type == 0 {
