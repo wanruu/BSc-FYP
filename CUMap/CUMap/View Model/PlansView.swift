@@ -181,7 +181,15 @@ struct PlansView: View {
                                                                 .font(.footnote).foregroundColor(.gray)
                                                         }
                                                     } else {
-                                                        Image(systemName: "bus")
+                                                        HStack(alignment: .bottom, spacing: 0) {
+                                                            Image(systemName: "bus.fill")
+                                                                .foregroundColor(Color.white)
+                                                                .padding(4)
+                                                                .background(CUPurple)
+                                                                .clipShape(Circle())
+                                                            Text(busId!)
+                                                                .font(.footnote).foregroundColor(.gray)
+                                                        }
                                                     }
                                                     if index != busPlan.busIds.count - 1 {
                                                         Text(">").font(.footnote).foregroundColor(Color.black.opacity(0.8))
@@ -192,7 +200,7 @@ struct PlansView: View {
                                             }
                                             .frame(maxWidth: .infinity)
                                             .padding()
-                                            
+                                            .contentShape(Rectangle())
                                         }.buttonStyle(MyButtonStyle2(bgColor: Color.gray.opacity(0.3)))
                                         Divider()
                                     }
