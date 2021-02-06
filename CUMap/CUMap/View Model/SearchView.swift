@@ -284,19 +284,8 @@ struct SearchArea: View {
         // Step 4: Searching for route plans
         checkNextRoute(plan: Plan(startLoc: nil, endLoc: nil, routes: [], dist: 0, time: 0, ascent: 0, type: 0), locs: newLocs, routes: newRoutes)
         
-        // Step 5: clean repeated plan with type 1
-        for plan in plans {
-            if plan.type != 1 {
-                continue
-            }
-            for route in plan.routes {
-                if route.type == 0 && !routes.filter({$0.type == 1 && $0.startLoc == route.startLoc && $0.endLoc == route.endLoc}).isEmpty {
-                    let index = plans.firstIndex(where: {$0.id == plan.id})!
-                    plans.remove(at: index)
-                    break
-                }
-            }
-        }
+        // Step 5: process plans
+        processPlans()
         
         
         chosenPlan = nil
@@ -338,7 +327,8 @@ struct SearchArea: View {
             for route in routes {
                 if route.startLoc == plan.endLoc {
                     if !plan.routes.filter({$0.startLoc == route.endLoc || $0.endLoc == route.endLoc}).isEmpty { continue }
-                    if plan.routes.last!.type == 0 && route.type == 0 && isOverlapped(points1: plan.routes.last!.points, points2: route.points) { continue }
+                    // if route.type == 0 && isOverlapped(points1: plan.routes.last!.points, points2: route.points) { continue }
+                    if isOverlapped(route1: plan.routes.last!, route2: route) { continue }
                     var plan = plan
                     plan.endLoc = route.endLoc
                     plan.routes.append(route)
@@ -353,7 +343,8 @@ struct SearchArea: View {
                     checkNextRoute(plan: plan, locs: locs, routes: routes)
                 } else if route.endLoc == plan.endLoc && route.type == 0 {
                     if !plan.routes.filter({$0.startLoc == route.startLoc || $0.endLoc == route.startLoc}).isEmpty { continue }
-                    if plan.routes.last!.type == 0 && isOverlapped(points1: plan.routes.last!.points, points2: route.points) { continue }
+                    // if isOverlapped(points1: plan.routes.last!.points, points2: route.points) { continue }
+                    if isOverlapped(route1: plan.routes.last!, route2: route) { continue }
                     var plan = plan
                     plan.endLoc = route.startLoc
                     plan.routes.append(Route(_id: route._id, startLoc: route.endLoc, endLoc: route.startLoc, points: route.points.reversed(), dist: route.dist, type: route.type))
@@ -365,18 +356,67 @@ struct SearchArea: View {
         }
     }
     
-    private func isOverlapped(points1: [Coor3D], points2: [Coor3D]) -> Bool {
-        var count = 0
-        for point in points2 {
-            if points1.contains(point) {
-                count += 1
+    private func isOverlapped(route1: Route, route2: Route) -> Bool {
+        if route1.type == 0 && route2.type == 0 {
+            var count = 0
+            for point in route2.points {
+                if route1.points.contains(point) {
+                    count += 1
+                }
+                if count == 3 {
+                    return true
+                }
             }
-            if count == 3 {
-                return true
+        } else if route1.type == 1 && route2.type == 0 {
+            var count = 0
+            for point2 in route2.points {
+                for point1 in route1.points {
+                    if distance(start: point1, end: point2) < 5 {
+                        count += 1
+                        break
+                    }
+                }
+                if count == 3 {
+                    return true
+                }
             }
         }
         return false
     }
+    
+    private func processPlans() {
+        // if a bus plan contains a walking route which can be replaced by taking bus, remove that plan
+        for plan in plans {
+            if plan.type != 1 { continue }
+            for route in plan.routes {
+                if route.type == 0 && !routes.filter({$0.type == 1 && $0.startLoc == route.startLoc && $0.endLoc == route.endLoc}).isEmpty {
+                    let index = plans.firstIndex(where: {$0.id == plan.id})!
+                    plans.remove(at: index)
+                    break
+                }
+            }
+        }
+        
+        // combine walking route in bus plan
+        for i in 0..<plans.count {
+            if plans[i].type != 1 {
+                continue
+            }
+            
+            var j = 0
+            while j < plans[i].routes.count - 1 {
+                if plans[i].routes[j].type == 0 && plans[i].routes[j+1].type == 0 {
+                    let newRoute = Route(_id: plans[i].routes[j]._id + plans[i].routes[j+1]._id, startLoc: plans[i].routes[j].startLoc, endLoc: plans[i].routes[j+1].endLoc, points: plans[i].routes[j].points + plans[i].routes[j+1].points, dist: plans[i].routes[j].dist + plans[i].routes[j+1].dist, type: 0)
+                    plans[i].routes.remove(at: j)
+                    plans[i].routes.remove(at: j)
+                    plans[i].routes.insert(newRoute, at: j)
+                } else {
+                    j += 1
+                }
+            }
+        }
+    }
+    
 }
 
 struct SearchList: View {
