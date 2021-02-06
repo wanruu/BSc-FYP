@@ -95,7 +95,6 @@ struct PlansView: View {
                 busPlans += planToBusPlans(plan: plan)
             }
         }
-        // TODO: change display of plan using walkPlans & busPlans
         
         return GeometryReader { geometry in
             VStack {
@@ -128,13 +127,13 @@ struct PlansView: View {
                     
                     // content starting here
                     if chosenPlan == nil && mode == .foot {
-                        if plans.filter({$0.type == 0}).isEmpty {
+                        if walkPlans.isEmpty {
                             Text("No results")
                         } else {
                             ScrollView {
                                 VStack(spacing: 0) {
                                     Divider()
-                                    ForEach(plans) { plan in
+                                    ForEach(walkPlans) { plan in
                                         if plan.type == 0 {
                                             // TODO: change display of walk plan
                                             Button(action: {
@@ -159,28 +158,43 @@ struct PlansView: View {
                     } else if chosenPlan == nil && mode == .bus {
                         DatePicker("Depart at", selection: $departDate).padding(.horizontal)
                             .onChange(of: departDate, perform: { value in
-                                print(value) // TODO
+                                print(value) // TODO: change plan time by current time
                             })
-                        if plans.filter({$0.type == 1}).isEmpty {
+                        if busPlans.isEmpty {
                             Text("No results")
                         } else {
                             ScrollView {
                                 VStack(spacing: 0) {
                                     Divider()
-                                    ForEach(plans) { plan in
-                                        if plan.type == 1 {
-                                            // TODO: change display of bus plan
-                                            Button(action: {
-                                                chosenPlan = plan
-                                            }) {
-                                                HStack {
-                                                    Spacer()
-                                                    Text("\(Int(plan.time)) min (\(Int(plan.dist)) m)")
-                                                    Text(">").bold()
-                                                }.padding()
-                                            }.buttonStyle(MyButtonStyle2(bgColor: Color.gray.opacity(0.3)))
-                                            Divider()
-                                        }
+                                    ForEach(busPlans) { busPlan in
+                                        Button(action: {
+                                            chosenPlan = busPlan.plan
+                                        }) {
+                                            HStack {
+                                                ForEach(busPlan.busIds, id: \.self) { busId in
+                                                    let index = busPlan.busIds.firstIndex(of: busId)!
+                                                    if busId == nil {
+                                                        HStack(alignment: .bottom, spacing: 0) {
+                                                            Image(systemName: "figure.walk")
+                                                                .foregroundColor(Color.black.opacity(0.8))
+                                                            Text("\(Int(busPlan.plan.routes[index].dist / footSpeed / 60))")
+                                                                .font(.footnote).foregroundColor(.gray)
+                                                        }
+                                                    } else {
+                                                        Image(systemName: "bus")
+                                                    }
+                                                    if index != busPlan.busIds.count - 1 {
+                                                        Text(">").font(.footnote).foregroundColor(Color.black.opacity(0.8))
+                                                    }
+                                                }
+                                                Spacer()
+                                                Text("\(Int(busPlan.plan.time)) mins >")
+                                            }
+                                            .frame(maxWidth: .infinity)
+                                            .padding()
+                                            
+                                        }.buttonStyle(MyButtonStyle2(bgColor: Color.gray.opacity(0.3)))
+                                        Divider()
                                     }
                                 }
                             }

@@ -65,6 +65,16 @@ struct BusPlan { // for showing plans in plansView
     var busIds: [String?]
 }
 
+extension BusPlan: Identifiable {
+    var id: String {
+        var tmp = plan.id
+        for busId in busIds {
+            tmp += busId == nil ? " " : busId!
+        }
+        return tmp
+    }
+}
+
 // MARK: - bus
 struct Bus: Codable, Identifiable {
     var id: String
