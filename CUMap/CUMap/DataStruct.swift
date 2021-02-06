@@ -60,6 +60,11 @@ extension Plan: Identifiable {
     }
 }
 
+struct BusPlan { // for showing plans in plansView
+    var plan: Plan
+    var busIds: [String?]
+}
+
 // MARK: - bus
 struct Bus: Codable, Identifiable {
     var id: String
