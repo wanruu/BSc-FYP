@@ -354,6 +354,17 @@ struct SearchArea: View {
                 }
             }
         }
+        
+        // Step 8: remove bus plan which contains more than 2 bus
+        var i = 0
+        while i < busPlans.count {
+            if busPlans[i].busIds.filter({$0 != nil}).count >= 3 {
+                busPlans.remove(at: i)
+            } else {
+                i += 1
+            }
+        }
+        
         chosenPlan = nil
     }
     
