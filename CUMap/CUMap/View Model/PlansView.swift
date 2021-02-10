@@ -195,6 +195,7 @@ struct PlansView: View {
                                     }
                                 }
                             }
+                            .padding(.bottom, height == largeH ? geometry.safeAreaInsets.bottom : 0)
                             .frame(height: height - geometry.safeAreaInsets.bottom * 2)
                             .gesture(DragGesture()) // prevent changing height when scrolling
                         }
