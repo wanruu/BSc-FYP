@@ -66,7 +66,7 @@ struct PageMenu: View {
                     page = .traj
                     showing.toggle()
                 }) {
-                    Text("Trajectory").padding().frame(maxWidth: .infinity)
+                    Text("Trajectory").padding().frame(maxWidth: .infinity).contentShape(Rectangle())
                 }.buttonStyle(MyButtonStyle3(bgColor: Color.gray.opacity(0.5)))
                 
                 Divider()
@@ -75,7 +75,7 @@ struct PageMenu: View {
                     page = .loc
                     showing.toggle()
                 }) {
-                    Text("Location").padding().frame(maxWidth: .infinity)
+                    Text("Location").padding().frame(maxWidth: .infinity).contentShape(Rectangle())
                 }.buttonStyle(MyButtonStyle3(bgColor: Color.gray.opacity(0.5)))
                 
                 Divider()
@@ -84,13 +84,14 @@ struct PageMenu: View {
                     page = .bus
                     showing.toggle()
                 }) {
-                    Text("Bus").padding().frame(maxWidth: .infinity)
+                    Text("Bus").padding().frame(maxWidth: .infinity).contentShape(Rectangle())
                 }.buttonStyle(MyButtonStyle3(bgColor: Color.gray.opacity(0.5)))
             }
             .background(Color.white)
             .cornerRadius(10)
             .clipped()
             .shadow(radius: 10)
+            .padding(.horizontal)
             .padding(.horizontal)
         }
     }

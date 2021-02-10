@@ -266,6 +266,7 @@ struct SearchSheet: View {
                             Spacer()
                             route == selectedResult ? Image(systemName: "checkmark").foregroundColor(.green) : nil
                         }
+                        .contentShape(Rectangle())
                         .onTapGesture { selectedResult = route }
                     }
                 }

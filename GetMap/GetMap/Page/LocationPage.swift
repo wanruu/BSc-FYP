@@ -180,7 +180,7 @@ struct LocationList: View {
                             Image(systemName: location.type == 0 ? "building.2" : "bus").imageScale(.large)
                             Text(location.name_en)
                             Spacer()
-                        }.padding(SCWidth * 0.02)
+                        }.padding(SCWidth * 0.02).contentShape(Rectangle())
                     }
                     .buttonStyle(MyButtonStyle2(bgColor: CUPurple.opacity(0.8)))
                 }
