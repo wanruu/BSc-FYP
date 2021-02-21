@@ -1,6 +1,5 @@
 /*
     Map View.
-    - Background Map
     - Search Result: plans
     - User Current Location
 
@@ -135,28 +134,6 @@ struct PlanMapView: View {
 
 */
 
-/*struct MapView: View {
-    @Binding var chosenPlan: Plan?
-    @ObservedObject var locationGetter: LocationGetterModel
-    
-    @Binding var lastHeight: CGFloat
-    @Binding var height: CGFloat
-
-    
-    @State var region = MKCoordinateRegion (
-            center: CLLocationCoordinate2D(latitude: centerLa, longitude: centerLg),
-            span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-    )
-    
-    @State var trackMode: MapUserTrackingMode = .none
-    
-    var body: some View {
-        if chosenPlan == nil {
-            Map(coordinateRegion: $region, interactionModes: .all, showsUserLocation: true).ignoresSafeArea(.all)
-        }
-    }
-}*/
-
 var lineColor: Color = CUYellow
 
 struct MapView: UIViewRepresentable {
@@ -178,7 +155,6 @@ struct MapView: UIViewRepresentable {
     }
     
     func updateUIView (_ mapView: MKMapView, context: Context) {
-        print(startLoc)
         // update start/end annotation
         if startLoc != nil {
             startAnt.title = "Start"
