@@ -7,6 +7,7 @@
 - [ ] improve: what if cant find closest point of current location
 - [ ] Change display of planView of bus plan
 - [ ] Take depart time into consideration
+- [ ] setUserTrackingMode
 
 ## GetMap
 
