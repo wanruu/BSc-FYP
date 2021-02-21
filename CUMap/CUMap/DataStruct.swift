@@ -45,7 +45,8 @@ extension Route: Identifiable, Equatable, Codable {
 }
 
 // MARK: - A plan
-struct Plan {
+struct Plan: Identifiable {
+    var id = UUID()
     var startLoc: Location?
     var endLoc: Location?
     var routes: [Route]
@@ -54,11 +55,11 @@ struct Plan {
     var ascent: Double // meters
     var type: Int
 }
-extension Plan: Identifiable {
+/*extension Plan: Identifiable {
     public var id: String {
         "\(String(describing: self.startLoc?._id))\(String(describing: self.endLoc?._id))\(self.dist)\(self.time)\(self.type)"
     }
-}
+}*/
 
 struct BusPlan { // for showing plans in plansView
     var plan: Plan
@@ -67,7 +68,7 @@ struct BusPlan { // for showing plans in plansView
 
 extension BusPlan: Identifiable {
     var id: String {
-        var tmp = plan.id
+        var tmp = plan.id.uuidString
         for busId in busIds {
             tmp += busId == nil ? " " : busId!
         }

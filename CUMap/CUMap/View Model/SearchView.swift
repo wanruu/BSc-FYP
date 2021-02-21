@@ -41,8 +41,8 @@ struct SearchView: View {
     @State var routes: [Route]
     @State var buses: [Bus]
     
-    @State var startLoc: Location? = nil
-    @State var endLoc: Location? = nil
+    @Binding var startLoc: Location?
+    @Binding var endLoc: Location?
     
     // result of route planning
     // @Binding var plans: [Plan]

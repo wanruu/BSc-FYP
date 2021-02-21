@@ -22,7 +22,12 @@ struct MainPage: View {
     @State var routes: [Route]
     @State var buses: [Bus]
     
+    // current location
     @ObservedObject var locationGetter: LocationGetterModel
+    
+    // selected start/end loc
+    @State var startLoc: Location? = nil
+    @State var endLoc: Location? = nil
     
     // search result
     @State var busPlans: [BusPlan] = []
@@ -36,11 +41,12 @@ struct MainPage: View {
     
     var body: some View {
         ZStack {
-            MapView(chosenPlan: $chosenPlan, locationGetter: locationGetter, lastHeight: $lastHeight, height: $height)
+            // MapView(chosenPlan: $chosenPlan, locationGetter: locationGetter, lastHeight: $lastHeight, height: $height)
+            MapView(startLoc: $startLoc, endLoc: $endLoc, busPlans: $busPlans, walkPlans: $walkPlans, chosenPlan: $chosenPlan, mode: $mode)
             
             PlansView(buses: buses, busPlans: $busPlans, walkPlans: $walkPlans, chosenPlan: $chosenPlan, mode: $mode, lastHeight: $lastHeight, height: $height)
             
-            SearchView(locationGetter: locationGetter, locations: locations, routes: routes, buses: buses, busPlans: $busPlans, walkPlans: $walkPlans, chosenPlan: $chosenPlan, mode: $mode, lastHeight: $lastHeight, height: $height)
+            SearchView(locationGetter: locationGetter, locations: locations, routes: routes, buses: buses, startLoc: $startLoc, endLoc: $endLoc, busPlans: $busPlans, walkPlans: $walkPlans, chosenPlan: $chosenPlan, mode: $mode, lastHeight: $lastHeight, height: $height)
         }
     }
 }

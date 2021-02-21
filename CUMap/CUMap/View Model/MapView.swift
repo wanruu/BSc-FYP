@@ -8,7 +8,9 @@
 
 import Foundation
 import SwiftUI
+import MapKit
 
+/*
 struct MapView: View {
     @Binding var chosenPlan: Plan?
     @ObservedObject var locationGetter: LocationGetterModel
@@ -131,3 +133,116 @@ struct PlanMapView: View {
     }
 }
 
+*/
+
+/*struct MapView: View {
+    @Binding var chosenPlan: Plan?
+    @ObservedObject var locationGetter: LocationGetterModel
+    
+    @Binding var lastHeight: CGFloat
+    @Binding var height: CGFloat
+
+    
+    @State var region = MKCoordinateRegion (
+            center: CLLocationCoordinate2D(latitude: centerLa, longitude: centerLg),
+            span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+    )
+    
+    @State var trackMode: MapUserTrackingMode = .none
+    
+    var body: some View {
+        if chosenPlan == nil {
+            Map(coordinateRegion: $region, interactionModes: .all, showsUserLocation: true).ignoresSafeArea(.all)
+        }
+    }
+}*/
+
+struct MapView: UIViewRepresentable {
+    @Binding var startLoc: Location?
+    @Binding var endLoc: Location?
+    
+    @Binding var busPlans: [BusPlan]
+    @Binding var walkPlans: [Plan]
+    @Binding var chosenPlan: Plan?
+    @Binding var mode: TransMode
+    
+    // annotation
+    var startAnt = MKPointAnnotation()
+    var endAnt = MKPointAnnotation()
+
+    func makeUIView (context: Context) -> MKMapView {
+        let mapView = MKMapView()
+        
+        // assign delegate
+        mapView.delegate = context.coordinator
+        
+        // set region
+        let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: centerLa, longitude: centerLg), span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+        mapView.setRegion(region, animated: true)
+        
+        // show user location
+        mapView.showsUserLocation = true
+
+        return mapView
+    }
+    
+    func updateUIView (_ mapView: MKMapView, context: Context) {
+        // update start/end annotation
+        if startLoc != nil {
+            startAnt.title = "Start"
+            startAnt.subtitle = startLoc!.name_en
+            startAnt.coordinate = CLLocationCoordinate2D(latitude: startLoc!.latitude, longitude: startLoc!.longitude)
+            mapView.addAnnotation(startAnt)
+        } else {
+            mapView.removeAnnotation(startAnt)
+        }
+        if endLoc != nil {
+            endAnt.title = "End"
+            endAnt.subtitle = endLoc!.name_en
+            endAnt.coordinate = CLLocationCoordinate2D(latitude: endLoc!.latitude, longitude: endLoc!.longitude)
+            mapView.addAnnotation(endAnt)
+        } else {
+            mapView.removeAnnotation(endAnt)
+        }
+        
+        // set region
+        if startLoc != nil || endLoc != nil {
+            let center: CLLocationCoordinate2D
+            let span: MKCoordinateSpan
+            if startLoc != nil && endLoc != nil {
+                center = CLLocationCoordinate2D(latitude: (startLoc!.latitude + endLoc!.latitude) / 2, longitude: (startLoc!.longitude + endLoc!.longitude) / 2)
+                span = MKCoordinateSpan(latitudeDelta: abs(startLoc!.latitude - endLoc!.latitude) * 1.5, longitudeDelta: abs(startLoc!.longitude - endLoc!.longitude) * 1.5)
+            } else if startLoc != nil {
+                center = CLLocationCoordinate2D(latitude: startLoc!.latitude, longitude: startLoc!.longitude)
+                span = MKCoordinateSpan(latitudeDelta: abs(startLoc!.latitude - centerLa) * 1.5, longitudeDelta: abs(startLoc!.longitude - centerLg) * 1.5)
+            } else {
+                center = CLLocationCoordinate2D(latitude: endLoc!.latitude, longitude: endLoc!.longitude)
+                span = MKCoordinateSpan(latitudeDelta: abs(endLoc!.latitude - centerLa) * 1.5, longitudeDelta: abs(endLoc!.longitude - centerLg) * 1.5)
+            }
+            mapView.setRegion(MKCoordinateRegion(center: center, span: span), animated: true)
+        }
+        
+        
+        if chosenPlan != nil {
+            
+        }
+    }
+    
+    func makeCoordinator () -> Coordinator {
+        return Coordinator(self)
+    }
+    
+    // delegate
+    class Coordinator: NSObject, MKMapViewDelegate {
+        var parent: MapView
+        
+        init(_ parent: MapView) {
+            self.parent = parent
+        }
+        
+        func mapViewDidChangeVisibleRegion (_ mapView: MKMapView) {
+            // print("MapView: mapViewDidChangeVisibleRegion")
+            // print(mapView.centerCoordinate)
+        }
+    }
+}
