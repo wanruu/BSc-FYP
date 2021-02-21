@@ -157,36 +157,28 @@ struct PlanMapView: View {
     }
 }*/
 
+var lineColor: Color = CUYellow
+
 struct MapView: UIViewRepresentable {
     @Binding var startLoc: Location?
     @Binding var endLoc: Location?
-    
-    @Binding var busPlans: [BusPlan]
-    @Binding var walkPlans: [Plan]
     @Binding var chosenPlan: Plan?
-    @Binding var mode: TransMode
+    
+    @State var trackingMode: MKUserTrackingMode = .follow
     
     // annotation
-    var startAnt = MKPointAnnotation()
-    var endAnt = MKPointAnnotation()
-
+    @State var startAnt = MKPointAnnotation()
+    @State var endAnt = MKPointAnnotation()
+    
     func makeUIView (context: Context) -> MKMapView {
         let mapView = MKMapView()
-        
-        // assign delegate
         mapView.delegate = context.coordinator
-        
-        // set region
-        let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: centerLa, longitude: centerLg), span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
-        mapView.setRegion(region, animated: true)
-        
-        // show user location
         mapView.showsUserLocation = true
-
         return mapView
     }
     
     func updateUIView (_ mapView: MKMapView, context: Context) {
+        print(startLoc)
         // update start/end annotation
         if startLoc != nil {
             startAnt.title = "Start"
@@ -205,26 +197,26 @@ struct MapView: UIViewRepresentable {
             mapView.removeAnnotation(endAnt)
         }
         
-        // set region
-        if startLoc != nil || endLoc != nil {
-            let center: CLLocationCoordinate2D
-            let span: MKCoordinateSpan
-            if startLoc != nil && endLoc != nil {
-                center = CLLocationCoordinate2D(latitude: (startLoc!.latitude + endLoc!.latitude) / 2, longitude: (startLoc!.longitude + endLoc!.longitude) / 2)
-                span = MKCoordinateSpan(latitudeDelta: abs(startLoc!.latitude - endLoc!.latitude) * 1.5, longitudeDelta: abs(startLoc!.longitude - endLoc!.longitude) * 1.5)
-            } else if startLoc != nil {
-                center = CLLocationCoordinate2D(latitude: startLoc!.latitude, longitude: startLoc!.longitude)
-                span = MKCoordinateSpan(latitudeDelta: abs(startLoc!.latitude - centerLa) * 1.5, longitudeDelta: abs(startLoc!.longitude - centerLg) * 1.5)
-            } else {
-                center = CLLocationCoordinate2D(latitude: endLoc!.latitude, longitude: endLoc!.longitude)
-                span = MKCoordinateSpan(latitudeDelta: abs(endLoc!.latitude - centerLa) * 1.5, longitudeDelta: abs(endLoc!.longitude - centerLg) * 1.5)
-            }
-            mapView.setRegion(MKCoordinateRegion(center: center, span: span), animated: true)
-        }
-        
-        
+        // update plan annotation
+        mapView.removeOverlays(mapView.overlays)
         if chosenPlan != nil {
-            
+            var busPolylines: [MKPolyline] = []
+            var walkPolylines: [MKPolyline] = []
+            for route in chosenPlan!.routes {
+                var points: [CLLocationCoordinate2D] = []
+                for point in route.points {
+                    points.append(CLLocationCoordinate2D(latitude: point.latitude, longitude: point.longitude))
+                }
+                if route.type == 0 { // walk
+                    walkPolylines.append(MKPolyline(coordinates: points, count: points.count))
+                } else { // bus
+                    busPolylines.append(MKPolyline(coordinates: points, count: points.count))
+                }
+            }
+            lineColor = CUPurple
+            mapView.addOverlay(MKMultiPolyline(busPolylines))
+            lineColor = CUYellow
+            mapView.addOverlay(MKMultiPolyline(walkPolylines))
         }
     }
     
@@ -236,13 +228,23 @@ struct MapView: UIViewRepresentable {
     class Coordinator: NSObject, MKMapViewDelegate {
         var parent: MapView
         
-        init(_ parent: MapView) {
+        init (_ parent: MapView) {
             self.parent = parent
         }
         
-        func mapViewDidChangeVisibleRegion (_ mapView: MKMapView) {
-            // print("MapView: mapViewDidChangeVisibleRegion")
-            // print(mapView.centerCoordinate)
+        // render layout
+        func mapView (_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+            if overlay is MKMultiPolyline {
+                let renderer = MKMultiPolylineRenderer(multiPolyline: overlay as! MKMultiPolyline)
+                renderer.strokeColor = UIColor(lineColor)
+                renderer.lineWidth = 3
+                return renderer
+            }
+            return MKOverlayRenderer()
+        }
+        
+        func mapViewDidFinishLoadingMap (_ mapView: MKMapView) {
+            mapView.setUserTrackingMode(.follow, animated: true)
         }
     }
 }
