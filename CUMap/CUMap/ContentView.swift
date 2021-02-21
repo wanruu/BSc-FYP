@@ -18,7 +18,6 @@ struct ContentView: View {
     @State var locations: [Location] = []
     @State var routes: [Route] = []
     @State var buses: [Bus] = []
-    @StateObject var locationGetter = LocationGetterModel()
     
     @State var loadTasks: [Bool] = [false, false, false]
     @State var newVersion: [Bool] = [false, false, false]
@@ -27,7 +26,7 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             loadTasks.filter{$0 == true}.count != loadTasks.count ? LoadPage(tasks: $loadTasks) : nil
-            loadTasks.filter{$0 == true}.count != loadTasks.count ? nil : MainPage(locations: locations, routes: routes, buses: buses, locationGetter: locationGetter)
+            loadTasks.filter{$0 == true}.count != loadTasks.count ? nil : MainPage(locations: locations, routes: routes, buses: buses)
         }
         .alert(isPresented: $showAlert) {
             Alert(

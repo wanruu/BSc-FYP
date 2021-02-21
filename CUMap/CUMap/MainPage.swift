@@ -23,7 +23,7 @@ struct MainPage: View {
     @State var buses: [Bus]
     
     // current location
-    @ObservedObject var locationGetter: LocationGetterModel
+    @StateObject var locationGetter = LocationGetterModel()
     
     // selected start/end loc
     @State var startLoc: Location? = nil
@@ -41,8 +41,8 @@ struct MainPage: View {
     
     var body: some View {
         ZStack {
-            // MapView(chosenPlan: $chosenPlan, locationGetter: locationGetter, lastHeight: $lastHeight, height: $height)
-            MapView(startLoc: $startLoc, endLoc: $endLoc, busPlans: $busPlans, walkPlans: $walkPlans, chosenPlan: $chosenPlan, mode: $mode)
+            MapView(startLoc: $startLoc, endLoc: $endLoc, chosenPlan: $chosenPlan)
+                .ignoresSafeArea(.all)
             
             PlansView(buses: buses, busPlans: $busPlans, walkPlans: $walkPlans, chosenPlan: $chosenPlan, mode: $mode, lastHeight: $lastHeight, height: $height)
             
