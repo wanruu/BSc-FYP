@@ -118,14 +118,6 @@ struct SearchArea: View {
         for plan in walkPlans {
             footTime = min(footTime, plan.time)
         }
-        /*for plan in plans {
-            if plan.type == 0 && plan.time < footTime {
-                footTime = plan.time
-            }
-            if plan.type == 1 && plan.time < busTime {
-                busTime = plan.time
-            }
-        }*/
         
         return GeometryReader { geometery in
             VStack {
@@ -229,12 +221,12 @@ struct SearchArea: View {
         if startLoc == nil || endLoc == nil { return }
         
         // Step 3: Deal with current location
-        let curLoc = Location(_id: "current", name_en: "Your Location", latitude: current.latitude, longitude: current.longitude, altitude: current.altitude, type: 0)
+        let curLoc = Location(_id: UUID().uuidString, name_en: "Your Location", latitude: current.latitude, longitude: current.longitude, altitude: current.altitude, type: 0)
         var newLocs = locations
         var newRoutes: [Route] = []
-        if startLoc!._id == "current" || endLoc!._id == "current" {
-            if startLoc!._id == "current" { startLoc = curLoc }
-            if endLoc!._id == "current" { endLoc = curLoc }
+        if startLoc!.name_en == "Your Location" || endLoc!.name_en == "Your Location" {
+            if startLoc!.name_en == "Your Location" { startLoc = curLoc }
+            if endLoc!.name_en == "Your Location" { endLoc = curLoc }
             // newLocs
             newLocs.append(curLoc)
             // newRoutes
@@ -566,7 +558,7 @@ struct SearchList: View {
                         VStack(spacing: 0) {
                             // current location
                             showCurrent ? Button(action: {
-                                self.location = Location(_id: "current", name_en: "Your Location", latitude: -1, longitude: -1, altitude: -1, type: 0)
+                                self.location = Location(_id: UUID().uuidString, name_en: "Your Location", latitude: -1, longitude: -1, altitude: -1, type: 0)
                                 showList = false
                             }) {
                                 HStack(spacing: 20) {
