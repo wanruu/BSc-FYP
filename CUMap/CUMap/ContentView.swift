@@ -26,7 +26,7 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             loadTasks.filter{$0 == true}.count != loadTasks.count ? LoadPage(tasks: $loadTasks) : nil
-            loadTasks.filter{$0 == true}.count != loadTasks.count ? nil : MainPage(locations: locations, routes: routes, buses: buses)
+            loadTasks.filter{$0 == true}.count != loadTasks.count ? nil : LocSearchPage(locations: locations, routes: routes, buses: buses)
         }
         .alert(isPresented: $showAlert) {
             Alert(

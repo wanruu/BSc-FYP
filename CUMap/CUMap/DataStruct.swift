@@ -8,6 +8,11 @@
 import Foundation
 import SwiftUI
 
+enum TransMode {
+    case bus
+    case foot
+}
+
 // MARK: - Location
 struct Location {
     var _id: String

@@ -134,7 +134,7 @@ struct PlanMapView: View {
 
 */
 
-var lineColor: Color = CUYellow
+// var lineColor: Color = CUYellow
 
 struct MapView: UIViewRepresentable {
     @Binding var startLoc: Location?

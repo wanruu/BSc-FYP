@@ -40,13 +40,14 @@ struct MainPage: View {
     @State var height: CGFloat = -UIScreen.main.bounds.height * 0.1
     
     var body: some View {
-        ZStack {
+        /*ZStack {
             MapView(startLoc: $startLoc, endLoc: $endLoc, chosenPlan: $chosenPlan)
                 .ignoresSafeArea(.all)
             
             PlansView(buses: buses, busPlans: $busPlans, walkPlans: $walkPlans, chosenPlan: $chosenPlan, mode: $mode, lastHeight: $lastHeight, height: $height)
             
             SearchView(locationGetter: locationGetter, locations: locations, routes: routes, buses: buses, startLoc: $startLoc, endLoc: $endLoc, busPlans: $busPlans, walkPlans: $walkPlans, chosenPlan: $chosenPlan, mode: $mode, lastHeight: $lastHeight, height: $height)
-        }
+        }*/
+        LocSearchPage(locations: locations, routes: routes, buses: buses)
     }
 }

@@ -27,11 +27,6 @@
 import Foundation
 import SwiftUI
 
-enum TransMode {
-    case bus
-    case foot
-}
-
 // To control which page to show
 struct SearchView: View {
     
