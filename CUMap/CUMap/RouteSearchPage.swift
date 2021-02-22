@@ -1,12 +1,13 @@
-//
-//  RouteSearchPage.swift
-//  CUMap
-//
-//  Created by wanruuu on 22/2/2021.
-//
+// MARK: The page for searching routes between A and B
 
 import SwiftUI
 import MapKit
+
+// height of plansView sheet
+let smallH = UIScreen.main.bounds.height * 0.25
+let mediumH = UIScreen.main.bounds.height * 0.55
+let largeH = UIScreen.main.bounds.height * 0.9
+
 
 struct RouteSearchPage: View {
     // data
@@ -32,8 +33,8 @@ struct RouteSearchPage: View {
     @State var showEndList: Bool = false
     @Binding var showing: Bool
     
-    @State var lastHeight: CGFloat = -UIScreen.main.bounds.height * 0.1
-    @State var height: CGFloat = -UIScreen.main.bounds.height * 0.1
+    @State var lastHeight: CGFloat = smallH
+    @State var height: CGFloat = smallH
     
     var body: some View {
         // find min time for both mode
@@ -48,10 +49,12 @@ struct RouteSearchPage: View {
         return ZStack {
             // MapView
             RouteMapView(startLoc: $startLoc, endLoc: $endLoc, chosenPlan: $chosenPlan, current: $current)
+                .ignoresSafeArea(.all)
             
+            // searchView
             VStack {
-                // searchView
                 VStack {
+                    Color.white.frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height / 18)
                     // search box
                     HStack {
                         // back button
@@ -125,17 +128,19 @@ struct RouteSearchPage: View {
                                 chosenPlan = nil
                             }
                         }
-                    }
+                    }.gesture(DragGesture())
                 }
                 .padding()
                 .background(Color.white)
-                // end of searchView
+                .clipped()
+                .shadow(radius: 5)
+                .offset(y: height > smallH ? (smallH - height) * 2 : 0)
                 Spacer()
-                    
-                // plansView
-                PlansView(buses: buses, busPlans: $busPlans, walkPlans: $walkPlans, chosenPlan: $chosenPlan, mode: $mode, lastHeight: $lastHeight, height: $height)
-                // end of plansView
             }
+            .ignoresSafeArea(.all)
+
+            // plansView
+            PlansView(buses: buses, busPlans: $busPlans, walkPlans: $walkPlans, chosenPlan: $chosenPlan, mode: $mode, lastHeight: $lastHeight, height: $height)
         }
         .onAppear {
             RP()
@@ -554,14 +559,8 @@ struct RouteMapView: UIViewRepresentable {
  ------------------    ------------------    -----------------
  */
 
-// height of plansView sheet
-let smallH = UIScreen.main.bounds.height * 0.25
-let mediumH = UIScreen.main.bounds.height * 0.55
-let largeH = UIScreen.main.bounds.height * 0.9
-
 struct PlansView: View {
     @State var buses: [Bus]
-    // @Binding var plans: [Plan]
     @Binding var busPlans: [BusPlan]
     @Binding var walkPlans: [Plan]
     @Binding var chosenPlan: Plan?
@@ -570,7 +569,6 @@ struct PlansView: View {
     
     @Binding var mode: TransMode
     
-    // height
     @Binding var lastHeight: CGFloat
     @Binding var height: CGFloat
     
@@ -618,7 +616,9 @@ struct PlansView: View {
         GeometryReader { geometry in
             VStack {
                 Spacer()
+
                 VStack {
+                    // "􀌇" or "back + 􀌇"
                     if chosenPlan == nil {
                         Image(systemName: "line.horizontal.3")
                             .foregroundColor(Color.gray)
@@ -645,7 +645,43 @@ struct PlansView: View {
                     }
                     
                     // content starting here
-                    if chosenPlan == nil && mode == .foot {
+                    if chosenPlan != nil {
+                        // display a plan
+                        HStack {
+                            Text("\(Int(chosenPlan!.time))").font(.title2).bold()
+                            Text("min").font(.title2)
+                            Text("(\(Int(chosenPlan!.dist)) m)").font(.title3).foregroundColor(Color.gray)
+                            Spacer()
+                        }.padding(.horizontal).padding(.bottom)
+                        
+                        Divider()
+                        
+                        ScrollView(.vertical) {
+                            VStack(spacing: 0) {
+                                // chart
+                                HeightChart(plan: chosenPlan)
+                                    .frame(width: UIScreen.main.bounds.size.width * 0.9, height: UIScreen.main.bounds.size.width * 0.25, alignment: .center)
+                                    .padding(.vertical)
+                                Divider()
+
+                                // Alert
+                                HStack(spacing: 20) {
+                                    Image(systemName: "exclamationmark.circle.fill")
+                                        .imageScale(.large)
+                                        .foregroundColor(CUYellow)
+                                    Text("The estimated time to arrive may not be accurate.")
+                                    Spacer()
+                                }.padding()
+                                Divider()
+                                // steps
+                                Instructions(plan: chosenPlan)
+                                Divider()
+                            }
+                        }
+                        .padding(.bottom, geometry.safeAreaInsets.bottom)
+                        .frame(maxHeight: height - geometry.safeAreaInsets.bottom * 2)
+                        .gesture(DragGesture()) // prevent changing height when scrolling
+                    } else if mode == .foot {
                         if walkPlans.isEmpty {
                             Text("No results")
                         } else {
@@ -673,7 +709,7 @@ struct PlansView: View {
                             .frame(height: height - geometry.safeAreaInsets.bottom * 2)
                             .gesture(DragGesture()) // prevent changing height when scrolling
                         }
-                    } else if chosenPlan == nil && mode == .bus {
+                    } else if mode == .bus {
                         DatePicker("Depart at", selection: $departDate).padding(.horizontal)
                             .onChange(of: departDate, perform: { value in
                                 print(value) // TODO: change plan time by current time
@@ -727,47 +763,12 @@ struct PlansView: View {
                             .padding(.bottom, height == largeH ? geometry.safeAreaInsets.bottom : 0)
                             .frame(height: height - geometry.safeAreaInsets.bottom * 2)
                             .gesture(DragGesture()) // prevent changing height when scrolling
+                            
                         }
-                    } else { // display a plan
-                        // title
-                        HStack {
-                            Text("\(Int(chosenPlan!.time))").font(.title2).bold()
-                            Text("min").font(.title2)
-                            Text("(\(Int(chosenPlan!.dist)) m)").font(.title3).foregroundColor(Color.gray)
-                            Spacer()
-                        }.padding(.horizontal).padding(.bottom)
-                        Divider()
-                        
-                        ScrollView(.vertical) {
-                            VStack(spacing: 0) {
-                                // chart
-                                HeightChart(plan: chosenPlan)
-                                    .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.25, alignment: .center)
-                                    .padding(.vertical)
-                                Divider()
-
-                                // Alert
-                                HStack(spacing: 20) {
-                                    Image(systemName: "exclamationmark.circle.fill")
-                                        .imageScale(.large)
-                                        .foregroundColor(CUYellow)
-                                    Text("The estimated time to arrive may not be accurate.")
-                                    Spacer()
-                                }.padding()
-                                Divider()
-                                // steps
-                                Instructions(plan: chosenPlan)
-                                Divider()
-                            }
-                        }
-                        .padding(.bottom, geometry.safeAreaInsets.bottom)
-                        .frame(maxHeight: height - geometry.safeAreaInsets.bottom * 2)
-                        .gesture(DragGesture()) // prevent changing height when scrolling
-
                     }
                     // content ending here
                 }
-                .frame(width: geometry.size.width, height: largeH, alignment: .top)
+                .frame(maxWidth: .infinity, maxHeight: largeH, alignment: .top)
                 .background(RoundedCorners(color: .white, tl: 15, tr: 15, bl: 0, br: 0))
                 .clipped()
                 .shadow(radius: 4)
