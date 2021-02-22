@@ -2,10 +2,7 @@
 
 ## CUMap
 
-- [ ] Adjust distance between points when showing plan in map
-- [ ] Add location mark when showing plan in map
 - [ ] improve: what if cant find closest point of current location
-- [ ] Change display of planView of bus plan
 - [ ] Take depart time into consideration
 - [ ] setUserTrackingMode
 
