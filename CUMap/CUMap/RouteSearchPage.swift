@@ -140,7 +140,7 @@ struct RouteSearchPage: View {
             .ignoresSafeArea(.all)
 
             // plansView
-            PlansView(buses: buses, busPlans: $busPlans, walkPlans: $walkPlans, chosenPlan: $chosenPlan, mode: $mode, lastHeight: $lastHeight, height: $height)
+            startLoc != nil && endLoc != nil ? PlansView(buses: buses, busPlans: $busPlans, walkPlans: $walkPlans, chosenPlan: $chosenPlan, mode: $mode, lastHeight: $lastHeight, height: $height) : nil
         }
         .onAppear {
             RP()

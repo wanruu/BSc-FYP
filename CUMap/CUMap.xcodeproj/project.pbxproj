@@ -21,6 +21,7 @@
 		B4A22B2825E30EC500DA708E /* LocSearchPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4A22B2725E30EC500DA708E /* LocSearchPage.swift */; };
 		B4A22B2D25E30FC100DA708E /* LocListPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4A22B2C25E30FC100DA708E /* LocListPage.swift */; };
 		B4A22B3225E3298C00DA708E /* RouteSearchPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4A22B3125E3298C00DA708E /* RouteSearchPage.swift */; };
+		B4A22B4925E358B200DA708E /* BusListPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4A22B4825E358B200DA708E /* BusListPage.swift */; };
 		B4D218DE2570561600E24F2E /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D218DD2570561600E24F2E /* Constant.swift */; };
 		B4D218E32570569800E24F2E /* LocationGetterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D218E22570569800E24F2E /* LocationGetterModel.swift */; };
 		B4D4FDA2257015FF00E61C29 /* CUMapApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D4FDA1257015FF00E61C29 /* CUMapApp.swift */; };
@@ -65,6 +66,7 @@
 		B4A22B2725E30EC500DA708E /* LocSearchPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocSearchPage.swift; sourceTree = "<group>"; };
 		B4A22B2C25E30FC100DA708E /* LocListPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocListPage.swift; sourceTree = "<group>"; };
 		B4A22B3125E3298C00DA708E /* RouteSearchPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteSearchPage.swift; sourceTree = "<group>"; };
+		B4A22B4825E358B200DA708E /* BusListPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusListPage.swift; sourceTree = "<group>"; };
 		B4D218DD2570561600E24F2E /* Constant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
 		B4D218E22570569800E24F2E /* LocationGetterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationGetterModel.swift; sourceTree = "<group>"; };
 		B4D4FD9E257015FF00E61C29 /* CUMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CUMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -186,6 +188,7 @@
 				B4D4FDA3257015FF00E61C29 /* ContentView.swift */,
 				B408C5BE257BC5F7006AFDAB /* LoadPage.swift */,
 				B4A22B2725E30EC500DA708E /* LocSearchPage.swift */,
+				B4A22B4825E358B200DA708E /* BusListPage.swift */,
 				B4A22B2C25E30FC100DA708E /* LocListPage.swift */,
 				B4A22B3125E3298C00DA708E /* RouteSearchPage.swift */,
 			);
@@ -347,6 +350,7 @@
 				B408C5D8257BD9AF006AFDAB /* CDPoint+CoreDataProperties.swift in Sources */,
 				B4D218DE2570561600E24F2E /* Constant.swift in Sources */,
 				B408C5D9257BD9AF006AFDAB /* CDPath+CoreDataClass.swift in Sources */,
+				B4A22B4925E358B200DA708E /* BusListPage.swift in Sources */,
 				B408C5D6257BD9AF006AFDAB /* CDLocation+CoreDataProperties.swift in Sources */,
 				B408C5D7257BD9AF006AFDAB /* CDPoint+CoreDataClass.swift in Sources */,
 			);
