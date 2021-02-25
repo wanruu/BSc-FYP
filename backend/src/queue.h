@@ -1,8 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-
-#define ERROR -99
-
 #ifndef QUEUE_H
 #define QUEUE_H
 
@@ -37,8 +32,6 @@ int is_empty_queue(queue_t* queue);
 int dequeue(queue_t* queue);
 
 void print_queue(queue_t* queue);
-
-
 
 
 queue_arr_t* create_arr_queue();

@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import random
 
-fd = open("trajs.txt", "r")
+fd = open("raw_trajs.txt", "r")
 
 x = []
 y = []

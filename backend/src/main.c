@@ -10,9 +10,7 @@ int LOC_NUM = 300; // now about 20
 int TRAJ_NUM = 1000; // now 74
 int LINE_SEG_NUM = 1000000; // now 3330
 
-char* int_to_str (int x);
-void get_locs (mongoc_collection_t *collection, loc_t *locs, int *locs_size);
-void get_trajs (mongoc_collection_t *collection, traj_t *trajs, int *trajs_size);
+char data_root[] = "./draw/";
 
 char* int_to_str (int x) {
     int length = snprintf(NULL, 0, "%d", x);
@@ -109,18 +107,17 @@ void get_trajs (mongoc_collection_t *collection, traj_t *trajs, int *trajs_size)
 }
 
 void print_raw_trajs (traj_t *trajs, int trajs_size) {
-    FILE *fp_trajs = fopen("./draw/raw_trajs.txt", "w");
+    FILE *fp = fopen("./draw/raw_trajs.txt", "w");
     for (int i = 0; i < trajs_size; i++) {
         for (int j = 0; j < trajs[i].points_num; j ++) {
-            fprintf(fp_trajs, "%f %f\n", trajs[i].points[j].lat, trajs[i].points[j].lng);
+            fprintf(fp, "%f %f\n", trajs[i].points[j].lat, trajs[i].points[j].lng);
         }
-        fprintf(fp_trajs, "\n");
+        fprintf(fp, "\n");
     }
 }
 
 void print_line_segs (line_seg_t *line_segs, int line_segs_size) {
-    FILE *fp;
-    fp = fopen("./draw/line_segs.txt", "w");
+    FILE *fp = fopen("./draw/line_segs.txt", "w");
     for (int i = 0; i < line_segs_size; i++) {
         fprintf(fp, "%d\n", line_segs[i].cluster_id);
         fprintf(fp, "%f %f\n", line_segs[i].start.lat, line_segs[i].start.lng);
@@ -129,21 +126,29 @@ void print_line_segs (line_seg_t *line_segs, int line_segs_size) {
     }
 }
 
-void print_rep_trajs (traj_t* rep_trajs, int rep_trajs_size) {
-    FILE *fp_rep;
-    fp_rep = fopen("./draw/rep.txt", "w");
+void print_rep_trajs (traj_t *rep_trajs, int rep_trajs_size) {
+    FILE *fp = fopen("./draw/rep.txt", "w");
     for (int i = 0; i < rep_trajs_size; i++) {
         for (int j = 0; j < rep_trajs[i].points_num; j ++) {
-            fprintf(fp_rep, "%f %f\n", rep_trajs[i].points[j].lat, rep_trajs[i].points[j].lng);
+            fprintf(fp, "%f %f\n", rep_trajs[i].points[j].lat, rep_trajs[i].points[j].lng);
         }
-        fprintf(fp_rep, "\n");
+        fprintf(fp, "\n");
+    }
+}
+
+void print_routes (route_t *routes, int routes_size) {
+    FILE *fp = fopen("./draw/route.txt", "w");
+    for (int i = 0; i < routes_size; i++) {
+        for (int j = 0; j < routes[i].points_num; j++) {
+            fprintf(fp, "%f %f\n", routes[i].points[j].lat, routes[i].points[j].lng);
+        }
+        fprintf(fp, "\n");
     }
 }
 
 int main (int argc, char *argv[]) {
-    /*
-     *  Aim: connect to mongoDB.
-     */
+
+    // Step 1: Connect to mongoDB.
     mongoc_client_t *client;
     mongoc_database_t *database;
     mongoc_collection_t *collection;
@@ -155,9 +160,8 @@ int main (int argc, char *argv[]) {
     }
     database = mongoc_client_get_database(client, "CUMap");
 
-    /*
-     *  Aim: get locations & trajectories data in db.
-     */
+
+    // Step 2: Get locations & trajectories data from db.
     collection = mongoc_client_get_collection(client, "CUMap", "locations");
     loc_t *locs = (loc_t*) malloc(sizeof(loc_t) * LOC_NUM);
     int locs_size = 0;
@@ -176,10 +180,7 @@ int main (int argc, char *argv[]) {
     print_raw_trajs (trajs, trajs_size);
 
 
-    /*
-     *  Aim: partition trajs into line_segs.
-     *  Data: cp(characteristic points), cp_num ->line_segs, line_segs_size.
-     */
+    // Step 3: Partition trajs into line_segs.
     line_seg_t* line_segs = (line_seg_t*) malloc(sizeof(line_seg_t) * LINE_SEG_NUM);
     int line_segs_size = 0;
     for (int traj_index = 0; traj_index < trajs_size; traj_index++) {
@@ -198,11 +199,7 @@ int main (int argc, char *argv[]) {
     }
 
     
-    /*
-     *  Aim: cluster line_segs by assigning cluster_id to them.
-     *  Data: cluster_num.
-     *  Test: OK. By verifying the num of cluster.
-     */
+    // Step 4: Cluster line_segs by assigning cluster_id to them.
     int cluster_num = 0;
     cluster(line_segs, line_segs_size, &cluster_num);
 
@@ -210,10 +207,7 @@ int main (int argc, char *argv[]) {
     print_line_segs (line_segs, line_segs_size);
 
 
-    /*
-     *  Aim: generate rep_trajs from line_segs.
-     *  Data: rep_trajs_size, rep_trajs. 
-     */
+    // Step 5: Generate rep_trajs from line_segs.
     int rep_trajs_size = 0;
     traj_t* rep_trajs = (traj_t*) malloc(sizeof(traj_t) * TRAJ_NUM);
 
@@ -248,30 +242,19 @@ int main (int argc, char *argv[]) {
     // test
     print_rep_trajs (rep_trajs, rep_trajs_size);
 
+    // Step 6: Connect & smooth rep_trajs.
     rep_trajs = smooth(rep_trajs, &rep_trajs_size);
 
 
-    /*
-     *  Aim: generate routes from rep_trajs.
-     *  Data: 
-     */
+    // Step 7: Generate routes from rep_trajs.
     int routes_size = 0;
     route_t* routes = generate_routes (rep_trajs, rep_trajs_size, locs, locs_size, &routes_size);
     
     // test
-    FILE *fp_route;
-    fp_route = fopen("./draw/route.txt", "w");
-    for (int i = 0; i < routes_size; i++) {
-        for (int j = 0; j < routes[i].points_num; j++) {
-            fprintf(fp_route, "%f %f\n", routes[i].points[j].lat, routes[i].points[j].lng);
-        }
-        fprintf(fp_route, "\n");
-    }
+    print_routes (routes, routes_size);
 
 
-    /*
-     *  Aim: drop routes table. -> delete route whose type is 0
-     */
+    // Step 8: Drop routes table. -> delete route whose type is 0
     mongoc_collection_destroy(collection);
     collection = mongoc_client_get_collection(client, "CUMap", "routes");
     bson_t *doc = bson_new();
@@ -281,16 +264,13 @@ int main (int argc, char *argv[]) {
     }
 
 
-    /*
-     *  Aim: upload routes to mongo.
-     */
+    // Step 9: Upload routes to mongo.
     for (int i = 0; i < routes_size; i ++) {
         bson_t* route = bson_new();
         // startLoc & endLoc
         bson_oid_t start_id, end_id;
         bson_oid_init_from_string (&start_id, routes[i].start_loc.id);
         bson_oid_init_from_string (&end_id, routes[i].end_loc.id);
-
         bson_append_oid (route, "startLoc", 8, &start_id);
         bson_append_oid (route, "endLoc", 6, &end_id);
         
@@ -307,7 +287,6 @@ int main (int argc, char *argv[]) {
             bson_append_double (point, "altitude", 8, routes[i].points[j].alt);
             bson_append_document_end (points, point);
         }
-
         bson_append_array_end (route, points);
 
         // dist
@@ -322,7 +301,7 @@ int main (int argc, char *argv[]) {
     }
     
     
-    // Release
+    // Step 10: Release
     mongoc_database_destroy(database);
     mongoc_collection_destroy(collection);
     mongoc_client_destroy(client);
