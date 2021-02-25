@@ -1,5 +1,5 @@
 process: main.o queue.o dist.o part.o cluster.o data_struct.o represent.o connect.o route.o
-	gcc -o process main.o dist.o part.o cluster.o queue.o data_struct.o represent.o connect.o route.o -I/usr/local/include -lmongoc-1.0 -lbson-1.0 -lm
+	gcc -o ../process main.o dist.o part.o cluster.o queue.o data_struct.o represent.o connect.o route.o -I/usr/local/include -lmongoc-1.0 -lbson-1.0 -lm
 
 main.o: main.c
 	gcc -std=c99 -c main.c 
