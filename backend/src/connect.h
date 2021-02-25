@@ -3,8 +3,6 @@
 
 #include "data_struct.h"
 #include "queue.h"
-#include <math.h>
-#include <stdlib.h>
 
 typedef struct {
     int trajs_indexes[100]; // now no more than 11

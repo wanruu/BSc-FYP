@@ -1,17 +1,13 @@
 #include "part.h"
 
-double log2(double n) {
-    return log(n) / log(2);
-}
-
 double MDLPar(coor_t* traj, int start_index, int end_index) {
     // only two cp in this trajectory
     // distance between two charateristic points
     double angle_sum = 0;
     double perp_sum = 0;
 
-    double diffX = (traj[start_index].lat - traj[end_index].lat) * laScale;
-    double diffY = (traj[start_index].lng - traj[end_index].lng) * lgScale;
+    double diffX = (traj[start_index].lat - traj[end_index].lat) * LA_SCALE;
+    double diffY = (traj[start_index].lng - traj[end_index].lng) * LG_SCALE;
     double diffZ = traj[start_index].alt - traj[end_index].alt;
 
     double* dists = (double*) malloc(sizeof(double) * 4);
@@ -31,8 +27,8 @@ double MDLNotPar(coor_t* traj, int start_index, int end_index) {
     double LH = 0;
     // LH_D = 0 under this situation
     for (int index = start_index; index < end_index; index++) {
-        double diffX = (traj[index].lat - traj[index+1].lat) * laScale;
-        double diffY = (traj[index].lng - traj[index+1].lng) * lgScale;
+        double diffX = (traj[index].lat - traj[index+1].lat) * LA_SCALE;
+        double diffY = (traj[index].lng - traj[index+1].lng) * LG_SCALE;
         double diffZ = traj[index].alt - traj[index+1].alt;
         LH += pow(diffX * diffX + diffY * diffY + diffZ * diffZ, 0.5);
     }

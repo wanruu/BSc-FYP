@@ -1,8 +1,6 @@
 #ifndef REPRESENT_H
 #define REPRESENT_H
 
-#include <math.h>
-#include <stdlib.h>
 #include "data_struct.h"
 
 int cmp_func_point (const void* p1, const void* p2);

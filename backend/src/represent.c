@@ -1,7 +1,7 @@
 #include "represent.h"
 
-#define r 1.2
-#define MinLns 3
+double r = 1.2;
+int MinLns = 3;
 
 int cmp_func_point (const void* p1, const void* p2) {
     double divide = ((point_t*)p1)->x - ((point_t*)p2)->x;
@@ -134,8 +134,8 @@ void generate_represent(line_seg_t* line_segs, int line_segs_size, coor_t* repre
             // undo rotation
             point_t aver_point = unrotate(rotated_aver_point, alpha, beta);
 
-            represent[*represent_size].lat = aver_point.x / laScale + line_segs[0].start.lat;
-            represent[*represent_size].lng = aver_point.y / lgScale + line_segs[0].start.lng;
+            represent[*represent_size].lat = aver_point.x / LA_SCALE + line_segs[0].start.lat;
+            represent[*represent_size].lng = aver_point.y / LG_SCALE + line_segs[0].start.lng;
             represent[*represent_size].alt = aver_point.z + line_segs[0].start.alt;
 
             *represent_size = *represent_size + 1;
@@ -245,12 +245,12 @@ void line_segs_to_points(line_seg_t* line_segs, int line_segs_size, point_t* poi
 
     for (int i = 0; i < line_segs_size; i++) {
 
-        points[2 * i].x = (line_segs[i].start.lat - lat) * laScale;
-        points[2 * i].y = (line_segs[i].start.lng - lng) * lgScale;
+        points[2 * i].x = (line_segs[i].start.lat - lat) * LA_SCALE;
+        points[2 * i].y = (line_segs[i].start.lng - lng) * LG_SCALE;
         points[2 * i].z = line_segs[i].start.alt - alt;
 
-        points[2 * i + 1].x = (line_segs[i].end.lat - lat) * laScale;
-        points[2 * i + 1].y = (line_segs[i].end.lng - lng) * lgScale;
+        points[2 * i + 1].x = (line_segs[i].end.lat - lat) * LA_SCALE;
+        points[2 * i + 1].y = (line_segs[i].end.lng - lng) * LG_SCALE;
         points[2 * i + 1].z = line_segs[i].end.alt - alt;
     }
 

@@ -1,11 +1,20 @@
+#ifndef LA_SCALE
+#define LA_SCALE 111000
+#endif
+
+#ifndef LG_SCALE
+#define LG_SCALE 85390
+#endif
+
+#ifndef INF
+#define INF 99999
+#endif
+
+#ifndef DATA_STRUCT_H
+#define DATA_STRUCT_H
+
 #include <math.h>
-
-#define laScale 111000.0
-#define lgScale 85390.0
-#define INF 99999.0
-
-#ifndef DATA_STRUCT
-#define DATA_STRUCT
+#include <stdlib.h>
 
 typedef struct {
     char id[25];
@@ -22,10 +31,6 @@ typedef struct {
     double alt;
 } coor_t;
 
-double dist_loc_coor (loc_t loc, coor_t point);
-
-double dist_coor_coor (coor_t point1, coor_t point2);
-
 typedef struct {
     coor_t* points;
     int points_num;
@@ -36,14 +41,6 @@ typedef struct {
     double y;
     double z;
 } point_t;
-
-point_t plus (point_t p1, point_t p2);
-point_t minus (point_t p1, point_t p2);
-point_t divide (point_t p_in, double num);
-point_t multi (point_t p_in, double num);
-double dot_product (point_t p1, point_t p2);
-double dist_point_point (point_t start, point_t end);
-
 
 typedef struct {
     coor_t start;
@@ -62,5 +59,19 @@ typedef struct {
 } line_segs_cluster_t;
 
 
+double dist_loc_coor (loc_t loc, coor_t point);
+double dist_coor_coor (coor_t point1, coor_t point2);
+void compute_distance (coor_t locs[], double* dists);
+double weighted_distance (coor_t locs[]);
+
+point_t plus (point_t p1, point_t p2);
+point_t minus (point_t p1, point_t p2);
+point_t divide (point_t p_in, double num);
+point_t multi (point_t p_in, double num);
+double dot_product (point_t p1, point_t p2);
+double dist_point_point (point_t start, point_t end);
+
+double log2 (double n);
+double min (double a, double b);
 
 #endif
