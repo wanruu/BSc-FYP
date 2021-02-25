@@ -3,19 +3,8 @@
 
 #include "data_struct.h"
 #include "connect.h"
-#include <math.h>
 #include <stdio.h>
 #include <string.h>
-
-typedef struct {
-    loc_t start_loc;
-    loc_t end_loc;
-
-    coor_t* points;
-    int points_num;
-
-    double dist;
-} route_t;
 
 route_t* generate_routes (traj_t* trajs, int trajs_size, loc_t* locs, int locs_size, int* routes_size);
 

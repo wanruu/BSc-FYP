@@ -458,7 +458,7 @@ app.all('/process', (req, res) => {
     console.log("ALL /process - " + Date());
     var exec = require('child_process').exec;
 
-    var cmdStr = './src/process';
+    var cmdStr = './process';
     
     exec(cmdStr, (err, stdout, stderr) => {
         if(err) {

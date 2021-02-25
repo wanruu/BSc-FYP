@@ -1,6 +1,7 @@
 #include "connect.h"
 
-#define MinDist 25 // 25
+#define MIN_DIST 23 // 25
+#define MIN_NUM 2
 
 /*
  *  Aim: main func. smooth and connect trajs by clustering.
@@ -33,7 +34,7 @@ traj_t* smooth(traj_t* trajs, int* trajs_size) {
             // let neighbors = neighborList[i][j] // [(Int, Int)]
             neighbor_trajs_t neighbors = neighbor_list[i][j];
 
-            if (neighbors.neighbors_num >= 2) { // it's core point
+            if (neighbors.neighbors_num >= MIN_NUM) { // it's core point
                 // assgin cluster_id to self and each neighbor
                 cluster[i][j] = cluster_id;
                 for (int k = 0; k < neighbors.neighbors_num; k++) {
@@ -58,7 +59,7 @@ traj_t* smooth(traj_t* trajs, int* trajs_size) {
 
                     neighbor_trajs_t first_neighbors = neighbor_list[first_i][first_j];
 
-                    if (first_neighbors.neighbors_num >= 2) { // it's core point
+                    if (first_neighbors.neighbors_num >= MIN_NUM) { // it's core point
                         
                         for (int k = 0; k < first_neighbors.neighbors_num; k++) {
                             int n_i = first_neighbors.trajs_indexes[k];
@@ -325,7 +326,7 @@ neighbor_trajs_t** find_neighbors(traj_t* trajs, int trajs_size) {
                 
                 coor_t point = trajs[j].points[k];
 
-                if (dist_coor_coor (start, point) <= MinDist) {
+                if (dist_coor_coor (start, point) <= MIN_DIST) {
                     int index = neighbors[i][0].neighbors_num;
                     neighbors[i][0].trajs_indexes[index] = j;
                     neighbors[i][0].points_indexes[index] = k;
@@ -335,7 +336,7 @@ neighbor_trajs_t** find_neighbors(traj_t* trajs, int trajs_size) {
                     neighbors[j][k].trajs_indexes[index] = i;
                     neighbors[j][k].points_indexes[index] = 0;
                 }
-                if (dist_coor_coor (end, point) <= MinDist) {
+                if (dist_coor_coor (end, point) <= MIN_DIST) {
                     int index = neighbors[i][trajs[i].points_num-1].neighbors_num;
                     neighbors[i][trajs[i].points_num-1].trajs_indexes[index] = j;
                     neighbors[i][trajs[i].points_num-1].points_indexes[index] = k;

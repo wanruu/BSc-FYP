@@ -1,7 +1,7 @@
 #include "cluster.h"
 
-#define e 14.5 // 13
-#define MinLns 3
+#define e 16 // 13
+#define MinLns 10
 
 /*
  *  Aim: calculate e-neighborhood for every line segment.
@@ -11,13 +11,16 @@
 
 void get_neighbors(line_seg_t* line_segs, int line_segs_size, neighbor_t* neighbors) {
     for (int i = 0; i < line_segs_size; i++) {
+        // printf("%f\n", dist_coor_coor (line_segs[i].start, line_segs[i].end));
         neighbors[i].neighbors_num = 0;
     }
+
 
     for (int i = 0; i < line_segs_size; i++) {
         for (int j = i + 1; j < line_segs_size; j++) {
             coor_t locs[4] = { line_segs[i].start, line_segs[i].end, line_segs[j].start, line_segs[j].end };
-            double dist = weighted_distance(locs);
+            double dist = weighted_distance(locs, 1, 1, 1);
+
             if(dist <= e) {
                 int num = neighbors[i].neighbors_num;
                 neighbors[i].neighbors_indexes[num] = j;

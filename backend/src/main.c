@@ -6,11 +6,9 @@
 #include "connect.h"
 #include "route.h"
 
-int LOC_NUM = 300; // now about 20
-int TRAJ_NUM = 1000; // now 74
-int LINE_SEG_NUM = 1000000; // now 3330
-
-char data_root[] = "./draw/";
+int LOC_NUM = 300; // now about 46
+int TRAJ_NUM = 1000; // now 132
+int LINE_SEG_NUM = 100000; // now 5718
 
 char* int_to_str (int x) {
     int length = snprintf(NULL, 0, "%d", x);
@@ -56,6 +54,7 @@ void get_locs (mongoc_collection_t *collection, loc_t *locs, int *locs_size) {
         }
         *locs_size = *locs_size + 1;
     }
+    // printf("%d\n", *locs_size);
 }
 
 void get_trajs (mongoc_collection_t *collection, traj_t *trajs, int *trajs_size) {
@@ -104,6 +103,7 @@ void get_trajs (mongoc_collection_t *collection, traj_t *trajs, int *trajs_size)
             }
         }
     }
+    // printf("%d\n", *trajs_size);
 }
 
 void print_raw_trajs (traj_t *trajs, int trajs_size) {
@@ -177,7 +177,7 @@ int main (int argc, char *argv[]) {
     get_trajs(collection, trajs, &trajs_size);
 
     // test
-    print_raw_trajs (trajs, trajs_size);
+    print_raw_trajs(trajs, trajs_size);
 
 
     // Step 3: Partition trajs into line_segs.
@@ -239,11 +239,11 @@ int main (int argc, char *argv[]) {
         }
     }
 
-    // test
-    print_rep_trajs (rep_trajs, rep_trajs_size);
-
     // Step 6: Connect & smooth rep_trajs.
     rep_trajs = smooth(rep_trajs, &rep_trajs_size);
+
+    // test
+    print_rep_trajs (rep_trajs, rep_trajs_size);
 
 
     // Step 7: Generate routes from rep_trajs.
@@ -258,9 +258,9 @@ int main (int argc, char *argv[]) {
     mongoc_collection_destroy(collection);
     collection = mongoc_client_get_collection(client, "CUMap", "routes");
     bson_t *doc = bson_new();
-    bson_append_int64 (doc, "type", 4, 0);
-    if (!mongoc_collection_remove (collection, MONGOC_REMOVE_NONE, doc, NULL, &error)) {
-        fprintf (stderr, "Delete failed: %s\n", error.message);
+    bson_append_int64(doc, "type", 4, 0);
+    if (!mongoc_collection_remove(collection, MONGOC_REMOVE_NONE, doc, NULL, &error)) {
+        fprintf(stderr, "Delete failed: %s\n", error.message);
     }
 
 

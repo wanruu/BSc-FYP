@@ -93,7 +93,7 @@ void generate_represent(line_seg_t* line_segs, int line_segs_size, coor_t* repre
     double last_x_value = - r;
 
     // printf("========\n");
-    for (int i = 0; i < points_size; i++) { //for point in rotated_points
+    for (int i = 0; i < points_size; i++) { // for point in rotated_points
 
         // printf("%f\n", rotated_points[i].x);
 

@@ -49,6 +49,14 @@ typedef struct {
 } line_seg_t;
 
 typedef struct {
+    loc_t start_loc;
+    loc_t end_loc;
+    coor_t* points;
+    int points_num;
+    double dist;
+} route_t;
+
+typedef struct {
     int neighbors_indexes[1000];
     int neighbors_num;
 } neighbor_t;
@@ -58,11 +66,16 @@ typedef struct {
     int line_segs_size;
 } line_segs_cluster_t;
 
+typedef struct {
+    int trajs_indexes[100]; // now no more than 11
+    int points_indexes[100];
+    int neighbors_num;
+} neighbor_trajs_t; // a neighbor (x, y) = (trajs_indexes[i], points_indexes[i]) -> trajs[x][y]
 
 double dist_loc_coor (loc_t loc, coor_t point);
 double dist_coor_coor (coor_t point1, coor_t point2);
 void compute_distance (coor_t locs[], double* dists);
-double weighted_distance (coor_t locs[]);
+double weighted_distance (coor_t locs[], double prep, double para, double angle);
 
 point_t plus (point_t p1, point_t p2);
 point_t minus (point_t p1, point_t p2);

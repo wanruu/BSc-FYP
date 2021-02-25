@@ -4,12 +4,6 @@
 #include "data_struct.h"
 #include "queue.h"
 
-typedef struct {
-    int trajs_indexes[100]; // now no more than 11
-    int points_indexes[100];
-    int neighbors_num;
-} neighbor_trajs_t; // a neighbor (x, y) = (trajs_indexes[i], points_indexes[i]) -> trajs[x][y]
-
 traj_t* smooth(traj_t* trajs, int* trajs_size);
 
 neighbor_trajs_t** find_neighbors(traj_t* trajs, int trajs_size);
