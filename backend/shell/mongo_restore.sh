@@ -4,4 +4,4 @@ mongorestore -d CUMap ./backup/CUMap --drop
 
 rm -rf backup
 
-rm backup.zip
+sudo rm backup.zip
