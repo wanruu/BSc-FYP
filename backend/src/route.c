@@ -1,6 +1,6 @@
 #include "route.h"
 
-double MIN_DIST = 40;
+double MIN_DIST = 100;
 
 /*
  *  Aim: generate routes.
