@@ -7,8 +7,8 @@
 #include "route.h"
 
 int LOC_NUM = 300; // now about 46
-int TRAJ_NUM = 1000; // now 132
-int LINE_SEG_NUM = 100000; // now 5718
+int TRAJ_NUM = 300; // now 132
+int LINE_SEG_NUM = 7000; // now 5071
 
 char* int_to_str (int x) {
     int length = snprintf(NULL, 0, "%d", x);

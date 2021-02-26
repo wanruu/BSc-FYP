@@ -20,6 +20,9 @@ traj_t* smooth(traj_t* trajs, int* trajs_size) {
     int** cluster = (int**) malloc(sizeof(int*) * *trajs_size);
     for (int i = 0; i < *trajs_size; i++) {
         cluster[i] = (int*) malloc(sizeof(int) * trajs[i].points_num);
+        for (int j = 0; j < trajs[i].points_num; j ++) {
+            cluster[i][j] = 0;
+        }
     }
 
     int cluster_id = 1;
