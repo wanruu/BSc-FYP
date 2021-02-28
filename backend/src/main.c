@@ -6,9 +6,9 @@
 #include "connect.h"
 #include "route.h"
 
-int LOC_NUM = 300; // now about 46
+int LOC_NUM = 200; // now about 46
 int TRAJ_NUM = 300; // now 132
-int LINE_SEG_NUM = 7000; // now 5071
+int LINE_SEG_NUM = 10000; // now 5071
 
 char* int_to_str (int x) {
     int length = snprintf(NULL, 0, "%d", x);

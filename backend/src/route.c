@@ -6,7 +6,6 @@
  *  Aim: generate routes.
  *  In: trajs, trajs_size, locs, locs_size.
  *  Out: routes, routes_size.
- *  Test: OK????
  */
 
 route_t* generate_routes (traj_t* trajs, int trajs_size, loc_t* locs, int locs_size, int* routes_size) {
@@ -27,27 +26,36 @@ route_t* generate_routes (traj_t* trajs, int trajs_size, loc_t* locs, int locs_s
     int processed_trajs_size = trajs_size;
     traj_t* processed_trajs = split_trajs(trajs, &processed_trajs_size, closest_points, locs_size);
 
-    // test: print processed_trajs
-    /*printf("[\n");
-    for (int i = 0; i < processed_trajs_size; i++) {
-        printf("[");
-        for (int j = 0; j < processed_trajs[i].points_num; j ++) {
-            printf("Coor3D(latitude: %f, longitude: %f, altitude: %f), ", 
-                processed_trajs[i].points[j].lat, processed_trajs[i].points[j].lng, processed_trajs[i].points[j].alt);
-        }
-        printf("],\n");
-    }
-    printf("]\n");*/
-
     // Step 2: try to connect trajs as much as possible
     int* is_trajs_marked = (int*) malloc (sizeof(int) * processed_trajs_size);
     for (int i = 0; i < processed_trajs_size; i ++) {
         is_trajs_marked[i] = 0;
     }
+    
+    // first, find direct route
+    for (int i = 0; i < processed_trajs_size; i ++) {
+        int start_index = first_index_of (closest_points, locs_size, processed_trajs[i].points[0]);
+        int end_index = first_index_of (closest_points, locs_size, processed_trajs[i].points[processed_trajs[i].points_num-1]);
+        if (start_index != -1 && end_index != -1) {
+            routes[*routes_size].start_loc = locs[start_index];
+            routes[*routes_size].end_loc = locs[end_index];
+            routes[*routes_size].points = processed_trajs[i].points;
+            routes[*routes_size].points_num = processed_trajs[i].points_num;
+            // compute distance
+            double dist = 0;
+            for (int j = 0; j < processed_trajs[i].points_num - 1; j ++) {
+                dist += dist_coor_coor (processed_trajs[i].points[j], processed_trajs[i].points[j+1]);
+            }
+            routes[*routes_size].dist = dist;
 
+            *routes_size = *routes_size + 1;
+            is_trajs_marked[i] = 1;
+        }
+    }
+
+    // then, find others
     route_t cur_route;
     cur_route.points_num = 0;
-
     find_routes (processed_trajs, processed_trajs_size, is_trajs_marked, locs, locs_size, closest_points, routes, routes_size, cur_route);
 
     // Step 3: if closest points of two locs are the same, generate a new route
@@ -83,7 +91,7 @@ route_t* generate_routes (traj_t* trajs, int trajs_size, loc_t* locs, int locs_s
 
 void find_routes (traj_t* trajs, int trajs_size, int* is_trajs_marked, loc_t* locs, int locs_size, coor_t* closest_points, route_t* routes, int* routes_size, route_t cur_route) {
 
-    // if start loc and end loc of cur_route is determined
+    // if start loc and end loc of cur_route is determined or not
     int has_start, has_end;
     if (cur_route.points_num == 0) {
         has_start = 0;
@@ -116,6 +124,15 @@ void find_routes (traj_t* trajs, int trajs_size, int* is_trajs_marked, loc_t* lo
         // printf("%s | %s\n", cur_route.start_loc.name, cur_route.end_loc.name);
         return;
     }
+
+    /*if (has_start) {
+        int i = first_index_of (closest_points, locs_size, cur_route.points[0]);
+        printf("%s\n", locs[i].name);
+    } 
+    if (has_end) {
+        int i = first_index_of (closest_points, locs_size, cur_route.points[cur_route.points_num - 1]);
+        printf("%s\n", locs[i].name);
+    }*/
 
     for (int i = 0; i < trajs_size; i ++) { // for each traj
         if (is_trajs_marked[i]) {

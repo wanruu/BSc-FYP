@@ -150,11 +150,11 @@
 		B43778EF2572C70400918432 /* Page */ = {
 			isa = PBXGroup;
 			children = (
+				B43779122572D9AC00918432 /* MainPage.swift */,
+				B43778F82572C80200918432 /* LocationPage.swift */,
 				B4DA259B259CF89E002A0009 /* Style */,
 				B488962A25A5EDA700D8AD47 /* View Model */,
-				B43779122572D9AC00918432 /* MainPage.swift */,
 				B48F7B7A258E8C9000EED1C1 /* TrajPage.swift */,
-				B43778F82572C80200918432 /* LocationPage.swift */,
 				B4DA2596259CEC01002A0009 /* BusPage.swift */,
 				B48F7BA9259213FE00EED1C1 /* SearchPage.swift */,
 			);

@@ -433,10 +433,9 @@ app.get('/buses', (req, res) => {
 });
 
 
-
-// delete points with -1 altitude in trajectory
 app.delete('/invalid', (req, res) => {
-    TrajectoryModel.findOne({ _id: mongoose.Types.ObjectId(req.body.id) }, (err, result) => {
+    // delete points with -1 altitude in trajectory
+    /*TrajectoryModel.findOne({ _id: mongoose.Types.ObjectId(req.body.id) }, (err, result) => {
         var new_points = [];
         for (var i = 0; i < result.points.length; i++) {
             if (result.points[i].altitude != -1) {
@@ -451,8 +450,20 @@ app.delete('/invalid', (req, res) => {
                 res.send(result);
             }
         })
-    })
-})
+    })*/
+    /*TrajectoryModel.find({}, (err, result) => {
+        for (var i = 0; i < result.length; i ++) {
+            for (var j = 0; j < result[i].points.length - 1; j ++) {
+                let value = Math.abs(result[i].points[j].longitude - result[i].points[j+1].longitude);
+                if(value >= 0.0002) {
+                    console.log(value);
+                    console.log(result[i]._id);
+                }
+            }
+        } 
+        res.send(result);
+    });*/
+});
 
 app.all('/process', (req, res) => {
     console.log("ALL /process - " + Date());

@@ -1,6 +1,6 @@
 #include "connect.h"
 
-#define MIN_DIST 23 // 25
+#define MIN_DIST 23
 #define MIN_NUM 2
 
 /*
@@ -207,7 +207,7 @@ traj_t* smooth(traj_t* trajs, int* trajs_size) {
 
         }
     }
-    
+
     // Step 5: Connect two traj with same endpoint.
     // This step can decrease num of representative trajs a lot, e.g, from 101 to 17
     coor_t* omit_points = (coor_t*) malloc(sizeof(coor_t) * 300); // crossroad
@@ -333,6 +333,11 @@ neighbor_trajs_t** find_neighbors(traj_t* trajs, int trajs_size) {
                     int index = neighbors[i][0].neighbors_num;
                     neighbors[i][0].trajs_indexes[index] = j;
                     neighbors[i][0].points_indexes[index] = k;
+                    /*if (k == 0 || k == trajs[j].points_num - 1) {
+                        neighbors[i][0].neighbors_num = index + 1;
+                    } else {
+                        neighbors[i][0].neighbors_num = index + 2;
+                    }*/
                     neighbors[i][0].neighbors_num = index + 1;
 
                     index = neighbors[j][k].neighbors_num;
@@ -343,6 +348,11 @@ neighbor_trajs_t** find_neighbors(traj_t* trajs, int trajs_size) {
                     int index = neighbors[i][trajs[i].points_num-1].neighbors_num;
                     neighbors[i][trajs[i].points_num-1].trajs_indexes[index] = j;
                     neighbors[i][trajs[i].points_num-1].points_indexes[index] = k;
+                    /*if (k == 0 || k == trajs[j].points_num - 1) {
+                        neighbors[i][trajs[i].points_num-1].neighbors_num = index + 1;
+                    } else {
+                        neighbors[i][trajs[i].points_num-1].neighbors_num = index + 2;
+                    }*/
                     neighbors[i][trajs[i].points_num-1].neighbors_num = index + 1;
 
                     index = neighbors[j][k].neighbors_num;
