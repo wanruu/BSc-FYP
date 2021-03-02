@@ -25,6 +25,8 @@ typedef struct {
     int type;
 } loc_t;
 
+loc_t empty_loc();
+
 typedef struct {
     double lat;
     double lng;
@@ -55,6 +57,8 @@ typedef struct {
     int points_num;
     double dist;
 } route_t;
+
+route_t empty_route(int max_points_num);
 
 typedef struct {
     int neighbors_indexes[1000];

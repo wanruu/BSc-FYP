@@ -1,5 +1,26 @@
 #include "data_struct.h"
 
+loc_t empty_loc() {
+    loc_t loc;
+    loc.id[0] = '\0';
+    loc.name[0] = '\0';
+    loc.lat = -1;
+    loc.lng = -1;
+    loc.alt = -1;
+    loc.type = -1;
+    return loc;
+}
+
+route_t empty_route(int max_points_num) {
+    route_t route;
+    route.start_loc = empty_loc();
+    route.end_loc = empty_loc();
+    route.points = (coor_t*) malloc(sizeof(coor_t) * max_points_num);
+    route.points_num = 0;
+    route.dist = 0;
+    return route;
+}
+
 int equals (coor_t point1, coor_t point2) {
     return point1.lat == point2.lat && point1.lng == point2.lng && point1.alt == point2.alt;
 }

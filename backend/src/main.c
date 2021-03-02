@@ -247,7 +247,6 @@ int main (int argc, char *argv[]) {
     // test
     print_rep_trajs (rep_trajs, rep_trajs_size);
 
-return 0;
 
     // Step 7: Generate routes from rep_trajs.
     int routes_size = 0;
