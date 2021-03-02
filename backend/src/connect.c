@@ -1,4 +1,5 @@
 #include "connect.h"
+#include <string.h>
 
 // #define MIN_DIST 18
 // #define MIN_NUM 2
@@ -186,7 +187,7 @@ traj_t* connect_trajs(traj_t* trajs, int* trajs_size, int min_dist, int min_num)
     trajs = trajs_after;
     *trajs_size = trajs_size_after;
 
-    // test
+    // test: result same as omit_points
     /*int total_points_num = 0;
     for (int i = 0; i < *trajs_size; i ++) {
         total_points_num += trajs[i].points_num;
@@ -248,7 +249,7 @@ traj_t* connect_trajs(traj_t* trajs, int* trajs_size, int min_dist, int min_num)
         }
     }
 
-    // test
+    // test: for drawing omit_points using python
     /*printf("plt.scatter([");
     for (int i = 0; i < omit_points_size; i ++) {
         printf("%f, ", (omit_points[i].lng - 114.20774) * 85390);
@@ -302,8 +303,90 @@ traj_t* connect_trajs(traj_t* trajs, int* trajs_size, int min_dist, int min_num)
     trajs = splited_trajs;
     *trajs_size = splited_trajs_size;
 
+    // Step 7 (optional): extend traj to connect as much as possible, crossroad not considered
 
-    // Step 7: Connect two traj with same endpoint.
+    // find unique point
+    coor_t* endpoints = (coor_t*) malloc(sizeof(coor_t) * *trajs_size * 2);
+    int* endpoints_count = (int*) malloc(sizeof(int) * *trajs_size * 2);
+    int endpoints_num = 0;
+    
+    for (int i = 0; i < *trajs_size; i ++) {
+        int index;
+
+        coor_t start_point = trajs[i].points[0];
+        index = first_index_of(endpoints, endpoints_num, start_point);
+        if (index == -1) {
+            endpoints[endpoints_num] = start_point;
+            endpoints_count[endpoints_num] = 1;
+            endpoints_num += 1;
+        } else {
+            endpoints_count[index] += 1;
+        }
+
+        coor_t end_point = trajs[i].points[trajs[i].points_num - 1];
+        index = first_index_of(endpoints, endpoints_num, end_point);
+        if (index == -1) {
+            endpoints[endpoints_num] = end_point;
+            endpoints_count[endpoints_num] = 1;
+            endpoints_num += 1;
+        } else {
+            endpoints_count[index] += 1;
+        }
+    }
+
+    coor_t* unique_endpoints = (coor_t*) malloc(sizeof(coor_t) * endpoints_num);
+    int unique_endpoints_num = 0;
+
+    for (int i = 0; i < endpoints_num; i ++) {
+        if (endpoints_count[i] == 1) {
+            unique_endpoints[unique_endpoints_num] = endpoints[i];
+            unique_endpoints_num += 1;
+        }
+    }
+
+    // extend
+    for (int i = 0; i < *trajs_size; i ++) {
+        coor_t closest_point;
+        coor_t start_point = trajs[i].points[0];
+        coor_t end_point = trajs[i].points[trajs[i].points_num - 1];
+
+
+        // consider ending point
+        if (contains(unique_endpoints, unique_endpoints_num, end_point)) {
+            closest_point = find_closest_point_for_point(unique_endpoints, unique_endpoints_num, end_point, start_point);
+            if (closest_point.lat != -1) {
+                coor_t* points = (coor_t*) malloc(sizeof(coor_t) * (trajs[i].points_num + 1));
+                memcpy(points, trajs[i].points, sizeof(coor_t) * trajs[i].points_num);
+                points[trajs[i].points_num] = closest_point;
+                trajs[i].points = points;
+                trajs[i].points_num += 1;
+                unique_endpoints = remove_first_point(unique_endpoints, &unique_endpoints_num, closest_point);
+                unique_endpoints = remove_first_point(unique_endpoints, &unique_endpoints_num, end_point);
+            }
+        }
+
+        // consider starting point
+        if (contains(unique_endpoints, unique_endpoints_num, start_point)) {
+            closest_point = find_closest_point_for_point(unique_endpoints, unique_endpoints_num, start_point, end_point);
+            if (closest_point.lat != -1) {
+                coor_t* points = (coor_t*) malloc(sizeof(coor_t) * (trajs[i].points_num + 1));
+                int points_num = 1;
+                points[0] = closest_point;
+                
+                for (int j = 0; j < trajs[i].points_num; j ++) {
+                    points[points_num] = trajs[i].points[j];
+                    points_num += 1;
+                }
+                trajs[i].points = points;
+                trajs[i].points_num = points_num;
+                unique_endpoints = remove_first_point(unique_endpoints, &unique_endpoints_num, closest_point);
+                unique_endpoints = remove_first_point(unique_endpoints, &unique_endpoints_num, start_point);
+            }
+        }
+    }
+
+
+    // Step 8: Connect two traj with same endpoint.
     int* indexes = connect_index(trajs, *trajs_size, omit_points, omit_points_size);
     while (indexes[0] != -1 && indexes[1] != -1) {
 
@@ -545,7 +628,41 @@ traj_t clean_palindrome(traj_t traj) {
     return traj;
 }
 
+coor_t find_closest_point_for_point(coor_t* points, int points_num, coor_t point, coor_t omitted_point) {
+    double min_dist = 20;
+    coor_t closest_point;
+    closest_point.lat = -1;
+    closest_point.lng = -1;
+    closest_point.alt = -1;
 
+    for (int j = 0; j < points_num; j ++) {
+        if (equals(points[j], point) || equals(points[j], omitted_point)) {
+            continue;
+        }
+        double dist = dist_coor_coor (point, points[j]);
+        if (dist < min_dist) {
+            min_dist = dist;
+            closest_point = points[j];
+        }
+    }
 
+    return closest_point;
+}
+
+coor_t* remove_first_point(coor_t* points, int *points_num, coor_t point) {
+    int removed = 0;
+    coor_t* new_points = (coor_t*) malloc(sizeof(coor_t) * *points_num);
+    for (int i = 0; i < *points_num; i ++) {
+        if (removed) {
+            new_points[i - 1] = points[i];
+        } else if (equals(points[i], point)) {
+            removed = 1;
+        } else {
+            new_points[i] = points[i];
+        }
+    }
+    *points_num = *points_num - 1;
+    return new_points;
+}
 
 

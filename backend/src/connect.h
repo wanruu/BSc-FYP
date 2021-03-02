@@ -16,4 +16,8 @@ void find_overlapped_traj(traj_t traj1, traj_t traj2, int* start_index, int* end
 
 traj_t clean_palindrome(traj_t traj);
 
+coor_t find_closest_point_for_point(coor_t* points, int points_num, coor_t point, coor_t omitted_point);
+
+coor_t* remove_first_point(coor_t* points, int *points_num, coor_t point);
+
 #endif

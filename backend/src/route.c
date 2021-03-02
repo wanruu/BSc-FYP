@@ -9,14 +9,6 @@
  */
 
 route_t* generate_routes (traj_t* trajs, int trajs_size, loc_t* locs, int locs_size, int* routes_size) {
-    
-    for (int i = 0; i < trajs_size; i ++) {
-        printf("%d\n", trajs[i].points_num);
-        /*for (int j = 0; j < trajs[i].points_num; j ++) {
-
-        }*/
-    }
-
 
     // Step 0: prepare output.
     route_t* routes = (route_t*) malloc(sizeof(route_t) * locs_size * locs_size);
@@ -45,6 +37,7 @@ route_t* generate_routes (traj_t* trajs, int trajs_size, loc_t* locs, int locs_s
         int start_index = first_index_of (closest_points, locs_size, processed_trajs[i].points[0]);
         int end_index = first_index_of (closest_points, locs_size, processed_trajs[i].points[processed_trajs[i].points_num-1]);
         if (start_index != -1 && end_index != -1) {
+            // printf("%s == %s\n", locs[start_index].name, locs[end_index].name);
             routes[*routes_size].start_loc = locs[start_index];
             routes[*routes_size].end_loc = locs[end_index];
             routes[*routes_size].points = processed_trajs[i].points;
@@ -264,7 +257,6 @@ void append_route (route_t* routes, int* routes_size, route_t route) {
  *  Aim: split trajs with given points
  *  In: trajs, trajs_size, points, point_num
  *  Out: new_trajs, trajs_size
- *  Test: OK.
  */
 traj_t* split_trajs(traj_t* trajs, int* trajs_size, coor_t* points, int points_num) {
     
@@ -312,7 +304,6 @@ coor_t* sub_points (traj_t traj, int start_index, int end_index) {
  *  Aim: find closest point from loc in trajs.
  *  In: loc, trajs, trajs_size.
  *  Out: return (coor_t) closest_point.
- *  Test: TODO.
  */
 coor_t find_closest_point(loc_t loc, traj_t* trajs, int trajs_size) {
     double min_dist = MIN_DIST;
