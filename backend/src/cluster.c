@@ -1,6 +1,6 @@
 #include "cluster.h"
 
-#define e 16
+#define e 16 // 16
 #define MinLns 10
 
 /*

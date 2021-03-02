@@ -177,7 +177,7 @@ int main (int argc, char *argv[]) {
     get_trajs(collection, trajs, &trajs_size);
 
     // test
-    print_raw_trajs(trajs, trajs_size);
+    // print_raw_trajs(trajs, trajs_size);
 
 
     // Step 3: Partition trajs into line_segs.
@@ -238,12 +238,15 @@ int main (int argc, char *argv[]) {
             rep_trajs_size += 1;
         }
     }
+    // test
+    // print_rep_trajs (rep_trajs, rep_trajs_size);
 
     // Step 6: Connect & smooth rep_trajs.
-    rep_trajs = smooth(rep_trajs, &rep_trajs_size);
-
+    rep_trajs = connect_trajs(rep_trajs, &rep_trajs_size, 18, 3);
+    
     // test
     print_rep_trajs (rep_trajs, rep_trajs_size);
+
 
 
     // Step 7: Generate routes from rep_trajs.

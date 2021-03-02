@@ -1,5 +1,28 @@
 #include "data_struct.h"
 
+int equals (coor_t point1, coor_t point2) {
+    return point1.lat == point2.lat && point1.lng == point2.lng && point1.alt == point2.alt;
+}
+
+int contains (coor_t* points, int points_size, coor_t point) {
+    for (int i = 0; i < points_size; i++) {
+        if (equals(points[i], point)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int first_index_of (coor_t* points, int points_size, coor_t point) {
+    for (int i = 0; i < points_size; i++) {
+        if (equals(points[i], point)) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+
 double dist_loc_coor (loc_t loc, coor_t point) {
     double diff_x = (loc.lat - point.lat) * LA_SCALE;
     double diff_y = (loc.lng - point.lng) * LG_SCALE;

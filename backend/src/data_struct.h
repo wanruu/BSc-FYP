@@ -72,6 +72,10 @@ typedef struct {
     int neighbors_num;
 } neighbor_trajs_t; // a neighbor (x, y) = (trajs_indexes[i], points_indexes[i]) -> trajs[x][y]
 
+int equals (coor_t point1, coor_t point2);
+int contains (coor_t* points, int points_size, coor_t point);
+int first_index_of (coor_t* points, int points_size, coor_t point);
+
 double dist_loc_coor (loc_t loc, coor_t point);
 double dist_coor_coor (coor_t point1, coor_t point2);
 void compute_distance (coor_t locs[], double* dists);

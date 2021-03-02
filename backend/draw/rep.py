@@ -19,9 +19,10 @@ while True:
         x.append((float(str[0]) - 22.419915) * 111000.0)
         y.append((float(str[1]) - 114.20774) * 85390.0)
 
-        
 fd.close()
 
 
 plt.axis('scaled')
 plt.show()
+
+ 

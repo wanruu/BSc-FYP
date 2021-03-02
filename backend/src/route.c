@@ -10,6 +10,14 @@
 
 route_t* generate_routes (traj_t* trajs, int trajs_size, loc_t* locs, int locs_size, int* routes_size) {
     
+    for (int i = 0; i < trajs_size; i ++) {
+        printf("%d\n", trajs[i].points_num);
+        /*for (int j = 0; j < trajs[i].points_num; j ++) {
+
+        }*/
+    }
+
+
     // Step 0: prepare output.
     route_t* routes = (route_t*) malloc(sizeof(route_t) * locs_size * locs_size);
     *routes_size = 0;

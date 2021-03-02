@@ -1,19 +1,18 @@
 #include "connect.h"
 
-#define MIN_DIST 23
-#define MIN_NUM 2
+// #define MIN_DIST 18
+// #define MIN_NUM 2
 
 /*
  *  Aim: main func. smooth and connect trajs by clustering.
  *  In: trajs, trajs_size.
  *  Out: trajs, trajs_size.
- *  Test:
  */
 
-traj_t* smooth(traj_t* trajs, int* trajs_size) {
+traj_t* connect_trajs(traj_t* trajs, int* trajs_size, int min_dist, int min_num) {
     
     // Step 1: Find neighbors of each point
-    neighbor_trajs_t** neighbor_list = find_neighbors(trajs, *trajs_size);
+    neighbor_trajs_t** neighbor_list = find_neighbors(trajs, *trajs_size, min_dist);
     
     // Step 2: Cluster
     // cluster[i][j]. 0: unclustered, -1: noise, others: clusterId of trajs[i][j]
@@ -30,14 +29,11 @@ traj_t* smooth(traj_t* trajs, int* trajs_size) {
     for (int i = 0; i < *trajs_size; i ++) { // for each traj
         for (int j = 0; j < trajs[i].points_num; j ++) { // for each point in traj
             
-            if (cluster[i][j] != 0) { // if classfied
-                continue;
-            }
-            
-            // let neighbors = neighborList[i][j] // [(Int, Int)]
+            if (cluster[i][j] != 0) { continue; } // if classfied
+
             neighbor_trajs_t neighbors = neighbor_list[i][j];
 
-            if (neighbors.neighbors_num >= MIN_NUM) { // it's core point
+            if (neighbors.neighbors_num >= min_num) { // it's core point
                 // assgin cluster_id to self and each neighbor
                 cluster[i][j] = cluster_id;
                 for (int k = 0; k < neighbors.neighbors_num; k++) {
@@ -62,7 +58,7 @@ traj_t* smooth(traj_t* trajs, int* trajs_size) {
 
                     neighbor_trajs_t first_neighbors = neighbor_list[first_i][first_j];
 
-                    if (first_neighbors.neighbors_num >= MIN_NUM) { // it's core point
+                    if (first_neighbors.neighbors_num >= min_num) { // it's core point
                         
                         for (int k = 0; k < first_neighbors.neighbors_num; k++) {
                             int n_i = first_neighbors.trajs_indexes[k];
@@ -101,13 +97,12 @@ traj_t* smooth(traj_t* trajs, int* trajs_size) {
     for (int i = 0; i < *trajs_size; i++) {
         for(int j = 0; j < trajs[i].points_num; j++) { // for each point
             int id = cluster[i][j];
-            if (id < 1) {
-                continue;
+            if (id >= 1) {
+                aver_points[id-1].lat += trajs[i].points[j].lat;
+                aver_points[id-1].lng += trajs[i].points[j].lng;
+                aver_points[id-1].alt += trajs[i].points[j].alt;
+                nums[id-1] += 1;
             }
-            aver_points[id-1].lat += trajs[i].points[j].lat;
-            aver_points[id-1].lng += trajs[i].points[j].lng;
-            aver_points[id-1].alt += trajs[i].points[j].alt;
-            nums[id-1] += 1;
         }
     }
     for (int i = 0; i < cluster_id - 1; i++) {
@@ -121,10 +116,9 @@ traj_t* smooth(traj_t* trajs, int* trajs_size) {
     for (int i = 0; i < *trajs_size; i++) { // for each traj
         for (int j = 0; j < trajs[i].points_num; j++) { // for each point
             int id = cluster[i][j];
-            if (id < 1) {
-                continue;
+            if (id >= 1) {
+                trajs[i].points[j] = aver_points[id-1];
             }
-            trajs[i].points[j] = aver_points[id-1];
         }
     }
 
@@ -149,7 +143,34 @@ traj_t* smooth(traj_t* trajs, int* trajs_size) {
 
         trajs[i].points = points_after;
         trajs[i].points_num = points_num_after;
+    }
 
+    // clean palindrome
+    for (int i = 0; i < *trajs_size; i ++) {
+        trajs[i] = clean_palindrome(trajs[i]);
+    }
+
+
+    // if traj1 and traj2 are overlapped, remove overlapped part of traj1
+    int start_index;
+    int end_index;
+    for (int i = 0; i < *trajs_size; i ++) { // for each traj
+        for (int j = i + 1; j < *trajs_size; j ++) { // for next traj
+            find_overlapped_traj(trajs[i], trajs[j], &start_index, &end_index);
+            // remove overlapped points of traj1
+            if (start_index == 0) {
+                coor_t* new_points = (coor_t*) malloc(sizeof(coor_t) * trajs[i].points_num);
+                int new_points_num = 0;
+                for (int k = end_index; k < trajs[i].points_num; k ++) {
+                    new_points[new_points_num] = trajs[i].points[k];
+                    new_points_num += 1; 
+                }
+                trajs[i].points = new_points;
+                trajs[i].points_num = new_points_num;
+            } else if (end_index == trajs[i].points_num - 1) {
+                trajs[i].points_num -= end_index - start_index;
+            }
+        }
     }
 
     // remove traj whose size < 2
@@ -165,35 +186,42 @@ traj_t* smooth(traj_t* trajs, int* trajs_size) {
     trajs = trajs_after;
     *trajs_size = trajs_size_after;
 
-    
-    // if traj1 can be replaced by traj2 (eg, traj2 contains traj1), remove traj1.
-    trajs_after = (traj_t*) malloc(sizeof(traj_t) * (*trajs_size)); 
-    trajs_size_after = 0; 
-
+    // test
+    /*int total_points_num = 0;
     for (int i = 0; i < *trajs_size; i ++) {
-        int share_flag = 0; // if trajs[i] should be removed
-        for (int j = 0; j < *trajs_size; j ++) {
-            if (i == j) {
-                continue;
+        total_points_num += trajs[i].points_num;
+    }
+    coor_t* unique_points = (coor_t*) malloc(sizeof(coor_t) * total_points_num);
+    int* unique_points_count = (int*) malloc(sizeof(int) * total_points_num);
+    int unique_points_num = 0;
+    
+    for (int i = 0; i < *trajs_size; i ++) {
+        for (int j = 0; j < trajs[i].points_num; j ++) {
+            int index = first_index_of(unique_points, unique_points_num, trajs[i].points[j]);
+            int weight = 2;
+            if (j == 0 || j == trajs[i].points_num - 1) {
+                weight = 1;
             }
-            if (trajs[i].points_num > trajs[j].points_num) {
-                continue;
+            if (index == -1) {
+                unique_points[unique_points_num] = trajs[i].points[j];
+                unique_points_count[unique_points_num] = weight;
+                unique_points_num += 1;
+            } else {
+                unique_points_count[index] += weight;
             }
-            if (contains (trajs[j].points, trajs[j].points_num, trajs[i].points[0]) &&
-                contains (trajs[j].points, trajs[j].points_num, trajs[i].points[trajs[i].points_num - 1])) {
-                share_flag = 1;
-                break;
-            }
-        }
-        if (share_flag == 0) {
-            trajs_after[trajs_size_after] = trajs[i];
-            trajs_size_after++;
         }
     }
-    trajs = trajs_after;
-    *trajs_size = trajs_size_after;
 
+    int count = 0;
+    for (int i = 0; i < unique_points_num; i ++) {
+        if (unique_points_count[i] >= 3) {
+            count += 1;
+        }
+    }
+    printf("unique == %d\n", count);*/
+    
 
+    // Step 5: Find omit_points -> crossroads.
     // recalculate nums: point number of each cluster
     for (int i = 0; i < cluster_id - 1; i++) {
         nums[i] = 0;
@@ -202,17 +230,17 @@ traj_t* smooth(traj_t* trajs, int* trajs_size) {
         for (int j = 0; j < trajs[i].points_num; j++) { // for each point
             int index = first_index_of(aver_points, cluster_id - 1, trajs[i].points[j]);
             if (index != -1) {
-                nums[index] += 1;
+                if (j == 0 || j == trajs[i].points_num - 1) {
+                    nums[index] += 1;
+                } else {
+                    nums[index] += 2;
+                }
             }
-
         }
     }
-
-    // Step 5: Connect two traj with same endpoint.
-    // This step can decrease num of representative trajs a lot, e.g, from 101 to 17
-    coor_t* omit_points = (coor_t*) malloc(sizeof(coor_t) * 300); // crossroad
+    // find omit
+    coor_t* omit_points = (coor_t*) malloc(sizeof(coor_t) * 100);
     int omit_points_size = 0;
-
     for (int i = 0; i < cluster_id - 1; i++) {
         if (nums[i] > 2) {
             omit_points[omit_points_size] = aver_points[i];
@@ -220,16 +248,71 @@ traj_t* smooth(traj_t* trajs, int* trajs_size) {
         }
     }
 
+    // test
+    /*printf("plt.scatter([");
+    for (int i = 0; i < omit_points_size; i ++) {
+        printf("%f, ", (omit_points[i].lng - 114.20774) * 85390);
+    }
+    printf("], [");
+    for (int i = 0; i < omit_points_size; i ++) {
+        printf("%f, ", (omit_points[i].lat - 22.419915) * 111000);
+    }
+    printf("], marker='o', color='r')\n");*/
 
+
+    // Step 6: Spilt trajs who has a omit_point in it.
+    traj_t* splited_trajs = (traj_t*) malloc(sizeof(traj_t) * (*trajs_size) * 3);
+    int splited_trajs_size = 0;
+
+    for (int i = 0; i < *trajs_size; i ++) { // for each traj
+        // find split indexes
+        int* indexes = (int*) malloc(sizeof(int) * (omit_points_size + 2));
+        indexes[0] = 0;
+        int indexes_size = 1;
+
+        for (int j = 1; j < trajs[i].points_num - 1; j ++) { // for each mid point    
+            if (contains(omit_points, omit_points_size, trajs[i].points[j])) {
+                indexes[indexes_size] = j;
+                indexes_size += 1;
+            }
+        }
+
+        indexes[indexes_size] = trajs[i].points_num - 1;
+        indexes_size += 1;
+
+        // start spliting
+        int last_split_index = 0;
+        for (int j = 0; j < indexes_size; j ++) { // for each split index
+            int this_split_index = indexes[j];
+            if (last_split_index >= this_split_index) { continue; }
+            
+            traj_t new_traj;
+            new_traj.points = (coor_t*) malloc(sizeof(coor_t) * trajs[i].points_num);
+            new_traj.points_num = 0;
+            for (int k = last_split_index; k <= this_split_index; k ++) {
+                new_traj.points[new_traj.points_num] = trajs[i].points[k];
+                new_traj.points_num += 1;
+            }
+            last_split_index = this_split_index;
+
+            splited_trajs[splited_trajs_size] = new_traj;
+            splited_trajs_size += 1;
+        }
+    }
+    trajs = splited_trajs;
+    *trajs_size = splited_trajs_size;
+
+
+    // Step 7: Connect two traj with same endpoint.
     int* indexes = connect_index(trajs, *trajs_size, omit_points, omit_points_size);
-
     while (indexes[0] != -1 && indexes[1] != -1) {
 
+        // traj to be connected
         traj_t traj1 = trajs[indexes[0]];
         traj_t traj2 = trajs[indexes[1]];
 
         traj_t new_traj;
-        new_traj.points = (coor_t*) malloc(sizeof(coor_t) * (traj1.points_num + traj2.points_num));
+        new_traj.points = (coor_t*) malloc(sizeof(coor_t) * (traj1.points_num + traj2.points_num - 1));
         new_traj.points_num = 0;
 
         if (equals(traj1.points[0], traj2.points[0])) {
@@ -271,10 +354,11 @@ traj_t* smooth(traj_t* trajs, int* trajs_size) {
             }
         }
 
-        // move trajs[indexes[0]], trajs[indexes[1]] out of trajs
+        // define new trajs
         traj_t* new_trajs = (traj_t*) malloc(sizeof(traj_t) * (*trajs_size - 1));
         int new_trajs_size = 0;
 
+        // move trajs[indexes[0]], trajs[indexes[1]] out of trajs
         for (int i = 0; i < *trajs_size; i ++) {
             if (i != indexes[0] && i != indexes[1]) {
                 new_trajs[new_trajs_size] = trajs[i];
@@ -288,14 +372,11 @@ traj_t* smooth(traj_t* trajs, int* trajs_size) {
         trajs = new_trajs;
         *trajs_size = new_trajs_size;
 
-        
-
         // update indexes
         indexes = connect_index(trajs, *trajs_size, omit_points, omit_points_size);
     }
 
     return trajs;
-
 }
 
 
@@ -303,10 +384,8 @@ traj_t* smooth(traj_t* trajs, int* trajs_size) {
  *  Aim: find neighbor metrix for each point in trajs.
  *  In: trajs, trajs_size.
  *  Out: return (neighbor_trajs_t**) neighbors.
- *  Test: TODO.
  */
-
-neighbor_trajs_t** find_neighbors(traj_t* trajs, int trajs_size) {
+neighbor_trajs_t** find_neighbors(traj_t* trajs, int trajs_size, int min_dist) {
 
     // initialize return result
     neighbor_trajs_t** neighbors = (neighbor_trajs_t**) malloc(sizeof(neighbor_trajs_t*) * trajs_size);
@@ -318,46 +397,24 @@ neighbor_trajs_t** find_neighbors(traj_t* trajs, int trajs_size) {
     }
 
     // find neighbors
-    for (int i = 0; i < trajs_size; i++) { // for each traj
-        
-        coor_t start = trajs[i].points[0]; // starting point of traj
-        coor_t end = trajs[i].points[trajs[i].points_num - 1]; // ending point of traj
-        
-        for (int j = i + 1; j < trajs_size; j++) { // for next traj
+    for (int i = 0; i < trajs_size; i ++) { // for each traj
+        for (int j = 0; j < trajs[i].points_num; j ++) { // for each point
 
-            for (int k = 0; k < trajs[j].points_num; k++) { // for each point in next traj
-                
-                coor_t point = trajs[j].points[k];
+            for (int a = i + 1; a < trajs_size; a ++) { // for next traj
+                for (int b = 0; b < trajs[a].points_num; b ++) { // for each point
+                    if (dist_coor_coor(trajs[i].points[j], trajs[a].points[b]) <= min_dist) {
+                        int index;
 
-                if (dist_coor_coor (start, point) <= MIN_DIST) {
-                    int index = neighbors[i][0].neighbors_num;
-                    neighbors[i][0].trajs_indexes[index] = j;
-                    neighbors[i][0].points_indexes[index] = k;
-                    /*if (k == 0 || k == trajs[j].points_num - 1) {
-                        neighbors[i][0].neighbors_num = index + 1;
-                    } else {
-                        neighbors[i][0].neighbors_num = index + 2;
-                    }*/
-                    neighbors[i][0].neighbors_num = index + 1;
+                        index = neighbors[i][j].neighbors_num;
+                        neighbors[i][j].trajs_indexes[index] = a;
+                        neighbors[i][j].points_indexes[index] = b;
+                        neighbors[i][j].neighbors_num = index + 1;
 
-                    index = neighbors[j][k].neighbors_num;
-                    neighbors[j][k].trajs_indexes[index] = i;
-                    neighbors[j][k].points_indexes[index] = 0;
-                }
-                if (dist_coor_coor (end, point) <= MIN_DIST) {
-                    int index = neighbors[i][trajs[i].points_num-1].neighbors_num;
-                    neighbors[i][trajs[i].points_num-1].trajs_indexes[index] = j;
-                    neighbors[i][trajs[i].points_num-1].points_indexes[index] = k;
-                    /*if (k == 0 || k == trajs[j].points_num - 1) {
-                        neighbors[i][trajs[i].points_num-1].neighbors_num = index + 1;
-                    } else {
-                        neighbors[i][trajs[i].points_num-1].neighbors_num = index + 2;
-                    }*/
-                    neighbors[i][trajs[i].points_num-1].neighbors_num = index + 1;
-
-                    index = neighbors[j][k].neighbors_num;
-                    neighbors[j][k].trajs_indexes[index] = i;
-                    neighbors[j][k].points_indexes[index] = trajs[i].points_num - 1;
+                        index = neighbors[a][b].neighbors_num;
+                        neighbors[a][b].trajs_indexes[index] = i;
+                        neighbors[a][b].points_indexes[index] = j;
+                        neighbors[a][b].neighbors_num = index + 1;
+                    }
                 }
             }
         }
@@ -365,12 +422,10 @@ neighbor_trajs_t** find_neighbors(traj_t* trajs, int trajs_size) {
     return neighbors;
 }
 
-
 /*
  *  Aim: find (index1, index2) that trajs[index1] can be connected with trajs[index2].
  *  In: trajs, trajs_size, omit_points, omit_points_size.
  *  Out: return {index1, index2}
- *  Test: TODO. But seems OK.
  */
 
 int* connect_index(traj_t* trajs, int trajs_size, coor_t* omit_points, int omit_points_size) {
@@ -379,18 +434,24 @@ int* connect_index(traj_t* trajs, int trajs_size, coor_t* omit_points, int omit_
     indexes[1] = -1;
 
     for (int i = 0; i < trajs_size; i++) { // for each traj
-        for (int j = i + 1; j < trajs_size; j++) { // for next traj
+        coor_t start = trajs[i].points[0];
+        coor_t end = trajs[i].points[trajs[i].points_num - 1];
 
-            if (!contains (omit_points, omit_points_size, trajs[i].points[0])) {
-                if (equals(trajs[i].points[0], trajs[j].points[0]) || equals(trajs[i].points[0], trajs[j].points[trajs[j].points_num - 1] )) {
+        if (!contains(omit_points, omit_points_size, start)) { // if start point shouldn't be omitted
+            for (int j = 0; j < trajs_size; j++) { // for next traj
+                if (i == j) { continue; }
+                if (equals(start, trajs[j].points[0]) || equals(start, trajs[j].points[trajs[j].points_num - 1])) {
                     indexes[0] = i;
                     indexes[1] = j;
                     return indexes;
                 }
             }
+        }
 
-            if (!contains (omit_points, omit_points_size, trajs[i].points[trajs[i].points_num - 1])) {
-                if (equals(trajs[i].points[trajs[i].points_num-1], trajs[j].points[0]) || equals(trajs[i].points[trajs[i].points_num-1], trajs[j].points[trajs[j].points_num-1])) {
+        if (!contains(omit_points, omit_points_size, end)) { // if end point shouldn't be omitted
+            for (int j = 0; j < trajs_size; j++) { // for next traj
+                if (i == j) { continue; }
+                if (equals(end, trajs[j].points[0]) || equals(end, trajs[j].points[trajs[j].points_num - 1])) {
                     indexes[0] = i;
                     indexes[1] = j;
                     return indexes;
@@ -398,32 +459,93 @@ int* connect_index(traj_t* trajs, int trajs_size, coor_t* omit_points, int omit_
             }
         }
     }
-
     return indexes;
 }
 
-int contains (coor_t* points, int points_size, coor_t point) {
-    for (int i = 0; i < points_size; i++) {
-        if (points[i].lat == point.lat && points[i].lng == point.lng && points[i].alt == point.alt) {
-            return 1;
+/*
+ * Aim: Find overlapped points of two traj.
+ * In: traj1, traj2
+ * Out: start/end index of overlapped points in traj1
+ */
+void find_overlapped_traj(traj_t traj1, traj_t traj2, int* start_index, int* end_index) {
+    if (traj1.points_num <= traj2.points_num) {
+        if (contains(traj2.points, traj2.points_num, traj1.points[0]) &&
+            contains(traj2.points, traj2.points_num, traj1.points[traj1.points_num - 1])) {
+            *start_index = 0;
+            *end_index = traj1.points_num - 1;
+            return;
         }
     }
-    return 0;
-}
+    if (contains(traj2.points, traj2.points_num, traj1.points[traj1.points_num - 1])) {
+        *end_index = traj1.points_num - 1;
 
-int first_index_of (coor_t* points, int points_size, coor_t point) {
-    for (int i = 0; i < points_size; i++) {
-        if (points[i].lat == point.lat && points[i].lng == point.lng && points[i].alt == point.alt) {
-            return i;
+        int first_index = first_index_of(traj1.points, traj1.points_num, traj2.points[0]);
+        if (first_index != -1 && first_index < *end_index) {
+            *start_index = first_index;
+            return;
+        }
+        int last_index = first_index_of(traj1.points, traj1.points_num, traj2.points[traj2.points_num - 1]);
+        if (last_index != -1 && last_index < *end_index) {
+            *start_index = last_index;
+            return;
         }
     }
-    return -1;
+    if (contains(traj2.points, traj2.points_num, traj1.points[0])) {
+        *start_index = 0;
+
+        int first_index = first_index_of(traj1.points, traj1.points_num, traj2.points[0]);
+        if (first_index != -1 && *start_index < first_index) {
+            *end_index = first_index;
+            return;
+        }
+        int last_index = first_index_of(traj1.points, traj1.points_num, traj2.points[traj2.points_num - 1]);
+        if (last_index != -1 && *start_index < last_index) {
+            *end_index = last_index;
+            return;
+        }
+    }
+    *start_index = -1;
+    *end_index = -1;
 }
 
-int equals (coor_t point1, coor_t point2) {
-    // return dist_coor_coor (point1, point2) < 5;
-    return point1.lat == point2.lat && point1.lng == point2.lng && point1.alt == point2.alt;
+traj_t clean_palindrome(traj_t traj) {
+    for (int i = 1; i < traj.points_num - 1; i ++) {
+        int left_index = i - 1;
+        int right_index = i + 1;
+        while (left_index >= 0 && right_index <= traj.points_num - 1) {
+            if (equals(traj.points[left_index], traj.points[right_index])) {
+                left_index -= 1;
+                right_index += 1;
+            } else {
+                break;
+            }
+        }
+        if (left_index < 0) {
+            traj_t new_traj;
+            new_traj.points = (coor_t*) malloc(sizeof(coor_t) * traj.points_num);
+            new_traj.points_num = 0;
+            for (int j = i; j < traj.points_num; j ++) {
+                new_traj.points[new_traj.points_num] = traj.points[j];
+                new_traj.points_num += 1;
+            }
+            return new_traj;
+        }
+
+        if (right_index > traj.points_num - 1) {
+            traj_t new_traj;
+            new_traj.points = (coor_t*) malloc(sizeof(coor_t) * traj.points_num);
+            new_traj.points_num = 0;
+            for (int j = 0; j <= i; j ++) {
+                new_traj.points[new_traj.points_num] = traj.points[j];
+                new_traj.points_num += 1;
+            }
+            return new_traj;
+        }
+    }
+    return traj;
 }
+
+
 
 
 
