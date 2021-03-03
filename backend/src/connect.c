@@ -187,124 +187,8 @@ traj_t* connect_trajs(traj_t* trajs, int* trajs_size, int min_dist, int min_num)
     trajs = trajs_after;
     *trajs_size = trajs_size_after;
 
-    // test: result same as omit_points
-    /*int total_points_num = 0;
-    for (int i = 0; i < *trajs_size; i ++) {
-        total_points_num += trajs[i].points_num;
-    }
-    coor_t* unique_points = (coor_t*) malloc(sizeof(coor_t) * total_points_num);
-    int* unique_points_count = (int*) malloc(sizeof(int) * total_points_num);
-    int unique_points_num = 0;
-    
-    for (int i = 0; i < *trajs_size; i ++) {
-        for (int j = 0; j < trajs[i].points_num; j ++) {
-            int index = first_index_of(unique_points, unique_points_num, trajs[i].points[j]);
-            int weight = 2;
-            if (j == 0 || j == trajs[i].points_num - 1) {
-                weight = 1;
-            }
-            if (index == -1) {
-                unique_points[unique_points_num] = trajs[i].points[j];
-                unique_points_count[unique_points_num] = weight;
-                unique_points_num += 1;
-            } else {
-                unique_points_count[index] += weight;
-            }
-        }
-    }
 
-    int count = 0;
-    for (int i = 0; i < unique_points_num; i ++) {
-        if (unique_points_count[i] >= 3) {
-            count += 1;
-        }
-    }
-    printf("unique == %d\n", count);*/
-    
-
-    // Step 5: Find omit_points -> crossroads.
-    // recalculate nums: point number of each cluster
-    for (int i = 0; i < cluster_id - 1; i++) {
-        nums[i] = 0;
-    }
-    for (int i = 0; i < *trajs_size; i++) {
-        for (int j = 0; j < trajs[i].points_num; j++) { // for each point
-            int index = first_index_of(aver_points, cluster_id - 1, trajs[i].points[j]);
-            if (index != -1) {
-                if (j == 0 || j == trajs[i].points_num - 1) {
-                    nums[index] += 1;
-                } else {
-                    nums[index] += 2;
-                }
-            }
-        }
-    }
-    // find omit
-    coor_t* omit_points = (coor_t*) malloc(sizeof(coor_t) * 100);
-    int omit_points_size = 0;
-    for (int i = 0; i < cluster_id - 1; i++) {
-        if (nums[i] > 2) {
-            omit_points[omit_points_size] = aver_points[i];
-            omit_points_size++;
-        }
-    }
-
-    // test: for drawing omit_points using python
-    /*printf("plt.scatter([");
-    for (int i = 0; i < omit_points_size; i ++) {
-        printf("%f, ", (omit_points[i].lng - 114.20774) * 85390);
-    }
-    printf("], [");
-    for (int i = 0; i < omit_points_size; i ++) {
-        printf("%f, ", (omit_points[i].lat - 22.419915) * 111000);
-    }
-    printf("], marker='o', color='r')\n");*/
-
-
-    // Step 6: Spilt trajs who has a omit_point in it.
-    traj_t* splited_trajs = (traj_t*) malloc(sizeof(traj_t) * (*trajs_size) * 3);
-    int splited_trajs_size = 0;
-
-    for (int i = 0; i < *trajs_size; i ++) { // for each traj
-        // find split indexes
-        int* indexes = (int*) malloc(sizeof(int) * (omit_points_size + 2));
-        indexes[0] = 0;
-        int indexes_size = 1;
-
-        for (int j = 1; j < trajs[i].points_num - 1; j ++) { // for each mid point    
-            if (contains(omit_points, omit_points_size, trajs[i].points[j])) {
-                indexes[indexes_size] = j;
-                indexes_size += 1;
-            }
-        }
-
-        indexes[indexes_size] = trajs[i].points_num - 1;
-        indexes_size += 1;
-
-        // start spliting
-        int last_split_index = 0;
-        for (int j = 0; j < indexes_size; j ++) { // for each split index
-            int this_split_index = indexes[j];
-            if (last_split_index >= this_split_index) { continue; }
-            
-            traj_t new_traj;
-            new_traj.points = (coor_t*) malloc(sizeof(coor_t) * trajs[i].points_num);
-            new_traj.points_num = 0;
-            for (int k = last_split_index; k <= this_split_index; k ++) {
-                new_traj.points[new_traj.points_num] = trajs[i].points[k];
-                new_traj.points_num += 1;
-            }
-            last_split_index = this_split_index;
-
-            splited_trajs[splited_trajs_size] = new_traj;
-            splited_trajs_size += 1;
-        }
-    }
-    trajs = splited_trajs;
-    *trajs_size = splited_trajs_size;
-
-    // Step 7 (optional): extend traj to connect as much as possible, crossroad not considered
-
+    // Step 5 (optional): extend traj to connect as much as possible, crossroad not considered
     // find unique point
     coor_t* endpoints = (coor_t*) malloc(sizeof(coor_t) * *trajs_size * 2);
     int* endpoints_count = (int*) malloc(sizeof(int) * *trajs_size * 2);
@@ -386,7 +270,83 @@ traj_t* connect_trajs(traj_t* trajs, int* trajs_size, int min_dist, int min_num)
     }
 
 
-    // Step 8: Connect two traj with same endpoint.
+    // Step 6: Find omit_points -> crossroads.
+
+    // test: result same as omit_points
+    /*int total_points_num = 0;
+    for (int i = 0; i < *trajs_size; i ++) {
+        total_points_num += trajs[i].points_num;
+    }
+    coor_t* unique_points = (coor_t*) malloc(sizeof(coor_t) * total_points_num);
+    int* unique_points_count = (int*) malloc(sizeof(int) * total_points_num);
+    int unique_points_num = 0;
+    
+    for (int i = 0; i < *trajs_size; i ++) {
+        for (int j = 0; j < trajs[i].points_num; j ++) {
+            int index = first_index_of(unique_points, unique_points_num, trajs[i].points[j]);
+            int weight = 2;
+            if (j == 0 || j == trajs[i].points_num - 1) {
+                weight = 1;
+            }
+            if (index == -1) {
+                unique_points[unique_points_num] = trajs[i].points[j];
+                unique_points_count[unique_points_num] = weight;
+                unique_points_num += 1;
+            } else {
+                unique_points_count[index] += weight;
+            }
+        }
+    }
+
+    // find omit
+    coor_t* omit_points = (coor_t*) malloc(sizeof(coor_t) * 100);
+    int omit_points_size = 0;
+    for (int i = 0; i < unique_points_num; i++) {
+        if (unique_points_count[i] >= 3) {
+            omit_points[omit_points_size] = unique_points[i];
+            omit_points_size++;
+        }
+    }*/
+
+    // recalculate nums: point number of each cluster
+    for (int i = 0; i < cluster_id - 1; i++) {
+        nums[i] = 0;
+    }
+    for (int i = 0; i < *trajs_size; i++) {
+        for (int j = 0; j < trajs[i].points_num; j++) { // for each point
+            int index = first_index_of(aver_points, cluster_id - 1, trajs[i].points[j]);
+            if (index != -1) {
+                if (j == 0 || j == trajs[i].points_num - 1) {
+                    nums[index] += 1;
+                } else {
+                    nums[index] += 2;
+                }
+            }
+        }
+    }
+    // find omit
+    coor_t* omit_points = (coor_t*) malloc(sizeof(coor_t) * 100);
+    int omit_points_size = 0;
+    for (int i = 0; i < cluster_id - 1; i++) {
+        if (nums[i] > 2) {
+            omit_points[omit_points_size] = aver_points[i];
+            omit_points_size++;
+        }
+    }
+
+    // test: for drawing omit_points using python
+    /*printf("plt.scatter([");
+    for (int i = 0; i < omit_points_size; i ++) {
+        printf("%f, ", (omit_points[i].lng - 114.20774) * 85390);
+    }
+    printf("], [");
+    for (int i = 0; i < omit_points_size; i ++) {
+        printf("%f, ", (omit_points[i].lat - 22.419915) * 111000);
+    }
+    printf("], marker='o', color='r')\n");*/
+
+
+    // Step 7: Connect two traj with same endpoint.
     int* indexes = connect_index(trajs, *trajs_size, omit_points, omit_points_size);
     while (indexes[0] != -1 && indexes[1] != -1) {
 
@@ -457,6 +417,54 @@ traj_t* connect_trajs(traj_t* trajs, int* trajs_size, int min_dist, int min_num)
 
         // update indexes
         indexes = connect_index(trajs, *trajs_size, omit_points, omit_points_size);
+    }
+
+
+    // Step 8: Spilt trajs who has a omit_point in it.
+    traj_t* splited_trajs = (traj_t*) malloc(sizeof(traj_t) * (*trajs_size) * 3);
+    int splited_trajs_size = 0;
+
+    for (int i = 0; i < *trajs_size; i ++) { // for each traj
+        // find split indexes
+        int* indexes = (int*) malloc(sizeof(int) * (omit_points_size + 2));
+        indexes[0] = 0;
+        int indexes_size = 1;
+
+        for (int j = 1; j < trajs[i].points_num - 1; j ++) { // for each mid point    
+            if (contains(omit_points, omit_points_size, trajs[i].points[j])) {
+                indexes[indexes_size] = j;
+                indexes_size += 1;
+            }
+        }
+
+        indexes[indexes_size] = trajs[i].points_num - 1;
+        indexes_size += 1;
+
+        // start spliting
+        int last_split_index = 0;
+        for (int j = 0; j < indexes_size; j ++) { // for each split index
+            int this_split_index = indexes[j];
+            if (last_split_index >= this_split_index) { continue; }
+            
+            traj_t new_traj;
+            new_traj.points = (coor_t*) malloc(sizeof(coor_t) * trajs[i].points_num);
+            new_traj.points_num = 0;
+            for (int k = last_split_index; k <= this_split_index; k ++) {
+                new_traj.points[new_traj.points_num] = trajs[i].points[k];
+                new_traj.points_num += 1;
+            }
+            last_split_index = this_split_index;
+
+            splited_trajs[splited_trajs_size] = new_traj;
+            splited_trajs_size += 1;
+        }
+    }
+    trajs = splited_trajs;
+    *trajs_size = splited_trajs_size;
+
+    // clean palindrome again
+    for (int i = 0; i < *trajs_size; i ++) {
+        trajs[i] = clean_palindrome(trajs[i]);
     }
 
     return trajs;

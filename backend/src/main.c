@@ -204,7 +204,7 @@ int main (int argc, char *argv[]) {
     cluster(line_segs, line_segs_size, &cluster_num);
 
     // test
-    print_line_segs (line_segs, line_segs_size);
+    // print_line_segs (line_segs, line_segs_size);
 
 
     // Step 5: Generate rep_trajs from line_segs.

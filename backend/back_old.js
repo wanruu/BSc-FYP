@@ -34,7 +34,6 @@ var Schema = mongoose.Schema;
 
 var LocationSchema = Schema({
     name_en: { type: String, require: true },
-    name_zh: { type: String, require: true },
     latitude: { type: Number, require: true },
     longitude: { type: Number, require: true },
     altitude: { type: Number, require: true },
@@ -51,9 +50,8 @@ var RouteSchema = Schema({
     type: { type: Number, require: true }
 });
 var BusSchema = Schema({
-    line: { type: String, require: true }, // 1a, 1b, 2, 3, 4, 5, 6a, 6b, 7, 8, light
+    id: { type: String, require: true }, // 1a, 1b, 2, 3, 4, 5, 6a, 6b, 7, 8, light
     name_en: String,
-    name_zh: String,
     serviceHour: { type: String, require: true }, // eg. 07:40-18:40
     serviceDay: { type: Number, require: true }, // 0: Mon-Sat, 1: Sun&PH, 2: teach
     stops: [{ type: Schema.Types.ObjectId, ref: 'Location' }], // locations the bus pass by
@@ -138,13 +136,12 @@ app.put('/version', (req, res) => {
 app.post('/location', (req, res) => {
     console.log("POST /location - " + Date());
     var name_en = req.body.name_en;
-    var name_zh = req.body.name_zh;
     var latitude = req.body.latitude;
     var longitude = req.body.longitude;
     var altitude = req.body.altitude;
     var type = req.body.type;
 
-    var newLocation = {name_en: name_en, name_zh: name_zh, latitude: latitude, longitude: longitude, altitude: altitude, type: type};
+    var newLocation = {name_en: name_en, latitude: latitude, longitude: longitude, altitude: altitude, type: type};
     LocationModel.create(newLocation, (err, result) => {
         if(err) {
             console.log(err);
@@ -157,11 +154,10 @@ app.post('/location', (req, res) => {
 
 app.put('/location', (req, res) => {
     console.log("PUT /location - " + Date());
-    var conditions = {_id: mongoose.Types.ObjectId(req.body._id)};
+    var conditions = {_id: mongoose.Types.ObjectId(req.body.id)};
     var update = { 
         $set: {
             name_en: req.body.name_en,
-            name_zh: req.body.name_zh,
             latitude: req.body.latitude,
             longitude: req.body.longitude,
             altitude: req.body.altitude,
@@ -192,7 +188,7 @@ app.get('/locations', (req, res) => {
 
 app.delete('/location', (req, res) => {
     console.log("DELETE /location - " + Date());
-    LocationModel.deleteOne({ _id: mongoose.Types.ObjectId(req.body._id)}, (err, result) => {
+    LocationModel.deleteOne({ _id: mongoose.Types.ObjectId(req.body.id)}, (err, result) => {
         if(err) {
             console.log(err);
             res.status(404).send();
@@ -342,11 +338,11 @@ app.get('/routes', (req, res) => {
     var conditions = [
         {
             path: 'startLoc',
-            select: '_id name_en name_zh latitude longitude altitude type'
+            select: '_id name_en latitude longitude altitude type'
         },
         {
             path: 'endLoc',
-            select: '_id name_en name_zh latitude longitude altitude type'
+            select: '_id name_en latitude longitude altitude type'
         }
     ];
     RouteModel.find({}).populate(conditions).exec((err, result) => {
@@ -364,11 +360,11 @@ app.get('/routes_dev', (req, res) => {
     var conditions = [
         {
             path: 'startLoc',
-            select: '_id name_en name_zh latitude longitude altitude type'
+            select: '_id name_en latitude longitude altitude type'
         },
         {
             path: 'endLoc',
-            select: '_id name_en name_zh latitude longitude altitude type'
+            select: '_id name_en latitude longitude altitude type'
         }
     ];
     RouteModel.find({}).populate(conditions).exec((err, result) => {
@@ -390,7 +386,7 @@ app.get('/routes_dev', (req, res) => {
 // BUS
 app.delete('/bus', (req, res) => {
     console.log("DELETE /bus - " + Date());
-    BusModel.deleteOne({ _id: mongoose.Types.ObjectId(req.body.id) }, (err, result) => {
+    BusModel.deleteOne({id: req.body.id}, (err, result) => {
         if(err) {
             console.log(err);
             res.status(404).send();
@@ -407,9 +403,8 @@ app.post('/bus', (req, res) => {
         stops.push(mongoose.Types.ObjectId(req.body.stops[i]));
     }
     var newBus = {
-        line: req.body.line,
+        id: req.body.id,
         name_en: req.body.name_en,
-        name_zh: req.body.name_zh,
         serviceHour: req.body.serviceHour,
         serviceDay: req.body.serviceDay,
         stops: stops,
