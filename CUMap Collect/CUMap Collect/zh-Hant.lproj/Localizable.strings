@@ -1,0 +1,43 @@
+"Sun & Public holidays" = "星期日及公眾假期";
+
+"Teaching days only" = "只限教學日";
+
+"Mon - Sat" = "星期一至六";
+
+"Service suspended on Public Holidays" = "公眾假期停止服務";
+
+"School Bus" = "校巴";
+
+"Departs hourly at (mins)" = "每小時發車時間 (分)";
+
+"Service hours" = "服務時間";
+
+"Route" = "路線";
+
+// new bus route
+"Basic" = "基本";
+"English name" = "英文名";
+"Chinese name" = "中文名";
+"Service" = "服務";
+"Service day" = "服務日";
+"Start at" = "始於";
+"End at" = "終於";
+"Bus stops" = "校巴站";
+"Confirm" = "確認";
+"Add" = "添加";
+"Delete" = "刪除";
+
+// new route
+"Generate routes" = "生成路線";
+
+// navigation tool bar
+"Trajectory" = "軌跡";
+"Location" = "地點";
+
+"Invalid" = "無效的";
+
+"Edit" = "編輯";
+
+"Blank" = "空白";
+
+"New location" = "新地點";

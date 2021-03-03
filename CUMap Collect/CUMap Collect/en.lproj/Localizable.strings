@@ -1,0 +1,44 @@
+"Sun & Public holidays" = "Sun & Public holidays";
+
+"Teaching days only" = "Teaching days only";
+
+"Mon - Sat" = "Mon - Sat";
+
+"Service suspended on Public Holidays" = "Service suspended on Public Holidays";
+
+"School Bus" = "School Bus";
+
+"Departs hourly at (mins)" = "Departs hourly at (mins)";
+
+"Service hours" = "Service hours";
+
+"Route" = "Route";
+
+// new bus
+"Basic" = "Basic";
+"English name" = "English name";
+"Chinese name" = "Chinese name";
+"Service" = "Service";
+"Service day" = "Service day";
+"Start at" = "Start at";
+"End at" = "End at";
+"Bus stops" = "Bus stops";
+"Confirm" = "Confirm";
+"Add" = "Add";
+"Delete" = "Delete";
+
+// new route
+"Generate routes" = "Generate routes";
+
+// navigation tool bar
+"Trajectory" = "Trajectory";
+"Location" = "Location";
+
+
+"Invalid" = "Invalid";
+
+"Edit" = "Edit";
+
+"Blank" = "Blank";
+
+"New location" = "New location";
