@@ -22,30 +22,11 @@ extension CDBus {
     @NSManaged public var nameZh: String
     @NSManaged public var serviceHour: String
     @NSManaged public var serviceDay: Int
-    @NSManaged public var stops: [String]
+    @NSManaged public var stops: [CDLocation]
     @NSManaged public var departTime: [Int]
     
-    func toBus(locations: [Location]) -> Bus {
-        var serviceDay: ServiceDay
-        switch self.serviceDay {
-        case 0: serviceDay = .ordinaryDay
-        case 1: serviceDay = .holiday
-        case 2: serviceDay = .teachingDay
-        default: serviceDay = .ordinaryDay
-        }
-        let times = serviceHour.split(separator: "-")
-        let startTimes = times[0].split(separator: ":")
-        let endTimes = times[1].split(separator: ":")
-        let startTime = Date(timeIntervalSince1970: TimeInterval(Int(startTimes[0])! * 3600 + Int(startTimes[1])! * 60))
-        let endTime = Date(timeIntervalSince1970: TimeInterval(Int(endTimes[0])! * 3600 + Int(endTimes[1])! * 60))
-        var stops: [Location] = []
-        for stopId in self.stops {
-            let stop = locations.first(where: { $0.id == stopId })
-            if stop != nil {
-                stops.append(stop!)
-            }
-        }
-        return Bus(id: id, line: line, nameEn: nameEn, nameZh: nameZh, serviceHour: ServiceHour(startTime: startTime, endTime: endTime), serviceDay: serviceDay, departTime: departTime, stops: stops)
+    func toBus() -> Bus {
+        Bus(id: id, line: line, nameEn: nameEn, nameZh: nameZh, serviceHour: serviceHour.toServiceHour(), serviceDay: serviceDay.toServiceDay(), departTime: departTime, stops: stops.map({ $0.toLocation() }))
     }
 }
 

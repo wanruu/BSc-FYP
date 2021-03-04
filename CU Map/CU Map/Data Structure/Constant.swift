@@ -17,8 +17,8 @@ let BUS_COLORS: [String?: Color] = [
     "light": Color(red: 151/255, green: 81/255, blue: 150/255)
 ]
 
-// let server = "http://10.13.16.219:8000" // CUHK1x
-let server = "http://42.194.159.158:8000" // tencent
+let server = "http://10.13.16.219:8000" // CUHK1x
+// let server = "http://42.194.159.158:8000" // tencent
 
 // CUHK Color
 let CU_PURPLE = Color(red: 117/255, green: 15/255, blue: 109/255)

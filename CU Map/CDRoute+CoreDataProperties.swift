@@ -24,11 +24,7 @@ extension CDRoute {
     @NSManaged public var type: Int
     
     func toRoute() -> Route {
-        var points: [Coor3D] = []
-        for point in self.points {
-            points.append(point.toCoor3D())
-        }
-        return Route(id: id, startLoc: startLoc.toLocation(), endLoc: endLoc.toLocation(), points: points, dist: dist, type: type.toRouteType())
+        Route(id: id, startLoc: startLoc.toLocation(), endLoc: endLoc.toLocation(), points: points.map({$0.toCoor3D()}), dist: dist, type: type.toRouteType())
     }
 }
 

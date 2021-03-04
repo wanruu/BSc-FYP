@@ -11,20 +11,11 @@ struct Bus: Identifiable {
     var stops: [Location]
     
     func toBusResponse() -> BusResponse {
-        var serviceDay: Int
-        switch self.serviceDay {
-        case .ordinaryDay: serviceDay = 0
-        case .holiday: serviceDay = 1
-        case .teachingDay: serviceDay = 2
-        }
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
-        let serviceHour = formatter.string(from: self.serviceHour.startTime) + "-" + formatter.string(from: self.serviceHour.endTime)
         var stops: [String] = []
         for stop in self.stops {
             stops.append(stop.id)
         }
-        return BusResponse(_id: id, line: line, name_en: nameEn, name_zh: nameZh, serviceHour: serviceHour, serviceDay: serviceDay, stops: stops, departTime: departTime)
+        return BusResponse(_id: id, line: line, name_en: nameEn, name_zh: nameZh, serviceHour: serviceHour.toString(), serviceDay: serviceDay.toInt(), stops: stops, departTime: departTime)
     }
 }
 
@@ -34,9 +25,19 @@ struct ServiceHour {
     func toString() -> String {
         let formatter = DateFormatter()
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
-        formatter.locale = Locale(identifier: "en_US")
         formatter.dateFormat = "HH:mm"
         return formatter.string(from: startTime) + " - " + formatter.string(from: endTime)
+    }
+}
+
+extension String {
+    func toServiceHour() -> ServiceHour {
+        let times = self.split(separator: "-")
+        let startTimes = times[0].split(separator: ":")
+        let endTimes = times[1].split(separator: ":")
+        let startTime = Date(timeIntervalSince1970: TimeInterval(Int(startTimes[0])! * 3600 + Int(startTimes[1])! * 60))
+        let endTime = Date(timeIntervalSince1970: TimeInterval(Int(endTimes[0])! * 3600 + Int(endTimes[1])! * 60))
+        return ServiceHour(startTime: startTime, endTime: endTime)
     }
 }
 
@@ -46,6 +47,26 @@ enum ServiceDay {
     case ordinaryDay
 }
 
+extension ServiceDay {
+    func toInt() -> Int {
+        switch self {
+        case .ordinaryDay: return 0
+        case .holiday: return 1
+        case .teachingDay: return 2
+        }
+    }
+}
+
+extension Int {
+    func toServiceDay() -> ServiceDay {
+        switch self {
+        case 0: return .ordinaryDay
+        case 1: return .holiday
+        case 2: return .teachingDay
+        default: return .ordinaryDay
+        }
+    }
+}
 
 struct BusResponse: Codable {
     var _id: String
@@ -58,18 +79,6 @@ struct BusResponse: Codable {
     var departTime: [Int]
     
     func toBus(locations: [Location]) -> Bus {
-        var serviceDay: ServiceDay
-        switch self.serviceDay {
-        case 0: serviceDay = .ordinaryDay
-        case 1: serviceDay = .holiday
-        case 2: serviceDay = .teachingDay
-        default: serviceDay = .ordinaryDay
-        }
-        let times = serviceHour.split(separator: "-")
-        let startTimes = times[0].split(separator: ":")
-        let endTimes = times[1].split(separator: ":")
-        let startTime = Date(timeIntervalSince1970: TimeInterval(Int(startTimes[0])! * 3600 + Int(startTimes[1])! * 60))
-        let endTime = Date(timeIntervalSince1970: TimeInterval(Int(endTimes[0])! * 3600 + Int(endTimes[1])! * 60))
         var stops: [Location] = []
         for stopId in self.stops {
             let stop = locations.first(where: { $0.id == stopId })
@@ -77,6 +86,6 @@ struct BusResponse: Codable {
                 stops.append(stop!)
             }
         }
-        return Bus(id: _id, line: line, nameEn: name_en, nameZh: name_zh, serviceHour: ServiceHour(startTime: startTime, endTime: endTime), serviceDay: serviceDay, departTime: departTime, stops: stops)
+        return Bus(id: _id, line: line, nameEn: name_en, nameZh: name_zh, serviceHour: serviceHour.toServiceHour(), serviceDay: serviceDay.toServiceDay(), departTime: departTime, stops: stops)
     }
 }
