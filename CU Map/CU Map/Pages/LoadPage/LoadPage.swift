@@ -32,7 +32,7 @@ struct LoadPage: View {
             .padding()
         }
         .onAppear {
-            // loadData()
+            loadData()
         }
         .onChange(of: tasks) { data in
             if data.filter({ $0.value }).count == data.count {
@@ -176,7 +176,7 @@ struct LoadPage: View {
     private func loadRoutesRemotely() {
         let url = URL(string: server + "/routes")!
         URLSession.shared.dataTask(with: url) { data, response, error in
-            text = "Loading route data"
+            text = "Loading route data remotely..."
             guard let data = data else { return }
             do {
                 let routeRes = try JSONDecoder().decode([RouteResponse].self, from: data)
