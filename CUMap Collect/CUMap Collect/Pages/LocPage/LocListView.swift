@@ -12,7 +12,7 @@ struct LocListView: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 0) {
                 HStack {
-                    TextField("Search for location", text: $text)
+                    TextField(NSLocalizedString("search.location", comment: ""), text: $text)
                     text.isEmpty ? nil : Image(systemName: "xmark").contentShape(Rectangle()).onTapGesture { text = "" }
                 }
                 .padding(10)

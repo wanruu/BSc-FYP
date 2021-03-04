@@ -24,7 +24,7 @@ struct MainPage: View {
                     VStack {
                         Image(systemName: "point.fill.topleft.down.curvedto.point.fill.bottomright.up")
                             .imageScale(.large)
-                        Text(NSLocalizedString("Trajectory", comment: ""))
+                        Text(NSLocalizedString("trajectory", comment: ""))
                             .font(.system(size: 15, weight: .medium, design: .rounded))
                             .lineLimit(1)
                             .minimumScaleFactor(0.5)
@@ -42,7 +42,7 @@ struct MainPage: View {
                     VStack {
                         Image(systemName: "building.2")
                             .imageScale(.large)
-                        Text(NSLocalizedString("Location", comment: ""))
+                        Text(NSLocalizedString("location", comment: ""))
                             .font(.system(size: 15, weight: .medium, design: .rounded))
                             .lineLimit(1)
                             .minimumScaleFactor(0.5)
@@ -60,7 +60,7 @@ struct MainPage: View {
                     VStack {
                         Image(systemName: "bus")
                             .imageScale(.large)
-                        Text(NSLocalizedString("School bus", comment: ""))
+                        Text(NSLocalizedString("school bus", comment: ""))
                             .font(.system(size: 15, weight: .medium, design: .rounded))
                             .lineLimit(1)
                             .minimumScaleFactor(0.5)

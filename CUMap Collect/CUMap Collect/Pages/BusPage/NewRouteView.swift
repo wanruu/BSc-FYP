@@ -24,9 +24,9 @@ struct NewRouteView: View {
                 Image(systemName: "chevron.backward").contentShape(Rectangle()).onTapGesture { showing.toggle() }
                 VStack {
                     HStack {
-                        NavigationLink(destination: StopListSingleView(locations: $locations, chosenStop: $startLoc, placeholder: "From", text: startLoc?.nameEn ?? "", showing: $showStartList), isActive: $showStartList) {
+                        NavigationLink(destination: StopListSingleView(locations: $locations, chosenStop: $startLoc, placeholder: NSLocalizedString("location.from", comment: ""), text: startLoc?.nameEn ?? "", showing: $showStartList), isActive: $showStartList) {
                             startLoc == nil ?
-                                Text("Form").foregroundColor(.gray).frame(maxWidth: .infinity, alignment: .leading) :
+                                Text(NSLocalizedString("location.from", comment: "")).foregroundColor(.gray).frame(maxWidth: .infinity, alignment: .leading) :
                                 Text(startLoc!.nameEn).foregroundColor(.black).frame(maxWidth: .infinity, alignment: .leading)
                         }
                         startLoc == nil ? nil : Image(systemName: "xmark").contentShape(Rectangle()).onTapGesture { startLoc = nil }
@@ -35,9 +35,9 @@ struct NewRouteView: View {
                     .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.5))
                     
                     HStack {
-                        NavigationLink(destination: StopListSingleView(locations: $locations, chosenStop: $endLoc, placeholder: "To", text: endLoc?.nameEn ?? "", showing: $showEndList), isActive: $showEndList) {
+                        NavigationLink(destination: StopListSingleView(locations: $locations, chosenStop: $endLoc, placeholder: NSLocalizedString("location.to", comment: ""), text: endLoc?.nameEn ?? "", showing: $showEndList), isActive: $showEndList) {
                             endLoc == nil ?
-                                Text("To").foregroundColor(.gray).frame(maxWidth: .infinity, alignment: .leading) :
+                                Text(NSLocalizedString("location.to", comment: "")).foregroundColor(.gray).frame(maxWidth: .infinity, alignment: .leading) :
                                 Text(endLoc!.nameEn).foregroundColor(.black).frame(maxWidth: .infinity, alignment: .leading)
                         }
                         endLoc == nil ? nil : Image(systemName: "xmark").contentShape(Rectangle()).onTapGesture { endLoc = nil }
@@ -65,7 +65,7 @@ struct NewRouteView: View {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack(alignment: .leading, spacing: 0) {
                     
-                    Text("In database").font(.system(size: 20, weight: .bold, design: .rounded)).padding()
+                    Text(NSLocalizedString("saved", comment: "")).font(.system(size: 20, weight: .bold, design: .rounded)).padding()
                     Divider()
                     
                     ForEach(routes) { route in
@@ -73,7 +73,7 @@ struct NewRouteView: View {
                             HStack(spacing: 15) {
                                 VStack(alignment: .leading) {
                                     Text("ID: \(route.id)")
-                                    Text("Distance: \(route.dist) m")
+                                    Text(NSLocalizedString("distance", comment: "") + ": \(route.dist) m")
                                 }
                                 Spacer()
                                 if route == selectedRoute {
@@ -94,18 +94,18 @@ struct NewRouteView: View {
                         }
                     }
                     if routes.filter({ $0.type == RouteType.bus && $0.startLoc == startLoc && $0.endLoc == endLoc}).isEmpty {
-                        Text("No results.").font(.system(size: 15)).italic().padding().foregroundColor(.gray)
+                        Text(NSLocalizedString("no results", comment: "")).font(.system(size: 15)).italic().padding().foregroundColor(.gray)
                         Divider()
                     }
                     
-                    Text("New").font(.system(size: 20, weight: .bold, design: .rounded)).padding()
+                    Text(NSLocalizedString("new.results", comment: "")).font(.system(size: 20, weight: .bold, design: .rounded)).padding()
                     Divider()
                     
                     ForEach(newRoutes) { route in
                         HStack {
                             VStack(alignment: .leading) {
                                 Text("ID: \(route.id)")
-                                Text("Distance: \(route.dist) m")
+                                Text(NSLocalizedString("distance", comment: "") + ": \(route.dist) m")
                             }
                             Spacer()
                             if route == selectedRoute {
@@ -119,13 +119,13 @@ struct NewRouteView: View {
                     }
                     
                     if newRoutes.isEmpty {
-                        Text("No results.").font(.system(size: 15)).italic().padding().foregroundColor(.gray)
+                        Text(NSLocalizedString("no results", comment: "")).font(.system(size: 15)).italic().padding().foregroundColor(.gray)
                         Divider()
                     }
                     
                     let disabled = selectedRoute == nil || newRoutes.first(where: { $0.id == selectedRoute!.id }) == nil
                     Button(action: { uploadRoute() }) {
-                        Text("Save as a bus route")
+                        Text(NSLocalizedString("button.save", comment: ""))
                             .padding()
                             .frame(maxWidth: .infinity)
                     }
@@ -143,8 +143,6 @@ struct NewRouteView: View {
             searchForRoutes()
         }
         .navigationBarHidden(true)
-        //.navigationBarTitle(NSLocalizedString("Generate routes", comment: ""), displayMode: .inline)
-
     }
     
     private func deleteRoute(route: Route) {

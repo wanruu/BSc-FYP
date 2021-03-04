@@ -24,11 +24,11 @@ struct NewLocView: View {
                 }) {
                     HStack {
                         Image(systemName: "arrow.uturn.backward")
-                        Text("Back")
+                        Text(NSLocalizedString("button.back", comment: ""))
                     }
                 }
                 Spacer()
-                Text(NSLocalizedString("New location", comment: ""))
+                Text(NSLocalizedString("new.location", comment: ""))
                     .bold()
                     .lineLimit(1)
                     .minimumScaleFactor(0.3)
@@ -53,16 +53,16 @@ struct NewLocView: View {
                 VStack(spacing: 10) {
                     NewItem(title: "English name", text: $nameEn, width: width)
                     NewItem(title: "Chinese name", text: $nameZh, width: width)
-                    NewItem(title: "Latitude", text: $latitude, width: width)
-                    NewItem(title: "Longitude", text: $longitude, width: width)
-                    NewItem(title: "Altitude", text: $altitude, width: width)
+                    NewItem(title: "latitude", text: $latitude, width: width)
+                    NewItem(title: "longitude", text: $longitude, width: width)
+                    NewItem(title: "altitude", text: $altitude, width: width)
                     HStack {
-                        Text(NSLocalizedString("Type", comment: "")).lineLimit(1).minimumScaleFactor(0.3).frame(width: width, alignment: .leading)
+                        Text(NSLocalizedString("type", comment: "")).lineLimit(1).minimumScaleFactor(0.3).frame(width: width, alignment: .leading)
                         TextField("", text: $type)
                             .padding(10).overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.secondary, lineWidth: 0.5))
                         
                         let num = Int(type) ?? -1
-                        Text(num.isValidLocationType() ? num.toLocationType().toString() : NSLocalizedString("Invalid", comment: ""))
+                        Text(num.isValidLocationType() ? num.toLocationType().toString() : NSLocalizedString("invalid", comment: ""))
                             .lineLimit(1).minimumScaleFactor(0.3)
                             .frame(width: width, alignment: .center)
                     }

@@ -19,15 +19,15 @@ struct BusListView: View {
                         VStack(alignment: .leading) {
                             Text(bus.serviceHour.toString())
                             switch bus.serviceDay {
-                            case .holiday: Text(NSLocalizedString("Sun & Public holidays", comment: ""))
-                            case .teachingDay: Text(NSLocalizedString("Teaching days only", comment: ""))
+                            case .holiday: Text(NSLocalizedString("Sun & public holidays", comment: ""))
+                            case .teachingDay: Text(NSLocalizedString("teaching days only", comment: ""))
                             case .ordinaryDay:
                                 VStack(alignment: .leading) {
                                     Text(NSLocalizedString("Mon - Sat", comment: ""))
-                                    Text("* " + NSLocalizedString("Service suspended on Public Holidays", comment: "")).font(.footnote).italic().foregroundColor(.gray)
+                                    Text("* " + NSLocalizedString("service suspended on public holidays", comment: "")).font(.footnote).italic().foregroundColor(.gray)
                                 }
                             }
-                            Text(NSLocalizedString("Departs hourly at (mins)", comment: "") + ": " + bus.departTime.description).lineLimit(2)
+                            Text(NSLocalizedString("departs hourly at (mins)", comment: "") + ": " + bus.departTime.description).lineLimit(2)
                         }
                     }
                     // End of BusListItem

@@ -1,44 +1,57 @@
-"Sun & Public holidays" = "Sun & Public holidays";
-
-"Teaching days only" = "Teaching days only";
-
+// school bus service day
+"Sun & public holidays" = "Sun & Public Holidays";
+"teaching days only" = "Teaching days only";
 "Mon - Sat" = "Mon - Sat";
+"service suspended on public holidays" = "Service suspended on public holidays";
 
-"Service suspended on Public Holidays" = "Service suspended on Public Holidays";
+// noun
+"school bus" = "School Bus";
+"route" = "Route";
+"trajectory" = "Trajectory";
+"location" = "Location";
+"school bus stops" = "School Bus Stops";
 
-"School Bus" = "School Bus";
+// adj
+"invalid" = "Invalid";
+"blank" = "Blank";
 
-"Departs hourly at (mins)" = "Departs hourly at (mins)";
+// button
+"button.add" = "Add";
+"button.confirm" = "Confirm";
+"button.delete" = "Delete";
+"button.edit" = "Edit";
+"button.cancel" = "Cancel";
+"button.back" = "Back";
+"button.save" = "Save";
+"button.upload" = "Upload";
+"button.process" = "Process";
 
-"Service hours" = "Service hours";
-
-"Route" = "Route";
-
-// new bus
-"Basic" = "Basic";
+// new bus/location/route information
+"basic" = "Basic";
 "English name" = "English name";
 "Chinese name" = "Chinese name";
-"Service" = "Service";
-"Service day" = "Service day";
-"Start at" = "Start at";
-"End at" = "End at";
-"Bus stops" = "Bus stops";
-"Confirm" = "Confirm";
-"Add" = "Add";
-"Delete" = "Delete";
+"service" = "Service";
+"service day" = "Service day";
+"start at" = "Start at";
+"end at" = "End at";
+"departs hourly at (mins)" = "Departs hourly at (mins)";
+"latitude" = "Latitude";
+"longitude" = "Longitude";
+"altitude" = "Altitude";
+"type" = "Type";
+"distance" = "Distance";
 
-// new route
-"Generate routes" = "Generate routes";
+// search
+"search.location" = "Search for a location";
 
-// navigation tool bar
-"Trajectory" = "Trajectory";
-"Location" = "Location";
+// new
+"new" = "New";
+"new.results" = "New Results";
+"new.location" = "New Location";
+"new.route" = "New Route";
 
+"saved" = "Saved";
+"no results" = "No results";
 
-"Invalid" = "Invalid";
-
-"Edit" = "Edit";
-
-"Blank" = "Blank";
-
-"New location" = "New location";
+"location.from" = "From";
+"location.to" = "To";

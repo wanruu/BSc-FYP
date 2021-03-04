@@ -60,7 +60,7 @@ struct TrajPage: View {
                     Button(action: {
                         process()
                     }) {
-                        Text("Process")
+                        Text(NSLocalizedString("button.process", comment: ""))
                             .foregroundColor(.black)
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                             .padding(10)

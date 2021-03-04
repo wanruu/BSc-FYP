@@ -22,23 +22,23 @@ struct NewBusView: View {
     
     var body: some View {
         List {
-            Section(header: Text(NSLocalizedString("Basic", comment: ""))) {
+            Section(header: Text(NSLocalizedString("basic", comment: ""))) {
                 TextField("ID", text: $id)
                 TextField(NSLocalizedString("English name", comment: ""), text: $nameEn)
                 TextField(NSLocalizedString("Chinese name", comment: ""), text: $nameZh)
             }
             
-            Section(header: Text(NSLocalizedString("Service", comment: ""))) {
+            Section(header: Text(NSLocalizedString("service", comment: ""))) {
                 Picker(selection: $serviceDay, label: Text("Service Day")) {
                     Text(NSLocalizedString("Mon - Sat", comment: "")).tag(ServiceDay.ordinaryDay)
-                    Text(NSLocalizedString("Sun & Public holidays", comment: "")).tag(ServiceDay.holiday)
-                    Text(NSLocalizedString("Teaching days only", comment: "")).tag(ServiceDay.teachingDay)
+                    Text(NSLocalizedString("Sun & public holidays", comment: "")).tag(ServiceDay.holiday)
+                    Text(NSLocalizedString("teaching days only", comment: "")).tag(ServiceDay.teachingDay)
                 }
-                DatePicker(NSLocalizedString("Start at", comment: ""), selection: $startTime, displayedComponents: .hourAndMinute)
-                DatePicker(NSLocalizedString("End at", comment: ""), selection: $endTime, displayedComponents: .hourAndMinute)
+                DatePicker(NSLocalizedString("start at", comment: ""), selection: $startTime, displayedComponents: .hourAndMinute)
+                DatePicker(NSLocalizedString("end at", comment: ""), selection: $endTime, displayedComponents: .hourAndMinute)
             }
             
-            Section(header: Text(NSLocalizedString("Departs hourly at (mins)", comment: ""))) {
+            Section(header: Text(NSLocalizedString("departs hourly at (mins)", comment: ""))) {
                 ForEach(departTime) { depart in
                     Text(String(depart))
                 }.onDelete(perform: { index in
@@ -51,12 +51,12 @@ struct NewBusView: View {
                         curDepartTime = ""
                         // TODO: hide keyboard
                     }) {
-                        Text(NSLocalizedString("Add", comment: ""))
+                        Text(NSLocalizedString("button.add", comment: ""))
                     }.disabled(curDepartTime.isEmpty || Int(curDepartTime) == nil || Int(curDepartTime)! < 0 || Int(curDepartTime)! > 60)
                 }
             }
             
-            Section(header: Text(NSLocalizedString("Bus stops", comment: ""))) {
+            Section(header: Text(NSLocalizedString("bus stops", comment: ""))) {
                 ForEach(chosenStops) { stop in
                     Text(stop.nameEn)
                 }.onDelete(perform: { index in
@@ -66,7 +66,7 @@ struct NewBusView: View {
                 NavigationLink(destination: StopListArrayView(locations: $locations, chosenStops: $chosenStops, showing: $showStopList), isActive: $showStopList) {
                     HStack {
                         Image(systemName: "plus.circle.fill").imageScale(.large).foregroundColor(.green)
-                        Text("New")
+                        Text(NSLocalizedString("new", comment: ""))
                     }
                 }
             }
@@ -82,7 +82,7 @@ struct NewBusView: View {
             }) {
                 HStack {
                     Spacer()
-                    Text("Confirm")
+                    Text(NSLocalizedString("button.confirm", comment: ""))
                     Spacer()
                 }
             }
@@ -90,7 +90,7 @@ struct NewBusView: View {
             
         }
         .listStyle(GroupedListStyle())
-        .navigationTitle(Text("New Bus Route"))
+        .navigationTitle(Text(NSLocalizedString("new.route", comment: "")))
     }
     private func createBus() {
         let bus = Bus(id: id, line: id, nameEn: nameEn, nameZh: nameZh, serviceHour: ServiceHour(startTime: startTime, endTime: endTime), serviceDay: serviceDay, departTime: departTime, stops: chosenStops)

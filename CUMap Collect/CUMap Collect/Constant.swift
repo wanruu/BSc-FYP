@@ -16,15 +16,13 @@ let BUS_COLORS: [String?: Color] = [
     "light": Color(red: 151/255, green: 81/255, blue: 150/255)
 ]
 
-// let server = "http://10.13.16.219:8000" // CUHK1x
-let server = "http://42.194.159.158:8000" // tencent
+let server = "http://10.13.16.219:8000" // CUHK1x
+// let server = "http://42.194.159.158:8000" // tencent
 
 // CUHK Color
 let CU_PURPLE = Color(red: 117/255, green: 15/255, blue: 109/255)
 let CU_YELLOW = Color(red: 221/255, green: 163/255, blue: 0)
 let CU_PALE_YELLOW = Color(red: 244/255, green: 223/255, blue: 176/255)
-
-let MAX_BUS_STOP_DIST: Double = 500
 
 let CENTER_LAT: Double = 22.419915
 let CENTER_LNG: Double = 114.20774

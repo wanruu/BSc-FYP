@@ -26,7 +26,7 @@ struct EditLocView: View {
                 }) {
                     HStack(spacing: 5) {
                         Image(systemName: "arrow.uturn.backward")
-                        Text("Back")
+                        Text(NSLocalizedString("button.back", comment: ""))
                     }
                 }
                 Spacer()
@@ -40,7 +40,7 @@ struct EditLocView: View {
                     }) {
                         HStack(spacing: 5) {
                             Image(systemName: "xmark")
-                            Text(NSLocalizedString("Delete", comment: ""))
+                            Text(NSLocalizedString("delete", comment: ""))
                         }.foregroundColor(Color.red)
                     }
                     
@@ -72,11 +72,11 @@ struct EditLocView: View {
                     EditItem(title: "ID", text: $id, isEditing: $isEditing, width: width, disabled: true)
                     EditItem(title: "English name", text: $nameEn, isEditing: $isEditing, width: width)
                     EditItem(title: "Chinese name", text: $nameZh, isEditing: $isEditing, width: width)
-                    EditItem(title: "Latitude", text: $latitude, isEditing: $isEditing, width: width)
-                    EditItem(title: "Longitude", text: $longitude, isEditing: $isEditing, width: width)
-                    EditItem(title: "Altitude", text: $altitude, isEditing: $isEditing, width: width)
+                    EditItem(title: "latitude", text: $latitude, isEditing: $isEditing, width: width)
+                    EditItem(title: "longitude", text: $longitude, isEditing: $isEditing, width: width)
+                    EditItem(title: "altitude", text: $altitude, isEditing: $isEditing, width: width)
                     HStack {
-                        Text(NSLocalizedString("Type", comment: "")).lineLimit(1).minimumScaleFactor(0.3).frame(width: width, alignment: .leading)
+                        Text(NSLocalizedString("type", comment: "")).lineLimit(1).minimumScaleFactor(0.3).frame(width: width, alignment: .leading)
                         if isEditing {
                             TextField("", text: $type)
                                 .padding(10).overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.secondary, lineWidth: 0.5))
@@ -84,7 +84,7 @@ struct EditLocView: View {
                             Spacer()
                         }
                         let num = Int(type) ?? -1
-                        Text(num.isValidLocationType() ? num.toLocationType().toString() : NSLocalizedString("Invalid", comment: ""))
+                        Text(num.isValidLocationType() ? num.toLocationType().toString() : NSLocalizedString("invalid", comment: ""))
                             .lineLimit(1).minimumScaleFactor(0.3)
                             .frame(width: width, alignment: .center)
                     }
@@ -111,7 +111,7 @@ struct EditLocView: View {
                         .padding(10).overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.secondary, lineWidth: 0.5))
                 } else {
                     text.isEmpty ?
-                    Text("(" + NSLocalizedString("Blank", comment: "") + ")")
+                    Text("(" + NSLocalizedString("blank", comment: "") + ")")
                         .italic().foregroundColor(Color.secondary)
                         .frame(maxWidth: .infinity, alignment: .trailing) :
                     Text(text)

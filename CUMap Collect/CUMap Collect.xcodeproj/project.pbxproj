@@ -75,6 +75,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B40843CB25F134CE007D84E2 /* Pages */ = {
+			isa = PBXGroup;
+			children = (
+				B48F10E825EF1B9F00E31AF0 /* MainPage.swift */,
+				B48BBF1025EB891400803F4C /* BusPage */,
+				B48F10E325EF1B2700E31AF0 /* LocPage */,
+				B48F10FC25EF6C8400E31AF0 /* TrajPage */,
+			);
+			path = Pages;
+			sourceTree = "<group>";
+		};
 		B48BBEBC25EAABF700803F4C = {
 			isa = PBXGroup;
 			children = (
@@ -96,10 +107,7 @@
 			isa = PBXGroup;
 			children = (
 				B48BBEC825EAABF800803F4C /* CUMap_CollectApp.swift */,
-				B48F10E825EF1B9F00E31AF0 /* MainPage.swift */,
-				B48F10FC25EF6C8400E31AF0 /* TrajPage */,
-				B48F10E325EF1B2700E31AF0 /* LocPage */,
-				B48BBF1025EB891400803F4C /* BusPage */,
+				B40843CB25F134CE007D84E2 /* Pages */,
 				B48BBEFA25EAD60C00803F4C /* Localizable.strings */,
 				B48BBEDF25EAB8FF00803F4C /* DataStructure.swift */,
 				B48BBEE325EACDA400803F4C /* Constant.swift */,

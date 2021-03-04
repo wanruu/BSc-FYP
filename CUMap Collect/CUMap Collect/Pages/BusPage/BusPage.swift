@@ -33,7 +33,6 @@ struct BusPage: View {
             BusListView(locations: $locations, buses: $buses, routes: $routes)
         }
         .navigationBarHidden(true)
-        // .navigationBarTitle(Text(NSLocalizedString("School Bus", comment: "")), displayMode: .inline)
         
         .onAppear {
             loadLocationsBuses()
