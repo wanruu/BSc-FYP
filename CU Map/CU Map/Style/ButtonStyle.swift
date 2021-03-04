@@ -13,3 +13,22 @@ struct RoundedShrinkDarkerButtonStyle: ButtonStyle {
             .animation(.spring())
     }
 }
+
+struct NaviButtonStyle: ButtonStyle {
+    var fgColor: Color
+    var bgColor: Color
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.9 : 1)
+            .foregroundColor(fgColor)
+            .background(
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(bgColor.opacity(configuration.isPressed ? 0.6 : 1))
+                    .rotationEffect(Angle(degrees: 45))
+                    .shadow(radius: 10)
+                    .scaleEffect(configuration.isPressed ? 0.9 : 1)
+                    .animation(.spring())
+            )
+            .animation(.spring())
+    }
+}

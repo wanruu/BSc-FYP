@@ -16,21 +16,22 @@ struct SearchAreaView: View {
     // showing control
     @State var showStartLocList = false
     @State var showEndLocList = false
-
-    // animation for 􀄬
+    @Binding var showing: Bool
+    
+    // animation for 􀅌
     @State var angle = 0.0
     
     var body: some View {
         VStack {
             // search box
-            HStack(spacing: 25) {
+            HStack(spacing: 20) {
                 // back button
-                /*Image(systemName: "arrowshape.turn.up.left.fill")
-                    .onTapGesture {
-                        showing.toggle()
-                    }
-                */
                 
+                Image(systemName: "arrowshape.turn.up.left.fill")
+                    .onTapGesture { showing.toggle() }
+                    .padding(.bottom, 60)
+                
+
                 // text field
                 VStack {
                     VStack(spacing: 12) {
@@ -64,7 +65,8 @@ struct SearchAreaView: View {
                     }
                 }
                 // switch button
-                Image(systemName: "arrow.up.arrow.down")
+                Image(systemName: "arrow.2.squarepath")
+                    .imageScale(.large)
                     .rotationEffect(.degrees(angle))
                     .animation(Animation.easeInOut(duration: 0.1))
                     .onTapGesture {
@@ -74,7 +76,8 @@ struct SearchAreaView: View {
                         endLoc = tmp
                     }
             }
-            .padding()
+            .padding(.top)
+            .padding(.horizontal, 20)
 
             // search mode
             ScrollView(.horizontal, showsIndicators: false) {
@@ -82,8 +85,7 @@ struct SearchAreaView: View {
                     PlanTypeSelectorView(thisPlanType: .byBus, time: $minTimeByBus, planType: $planType)
                     PlanTypeSelectorView(thisPlanType: .onFoot, time: $minTimeOnFoot, planType: $planType)
                 }
-                .padding(.horizontal)
-                .padding(.bottom)
+                .padding()
             }
         }
         .background(Color.white)

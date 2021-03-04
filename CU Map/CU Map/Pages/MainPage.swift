@@ -4,7 +4,7 @@ enum PageType {
     case loadPage
     case locPage
     case busPage
-    case naviPage
+    //case naviPage
     case savedPage
 }
 
@@ -25,9 +25,8 @@ struct MainPage: View {
             NavigationView {
                 ZStack {
                     switch pageType {
-                    case .locPage: LocPage(locations: locations, pageType: $pageType)
+                    case .locPage: LocPage(locations: locations, buses: buses, routesOnFoot: routesOnFoot, routesByBus: routesByBus, pageType: $pageType)
                     case .busPage: BusPage(locations: locations, buses: buses, routesByBus: routesByBus)
-                    case .naviPage: NaviPage(locations: locations, buses: buses, routesOnFoot: routesOnFoot, routesByBus: routesByBus)
                     case .savedPage: Text("Saved page")
                     default: Text("This shouldn't be seen.")
                     }
@@ -38,8 +37,8 @@ struct MainPage: View {
                         ToolBarItem(imgName: "building.2", text: "Location", thisPageType: .locPage, pageType: $pageType)
                         Spacer()
                         ToolBarItem(imgName: "bus", text: "Bus", thisPageType: .busPage, pageType: $pageType)
-                        Spacer()
-                        ToolBarItem(imgName: "arrow.triangle.turn.up.right.diamond", text: "Navigation", thisPageType: .naviPage, pageType: $pageType)
+                        //Spacer()
+                        //ToolBarItem(imgName: "arrow.triangle.turn.up.right.diamond", text: "Navigation", thisPageType: .naviPage, pageType: $pageType)
                         Spacer()
                         ToolBarItem(imgName: "heart", text: "Saved", thisPageType: .savedPage, pageType: $pageType)
                         Spacer()

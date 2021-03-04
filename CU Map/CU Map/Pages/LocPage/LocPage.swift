@@ -1,10 +1,16 @@
 import SwiftUI
 
 struct LocPage: View {
+    // input data
     @State var locations: [Location]
+    @State var buses: [Bus]
+    @State var routesOnFoot: [Route]
+    @State var routesByBus: [Route]
+    
     @State var selectedLoc: Location? = nil
     
     @State var showLocList = false
+    @State var showNavi = false
     
     @Binding var pageType: PageType
 
@@ -28,7 +34,24 @@ struct LocPage: View {
                 .clipped()
                 .shadow(radius: 5)
                 .padding()
+                
                 Spacer()
+                
+                HStack {
+                    Spacer()
+                    NavigationLink(destination: NaviPage(locations: locations, buses: buses, routesOnFoot: routesOnFoot, routesByBus: routesByBus, showing: $showNavi), isActive: $showNavi) {
+                        Image(systemName: "arrow.triangle.swap")
+                            .resizable()
+                            .frame(width: UIScreen.main.bounds.width * 0.05, height: UIScreen.main.bounds.width * 0.05, alignment: .center)
+                            .scaledToFit()
+                            .rotationEffect(Angle(degrees: 90))
+                            .padding(6)
+                    }
+                    .buttonStyle(NaviButtonStyle(fgColor: .white, bgColor: .accentColor))
+                    .padding()
+                    .padding()
+                }
+                
             }
         }
         .navigationBarHidden(true)

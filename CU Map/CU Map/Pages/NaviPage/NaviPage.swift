@@ -20,39 +20,32 @@ struct NaviPage: View {
     @State var selectedPlan: Plan? = nil
     @State var minTimeByBus: Double = .infinity // min
     @State var minTimeOnFoot: Double = .infinity
-    
-    @State var showSearchArea = true
+
+    @Binding var showing: Bool
+
+    @State var lastOffset = CGSize.zero
+    @State var offset = CGSize.zero
     
     var body: some View {
         VStack(spacing: 0) {
-            if showSearchArea {
-                SearchAreaView(locations: locations, startLoc: $startLoc, endLoc: $endLoc, planType: $planType, minTimeByBus: $minTimeByBus, minTimeOnFoot: $minTimeOnFoot)
-                Divider()
-            }
-            ZStack {
-                NaviMapView(startLoc: $startLoc, endLoc: $endLoc, selectedPlan: $selectedPlan)
-                    .ignoresSafeArea(.all)
-                if !showSearchArea {
-                    VStack(alignment: .leading) {
-                        Button(action: {
-                            showSearchArea = true
-                        }) {
-                            Image(systemName: "chevron.backward.circle.fill").imageScale(.large)
-                                .foregroundColor(.accentColor)
-                        }
-                        Spacer()
-                    }
-                }
-            }
             
-            if !showSearchArea {
-                Divider()
-                if planType == .byBus {
+            SearchAreaView(locations: locations, startLoc: $startLoc, endLoc: $endLoc, planType: $planType, minTimeByBus: $minTimeByBus, minTimeOnFoot: $minTimeOnFoot, showing: $showing)
+            
+            NaviMapView(startLoc: $startLoc, endLoc: $endLoc, selectedPlan: $selectedPlan)
+                //.ignoresSafeArea(.all)
+            
                 
-                } else if planType == .onFoot {
-                    PlansOnFootView(plansOnFoot: $plansOnFoot, selectedPlan: $selectedPlan)
-                }
-            }
+            PlansOnFootView(plansOnFoot: $plansOnFoot, selectedPlan: $selectedPlan)
+                .gesture(
+                    DragGesture()
+                        .onChanged { value in
+                            offset.width = lastOffset.width + value.location.x - value.startLocation.x
+                            offset.height = lastOffset.height + value.location.y - value.startLocation.y
+                        }
+                        .onEnded{ _ in
+                            lastOffset = offset
+                        }
+                )
 
         }
         .navigationBarHidden(true)
@@ -128,7 +121,6 @@ struct NaviPage: View {
         
         print("=====")
         print(plansOnFoot.count)
-        showSearchArea = false
     }
     
     // DFS recursion for find plan on foot
