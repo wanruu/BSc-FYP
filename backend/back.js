@@ -60,8 +60,9 @@ var BusSchema = Schema({
     departTime: [{ type: Number, require: true }], // depart hourly at (mins)
 });
 var VersionSchema = Schema({
-    database: { type: String, require: true, unique: true},
-    version: { type: String, require: true }
+    locations: { type: String, require: true },
+    routes: { type: String, require: true },
+    buses: { type: String, require: true }
 });
 
 // define model
@@ -80,19 +81,12 @@ const VersionModel = mongoose.model('Version', VersionSchema);
     next();
 }); */
 
-// get map img
-/* app.get('/map', (req, res) => {
-    console.log("get");
-    res.setHeader('Content-Type', 'image/jpeg');
-    res.sendFile("cuhk-campus-map.jpg", {root: __dirname});
-}); */
-
 // admin login 
 // TODO
 
 app.get('/versions', (req, res) => {
     console.log("GET /versions - " + Date());
-    VersionModel.find({}, (err, result) => {
+    VersionModel.findOne({}, (err, result) => {
         if(err) {
             console.log(err);
             res.status(404).send();
@@ -102,32 +96,59 @@ app.get('/versions', (req, res) => {
     });
 });
 
-app.put('/version', (req, res) => {
-    console.log("PUT /version - " + Date());
-    var database = req.body.database
-    var version = req.body.version
-    VersionModel.findOne({database: database}, (err, result) => {
+app.post('/version', (req, res) => {
+    console.log("POST /version - " + Date());
+    var version = {
+        locations: req.body.locations,
+        routes: req.body.routes,
+        buses: req.body.buses,
+    };
+
+    VersionModel.create(version, (err, result) => {
         if(err) {
             console.log(err);
             res.status(404).send();
-        } else if(result) {
-            VersionModel.updateOne({database: database}, {$set: {version: version}}, (err, result) => {
-                if(err) {
-                    console.log(err);
-                    res.status(404).send();
-                } else {
-                    res.send(result);
-                }
-            });
         } else {
-            VersionModel.create({database: database, version: version}, (err, result) => {
-                if(err) {
-                    console.log(err);
-                    res.status(404).send();
-                } else {
-                    res.send(result);
-                }
-            });
+            res.send(result);
+        }
+    });
+});
+
+app.put('/version/locations', (req, res) => {
+    console.log("PUT /version/locations - " + Date());
+    var update = { $set: { locations: req.body.locations }};
+    VersionModel.updateOne({}, update, (err, result) => {
+        if(err) {
+            console.log(err);
+            res.status(404).send();
+        } else {
+            res.send(result);
+        }
+    });
+});
+
+app.put('/version/routes', (req, res) => {
+    console.log("PUT /version/routes - " + Date());
+    var update = { $set: { routes: req.body.routes }};
+    VersionModel.updateOne({}, update, (err, result) => {
+        if(err) {
+            console.log(err);
+            res.status(404).send();
+        } else {
+            res.send(result);
+        }
+    });
+});
+
+app.put('/version/buses', (req, res) => {
+    console.log("PUT /version/routes - " + Date());
+    var update = { $set: { buses: req.body.buses }};
+    VersionModel.updateOne({}, update, (err, result) => {
+        if(err) {
+            console.log(err);
+            res.status(404).send();
+        } else {
+            res.send(result);
         }
     });
 });

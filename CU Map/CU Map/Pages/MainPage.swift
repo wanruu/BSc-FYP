@@ -20,7 +20,7 @@ struct MainPage: View {
     
     var body: some View {
         if pageType == .loadPage {
-            LoadPage(locations: $locations, buses: $buses, routesOnFoot: $routesOnFoot, routesByBus: $routesByBus, loadTasks: [Bool](repeating: false, count: 3), pageType: $pageType)
+            LoadPage(locations: $locations, buses: $buses, routesOnFoot: $routesOnFoot, routesByBus: $routesByBus, pageType: $pageType)
         } else {
             NavigationView {
                 ZStack {

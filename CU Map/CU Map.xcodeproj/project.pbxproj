@@ -7,6 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B40843CF25F14841007D84E2 /* Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40843CE25F14841007D84E2 /* Version.swift */; };
+		B40843D625F166F0007D84E2 /* CDBus+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40843D425F166F0007D84E2 /* CDBus+CoreDataClass.swift */; };
+		B40843D725F166F0007D84E2 /* CDBus+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40843D525F166F0007D84E2 /* CDBus+CoreDataProperties.swift */; };
+		B40843DD25F16885007D84E2 /* CDLocation+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40843DB25F16885007D84E2 /* CDLocation+CoreDataClass.swift */; };
+		B40843DE25F16885007D84E2 /* CDLocation+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40843DC25F16885007D84E2 /* CDLocation+CoreDataProperties.swift */; };
+		B40843E225F1694D007D84E2 /* CDRoute+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40843E025F1694D007D84E2 /* CDRoute+CoreDataClass.swift */; };
+		B40843E325F1694D007D84E2 /* CDRoute+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40843E125F1694D007D84E2 /* CDRoute+CoreDataProperties.swift */; };
+		B40843E725F16D3D007D84E2 /* CDCoor3D+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40843E525F16D3D007D84E2 /* CDCoor3D+CoreDataClass.swift */; };
+		B40843E825F16D3D007D84E2 /* CDCoor3D+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40843E625F16D3D007D84E2 /* CDCoor3D+CoreDataProperties.swift */; };
+		B40843EC25F172AD007D84E2 /* ProgressViewStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40843EB25F172AD007D84E2 /* ProgressViewStyle.swift */; };
 		B48F112C25EFB5B400E31AF0 /* CU_MapApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F112B25EFB5B400E31AF0 /* CU_MapApp.swift */; };
 		B48F112E25EFB5B400E31AF0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F112D25EFB5B400E31AF0 /* ContentView.swift */; };
 		B48F113025EFB5B500E31AF0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B48F112F25EFB5B500E31AF0 /* Assets.xcassets */; };
@@ -36,6 +46,16 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B40843CE25F14841007D84E2 /* Version.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Version.swift; sourceTree = "<group>"; };
+		B40843D425F166F0007D84E2 /* CDBus+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDBus+CoreDataClass.swift"; sourceTree = "<group>"; };
+		B40843D525F166F0007D84E2 /* CDBus+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDBus+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B40843DB25F16885007D84E2 /* CDLocation+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDLocation+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
+		B40843DC25F16885007D84E2 /* CDLocation+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDLocation+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
+		B40843E025F1694D007D84E2 /* CDRoute+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDRoute+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
+		B40843E125F1694D007D84E2 /* CDRoute+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDRoute+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
+		B40843E525F16D3D007D84E2 /* CDCoor3D+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDCoor3D+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
+		B40843E625F16D3D007D84E2 /* CDCoor3D+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDCoor3D+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
+		B40843EB25F172AD007D84E2 /* ProgressViewStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressViewStyle.swift; sourceTree = "<group>"; };
 		B48F112825EFB5B400E31AF0 /* CU Map.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CU Map.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B48F112B25EFB5B400E31AF0 /* CU_MapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CU_MapApp.swift; sourceTree = "<group>"; };
 		B48F112D25EFB5B400E31AF0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -77,6 +97,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B40843D925F16700007D84E2 /* Core Data */ = {
+			isa = PBXGroup;
+			children = (
+				B40843E525F16D3D007D84E2 /* CDCoor3D+CoreDataClass.swift */,
+				B40843E625F16D3D007D84E2 /* CDCoor3D+CoreDataProperties.swift */,
+				B40843E025F1694D007D84E2 /* CDRoute+CoreDataClass.swift */,
+				B40843E125F1694D007D84E2 /* CDRoute+CoreDataProperties.swift */,
+				B40843DB25F16885007D84E2 /* CDLocation+CoreDataClass.swift */,
+				B40843DC25F16885007D84E2 /* CDLocation+CoreDataProperties.swift */,
+				B40843D425F166F0007D84E2 /* CDBus+CoreDataClass.swift */,
+				B40843D525F166F0007D84E2 /* CDBus+CoreDataProperties.swift */,
+			);
+			path = "Core Data";
+			sourceTree = "<group>";
+		};
 		B48F111F25EFB5B400E31AF0 = {
 			isa = PBXGroup;
 			children = (
@@ -98,6 +133,7 @@
 			children = (
 				B48F112B25EFB5B400E31AF0 /* CU_MapApp.swift */,
 				B48F112D25EFB5B400E31AF0 /* ContentView.swift */,
+				B40843D925F16700007D84E2 /* Core Data */,
 				B48F115025EFB91500E31AF0 /* Pages */,
 				B48F114025EFB62400E31AF0 /* Data Structure */,
 				B48F116425EFBE4700E31AF0 /* Style */,
@@ -128,6 +164,7 @@
 				B48F114A25EFB6E900E31AF0 /* Route.swift */,
 				B48F118525EFE0C000E31AF0 /* Plan.swift */,
 				B48F114D25EFB71300E31AF0 /* MongoRes.swift */,
+				B40843CE25F14841007D84E2 /* Version.swift */,
 			);
 			path = "Data Structure";
 			sourceTree = "<group>";
@@ -159,6 +196,7 @@
 			isa = PBXGroup;
 			children = (
 				B48F116525EFBE6000E31AF0 /* ButtonStyle.swift */,
+				B40843EB25F172AD007D84E2 /* ProgressViewStyle.swift */,
 			);
 			path = Style;
 			sourceTree = "<group>";
@@ -271,19 +309,29 @@
 				B48F114825EFB6B700E31AF0 /* Bus.swift in Sources */,
 				B48F117325EFDD0400E31AF0 /* BusPage.swift in Sources */,
 				B48F118625EFE0C000E31AF0 /* Plan.swift in Sources */,
+				B40843EC25F172AD007D84E2 /* ProgressViewStyle.swift in Sources */,
 				B48F119025F00AEE00E31AF0 /* PlansView.swift in Sources */,
+				B40843E225F1694D007D84E2 /* CDRoute+CoreDataClass.swift in Sources */,
 				B48F118C25EFF0E900E31AF0 /* LocationModel.swift in Sources */,
 				B48F113825EFB5B500E31AF0 /* CU_Map.xcdatamodeld in Sources */,
 				B48F114E25EFB71300E31AF0 /* MongoRes.swift in Sources */,
 				B48F113525EFB5B500E31AF0 /* Persistence.swift in Sources */,
+				B40843E325F1694D007D84E2 /* CDRoute+CoreDataProperties.swift in Sources */,
 				B48F117925EFDD3E00E31AF0 /* BusMapView.swift in Sources */,
 				B48F115A25EFBA8700E31AF0 /* LocListView.swift in Sources */,
+				B40843E725F16D3D007D84E2 /* CDCoor3D+CoreDataClass.swift in Sources */,
 				B48F116025EFBB9600E31AF0 /* MainPage.swift in Sources */,
+				B40843D725F166F0007D84E2 /* CDBus+CoreDataProperties.swift in Sources */,
+				B40843DE25F16885007D84E2 /* CDLocation+CoreDataProperties.swift in Sources */,
 				B48F116E25EFD0C500E31AF0 /* LoadPage.swift in Sources */,
+				B40843DD25F16885007D84E2 /* CDLocation+CoreDataClass.swift in Sources */,
 				B48F112E25EFB5B400E31AF0 /* ContentView.swift in Sources */,
+				B40843D625F166F0007D84E2 /* CDBus+CoreDataClass.swift in Sources */,
 				B48F116A25EFC38800E31AF0 /* LocMapView.swift in Sources */,
+				B40843E825F16D3D007D84E2 /* CDCoor3D+CoreDataProperties.swift in Sources */,
 				B48F118325EFE05E00E31AF0 /* NaviMapView.swift in Sources */,
 				B48F114225EFB63C00E31AF0 /* Coor3D.swift in Sources */,
+				B40843CF25F14841007D84E2 /* Version.swift in Sources */,
 				B48F114B25EFB6E900E31AF0 /* Route.swift in Sources */,
 				B48F115325EFB9E600E31AF0 /* LocPage.swift in Sources */,
 				B48F114525EFB64800E31AF0 /* Location.swift in Sources */,
