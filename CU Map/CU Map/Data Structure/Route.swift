@@ -16,6 +16,16 @@ struct Route: Identifiable, Equatable {
     }
 }
 
+struct RouteByBus {
+    var id = UUID()
+    var bus: Bus
+    var startLoc: Location
+    var endLoc: Location
+    var points: [Coor3D]
+    var dist: Double
+    var type = RouteType.byBus
+}
+
 enum RouteType {
     case onFoot
     case byBus
@@ -76,3 +86,4 @@ struct RouteResponse: Codable {
         Route(id: _id, startLoc: startLoc.toLocation(), endLoc: endLoc.toLocation(), points: points, dist: dist, type: type.toRouteType())
     }
 }
+

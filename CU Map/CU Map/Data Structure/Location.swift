@@ -31,6 +31,12 @@ struct Location: Identifiable, Equatable {
     }
 }
 
+func distance (from: Location, to: Location) -> Double {
+    pow((from.latitude - to.latitude) * LAT_SCALE * (from.latitude - to.latitude) * LAT_SCALE +
+        (from.longitude - to.longitude) * LNG_SCALE * (from.longitude - to.longitude) * LNG_SCALE +
+        (from.altitude - to.altitude) * (from.altitude - to.altitude), 0.5)
+}
+
 enum LocationType {
     case building
     case busStop

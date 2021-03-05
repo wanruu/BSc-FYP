@@ -18,3 +18,22 @@ struct PlansOnFootView: View {
         //}
     }
 }
+
+struct PlansByBusView: View {
+    @Binding var plansByBus: [Plan]
+    @Binding var selectedPlan: Plan?
+    
+    var body: some View {
+        //ScrollView {
+            List {
+                ForEach(plansByBus) { plan in
+                    Button(action: {
+                        selectedPlan = plan
+                    }) {
+                        Text(String(Int(plan.dist)) + " " + NSLocalizedString("m", comment: ""))
+                    }
+                }
+            }
+        //}
+    }
+}

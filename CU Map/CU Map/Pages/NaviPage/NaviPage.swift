@@ -34,8 +34,9 @@ struct NaviPage: View {
             NaviMapView(startLoc: $startLoc, endLoc: $endLoc, selectedPlan: $selectedPlan)
                 //.ignoresSafeArea(.all)
             
+            PlansByBusView(plansByBus: $plansByBus, selectedPlan: $selectedPlan)
                 
-            PlansOnFootView(plansOnFoot: $plansOnFoot, selectedPlan: $selectedPlan)
+            /*PlansOnFootView(plansOnFoot: $plansOnFoot, selectedPlan: $selectedPlan)
                 .gesture(
                     DragGesture()
                         .onChanged { value in
@@ -45,7 +46,7 @@ struct NaviPage: View {
                         .onEnded{ _ in
                             lastOffset = offset
                         }
-                )
+                )*/
 
         }
         .navigationBarHidden(true)
@@ -113,14 +114,51 @@ struct NaviPage: View {
         }
         
         // Step 4: Searching for route plans
+        
+        // on foot
         checkRoutesOnFoot(locations: newLocs, routes: routesOnFoot, curStartLoc: nil, curEndLoc: nil, curRoutes: [])
         plansOnFoot.sort(by: { $0.dist < $1.dist})
         if planType == .onFoot {
             selectedPlan = plansOnFoot.first
         }
         
-        print("=====")
-        print(plansOnFoot.count)
+        // by bus
+        // find nearest bus stop
+        let startStops = startLoc!.type == .busStop ? [startLoc!] : findBusStops(cur: startLoc!, stops: locations.filter({ $0.type == .busStop }), maxDist: 400)
+        let endStops = endLoc!.type == .busStop ? [endLoc!] : findBusStops(cur: endLoc!, stops: locations.filter({ $0.type == .busStop }), maxDist: 400)
+        
+        var routesList: [[RouteByBus]] = []
+        for startStop in startStops {
+            for endStop in endStops {
+                routesList += findRoutes(startStop: startStop, endStop: endStop, buses: buses)
+            }
+        }
+        
+        // deduplicate
+        var removedIndexes: [Int] = []
+        for i in 0..<routesList.count {
+            if i != routesList.lastIndex(where: { routes -> Bool in
+                routes.map({ $0.bus.line }) == routesList[i].map({ $0.bus.line })
+            }) {
+                removedIndexes.append(i)
+            }
+        }
+        routesList.remove(atOffsets: IndexSet(removedIndexes))
+        
+        for routes in routesList {
+            var routes = routes
+            for i in 0..<routes.count {
+                let tmp = routesByBus.first(where: { $0.startLoc == routes[i].startLoc && $0.endLoc == routes[i].endLoc })
+                routes[i].points = tmp?.points ?? []
+                routes[i].dist = tmp?.dist ?? -1
+            }
+            var dist = 0.0
+            for route in routes {
+                dist += route.dist
+            }
+            plansByBus.append(Plan(startLoc: startLoc, endLoc: endLoc, routes: routes, dist: dist, time: 0, ascent: 0, type: .byBus))
+            print(routes.map({ $0.bus.line }))
+        }
     }
     
     // DFS recursion for find plan on foot
@@ -179,6 +217,92 @@ struct NaviPage: View {
             }
         }
         return false
+    }
+    
+    
+    private func findBusStops(cur: Location, stops: [Location], maxDist: Double) -> [Location] {
+        var result: [Location] = []
+        for stop in stops {
+            let dist = distance(from: cur, to: stop)
+            if dist < maxDist {
+                result.append(stop)
+            }
+        }
+        return result
+    }
+    
+    private func findDirectRoutes(startStop: Location, endStop: Location, bus: Bus) -> [RouteByBus] {
+        for bus in buses {
+            let startIndex1 = bus.stops.firstIndex(of: startStop) ?? -1
+            let startIndex2 = bus.stops.lastIndex(of: startStop) ?? -1
+            let endIndex1 = bus.stops.firstIndex(of: endStop) ?? -1
+            let endIndex2 = bus.stops.lastIndex(of: endStop) ?? -1
+            
+            var startIndex = startIndex1
+            var endIndex = endIndex1
+
+            if startIndex1 == startIndex2 {
+                if endIndex1 != endIndex2 && startIndex > endIndex1 {
+                    endIndex = endIndex2
+                }
+            } else {
+                if endIndex1 == endIndex2 {
+                    if startIndex2 < endIndex {
+                        startIndex = startIndex2
+                    }
+                } else {
+                    if startIndex1 > endIndex1 && startIndex2 < endIndex2 {
+                        startIndex = startIndex2
+                        endIndex = endIndex2
+                    }
+                }
+            }
+            
+            if startIndex < endIndex && startIndex != -1 && endIndex != -1 {
+                var newRoutes: [RouteByBus] = []
+                for i in startIndex..<endIndex {
+                    newRoutes.append(RouteByBus(bus: bus, startLoc: bus.stops[i], endLoc: bus.stops[i+1], points: [], dist: 0))
+                }
+                return newRoutes
+            }
+        }
+        return []
+    }
+    
+    // transfer at most 2 time
+    private func findRoutes(startStop: Location, endStop: Location, buses: [Bus]) -> [[RouteByBus]] {
+        var result: [[RouteByBus]] = []
+        for firstBus in buses { // consider first bus
+            if !firstBus.stops.contains(startStop) {
+                continue
+            }
+            // find direct routes
+            var routes = findDirectRoutes(startStop: startStop, endStop: endStop, bus: firstBus)
+            if routes.isEmpty { // no direct routes
+                let index1 = firstBus.stops.firstIndex(of: startStop) ?? -1
+                let index2 = firstBus.stops.lastIndex(of: startStop) ?? -1
+                print(index1, index2)
+                // for each stops succeed startStop in first bus (also need differ from startStop
+                for i in index1+1..<firstBus.stops.count {
+                    if i == index2 {
+                        continue
+                    }
+                    routes.append(RouteByBus(bus: firstBus, startLoc: firstBus.stops[i-1], endLoc: firstBus.stops[i], points: [], dist: 0))
+                    for secondBus in buses {
+                        if secondBus.line != firstBus.line {
+                            let secondRoutes = findDirectRoutes(startStop: firstBus.stops[i], endStop: endStop, bus: secondBus)
+                            if !secondRoutes.isEmpty {
+                                result.append(routes + secondRoutes)
+                            }
+                        }
+                    }
+                }
+                
+            } else {
+                result.append(routes)
+            }
+        }
+        return result
     }
 }
 

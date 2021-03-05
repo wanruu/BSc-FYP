@@ -5,7 +5,7 @@ struct Plan: Identifiable {
     var id = UUID()
     var startLoc: Location?
     var endLoc: Location?
-    var routes: [Route]
+    var routes: [Any] // Route or RouteByBus
     var dist: Double // meters
     var time: Double // seconds
     var ascent: Double // meters
@@ -25,3 +25,4 @@ extension PlanType {
         }
     }
 }
+
