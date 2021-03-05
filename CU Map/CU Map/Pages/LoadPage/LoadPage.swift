@@ -5,7 +5,6 @@ struct LoadPage: View {
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(sortDescriptors: []) private var CDVersions: FetchedResults<CDVersion>
     @FetchRequest(sortDescriptors: []) private var CDLocations: FetchedResults<CDLocation>
-    @FetchRequest(sortDescriptors: []) private var CDPoints: FetchedResults<CDCoor3D>
     @FetchRequest(sortDescriptors: []) private var CDBuses: FetchedResults<CDBus>
     @FetchRequest(sortDescriptors: []) private var CDRoutes: FetchedResults<CDRoute>
     
@@ -22,6 +21,8 @@ struct LoadPage: View {
     
     var body: some View {
         VStack {
+            LoadImage()
+            
             ProgressView(value: Double(tasks.filter({$0.value}).count) / Double(tasks.count)) {
                 Text(text)
                     .italic()
@@ -37,7 +38,10 @@ struct LoadPage: View {
         }
         .onChange(of: tasks) { data in
             if data.filter({ $0.value }).count == data.count {
-                // save(version: version!)
+                saveVersion(version!)
+                saveLocations(locations)
+                saveBuses(buses)
+                saveRoutes(routesByBus + routesOnFoot)
                 pageType = .locPage
             }
         }
@@ -56,20 +60,20 @@ struct LoadPage: View {
         if CDVersions.isEmpty || CDVersions[0].locations != version?.locations {
             loadLocsRemotely()
             loadRoutesRemotely()
-            loadBusesRemotely() // must succeed loadLocsRemotely()
+            loadBusesRemotely(locations: locations)
         } else {
             let lastVersion = CDVersions[0]
             loadLocsLocally()
-            if lastVersion.routes == version?.routes ?? "" {
-                loadRoutesLocally()
+            if lastVersion.routes == version?.routes {
+                loadRoutesLocally(locations: locations)
             } else {
                 loadRoutesRemotely()
             }
-            if lastVersion.buses == version?.buses ?? "" {
-                loadBusesLocally()
+            if lastVersion.buses == version?.buses {
+                loadBusesLocally(locations: locations)
             } else {
-                loadBusesRemotely()
-            } // must succeed loadLocs()
+                loadBusesRemotely(locations: locations)
+            }
         }
     }
     
@@ -101,19 +105,19 @@ struct LoadPage: View {
         text = "Location data loaded."
     }
     
-    private func loadBusesLocally() {
+    private func loadBusesLocally(locations: [Location]) {
         text = "Loading bus data locally..."
-        buses = CDBuses.map({ $0.toBus() })
+        buses = CDBuses.map({ $0.toBus(locations: locations) })
         tasks[.buses] = true
         text = "Buses data loaded."
     }
     
-    private func loadRoutesLocally() {
+    private func loadRoutesLocally(locations: [Location]) {
         text = "Loading route data locally..."
         routesByBus.removeAll()
         routesOnFoot.removeAll()
         for CDroute in CDRoutes {
-            let route = CDroute.toRoute()
+            let route = CDroute.toRoute(locations: locations)
             switch route.type {
             case .byBus: routesByBus.append(route)
             case .onFoot: routesOnFoot.append(route)
@@ -136,7 +140,6 @@ struct LoadPage: View {
                 locations = locRes.map({ $0.toLocation() })
                 tasks[.locations] = true
                 text = "Location data resolved."
-                //save(locations: locations)
                 sema.signal()
             } catch let error {
                 print(error)
@@ -148,7 +151,7 @@ struct LoadPage: View {
     }
     
     // async
-    private func loadBusesRemotely() {
+    private func loadBusesRemotely(locations: [Location]) {
         let url = URL(string: server + "/buses")!
         text = "Loading bus data remotely..."
         URLSession.shared.dataTask(with: url) { data, response, error in
@@ -159,7 +162,6 @@ struct LoadPage: View {
                 buses = busRes.map({ $0.toBus(locations: locations )})
                 tasks[.buses] = true
                 text = "Bus data resolved."
-                //save(buses: buses)
             } catch let error {
                 print(error)
                 text = "Failed to resolve bus data."
@@ -186,7 +188,6 @@ struct LoadPage: View {
                 }
                 tasks[.routes] = true
                 text = "Route data resolved."
-                //save(routes: routesByBus + routesOnFoot)
             } catch let error {
                 print(error)
                 text = "Failed to resolve route data."
@@ -195,7 +196,7 @@ struct LoadPage: View {
     }
     
     // MARK: - core data
-    private func save(version: Version) {
+    private func saveVersion(_ version: Version) {
         if CDVersions.isEmpty {
             let newVersion = CDVersion(context: viewContext)
             newVersion.locations = version.locations
@@ -214,24 +215,19 @@ struct LoadPage: View {
         }
     }
     
-    private func save(location: Location) -> CDLocation {
-        let newLoc = CDLocation(context: viewContext)
-        newLoc.id = location.id
-        newLoc.nameEn = location.nameEn
-        newLoc.nameZh = location.nameZh
-        newLoc.latitude = location.latitude
-        newLoc.longitude = location.longitude
-        newLoc.altitude = location.altitude
-        newLoc.type = location.type.toInt()
-        return newLoc
-    }
-    
-    private func save(locations: [Location]) {
+    private func saveLocations(_ locations: [Location]) {
         for loc in CDLocations {
             viewContext.delete(loc)
         }
-        for loc in locations {
-            _ = save(location: loc)
+        for location in locations {
+            let newLoc = CDLocation(context: viewContext)
+            newLoc.id = location.id
+            newLoc.nameEn = location.nameEn
+            newLoc.nameZh = location.nameZh
+            newLoc.latitude = location.latitude
+            newLoc.longitude = location.longitude
+            newLoc.altitude = location.altitude
+            newLoc.type = location.type.toInt()
         }
         do {
             try viewContext.save()
@@ -240,27 +236,22 @@ struct LoadPage: View {
             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
         }
     }
+
     
-    private func save(bus: Bus) {
-        let newBus = CDBus(context: viewContext)
-        newBus.id = bus.id
-        newBus.line = bus.line
-        newBus.nameEn = bus.nameEn
-        newBus.nameZh = bus.nameZh
-        newBus.serviceHour = bus.serviceHour.toString()
-        newBus.serviceDay = bus.serviceDay.toInt()
-        newBus.departTime = bus.departTime
-        for stop in bus.stops {
-            newBus.stops.append(CDLocations.first(where: { $0.id == stop.id }) ?? save(location: stop))
-        }
-    }
-    
-    private func save(buses: [Bus]) {
+    private func saveBuses(_ buses: [Bus]) {
         for bus in CDBuses {
             viewContext.delete(bus)
         }
         for bus in buses {
-            save(bus: bus)
+            let newBus = CDBus(context: viewContext)
+            newBus.id = bus.id
+            newBus.line = bus.line
+            newBus.nameEn = bus.nameEn
+            newBus.nameZh = bus.nameZh
+            newBus.serviceHour = bus.serviceHour.toString()
+            newBus.serviceDay = bus.serviceDay.toInt()
+            newBus.departTime = bus.departTime
+            newBus.stops = bus.stops.map({ $0.id })
         }
         do {
             try viewContext.save()
@@ -269,38 +260,32 @@ struct LoadPage: View {
             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
         }
     }
-    
-    private func save(point: Coor3D) -> CDCoor3D {
-        let newPoint = CDCoor3D(context: viewContext)
-        newPoint.latitude = point.latitude
-        newPoint.longitude = point.longitude
-        newPoint.altitude = point.altitude
-        return newPoint
-    }
-    
-    private func save(route: Route) {
-        let newRoute = CDRoute(context: viewContext)
-        newRoute.id = route.id
-        newRoute.startLoc = CDLocations.first(where: { $0.id == route.startLoc.id }) ?? save(location: route.startLoc)
-        newRoute.endLoc = CDLocations.first(where: { $0.id == route.endLoc.id }) ?? save(location: route.endLoc)
-        for point in route.points {
-            newRoute.points.append(
-                CDPoints.first(where: { $0.latitude == point.latitude && $0.longitude == point.longitude && $0.altitude == point.altitude}) ?? save(point: point)
-            )
-        }
-        newRoute.dist = route.dist
-        newRoute.type = route.type.toInt()
-    }
-    
-    private func save(routes: [Route]) {
+
+    private func saveRoutes(_ routes: [Route]) {
         for route in routes {
-            save(route: route)
+            let newRoute = CDRoute(context: viewContext)
+            newRoute.id = route.id
+            newRoute.startLoc = route.startLoc.id
+            newRoute.endLoc = route.endLoc.id
+            newRoute.points = route.points.map({ CDCoor3D(point: $0) })
+            newRoute.dist = route.dist
+            newRoute.type = route.type.toInt()
         }
         do {
             try viewContext.save()
         } catch {
             let nsError = error as NSError
             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        }
+    }
+}
+
+
+struct LoadImage: View {
+    var body: some View {
+        HStack {
+            Text("C")
+            
         }
     }
 }

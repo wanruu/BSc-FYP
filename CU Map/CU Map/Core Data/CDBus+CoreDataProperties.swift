@@ -22,11 +22,22 @@ extension CDBus {
     @NSManaged public var nameZh: String
     @NSManaged public var serviceHour: String
     @NSManaged public var serviceDay: Int
-    @NSManaged public var stops: [CDLocation]
+    @NSManaged public var stops: [String]
     @NSManaged public var departTime: [Int]
     
-    func toBus() -> Bus {
-        Bus(id: id, line: line, nameEn: nameEn, nameZh: nameZh, serviceHour: serviceHour.toServiceHour(), serviceDay: serviceDay.toServiceDay(), departTime: departTime, stops: stops.map({ $0.toLocation() }))
+    func toBus(locations: [Location]) -> Bus {
+        Bus(id: id,
+            line: line,
+            nameEn: nameEn,
+            nameZh: nameZh,
+            serviceHour: serviceHour.toServiceHour(),
+            serviceDay: serviceDay.toServiceDay(),
+            departTime: departTime,
+            stops: stops.map({
+                let stopId = $0
+                return locations.first(where: { $0.id == stopId })!
+            })
+        )
     }
 }
 

@@ -17,14 +17,20 @@ extension CDRoute {
     }
 
     @NSManaged public var id: String
-    @NSManaged public var startLoc: CDLocation
-    @NSManaged public var endLoc: CDLocation
+    @NSManaged public var startLoc: String
+    @NSManaged public var endLoc: String
     @NSManaged public var points: [CDCoor3D]
     @NSManaged public var dist: Double
     @NSManaged public var type: Int
     
-    func toRoute() -> Route {
-        Route(id: id, startLoc: startLoc.toLocation(), endLoc: endLoc.toLocation(), points: points.map({$0.toCoor3D()}), dist: dist, type: type.toRouteType())
+    func toRoute(locations: [Location]) -> Route {
+        Route(id: id,
+              startLoc: locations.first(where: { $0.id == startLoc })!,
+              endLoc: locations.first(where: { $0.id == endLoc })!,
+              points: points.map({ $0.toCoor3D() }),
+              dist: dist,
+              type: type.toRouteType()
+        )
     }
 }
 

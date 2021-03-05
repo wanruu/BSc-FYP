@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20D74" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="CDBus" representedClassName="CDBus" syncable="YES">
-        <attribute name="departTime" optional="YES" attributeType="Transformable"/>
+        <attribute name="departTime" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData"/>
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="line" optional="YES" attributeType="String"/>
         <attribute name="nameEn" optional="YES" attributeType="String"/>
         <attribute name="nameZh" optional="YES" attributeType="String"/>
         <attribute name="serviceDay" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="serviceHour" optional="YES" attributeType="String"/>
-        <attribute name="stops" optional="YES" attributeType="Transformable"/>
-    </entity>
-    <entity name="CDCoor3D" representedClassName="CDCoor3D" syncable="YES">
-        <attribute name="altitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="stops" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData"/>
     </entity>
     <entity name="CDLocation" representedClassName="CDLocation" syncable="YES">
         <attribute name="altitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
@@ -26,11 +21,11 @@
     </entity>
     <entity name="CDRoute" representedClassName="CDRoute" syncable="YES">
         <attribute name="dist" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="endLoc" optional="YES" attributeType="String" customClassName="NSSecureUnarchiveFromData"/>
         <attribute name="id" optional="YES" attributeType="String"/>
-        <attribute name="points" optional="YES" attributeType="Transformable"/>
+        <attribute name="points" optional="YES" attributeType="Transformable" valueTransformerName="CDCoor3DValueTransformer"/>
+        <attribute name="startLoc" optional="YES" attributeType="String" valueTransformerName="" customClassName="NSSecureUnarchiveFromData"/>
         <attribute name="type" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <relationship name="endLoc" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDLocation"/>
-        <relationship name="startLoc" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDLocation"/>
     </entity>
     <entity name="CDVersion" representedClassName="CDVersion" syncable="YES" codeGenerationType="class">
         <attribute name="buses" optional="YES" attributeType="String"/>
@@ -42,7 +37,6 @@
     </entity>
     <elements>
         <element name="CDBus" positionX="-36" positionY="72" width="128" height="149"/>
-        <element name="CDCoor3D" positionX="0" positionY="135" width="128" height="14"/>
         <element name="CDLocation" positionX="-54" positionY="18" width="128" height="134"/>
         <element name="CDRoute" positionX="-18" positionY="117" width="128" height="119"/>
         <element name="CDVersion" positionX="-63" positionY="-9" width="128" height="74"/>

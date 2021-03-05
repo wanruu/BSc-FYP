@@ -22,11 +22,12 @@ struct Bus: Identifiable {
 struct ServiceHour {
     var startTime: Date
     var endTime: Date
+
     func toString() -> String {
         let formatter = DateFormatter()
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
         formatter.dateFormat = "HH:mm"
-        return formatter.string(from: startTime) + " - " + formatter.string(from: endTime)
+        return formatter.string(from: startTime) + "-" + formatter.string(from: endTime)
     }
 }
 

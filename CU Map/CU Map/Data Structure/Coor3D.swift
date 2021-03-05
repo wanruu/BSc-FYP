@@ -15,3 +15,4 @@ func distance (from: Coor3D, to: Coor3D) -> Double {
         (from.longitude - to.longitude) * LNG_SCALE * (from.longitude - to.longitude) * LNG_SCALE +
         (from.altitude - to.altitude) * (from.altitude - to.altitude), 0.5)
 }
+
