@@ -14,36 +14,30 @@ struct LoadPage: View {
     @Binding var routesOnFoot: [Route]
     @Binding var routesByBus: [Route]
     
-    @State var text = "Loading data..."
+    @State var text = "Start loading data..."
     @State var tasks: [Task: Bool] = [.versions: false, .locations: false, .routes: false, .buses: false]
     
     @Binding var pageType: PageType
-    
+
     var body: some View {
         VStack {
             LoadImage()
-            
-            ProgressView(value: Double(tasks.filter({$0.value}).count) / Double(tasks.count)) {
+            VStack(alignment: .leading, spacing: 10){
+                ProgressView(value: Double(tasks.filter({$0.value}).count) / Double(tasks.count))
+                    .progressViewStyle(LoadingProgressViewStyle())
+                    .animation(Animation.linear(duration: 2))
+
                 Text(text)
+                    .font(.footnote)
                     .italic()
-                    .font(.system(size: 15, weight: .regular, design: .rounded))
+                    .foregroundColor(.secondary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.3)
             }
-            .progressViewStyle(LoadingProgressViewStyle())
-            .padding()
+            .offset(y: UIScreen.main.bounds.height * 0.3)
         }
         .onAppear {
             loadData()
-        }
-        .onChange(of: tasks) { data in
-            if data.filter({ $0.value }).count == data.count {
-                saveVersion(version!)
-                saveLocations(locations)
-                saveBuses(buses)
-                saveRoutes(routesByBus + routesOnFoot)
-                pageType = .locPage
-            }
         }
     }
     
@@ -55,24 +49,41 @@ struct LoadPage: View {
     }
     
     private func loadData() {
-        getVersion()
-        // if locations changed, routes and buses must be loaded
-        if CDVersions.isEmpty || CDVersions[0].locations != version?.locations {
-            loadLocsRemotely()
-            loadRoutesRemotely()
-            loadBusesRemotely(locations: locations)
-        } else {
-            let lastVersion = CDVersions[0]
-            loadLocsLocally()
-            if lastVersion.routes == version?.routes {
-                loadRoutesLocally(locations: locations)
-            } else {
+        let queue = DispatchQueue(label: "loadHandler")
+        let group = DispatchGroup()
+        queue.async(group: group) {
+            getVersion()
+        }
+        queue.async(group: group) {
+            // if locations changed, routes and buses must be loaded
+            if CDVersions.isEmpty || CDVersions[0].locations != version?.locations {
+                loadLocsRemotely()
                 loadRoutesRemotely()
-            }
-            if lastVersion.buses == version?.buses {
-                loadBusesLocally(locations: locations)
-            } else {
                 loadBusesRemotely(locations: locations)
+            } else {
+                let lastVersion = CDVersions[0]
+                loadLocsLocally()
+                if lastVersion.routes == version?.routes {
+                    loadRoutesLocally(locations: locations)
+                } else {
+                    loadRoutesRemotely()
+                }
+                if lastVersion.buses == version?.buses {
+                    loadBusesLocally(locations: locations)
+                } else {
+                    loadBusesRemotely(locations: locations)
+                }
+            }
+            Thread.sleep(forTimeInterval: TimeInterval(2))
+        }
+        group.notify(queue: DispatchQueue.main) {
+            text = "Everything is prepared."
+            if tasks.filter({ $0.value }).count == tasks.count {
+                saveVersion(version!)
+                saveLocations(locations)
+                saveBuses(buses)
+                saveRoutes(routesByBus + routesOnFoot)
+                pageType = .locPage
             }
         }
     }
@@ -81,19 +92,16 @@ struct LoadPage: View {
         let sema = DispatchSemaphore(value: 0)
         let url = URL(string: server + "/versions")!
         text = "Loading version infomation remotely..."
+        // Thread.sleep(forTimeInterval: 10)
         URLSession.shared.dataTask(with: url) { data, response, error in
-            text = "Resolving version data..."
             guard let data = data else { return }
             do {
                 version = try JSONDecoder().decode(Version.self, from: data)
-                text = "Version data resolved."
-                tasks[.versions] = true
-                sema.signal()
             } catch let error {
                 print(error)
-                text = "Failed to resolve version data."
-                sema.signal()
             }
+            tasks[.versions] = true
+            sema.signal()
         }.resume()
         sema.wait()
     }
@@ -102,14 +110,12 @@ struct LoadPage: View {
         text = "Loading location data locally..."
         locations = CDLocations.map({ $0.toLocation() })
         tasks[.locations] = true
-        text = "Location data loaded."
     }
     
     private func loadBusesLocally(locations: [Location]) {
         text = "Loading bus data locally..."
         buses = CDBuses.map({ $0.toBus(locations: locations) })
         tasks[.buses] = true
-        text = "Buses data loaded."
     }
     
     private func loadRoutesLocally(locations: [Location]) {
@@ -122,9 +128,9 @@ struct LoadPage: View {
             case .byBus: routesByBus.append(route)
             case .onFoot: routesOnFoot.append(route)
             }
+            
         }
         tasks[.routes] = true
-        text = "Route data loaded."
     }
     
     // sync
@@ -133,19 +139,15 @@ struct LoadPage: View {
         let url = URL(string: server + "/locations")!
         text = "Loading location data remotely..."
         URLSession.shared.dataTask(with: url) { data, response, error in
-            text = "Resolving location data..."
             guard let data = data else { return }
             do {
                 let locRes = try JSONDecoder().decode([LocResponse].self, from: data)
                 locations = locRes.map({ $0.toLocation() })
                 tasks[.locations] = true
-                text = "Location data resolved."
-                sema.signal()
             } catch let error {
                 print(error)
-                text = "Failed to resolve location data."
-                sema.signal()
             }
+            sema.signal()
         }.resume()
         sema.wait()
     }
@@ -155,16 +157,13 @@ struct LoadPage: View {
         let url = URL(string: server + "/buses")!
         text = "Loading bus data remotely..."
         URLSession.shared.dataTask(with: url) { data, response, error in
-            text = "Resolving bus data..."
             guard let data = data else { return }
             do {
                 let busRes = try JSONDecoder().decode([BusResponse].self, from: data)
                 buses = busRes.map({ $0.toBus(locations: locations )})
                 tasks[.buses] = true
-                text = "Bus data resolved."
             } catch let error {
                 print(error)
-                text = "Failed to resolve bus data."
             }
         }.resume()
     }
@@ -174,7 +173,6 @@ struct LoadPage: View {
         let url = URL(string: server + "/routes")!
         text = "Loading route data remotely..."
         URLSession.shared.dataTask(with: url) { data, response, error in
-            text = "Resolving route data..."
             guard let data = data else { return }
             do {
                 let routeRes = try JSONDecoder().decode([RouteResponse].self, from: data)
@@ -187,10 +185,8 @@ struct LoadPage: View {
                     }
                 }
                 tasks[.routes] = true
-                text = "Route data resolved."
             } catch let error {
                 print(error)
-                text = "Failed to resolve route data."
             }
         }.resume()
     }
@@ -262,6 +258,9 @@ struct LoadPage: View {
     }
 
     private func saveRoutes(_ routes: [Route]) {
+        for route in CDRoutes {
+            viewContext.delete(route)
+        }
         for route in routes {
             let newRoute = CDRoute(context: viewContext)
             newRoute.id = route.id
@@ -282,10 +281,20 @@ struct LoadPage: View {
 
 
 struct LoadImage: View {
+    @State var opacity = 0.5
+    @State var scale: CGFloat = 1.5
+
     var body: some View {
         HStack {
-            Text("C")
-            
+            Text("CU Map")
+                .opacity(opacity)
+                .scaleEffect(scale)
+        }
+        .font(.system(size: 50, weight: .bold, design: .rounded))
+        .animation(Animation.easeIn(duration: 1))
+        .onAppear {
+            scale = 1.0
+            opacity = 1
         }
     }
 }
