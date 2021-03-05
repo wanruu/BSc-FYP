@@ -4,8 +4,8 @@ import CoreData
 struct LoadPage: View {
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(sortDescriptors: []) private var CDVersions: FetchedResults<CDVersion>
-    @FetchRequest(sortDescriptors: []) private var CDLocations: FetchedResults<CDLocation>
-    @FetchRequest(sortDescriptors: []) private var CDBuses: FetchedResults<CDBus>
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "nameEn", ascending: true)]) private var CDLocations: FetchedResults<CDLocation>
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "line", ascending: true)]) private var CDBuses: FetchedResults<CDBus>
     @FetchRequest(sortDescriptors: []) private var CDRoutes: FetchedResults<CDRoute>
     
     @State var version: Version? = nil
