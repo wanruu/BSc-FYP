@@ -33,3 +33,6 @@ let CENTER_REGION = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 
 
 let LAT_SCALE: Double = 111000
 let LNG_SCALE: Double = 85390
+
+let SPEED_ON_FOOT = 0.9
+let SPEED_BY_BUS = 3.0

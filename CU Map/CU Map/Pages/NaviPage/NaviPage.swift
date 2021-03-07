@@ -244,7 +244,7 @@ struct NaviPage: View {
                 continue
             }
             for route in routes {
-                if route.points.contains(newPoint) {
+                if route.type == .onFoot && route.points.contains(newPoint) {
                     count += 1
                     break
                 }
