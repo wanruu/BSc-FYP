@@ -15,6 +15,7 @@ struct NaviPage: View {
     @State var planType: PlanType = .byBus
     
     // result
+    @State var isRoutePlanning = false
     @State var plansByBus: [Plan] = []
     @State var plansOnFoot: [Plan] = []
     @State var selectedPlan: Plan? = nil
@@ -27,43 +28,56 @@ struct NaviPage: View {
     @State var offset = CGSize.zero
     
     var body: some View {
-        VStack(spacing: 0) {
-            
-            SearchAreaView(locations: locations, startLoc: $startLoc, endLoc: $endLoc, planType: $planType, minTimeByBus: $minTimeByBus, minTimeOnFoot: $minTimeOnFoot, showing: $showing)
-            
-            NaviMapView(startLoc: $startLoc, endLoc: $endLoc, selectedPlan: $selectedPlan)
-                //.ignoresSafeArea(.all)
-            
-            if planType == .byBus {
-                PlansByBusView(plansByBus: $plansByBus, selectedPlan: $selectedPlan)
-            } else {
-                PlansOnFootView(plansOnFoot: $plansOnFoot, selectedPlan: $selectedPlan)
-            }
+        ZStack {
+            VStack(spacing: 0) {
                 
-            /*PlansOnFootView(plansOnFoot: $plansOnFoot, selectedPlan: $selectedPlan)
-                .gesture(
-                    DragGesture()
-                        .onChanged { value in
-                            offset.width = lastOffset.width + value.location.x - value.startLocation.x
-                            offset.height = lastOffset.height + value.location.y - value.startLocation.y
-                        }
-                        .onEnded{ _ in
-                            lastOffset = offset
-                        }
-                )*/
-
+                SearchAreaView(locations: locations, startLoc: $startLoc, endLoc: $endLoc, planType: $planType, minTimeByBus: $minTimeByBus, minTimeOnFoot: $minTimeOnFoot, showing: $showing)
+                
+                NaviMapView(startLoc: $startLoc, endLoc: $endLoc, selectedPlan: $selectedPlan)
+                    //.ignoresSafeArea(.all)
+                
+                if planType == .byBus {
+                    PlansByBusView(plansByBus: $plansByBus, selectedPlan: $selectedPlan)
+                } else {
+                    PlansOnFootView(plansOnFoot: $plansOnFoot, selectedPlan: $selectedPlan)
+                }
+                    
+                /*PlansOnFootView(plansOnFoot: $plansOnFoot, selectedPlan: $selectedPlan)
+                    .gesture(
+                        DragGesture()
+                            .onChanged { value in
+                                offset.width = lastOffset.width + value.location.x - value.startLocation.x
+                                offset.height = lastOffset.height + value.location.y - value.startLocation.y
+                            }
+                            .onEnded{ _ in
+                                lastOffset = offset
+                            }
+                    )*/
+            }
+            isRoutePlanning ?
+            ProgressView("Processing", value: 0)
+                .progressViewStyle(CircularProgressViewStyle())
+                .frame(width: UIScreen.main.bounds.width * 0.7, height: UIScreen.main.bounds.width * 0.2)
+                .background(RoundedRectangle(cornerRadius: 10).fill(Color.white).shadow(radius: 5))
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.gray.opacity(0.2))
+                .ignoresSafeArea(.all) : nil
         }
         .navigationBarHidden(true)
         .onChange(of: startLoc) { _ in
             let queue = DispatchQueue(label: "route planning")
             queue.async {
+                isRoutePlanning = true
                 RP()
+                isRoutePlanning = false
             }
         }
         .onChange(of: endLoc) { _ in
             let queue = DispatchQueue(label: "route planning")
             queue.async {
+                isRoutePlanning = true
                 RP()
+                isRoutePlanning = false
             }
         }
     }
@@ -127,12 +141,14 @@ struct NaviPage: View {
         for bus in buses {
             isBusChecked[bus.id] = false
         }
-        checkRoutes(locations: newLocs, routesOnFoot: newRoutesOnFoot, curEndLoc: startLoc!, curRoutes: [], curWalkDist: 0, isBusChecked: isBusChecked, maxWalkDist: 1000)
+        checkRoutes(locations: newLocs, routesOnFoot: newRoutesOnFoot, curEndLoc: startLoc!, curRoutes: [], curWalkDist: 0, isBusChecked: isBusChecked, maxWalkDist: 500)
     }
     
     // DFS recursion for find plan by bus
     private func checkRoutes(locations: [Location], routesOnFoot: [Route], curEndLoc: Location, curRoutes: [Route], curWalkDist: Double, isBusChecked: [String: Bool], maxWalkDist: Double) {
-        if isBusChecked.filter({ $0.value }).count > 2 || curWalkDist > maxWalkDist {
+        
+        let busCount = isBusChecked.filter({ $0.value }).count
+        if busCount > 2 || (busCount != 0 && curWalkDist > maxWalkDist) {
             return
         }
         
