@@ -56,6 +56,7 @@ struct LoadPage: View {
             // tasks[.versions] = true
         }
         queue.async(group: group) {
+            Thread.sleep(forTimeInterval: TimeInterval(0.1))
             // if locations changed, routes and buses must be loaded
             if CDVersions.isEmpty || CDVersions[0].locations != version?.locations {
                 loadLocsRemotely()
@@ -75,7 +76,7 @@ struct LoadPage: View {
                     loadBusesRemotely(locations: locations)
                 }
             }
-            Thread.sleep(forTimeInterval: TimeInterval(1.5))
+            Thread.sleep(forTimeInterval: TimeInterval(1))
         }
         group.notify(queue: DispatchQueue.main) {
             text = "Everything is prepared."
@@ -89,11 +90,11 @@ struct LoadPage: View {
         }
     }
     
+    // MARK: - loading data
     private func getVersion() {
         let sema = DispatchSemaphore(value: 0)
         let url = URL(string: server + "/versions")!
         text = "Loading version infomation remotely..."
-        // Thread.sleep(forTimeInterval: 10)
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data else { return }
             do {
@@ -129,7 +130,6 @@ struct LoadPage: View {
             case .byBus: routesByBus.append(route)
             case .onFoot: routesOnFoot.append(route)
             }
-            
         }
         tasks[.routes] = true
     }
@@ -153,8 +153,9 @@ struct LoadPage: View {
         sema.wait()
     }
     
-    // async
+    // sync
     private func loadBusesRemotely(locations: [Location]) {
+        let sema = DispatchSemaphore(value: 0)
         let url = URL(string: server + "/buses")!
         text = "Loading bus data remotely..."
         URLSession.shared.dataTask(with: url) { data, response, error in
@@ -166,11 +167,14 @@ struct LoadPage: View {
             } catch let error {
                 print(error)
             }
+            sema.signal()
         }.resume()
+        sema.wait()
     }
     
-    // async
+    // sync
     private func loadRoutesRemotely() {
+        let sema = DispatchSemaphore(value: 0)
         let url = URL(string: server + "/routes")!
         text = "Loading route data remotely..."
         URLSession.shared.dataTask(with: url) { data, response, error in
@@ -189,7 +193,9 @@ struct LoadPage: View {
             } catch let error {
                 print(error)
             }
+            sema.signal()
         }.resume()
+        sema.wait()
     }
     
     // MARK: - core data
