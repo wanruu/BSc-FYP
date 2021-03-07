@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct LocPage: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     // input data
     @State var locations: [Location]
     @State var buses: [Bus]
@@ -29,7 +31,7 @@ struct LocPage: View {
                 }
                 .padding()
                 .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.secondary, lineWidth: 1))
-                .background(Color.white)
+                .background(colorScheme == .light ? Color.white : Color.black)
                 .cornerRadius(16)
                 .clipped()
                 .shadow(radius: 5)

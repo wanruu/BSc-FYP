@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SearchAreaView: View {
+    @Environment(\.colorScheme) var colorScheme
     // input data
     @State var locations: [Location]
     
@@ -88,7 +89,7 @@ struct SearchAreaView: View {
                 .padding()
             }
         }
-        .background(Color.white)
+        .background(colorScheme == .light ? Color.white : Color.black)
     }
     
     struct PlanTypeSelectorView: View {

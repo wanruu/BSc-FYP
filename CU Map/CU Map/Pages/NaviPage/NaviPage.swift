@@ -2,6 +2,7 @@ import SwiftUI
 
 struct NaviPage: View {
     @EnvironmentObject var locationModel: LocationModel
+    @Environment(\.colorScheme) var colorScheme
     
     // input data
     @State var locations: [Location]
@@ -58,7 +59,10 @@ struct NaviPage: View {
             ProgressView("Processing", value: 0)
                 .progressViewStyle(CircularProgressViewStyle())
                 .frame(width: UIScreen.main.bounds.width * 0.7, height: UIScreen.main.bounds.width * 0.2)
-                .background(RoundedRectangle(cornerRadius: 10).fill(Color.white).shadow(radius: 5))
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(colorScheme == .light ? Color.white : Color.black).shadow(radius: 5)
+                )
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color.gray.opacity(0.2))
                 .ignoresSafeArea(.all) : nil
