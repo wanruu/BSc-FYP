@@ -12,7 +12,7 @@ struct NaviPage: View {
     // user selected
     @State var startLoc: Location? = nil
     @State var endLoc: Location? = nil
-    @State var planType = PlanType.byBus
+    @State var planType: PlanType = .byBus
     
     // result
     @State var plansByBus: [Plan] = []
@@ -34,7 +34,11 @@ struct NaviPage: View {
             NaviMapView(startLoc: $startLoc, endLoc: $endLoc, selectedPlan: $selectedPlan)
                 //.ignoresSafeArea(.all)
             
-            PlansByBusView(plansByBus: $plansByBus, selectedPlan: $selectedPlan)
+            if planType == .byBus {
+                PlansByBusView(plansByBus: $plansByBus, selectedPlan: $selectedPlan)
+            } else {
+                PlansOnFootView(plansOnFoot: $plansOnFoot, selectedPlan: $selectedPlan)
+            }
                 
             /*PlansOnFootView(plansOnFoot: $plansOnFoot, selectedPlan: $selectedPlan)
                 .gesture(
@@ -51,10 +55,16 @@ struct NaviPage: View {
         }
         .navigationBarHidden(true)
         .onChange(of: startLoc) { _ in
-            RP()
+            let queue = DispatchQueue(label: "route planning")
+            queue.async {
+                RP()
+            }
         }
         .onChange(of: endLoc) { _ in
-            RP()
+            let queue = DispatchQueue(label: "route planning")
+            queue.async {
+                RP()
+            }
         }
     }
     
@@ -68,7 +78,6 @@ struct NaviPage: View {
         if startLoc == nil || endLoc == nil {
             return
         }
-        // guard var startLoc = startLoc, var endLoc = endLoc else { return }
         
         // Step 3: Consider current location and generate new data for processing
         var newLocs = locations
@@ -114,87 +123,95 @@ struct NaviPage: View {
         }
         
         // Step 4: Searching for route plans
-        
-        // on foot
-        checkRoutesOnFoot(locations: newLocs, routes: routesOnFoot, curStartLoc: nil, curEndLoc: nil, curRoutes: [])
-        plansOnFoot.sort(by: { $0.dist < $1.dist})
-        if planType == .onFoot {
-            selectedPlan = plansOnFoot.first
+        var isBusChecked: [String: Bool] = [:]
+        for bus in buses {
+            isBusChecked[bus.id] = false
         }
-        
-        // by bus
-        // find nearest bus stop
-        let startStops = startLoc!.type == .busStop ? [startLoc!] : findBusStops(cur: startLoc!, stops: locations.filter({ $0.type == .busStop }), maxDist: 400)
-        let endStops = endLoc!.type == .busStop ? [endLoc!] : findBusStops(cur: endLoc!, stops: locations.filter({ $0.type == .busStop }), maxDist: 400)
-        
-        var routesList: [[RouteByBus]] = []
-        for startStop in startStops {
-            for endStop in endStops {
-                routesList += findRoutes(startStop: startStop, endStop: endStop, buses: buses)
-            }
-        }
-        
-        // deduplicate
-        var removedIndexes: [Int] = []
-        for i in 0..<routesList.count {
-            if i != routesList.lastIndex(where: { routes -> Bool in
-                routes.map({ $0.bus.line }) == routesList[i].map({ $0.bus.line })
-            }) {
-                removedIndexes.append(i)
-            }
-        }
-        routesList.remove(atOffsets: IndexSet(removedIndexes))
-        
-        for routes in routesList {
-            var routes = routes
-            for i in 0..<routes.count {
-                let tmp = routesByBus.first(where: { $0.startLoc == routes[i].startLoc && $0.endLoc == routes[i].endLoc })
-                routes[i].points = tmp?.points ?? []
-                routes[i].dist = tmp?.dist ?? -1
-            }
-            var dist = 0.0
-            for route in routes {
-                dist += route.dist
-            }
-            plansByBus.append(Plan(startLoc: startLoc, endLoc: endLoc, routes: routes, dist: dist, time: 0, ascent: 0, type: .byBus))
-            print(routes.map({ $0.bus.line }))
-        }
+        checkRoutes(locations: newLocs, routesOnFoot: newRoutesOnFoot, curEndLoc: startLoc!, curRoutes: [], curWalkDist: 0, isBusChecked: isBusChecked, maxWalkDist: 1000)
     }
     
-    // DFS recursion for find plan on foot
-    // routes: routesOnFoot
-    private func checkRoutesOnFoot(locations: [Location], routes: [Route], curStartLoc: Location?, curEndLoc: Location?, curRoutes: [Route]) {
-        if curStartLoc == nil && curEndLoc == nil { // find first routes
-            for route in routes {
-                if route.startLoc == self.startLoc {
-                    checkRoutesOnFoot(locations: locations, routes: routes, curStartLoc: route.startLoc, curEndLoc: route.endLoc, curRoutes: [route])
+    // DFS recursion for find plan by bus
+    private func checkRoutes(locations: [Location], routesOnFoot: [Route], curEndLoc: Location, curRoutes: [Route], curWalkDist: Double, isBusChecked: [String: Bool], maxWalkDist: Double) {
+        if isBusChecked.filter({ $0.value }).count > 2 || curWalkDist > maxWalkDist {
+            return
+        }
+        
+        // 1. Found way to endLoc
+        if curEndLoc == endLoc {
+            var dist: Double = 0
+            var type: PlanType = .onFoot
+            for route in curRoutes {
+                dist += route.dist
+                if route.type == .byBus {
+                    type = .byBus
                 }
-                if route.endLoc == self.startLoc {
-                    let newRoute = Route(id: UUID().uuidString, startLoc: route.endLoc, endLoc: route.startLoc, points: route.points.reversed(), dist: route.dist, type: route.type)
-                    checkRoutesOnFoot(locations: locations, routes: routes, curStartLoc: route.endLoc, curEndLoc: route.startLoc, curRoutes: [newRoute])
-                }
+            }
+            // TODO: calculate time & ascent
+            
+            let plan = Plan(startLoc: startLoc, endLoc: curEndLoc, routes: curRoutes, dist: dist, time: 0, ascent: 0, type: type)
+            if type == .onFoot {
+                plansOnFoot.append(plan)
+                plansOnFoot.sort(by: { $0.dist < $1.dist})
+            } else if type == .byBus {
+                plansByBus.append(plan)
+                plansByBus.sort(by: { $0.dist < $1.dist })
             }
             return
         }
-        if curEndLoc == self.endLoc { // return result
-            var dist: Double = 0
-            for route in curRoutes {
-                dist += route.dist
+        
+        // 2. check next possible route
+        // check bus
+        for bus in buses { // for each bus
+            
+            // whether this bus is checked or not
+            if isBusChecked[bus.id] == true {
+                continue
             }
-            // TODO: calculate
-            let plan = Plan(startLoc: curStartLoc, endLoc: curEndLoc, routes: curRoutes, dist: dist, time: 0, ascent: 0, type: .onFoot)
-            plansOnFoot.append(plan)
-        } else {
-            for route in routes {
-                if route.startLoc == curEndLoc && !isBack(routes: curRoutes, newRoute: route) {
-                    checkRoutesOnFoot(locations: locations, routes: routes, curStartLoc: curStartLoc, curEndLoc: route.endLoc, curRoutes: curRoutes + [route])
+            var isBusChecked = isBusChecked
+            isBusChecked[bus.id] = true
+            
+            // find indexes of cur end location in its stop
+            var indexes: [Int] = []
+            for i in 0..<bus.stops.count {
+                if bus.stops[i] == curEndLoc {
+                    indexes.append(i)
                 }
+            }
+            
+            // consider stops between each two indexes
+            if !indexes.isEmpty {
+                indexes.append(bus.stops.count) // append end index of bus stops
                 
-                if route.endLoc == curEndLoc {
-                    let newRoute = Route(id: UUID().uuidString, startLoc: route.endLoc, endLoc: route.startLoc, points: route.points.reversed(), dist: route.dist, type: route.type)
-                    if !isBack(routes: curRoutes, newRoute: newRoute) {
-                        checkRoutesOnFoot(locations: locations, routes: routes, curStartLoc: curStartLoc, curEndLoc: route.startLoc, curRoutes: curRoutes + [newRoute])
+                for i in 0..<indexes.count-1 {
+                    let thisIndex = indexes[i] // startStop
+                    let nextIndex = indexes[i+1] // max index of EndStop - 1
+                    var newRoutes: [Route] = []
+                    
+                    for j in thisIndex+1..<nextIndex { // for each stop between two indexes, append routes
+                        if var route = routesByBus.first(where: { $0.startLoc == bus.stops[j-1] && $0.endLoc == bus.stops[j] }) {
+                            route.id = UUID().uuidString
+                            route.bus = bus
+                            route.type = .byBus
+                            newRoutes.append(route)
+                        }
+                        
+                        if !isBack(routes: curRoutes, loc: bus.stops[j]) {
+                            checkRoutes(locations: locations, routesOnFoot: routesOnFoot, curEndLoc: bus.stops[j], curRoutes: curRoutes + newRoutes, curWalkDist: curWalkDist, isBusChecked: isBusChecked, maxWalkDist: maxWalkDist)
+                        }
                     }
+                    
+                }
+            }
+        }
+        
+        // check route on foot
+        for route in routesOnFoot {
+            if route.startLoc == curEndLoc && !isBack(routes: curRoutes, newRoute: route) {
+                checkRoutes(locations: locations, routesOnFoot: routesOnFoot, curEndLoc: route.endLoc, curRoutes: curRoutes + [route], curWalkDist: curWalkDist + route.dist, isBusChecked: isBusChecked, maxWalkDist: maxWalkDist)
+            } else if route.endLoc == curEndLoc {
+                let newRoute = Route(id: UUID().uuidString, startLoc: route.endLoc, endLoc: route.startLoc, points: route.points.reversed(), dist: route.dist, type: route.type)
+                if !isBack(routes: curRoutes, newRoute: newRoute) {
+                    checkRoutes(locations: locations, routesOnFoot: routesOnFoot, curEndLoc: route.startLoc, curRoutes: curRoutes + [newRoute], curWalkDist: curWalkDist + route.dist, isBusChecked: isBusChecked, maxWalkDist: maxWalkDist)
                 }
             }
         }
@@ -219,90 +236,14 @@ struct NaviPage: View {
         return false
     }
     
-    
-    private func findBusStops(cur: Location, stops: [Location], maxDist: Double) -> [Location] {
-        var result: [Location] = []
-        for stop in stops {
-            let dist = distance(from: cur, to: stop)
-            if dist < maxDist {
-                result.append(stop)
+    private func isBack(routes: [Route], loc: Location) -> Bool {
+        for route in routes {
+            if route.startLoc == loc {
+                return true
             }
         }
-        return result
+        return false
     }
-    
-    private func findDirectRoutes(startStop: Location, endStop: Location, bus: Bus) -> [RouteByBus] {
-        for bus in buses {
-            let startIndex1 = bus.stops.firstIndex(of: startStop) ?? -1
-            let startIndex2 = bus.stops.lastIndex(of: startStop) ?? -1
-            let endIndex1 = bus.stops.firstIndex(of: endStop) ?? -1
-            let endIndex2 = bus.stops.lastIndex(of: endStop) ?? -1
-            
-            var startIndex = startIndex1
-            var endIndex = endIndex1
 
-            if startIndex1 == startIndex2 {
-                if endIndex1 != endIndex2 && startIndex > endIndex1 {
-                    endIndex = endIndex2
-                }
-            } else {
-                if endIndex1 == endIndex2 {
-                    if startIndex2 < endIndex {
-                        startIndex = startIndex2
-                    }
-                } else {
-                    if startIndex1 > endIndex1 && startIndex2 < endIndex2 {
-                        startIndex = startIndex2
-                        endIndex = endIndex2
-                    }
-                }
-            }
-            
-            if startIndex < endIndex && startIndex != -1 && endIndex != -1 {
-                var newRoutes: [RouteByBus] = []
-                for i in startIndex..<endIndex {
-                    newRoutes.append(RouteByBus(bus: bus, startLoc: bus.stops[i], endLoc: bus.stops[i+1], points: [], dist: 0))
-                }
-                return newRoutes
-            }
-        }
-        return []
-    }
-    
-    // transfer at most 2 time
-    private func findRoutes(startStop: Location, endStop: Location, buses: [Bus]) -> [[RouteByBus]] {
-        var result: [[RouteByBus]] = []
-        for firstBus in buses { // consider first bus
-            if !firstBus.stops.contains(startStop) {
-                continue
-            }
-            // find direct routes
-            var routes = findDirectRoutes(startStop: startStop, endStop: endStop, bus: firstBus)
-            if routes.isEmpty { // no direct routes
-                let index1 = firstBus.stops.firstIndex(of: startStop) ?? -1
-                let index2 = firstBus.stops.lastIndex(of: startStop) ?? -1
-                print(index1, index2)
-                // for each stops succeed startStop in first bus (also need differ from startStop
-                for i in index1+1..<firstBus.stops.count {
-                    if i == index2 {
-                        continue
-                    }
-                    routes.append(RouteByBus(bus: firstBus, startLoc: firstBus.stops[i-1], endLoc: firstBus.stops[i], points: [], dist: 0))
-                    for secondBus in buses {
-                        if secondBus.line != firstBus.line {
-                            let secondRoutes = findDirectRoutes(startStop: firstBus.stops[i], endStop: endStop, bus: secondBus)
-                            if !secondRoutes.isEmpty {
-                                result.append(routes + secondRoutes)
-                            }
-                        }
-                    }
-                }
-                
-            } else {
-                result.append(routes)
-            }
-        }
-        return result
-    }
 }
 

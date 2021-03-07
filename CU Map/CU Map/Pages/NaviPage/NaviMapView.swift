@@ -46,28 +46,14 @@ struct NaviMapView: UIViewRepresentable {
             var busPolylines: [MKPolyline] = []
             var walkPolylines: [MKPolyline] = []
             for route in selectedPlan!.routes {
-                if route is Route {
-                    let route = route as! Route
-                    var points: [CLLocationCoordinate2D] = []
-                    for point in route.points {
-                        points.append(CLLocationCoordinate2D(latitude: point.latitude, longitude: point.longitude))
-                    }
-                    if route.type == .onFoot { // walk
-                        walkPolylines.append(MKPolyline(coordinates: points, count: points.count))
-                    } else if route.type == .byBus { // bus
-                        busPolylines.append(MKPolyline(coordinates: points, count: points.count))
-                    }
-                } else if route is RouteByBus {
-                    let route = route as! RouteByBus
-                    var points: [CLLocationCoordinate2D] = []
-                    for point in route.points {
-                        points.append(CLLocationCoordinate2D(latitude: point.latitude, longitude: point.longitude))
-                    }
-                    if route.type == .onFoot { // walk
-                        walkPolylines.append(MKPolyline(coordinates: points, count: points.count))
-                    } else if route.type == .byBus { // bus
-                        busPolylines.append(MKPolyline(coordinates: points, count: points.count))
-                    }
+                var points: [CLLocationCoordinate2D] = []
+                for point in route.points {
+                    points.append(CLLocationCoordinate2D(latitude: point.latitude, longitude: point.longitude))
+                }
+                if route.type == .onFoot { // walk
+                    walkPolylines.append(MKPolyline(coordinates: points, count: points.count))
+                } else if route.type == .byBus { // bus
+                    busPolylines.append(MKPolyline(coordinates: points, count: points.count))
                 }
             }
             lineColor = CU_PURPLE

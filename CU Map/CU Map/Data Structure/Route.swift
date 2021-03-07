@@ -7,6 +7,7 @@ struct Route: Identifiable, Equatable {
     var points: [Coor3D]
     var dist: Double
     var type: RouteType
+    var bus: Bus? = nil
     
     func toRouteResponse() -> RouteResponse {
         RouteResponse(_id: id, startLoc: startLoc.toLocResponse(), endLoc: endLoc.toLocResponse(), points: points, dist: dist, type: self.type.toInt())
@@ -14,16 +15,6 @@ struct Route: Identifiable, Equatable {
     static func == (route1: Route, route2: Route) -> Bool {
         return route1.id == route2.id
     }
-}
-
-struct RouteByBus {
-    var id = UUID()
-    var bus: Bus
-    var startLoc: Location
-    var endLoc: Location
-    var points: [Coor3D]
-    var dist: Double
-    var type = RouteType.byBus
 }
 
 enum RouteType {

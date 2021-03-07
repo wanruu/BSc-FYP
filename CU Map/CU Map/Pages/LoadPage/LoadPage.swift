@@ -53,6 +53,7 @@ struct LoadPage: View {
         let group = DispatchGroup()
         queue.async(group: group) {
             getVersion()
+            // tasks[.versions] = true
         }
         queue.async(group: group) {
             // if locations changed, routes and buses must be loaded
@@ -74,12 +75,12 @@ struct LoadPage: View {
                     loadBusesRemotely(locations: locations)
                 }
             }
-            Thread.sleep(forTimeInterval: TimeInterval(2))
+            Thread.sleep(forTimeInterval: TimeInterval(1.5))
         }
         group.notify(queue: DispatchQueue.main) {
             text = "Everything is prepared."
             if tasks.filter({ $0.value }).count == tasks.count {
-                saveVersion(version!)
+                saveVersion(version ?? Version(locations: "", buses: "", routes: ""))
                 saveLocations(locations)
                 saveBuses(buses)
                 saveRoutes(routesByBus + routesOnFoot)
