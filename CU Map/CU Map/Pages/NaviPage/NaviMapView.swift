@@ -29,7 +29,6 @@ struct NaviMapView: UIViewRepresentable {
         if let endLoc = endLoc {
             endAnt.title = endLoc.nameEn
             endAnt.coordinate = CLLocationCoordinate2D(latitude: endLoc.latitude, longitude: endLoc.longitude)
-            mapView.setRegion(MKCoordinateRegion(center: endAnt.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)), animated: true)
         }
         
         // update plan annotation
