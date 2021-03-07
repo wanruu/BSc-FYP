@@ -80,29 +80,34 @@ struct PlansByBusView: View {
                 }) {
                     HStack {
                         ForEach(routes) { route in
-                            if let bus = route.bus { // by bus
-                                HStack(alignment: .bottom, spacing: 0) {
-                                    Image(systemName: "bus.fill")
-                                        .foregroundColor(Color.white)
-                                        .padding(4)
-                                        .background(CU_PURPLE)
-                                        .clipShape(Circle())
+                            HStack(alignment: .bottom, spacing: 0) {
+                                if let bus = route.bus { // by bus
                                     Text(bus.line)
-                                        .font(.footnote)
-                                        .foregroundColor(Color.secondary)
-                                }
-                            } else {
-                                HStack(alignment: .bottom, spacing: 0) {
+                                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.2)
+                                        .frame(width: 18)
+                                        .foregroundColor(Color.white)
+                                        .padding(6)
+                                        .background(BUS_COLORS[bus.line])
+                                        .clipShape(Circle())
+                                } else {
                                     Image(systemName: "figure.walk")
                                         .foregroundColor(Color.primary.opacity(0.8))
-                                    Text(String(route.time))
-                                        .font(.footnote)
-                                        .foregroundColor(Color.secondary)
                                 }
+                                Text(String(route.time))
+                                    .font(.footnote)
+                                    .foregroundColor(Color.secondary)
+                            }
+                            if route.id != routes.last?.id {
+                                Image(systemName: "chevron.right")
                             }
                         }
                         Spacer()
-                        Text("\(Int(plan.time)) mins >")
+                        HStack {
+                            Text("\(Int(plan.time)) mins")
+                            Image(systemName: "chevron.right")
+                        }
                     }
                 }
         }
