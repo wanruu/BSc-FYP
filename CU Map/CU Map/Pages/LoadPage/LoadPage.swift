@@ -52,8 +52,8 @@ struct LoadPage: View {
         let queue = DispatchQueue(label: "loadHandler")
         let group = DispatchGroup()
         queue.async(group: group) {
-            getVersion()
-            // tasks[.versions] = true
+            // getVersion()
+            tasks[.versions] = true
         }
         queue.async(group: group) {
             Thread.sleep(forTimeInterval: TimeInterval(0.1))

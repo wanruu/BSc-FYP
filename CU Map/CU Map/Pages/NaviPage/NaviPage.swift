@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct NaviPage: View {
-    @EnvironmentObject var locationModel: LocationModel
+    // @EnvironmentObject var locationModel: LocationModel
     @Environment(\.colorScheme) var colorScheme
     
     // input data
@@ -102,11 +102,11 @@ struct NaviPage: View {
         var newRoutesOnFoot: [Route] = []
         
         if startLoc!.type == .user || endLoc!.type == .user {
-            let curLoc = Location(id: UUID().uuidString, nameEn: "Your Location", nameZh: "你的位置", latitude: locationModel.current.latitude, longitude: locationModel.current.longitude, altitude: locationModel.current.altitude, type: .user)
+            let curLoc: Location
             if startLoc!.type == .user {
-                startLoc = curLoc
+                curLoc = startLoc!
             } else {
-                endLoc = curLoc
+                curLoc = endLoc!
             }
             newLocs.append(curLoc)
             

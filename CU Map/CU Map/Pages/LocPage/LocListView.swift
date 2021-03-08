@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct LocListView: View {
+    @EnvironmentObject var locationModel: LocationModel
+    
     // search box
     @State var placeholder: String
     @State var keyword: String
@@ -37,7 +39,7 @@ struct LocListView: View {
                 VStack(spacing: 0) {
                     // current location
                     if showCurrent {
-                        LocListItemView(loc: Location(id: UUID().uuidString, nameEn: "Your Location", nameZh: "你的位置", latitude: -1, longitude: -1, altitude: -1, type: LocationType.user), imageColor: .accentColor, selectedLoc: $selectedLoc, showing: $showing)
+                        LocListItemView(loc: Location(id: UUID().uuidString, nameEn: "Your Location", nameZh: "你的位置", latitude: locationModel.current.latitude, longitude: locationModel.current.longitude, altitude: locationModel.current.altitude, type: LocationType.user), imageColor: .accentColor, selectedLoc: $selectedLoc, showing: $showing)
                     }
                     
                     // other locations
