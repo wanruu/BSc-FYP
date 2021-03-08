@@ -234,7 +234,7 @@ struct LocResponse: Codable {
     var type: Int
     
     func toLocation() -> Location {
-        return Location(id: _id, nameEn: name_en, nameZh: name_zh, latitude: latitude, longitude: longitude, altitude: longitude, type: type.toLocationType())
+        return Location(id: _id, nameEn: name_en, nameZh: name_zh, latitude: latitude, longitude: longitude, altitude: altitude, type: type.toLocationType())
     }
 }
 
