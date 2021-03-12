@@ -24,37 +24,22 @@ struct NaviPage: View {
     @State var minTimeOnFoot: Double = .infinity
 
     @Binding var showing: Bool
-
-    @State var lastOffset = CGSize.zero
-    @State var offset = CGSize.zero
+    @State var showPlans: Bool = false
     
     var body: some View {
         ZStack {
-            VStack(spacing: 0) {
-                
+            NaviMapView(startLoc: $startLoc, endLoc: $endLoc, selectedPlan: $selectedPlan)
+                .ignoresSafeArea(.all)
+            TopBottomView(showBottom: $showPlans, top: {
                 SearchAreaView(locations: locations, startLoc: $startLoc, endLoc: $endLoc, planType: $planType, minTimeByBus: $minTimeByBus, minTimeOnFoot: $minTimeOnFoot, showing: $showing)
-                
-                NaviMapView(startLoc: $startLoc, endLoc: $endLoc, selectedPlan: $selectedPlan)
-                    //.ignoresSafeArea(.all)
-                
+            }, bottom: {
                 if planType == .byBus {
                     PlansByBusView(plansByBus: $plansByBus, selectedPlan: $selectedPlan)
                 } else {
                     PlansOnFootView(plansOnFoot: $plansOnFoot, selectedPlan: $selectedPlan)
                 }
-                    
-                /*PlansOnFootView(plansOnFoot: $plansOnFoot, selectedPlan: $selectedPlan)
-                    .gesture(
-                        DragGesture()
-                            .onChanged { value in
-                                offset.width = lastOffset.width + value.location.x - value.startLocation.x
-                                offset.height = lastOffset.height + value.location.y - value.startLocation.y
-                            }
-                            .onEnded{ _ in
-                                lastOffset = offset
-                            }
-                    )*/
-            }
+            })
+            
             isRoutePlanning ?
             ProgressView("Processing", value: 0)
                 .progressViewStyle(CircularProgressViewStyle())
@@ -88,9 +73,11 @@ struct NaviPage: View {
     
     private func RP() {
         // Step 1: Clear result
+        showPlans = false
         plansOnFoot.removeAll()
         plansByBus.removeAll()
         selectedPlan = nil
+        buses = []
         
         // Step 2: Deal with nil input
         if startLoc == nil || endLoc == nil {
@@ -146,6 +133,8 @@ struct NaviPage: View {
             isBusChecked[bus.id] = false
         }
         checkRoutes(locations: newLocs, routesOnFoot: newRoutesOnFoot, curEndLoc: startLoc!, curRoutes: [], curWalkDist: 0, isBusChecked: isBusChecked, maxWalkDist: 500)
+        
+        showPlans = true
     }
     
     // DFS recursion for find plan by bus
