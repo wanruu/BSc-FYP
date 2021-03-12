@@ -2,8 +2,7 @@ import Foundation
 import SwiftUI
 import MapKit
 
-let BUS_COLORS: [String?: Color] = [
-    nil: Color.black,
+let BUS_COLORS: [String: Color] = [
     "1A": Color(red: 227/255, green: 222/255, blue: 0),
     "1B": Color(red: 227/255, green: 222/255, blue: 0),
     "2": Color(red: 255/255, green: 102/255, blue: 204/255),
