@@ -25,8 +25,7 @@ struct LoadPage: View {
             VStack(alignment: .leading, spacing: 10){
                 ProgressView(value: Double(tasks.filter({$0.value}).count) / Double(tasks.count))
                     .progressViewStyle(LoadingProgressViewStyle())
-                    .animation(Animation.linear(duration: 2))
-
+                    .animation(Animation.linear(duration: 1))
                 Text(text)
                     .font(.footnote)
                     .italic()
@@ -53,7 +52,6 @@ struct LoadPage: View {
         let group = DispatchGroup()
         queue.async(group: group) {
             getVersion()
-            Thread.sleep(forTimeInterval: TimeInterval(0.1))
             // if locations changed, routes and buses must be loaded
             if CDVersions.isEmpty || CDVersions[0].locations != version?.locations {
                 loadLocsRemotely()
@@ -89,6 +87,7 @@ struct LoadPage: View {
     
     // MARK: - loading data
     private func getVersion() {
+        tasks[.versions] = true
         let sema = DispatchSemaphore(value: 0)
         let url = URL(string: server + "/versions")!
         text = "Loading version infomation remotely..."
@@ -100,25 +99,25 @@ struct LoadPage: View {
                     print(error)
                 }
             }
-            tasks[.versions] = true
             sema.signal()
         }.resume()
         sema.wait()
     }
     
     private func loadLocsLocally() {
+        tasks[.locations] = true
         text = "Loading location data locally..."
         locations = CDLocations.map({ $0.toLocation() })
-        tasks[.locations] = true
     }
     
     private func loadBusesLocally(locations: [Location]) {
+        tasks[.buses] = true
         text = "Loading bus data locally..."
         buses = CDBuses.map({ $0.toBus(locations: locations) })
-        tasks[.buses] = true
     }
     
     private func loadRoutesLocally(locations: [Location]) {
+        tasks[.routes] = true
         text = "Loading route data locally..."
         routesByBus.removeAll()
         routesOnFoot.removeAll()
@@ -129,7 +128,6 @@ struct LoadPage: View {
             case .onFoot: routesOnFoot.append(route)
             }
         }
-        tasks[.routes] = true
     }
     
     // sync
