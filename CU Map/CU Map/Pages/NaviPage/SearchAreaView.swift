@@ -69,7 +69,7 @@ struct SearchAreaView: View {
                 Image(systemName: "arrow.2.squarepath")
                     .imageScale(.large)
                     .rotationEffect(.degrees(angle))
-                    .animation(Animation.easeInOut(duration: 0.1))
+                    .animation(Animation.easeInOut(duration: 0.1), value: angle)
                     .onTapGesture {
                         angle += 180
                         let tmp = startLoc
