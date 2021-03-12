@@ -69,6 +69,14 @@ struct NaviPage: View {
                 isRoutePlanning = false
             }
         }
+        .onAppear {
+            let queue = DispatchQueue(label: "route planning")
+            queue.async {
+                isRoutePlanning = true
+                RP()
+                isRoutePlanning = false
+            }
+        }
     }
     
     private func RP() {
@@ -77,7 +85,6 @@ struct NaviPage: View {
         plansOnFoot.removeAll()
         plansByBus.removeAll()
         selectedPlan = nil
-        buses = []
         
         // Step 2: Deal with nil input
         if startLoc == nil || endLoc == nil {
