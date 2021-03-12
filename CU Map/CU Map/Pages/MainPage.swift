@@ -4,7 +4,7 @@ enum PageType {
     case loadPage
     case locPage
     case busPage
-    case savedPage
+    case pcPage
 }
 
 struct MainPage: View {
@@ -16,7 +16,7 @@ struct MainPage: View {
     @State var routesByBus: [Route] = []
     
     @State var showToolBar: Bool = true
-    @State var pageType: PageType = .loadPage
+    @State var pageType: PageType = .pcPage
     
     var body: some View {
         if pageType == .loadPage {
@@ -27,7 +27,7 @@ struct MainPage: View {
                     switch pageType {
                     case .locPage: LocPage(locations: locations, buses: buses, routesOnFoot: routesOnFoot, routesByBus: routesByBus, showToolBar: $showToolBar, pageType: $pageType)
                     case .busPage: BusPage(locations: locations, buses: buses, routesByBus: routesByBus)
-                    case .savedPage: Text("Saved page")
+                    case .pcPage: PCPage()
                     default: Text("This shouldn't be seen.")
                     }
                 }
@@ -39,7 +39,7 @@ struct MainPage: View {
                             Spacer()
                             ToolBarItem(imgName: "bus", text: "Bus", thisPageType: .busPage, pageType: $pageType)
                             Spacer()
-                            ToolBarItem(imgName: "heart", text: "Saved", thisPageType: .savedPage, pageType: $pageType)
+                            ToolBarItem(imgName: "heart", text: "Saved", thisPageType: .pcPage, pageType: $pageType)
                             Spacer()
                         }
                     }
