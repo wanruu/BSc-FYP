@@ -4,7 +4,6 @@ enum PageType {
     case loadPage
     case locPage
     case busPage
-    //case naviPage
     case savedPage
 }
 
@@ -16,6 +15,7 @@ struct MainPage: View {
     @State var routesOnFoot: [Route] = []
     @State var routesByBus: [Route] = []
     
+    @State var showToolBar: Bool = true
     @State var pageType: PageType = .loadPage
     
     var body: some View {
@@ -25,7 +25,7 @@ struct MainPage: View {
             NavigationView {
                 ZStack {
                     switch pageType {
-                    case .locPage: LocPage(locations: locations, buses: buses, routesOnFoot: routesOnFoot, routesByBus: routesByBus, pageType: $pageType)
+                    case .locPage: LocPage(locations: locations, buses: buses, routesOnFoot: routesOnFoot, routesByBus: routesByBus, showToolBar: $showToolBar, pageType: $pageType)
                     case .busPage: BusPage(locations: locations, buses: buses, routesByBus: routesByBus)
                     case .savedPage: Text("Saved page")
                     default: Text("This shouldn't be seen.")
@@ -33,15 +33,15 @@ struct MainPage: View {
                 }
                 .toolbar {
                     ToolbarItemGroup(placement: .bottomBar) {
-                        Spacer()
-                        ToolBarItem(imgName: "building.2", text: "Location", thisPageType: .locPage, pageType: $pageType)
-                        Spacer()
-                        ToolBarItem(imgName: "bus", text: "Bus", thisPageType: .busPage, pageType: $pageType)
-                        //Spacer()
-                        //ToolBarItem(imgName: "arrow.triangle.turn.up.right.diamond", text: "Navigation", thisPageType: .naviPage, pageType: $pageType)
-                        Spacer()
-                        ToolBarItem(imgName: "heart", text: "Saved", thisPageType: .savedPage, pageType: $pageType)
-                        Spacer()
+                        if showToolBar {
+                            Spacer()
+                            ToolBarItem(imgName: "building.2", text: "Location", thisPageType: .locPage, pageType: $pageType)
+                            Spacer()
+                            ToolBarItem(imgName: "bus", text: "Bus", thisPageType: .busPage, pageType: $pageType)
+                            Spacer()
+                            ToolBarItem(imgName: "heart", text: "Saved", thisPageType: .savedPage, pageType: $pageType)
+                            Spacer()
+                        }
                     }
                 }
             }

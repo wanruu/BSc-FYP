@@ -185,7 +185,6 @@
 				B48F115125EFB98200E31AF0 /* LocPage */,
 				B48F117125EFDCED00E31AF0 /* BusPage */,
 				B48F117C25EFDF8600E31AF0 /* NaviPage */,
-				B48F117D25EFDF9A00E31AF0 /* PCPage */,
 			);
 			path = Pages;
 			sourceTree = "<group>";
@@ -236,13 +235,6 @@
 				B48F118B25EFF0E900E31AF0 /* LocationModel.swift */,
 			);
 			path = NaviPage;
-			sourceTree = "<group>";
-		};
-		B48F117D25EFDF9A00E31AF0 /* PCPage */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = PCPage;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

@@ -89,11 +89,12 @@ struct BottomSheetView<Content: View>: View {
             VStack(spacing: 0) {
                 indicator
                 content
-                    .disabled(curHeight != .large)
+                    //.disabled(curHeight != .large)
             }
             .frame(width: geometry.size.width, height: largeHeight, alignment: .top)
             .background(colorScheme == .dark ? Color.black : Color.white)
             .cornerRadius(10)
+            .background(Color.secondary.opacity(0.1))
             .frame(height: geometry.size.height, alignment: .bottom)
             .offset(y: offset)
             .animation(.interactiveSpring(), value: showing)
@@ -101,5 +102,6 @@ struct BottomSheetView<Content: View>: View {
             .shadow(radius: 5)
         }
         .gesture(drag)
+        .edgesIgnoringSafeArea(.all)
     }
 }
