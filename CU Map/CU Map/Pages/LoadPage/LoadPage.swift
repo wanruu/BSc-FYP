@@ -52,10 +52,7 @@ struct LoadPage: View {
         let queue = DispatchQueue(label: "loadHandler")
         let group = DispatchGroup()
         queue.async(group: group) {
-            // getVersion()
-            tasks[.versions] = true
-        }
-        queue.async(group: group) {
+            getVersion()
             Thread.sleep(forTimeInterval: TimeInterval(0.1))
             // if locations changed, routes and buses must be loaded
             if CDVersions.isEmpty || CDVersions[0].locations != version?.locations {
@@ -96,11 +93,12 @@ struct LoadPage: View {
         let url = URL(string: server + "/versions")!
         text = "Loading version infomation remotely..."
         URLSession.shared.dataTask(with: url) { data, response, error in
-            guard let data = data else { return }
-            do {
-                version = try JSONDecoder().decode(Version.self, from: data)
-            } catch let error {
-                print(error)
+            if let data = data {
+                do {
+                    version = try JSONDecoder().decode(Version.self, from: data)
+                } catch let error {
+                    print(error)
+                }
             }
             tasks[.versions] = true
             sema.signal()
