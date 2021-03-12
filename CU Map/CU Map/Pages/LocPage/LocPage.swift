@@ -19,7 +19,6 @@ struct LocPage: View {
     var body: some View {
         ZStack {
             LocMapView(locations: locations, selectedLoc: $selectedLoc)
-                .ignoresSafeArea(.all)
             VStack {
                 HStack {
                     NavigationLink(destination: LocListView(placeholder: "Search for location", keyword: selectedLoc?.nameEn ?? "", locations: locations, showCurrent: false, selectedLoc: $selectedLoc, showing: $showLocList), isActive: $showLocList) {

@@ -24,11 +24,12 @@ let CU_PURPLE = Color(red: 117/255, green: 15/255, blue: 109/255)
 let CU_YELLOW = Color(red: 221/255, green: 163/255, blue: 0)
 let CU_PALE_YELLOW = Color(red: 244/255, green: 223/255, blue: 176/255)
 
+let CENTER_LAT: Double = 22.420235823827056
+let CENTER_LNG: Double = 114.20697508836815
+let CENTER_COOR2D = CLLocationCoordinate2D(latitude: CENTER_LAT, longitude: CENTER_LNG)
 
-let CENTER_LAT: Double = 22.419915
-let CENTER_LNG: Double = 114.20774
-
-let CENTER_REGION = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: CENTER_LAT, longitude: CENTER_LNG), span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+let LARGE_SPAN = MKCoordinateSpan(latitudeDelta: 0.025535897620393655, longitudeDelta: 0.01494943394902748) // whole cuhk
+let SMALL_SPAN = MKCoordinateSpan(latitudeDelta: 0.004325250474217057, longitudeDelta: 0.0025322589048073496) // one location
 
 let LAT_SCALE: Double = 111000
 let LNG_SCALE: Double = 85390
