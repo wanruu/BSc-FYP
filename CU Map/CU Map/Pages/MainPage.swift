@@ -16,7 +16,7 @@ struct MainPage: View {
     @State var routesByBus: [Route] = []
     
     @State var showToolBar: Bool = true
-    @State var pageType: PageType = .pcPage
+    @State var pageType: PageType = .loadPage
     
     var body: some View {
         if pageType == .loadPage {

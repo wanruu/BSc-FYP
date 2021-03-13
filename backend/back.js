@@ -38,7 +38,7 @@ var LocationSchema = Schema({
     latitude: { type: Number, require: true },
     longitude: { type: Number, require: true },
     altitude: { type: Number, require: true },
-    type: { type: Number, require: true } // 0: building, 1: bus stop
+    type: { type: Number, require: true } 
 });
 var TrajectorySchema = Schema({
     points: [{ latitude: Number, longitude: Number, altitude: Number }]
@@ -55,7 +55,7 @@ var BusSchema = Schema({
     name_en: String,
     name_zh: String,
     serviceHour: { type: String, require: true }, // eg. 07:40-18:40
-    serviceDay: { type: Number, require: true }, // 0: Mon-Sat, 1: Sun&PH, 2: teach
+    serviceDay: { type: Number, require: true }, // 0: Mon-Sat, 1: Sun&PH, 2: teach, 3: Mon-Sat (excluding teach)
     stops: [{ type: Schema.Types.ObjectId, ref: 'Location' }], // locations the bus pass by
     departTime: [{ type: Number, require: true }], // depart hourly at (mins)
 });

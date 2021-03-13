@@ -51,7 +51,8 @@ struct LoadPage: View {
         let queue = DispatchQueue(label: "loadHandler")
         let group = DispatchGroup()
         queue.async(group: group) {
-            getVersion()
+            // getVersion()
+            tasks[.versions] = true
             // if locations changed, routes and buses must be loaded
             if CDVersions.isEmpty || CDVersions[0].locations != version?.locations {
                 loadLocsRemotely()

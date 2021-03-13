@@ -19,15 +19,7 @@ struct BusPage: View {
                         }.lineLimit(1).minimumScaleFactor(0.2).frame(width: UIScreen.main.bounds.width * 0.2)
                         VStack(alignment: .leading) {
                             Text(bus.serviceHour.toString())
-                            switch bus.serviceDay {
-                            case .holiday: Text(NSLocalizedString("Sun & Public holidays", comment: ""))
-                            case .teachingDay: Text(NSLocalizedString("Teaching days only", comment: ""))
-                            case .ordinaryDay:
-                                VStack(alignment: .leading) {
-                                    Text(NSLocalizedString("Mon - Sat", comment: ""))
-                                    Text("* " + NSLocalizedString("Service suspended on Public Holidays", comment: "")).font(.footnote).italic().foregroundColor(.gray)
-                                }
-                            }
+                            bus.serviceDay.toView()
                             Text(NSLocalizedString("Departs hourly at (mins)", comment: "") + ": " + bus.departTime.description).lineLimit(2)
                         }
                     }

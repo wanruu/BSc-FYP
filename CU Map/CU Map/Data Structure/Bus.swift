@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 struct Bus: Identifiable {
     var id: String
@@ -43,17 +44,31 @@ extension String {
 }
 
 enum ServiceDay {
-    case holiday
-    case teachingDay
-    case ordinaryDay
-}
-
-extension ServiceDay {
+    case holiday, teachingDay, ordinaryDay, ordinaryNotTeachingDay
+    
     func toInt() -> Int {
         switch self {
         case .ordinaryDay: return 0
         case .holiday: return 1
         case .teachingDay: return 2
+        case .ordinaryNotTeachingDay: return 3
+        }
+    }
+    
+    func toView() -> some View {
+        VStack(alignment: .leading) {
+            switch self {
+            case .holiday:
+                Text(NSLocalizedString("Sun & public holidays", comment: ""))
+            case .teachingDay:
+                Text(NSLocalizedString("Teaching days only", comment: ""))
+            case .ordinaryDay:
+                Text(NSLocalizedString("Mon - Sat", comment: ""))
+                Text("* " + NSLocalizedString("Service suspended on public holidays", comment: "")).font(.footnote).italic().foregroundColor(.gray)
+            case .ordinaryNotTeachingDay:
+                Text(NSLocalizedString("Mon - Sat", comment: ""))
+                Text("* " + NSLocalizedString("Non-teaching days", comment: "")).font(.footnote).italic().foregroundColor(.gray)
+            }
         }
     }
 }
@@ -64,6 +79,7 @@ extension Int {
         case 0: return .ordinaryDay
         case 1: return .holiday
         case 2: return .teachingDay
+        case 3: return .ordinaryNotTeachingDay
         default: return .ordinaryDay
         }
     }
