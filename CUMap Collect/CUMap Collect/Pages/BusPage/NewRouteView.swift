@@ -69,7 +69,7 @@ struct NewRouteView: View {
                     Divider()
                     
                     ForEach(routes) { route in
-                        if route.type == RouteType.bus && route.startLoc == startLoc && route.endLoc == endLoc {
+                        if route.type == RouteType.byBus && route.startLoc == startLoc && route.endLoc == endLoc {
                             HStack(spacing: 15) {
                                 VStack(alignment: .leading) {
                                     Text("ID: \(route.id)")
@@ -93,7 +93,7 @@ struct NewRouteView: View {
                             Divider()
                         }
                     }
-                    if routes.filter({ $0.type == RouteType.bus && $0.startLoc == startLoc && $0.endLoc == endLoc}).isEmpty {
+                    if routes.filter({ $0.type == RouteType.byBus && $0.startLoc == startLoc && $0.endLoc == endLoc}).isEmpty {
                         Text(NSLocalizedString("no results", comment: "")).font(.system(size: 15)).italic().padding().foregroundColor(.gray)
                         Divider()
                     }
@@ -193,7 +193,7 @@ struct NewRouteView: View {
         guard startLoc != nil && endLoc != nil else { return }
 
         // find routes recursively
-        checkNextRoute(startLoc: nil, endLoc: nil, points: [], dist: 0, routes: routes.filter({ $0.type != .bus }))
+        checkNextRoute(startLoc: nil, endLoc: nil, points: [], dist: 0, routes: routes.filter({ $0.type != .byBus }))
         
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
@@ -209,7 +209,7 @@ struct NewRouteView: View {
     }
     private func checkNextRoute(startLoc: Location?, endLoc: Location?, points: [Coor3D], dist: Double, routes: [Route]) {
         if startLoc == self.startLoc && endLoc == self.endLoc {
-            newRoutes.append(Route(id: "", startLoc: startLoc!, endLoc: endLoc!, points: points, dist: dist, type: RouteType.bus))
+            newRoutes.append(Route(id: "", startLoc: startLoc!, endLoc: endLoc!, points: points, dist: dist, type: RouteType.byBus))
             return
         }
         

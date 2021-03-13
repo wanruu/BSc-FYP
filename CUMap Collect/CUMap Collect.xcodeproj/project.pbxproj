@@ -7,11 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B436BCEB25FC66E300D7AFE2 /* Bus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B436BCEA25FC66E300D7AFE2 /* Bus.swift */; };
+		B436BCEF25FC680A00D7AFE2 /* Coor3D.swift in Sources */ = {isa = PBXBuildFile; fileRef = B436BCEE25FC680A00D7AFE2 /* Coor3D.swift */; };
+		B436BCF225FC683700D7AFE2 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = B436BCF125FC683700D7AFE2 /* Location.swift */; };
+		B436BCF525FC688700D7AFE2 /* MongoRes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B436BCF425FC688700D7AFE2 /* MongoRes.swift */; };
+		B436BCF825FC68A000D7AFE2 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = B436BCF725FC68A000D7AFE2 /* Route.swift */; };
+		B436BCFF25FC6A0700D7AFE2 /* BottomSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B436BCFE25FC6A0700D7AFE2 /* BottomSheetView.swift */; };
+		B436BD0725FC717200D7AFE2 /* LoadPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B436BD0625FC717200D7AFE2 /* LoadPage.swift */; };
+		B436BD0A25FC71C300D7AFE2 /* ProgressViewStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B436BD0925FC71C300D7AFE2 /* ProgressViewStyle.swift */; };
+		B436BD0D25FC80A200D7AFE2 /* LocDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B436BD0C25FC80A200D7AFE2 /* LocDetailsView.swift */; };
 		B48BBEC925EAABF800803F4C /* CUMap_CollectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48BBEC825EAABF800803F4C /* CUMap_CollectApp.swift */; };
 		B48BBECD25EAABF900803F4C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B48BBECC25EAABF900803F4C /* Assets.xcassets */; };
 		B48BBED025EAABF900803F4C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B48BBECF25EAABF900803F4C /* Preview Assets.xcassets */; };
 		B48BBEDD25EAB88300803F4C /* BusListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48BBEDC25EAB88300803F4C /* BusListView.swift */; };
-		B48BBEE025EAB8FF00803F4C /* DataStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48BBEDF25EAB8FF00803F4C /* DataStructure.swift */; };
+		B48BBEE025EAB8FF00803F4C /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48BBEDF25EAB8FF00803F4C /* Extension.swift */; };
 		B48BBEE425EACDA400803F4C /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48BBEE325EACDA400803F4C /* Constant.swift */; };
 		B48BBEF825EAD60C00803F4C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B48BBEFA25EAD60C00803F4C /* Localizable.strings */; };
 		B48BBF0225EAF15A00803F4C /* ButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48BBF0125EAF15A00803F4C /* ButtonStyle.swift */; };
@@ -27,20 +36,28 @@
 		B48F10ED25EF242600E31AF0 /* LocListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F10EC25EF242600E31AF0 /* LocListView.swift */; };
 		B48F10F025EF244100E31AF0 /* LocMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F10EF25EF244100E31AF0 /* LocMapView.swift */; };
 		B48F10F625EF5EA500E31AF0 /* NewLocView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F10F525EF5EA500E31AF0 /* NewLocView.swift */; };
-		B48F10F925EF5F3800E31AF0 /* EditLocView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F10F825EF5F3800E31AF0 /* EditLocView.swift */; };
 		B48F10FE25EF6C9D00E31AF0 /* TrajPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F10FD25EF6C9D00E31AF0 /* TrajPage.swift */; };
 		B48F110525EF6E5F00E31AF0 /* TrajMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F110425EF6E5F00E31AF0 /* TrajMapView.swift */; };
 		B48F111125EF704200E31AF0 /* LocationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F111025EF704200E31AF0 /* LocationModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B436BCEA25FC66E300D7AFE2 /* Bus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bus.swift; sourceTree = "<group>"; };
+		B436BCEE25FC680A00D7AFE2 /* Coor3D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coor3D.swift; sourceTree = "<group>"; };
+		B436BCF125FC683700D7AFE2 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
+		B436BCF425FC688700D7AFE2 /* MongoRes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MongoRes.swift; sourceTree = "<group>"; };
+		B436BCF725FC68A000D7AFE2 /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
+		B436BCFE25FC6A0700D7AFE2 /* BottomSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetView.swift; sourceTree = "<group>"; };
+		B436BD0625FC717200D7AFE2 /* LoadPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadPage.swift; sourceTree = "<group>"; };
+		B436BD0925FC71C300D7AFE2 /* ProgressViewStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressViewStyle.swift; sourceTree = "<group>"; };
+		B436BD0C25FC80A200D7AFE2 /* LocDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocDetailsView.swift; sourceTree = "<group>"; };
 		B48BBEC525EAABF800803F4C /* CUMap Collect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CUMap Collect.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B48BBEC825EAABF800803F4C /* CUMap_CollectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CUMap_CollectApp.swift; sourceTree = "<group>"; };
 		B48BBECC25EAABF900803F4C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B48BBECF25EAABF900803F4C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B48BBED125EAABF900803F4C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B48BBEDC25EAB88300803F4C /* BusListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusListView.swift; sourceTree = "<group>"; };
-		B48BBEDF25EAB8FF00803F4C /* DataStructure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStructure.swift; sourceTree = "<group>"; };
+		B48BBEDF25EAB8FF00803F4C /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		B48BBEE325EACDA400803F4C /* Constant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
 		B48BBEF925EAD60C00803F4C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B48BBEFE25EAD66A00803F4C /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -57,7 +74,6 @@
 		B48F10EC25EF242600E31AF0 /* LocListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocListView.swift; sourceTree = "<group>"; };
 		B48F10EF25EF244100E31AF0 /* LocMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocMapView.swift; sourceTree = "<group>"; };
 		B48F10F525EF5EA500E31AF0 /* NewLocView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewLocView.swift; sourceTree = "<group>"; };
-		B48F10F825EF5F3800E31AF0 /* EditLocView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditLocView.swift; sourceTree = "<group>"; };
 		B48F10FD25EF6C9D00E31AF0 /* TrajPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrajPage.swift; sourceTree = "<group>"; };
 		B48F110425EF6E5F00E31AF0 /* TrajMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrajMapView.swift; sourceTree = "<group>"; };
 		B48F111025EF704200E31AF0 /* LocationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationModel.swift; sourceTree = "<group>"; };
@@ -78,12 +94,61 @@
 		B40843CB25F134CE007D84E2 /* Pages */ = {
 			isa = PBXGroup;
 			children = (
-				B48F10E825EF1B9F00E31AF0 /* MainPage.swift */,
+				B436BD0425FC6A5400D7AFE2 /* MainPage */,
 				B48BBF1025EB891400803F4C /* BusPage */,
 				B48F10E325EF1B2700E31AF0 /* LocPage */,
 				B48F10FC25EF6C8400E31AF0 /* TrajPage */,
 			);
 			path = Pages;
+			sourceTree = "<group>";
+		};
+		B436BCE925FC66C400D7AFE2 /* Data Structure */ = {
+			isa = PBXGroup;
+			children = (
+				B48BBEE325EACDA400803F4C /* Constant.swift */,
+				B436BCEA25FC66E300D7AFE2 /* Bus.swift */,
+				B436BCEE25FC680A00D7AFE2 /* Coor3D.swift */,
+				B436BCF125FC683700D7AFE2 /* Location.swift */,
+				B436BCF425FC688700D7AFE2 /* MongoRes.swift */,
+				B436BCF725FC68A000D7AFE2 /* Route.swift */,
+				B48BBEDF25EAB8FF00803F4C /* Extension.swift */,
+			);
+			path = "Data Structure";
+			sourceTree = "<group>";
+		};
+		B436BCFD25FC69EE00D7AFE2 /* Customized */ = {
+			isa = PBXGroup;
+			children = (
+				B436BD0125FC6A1900D7AFE2 /* View */,
+				B436BD0225FC6A2400D7AFE2 /* Style */,
+			);
+			path = Customized;
+			sourceTree = "<group>";
+		};
+		B436BD0125FC6A1900D7AFE2 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				B436BCFE25FC6A0700D7AFE2 /* BottomSheetView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		B436BD0225FC6A2400D7AFE2 /* Style */ = {
+			isa = PBXGroup;
+			children = (
+				B48BBF0125EAF15A00803F4C /* ButtonStyle.swift */,
+				B436BD0925FC71C300D7AFE2 /* ProgressViewStyle.swift */,
+			);
+			path = Style;
+			sourceTree = "<group>";
+		};
+		B436BD0425FC6A5400D7AFE2 /* MainPage */ = {
+			isa = PBXGroup;
+			children = (
+				B48F10E825EF1B9F00E31AF0 /* MainPage.swift */,
+				B436BD0625FC717200D7AFE2 /* LoadPage.swift */,
+			);
+			path = MainPage;
 			sourceTree = "<group>";
 		};
 		B48BBEBC25EAABF700803F4C = {
@@ -106,14 +171,13 @@
 		B48BBEC725EAABF800803F4C /* CUMap Collect */ = {
 			isa = PBXGroup;
 			children = (
-				B48BBEC825EAABF800803F4C /* CUMap_CollectApp.swift */,
+				B436BCFD25FC69EE00D7AFE2 /* Customized */,
+				B436BCE925FC66C400D7AFE2 /* Data Structure */,
 				B40843CB25F134CE007D84E2 /* Pages */,
 				B48BBEFA25EAD60C00803F4C /* Localizable.strings */,
-				B48BBEDF25EAB8FF00803F4C /* DataStructure.swift */,
-				B48BBEE325EACDA400803F4C /* Constant.swift */,
-				B48BBF0125EAF15A00803F4C /* ButtonStyle.swift */,
-				B48BBECC25EAABF900803F4C /* Assets.xcassets */,
 				B48BBED125EAABF900803F4C /* Info.plist */,
+				B48BBEC825EAABF800803F4C /* CUMap_CollectApp.swift */,
+				B48BBECC25EAABF900803F4C /* Assets.xcassets */,
 				B48BBECE25EAABF900803F4C /* Preview Content */,
 			);
 			path = "CUMap Collect";
@@ -155,8 +219,8 @@
 				B48F10E425EF1B6800E31AF0 /* LocPage.swift */,
 				B48F10EF25EF244100E31AF0 /* LocMapView.swift */,
 				B48F10EC25EF242600E31AF0 /* LocListView.swift */,
-				B48F10F825EF5F3800E31AF0 /* EditLocView.swift */,
 				B48F10F525EF5EA500E31AF0 /* NewLocView.swift */,
+				B436BD0C25FC80A200D7AFE2 /* LocDetailsView.swift */,
 			);
 			path = LocPage;
 			sourceTree = "<group>";
@@ -242,9 +306,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B48F10F925EF5F3800E31AF0 /* EditLocView.swift in Sources */,
+				B436BCEB25FC66E300D7AFE2 /* Bus.swift in Sources */,
 				B48BBF2425EBA97900803F4C /* RouteMapView.swift in Sources */,
 				B48F10ED25EF242600E31AF0 /* LocListView.swift in Sources */,
+				B436BD0725FC717200D7AFE2 /* LoadPage.swift in Sources */,
 				B48F10F025EF244100E31AF0 /* LocMapView.swift in Sources */,
 				B48BBEDD25EAB88300803F4C /* BusListView.swift in Sources */,
 				B48F10F625EF5EA500E31AF0 /* NewLocView.swift in Sources */,
@@ -252,15 +317,22 @@
 				B48BBF1D25EB8CB100803F4C /* BusPage.swift in Sources */,
 				B48BBF1225EB895B00803F4C /* StopListView.swift in Sources */,
 				B48F10E925EF1B9F00E31AF0 /* MainPage.swift in Sources */,
+				B436BCF525FC688700D7AFE2 /* MongoRes.swift in Sources */,
 				B48BBF1825EB89C200803F4C /* NewBusView.swift in Sources */,
 				B48BBEE425EACDA400803F4C /* Constant.swift in Sources */,
-				B48BBEE025EAB8FF00803F4C /* DataStructure.swift in Sources */,
+				B436BD0D25FC80A200D7AFE2 /* LocDetailsView.swift in Sources */,
+				B48BBEE025EAB8FF00803F4C /* Extension.swift in Sources */,
+				B436BCF225FC683700D7AFE2 /* Location.swift in Sources */,
 				B48F10E525EF1B6800E31AF0 /* LocPage.swift in Sources */,
+				B436BCEF25FC680A00D7AFE2 /* Coor3D.swift in Sources */,
 				B48F10FE25EF6C9D00E31AF0 /* TrajPage.swift in Sources */,
 				B48F111125EF704200E31AF0 /* LocationModel.swift in Sources */,
 				B48BBF0225EAF15A00803F4C /* ButtonStyle.swift in Sources */,
+				B436BCFF25FC6A0700D7AFE2 /* BottomSheetView.swift in Sources */,
+				B436BD0A25FC71C300D7AFE2 /* ProgressViewStyle.swift in Sources */,
 				B48BBEC925EAABF800803F4C /* CUMap_CollectApp.swift in Sources */,
 				B48F110525EF6E5F00E31AF0 /* TrajMapView.swift in Sources */,
+				B436BCF825FC68A000D7AFE2 /* Route.swift in Sources */,
 				B48BBF1525EB899100803F4C /* BusMapView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

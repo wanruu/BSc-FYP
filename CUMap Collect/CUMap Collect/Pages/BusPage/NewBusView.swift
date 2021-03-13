@@ -32,6 +32,7 @@ struct NewBusView: View {
                 Picker(selection: $serviceDay, label: Text("Service Day")) {
                     Text(NSLocalizedString("Mon - Sat", comment: "")).tag(ServiceDay.ordinaryDay)
                     Text(NSLocalizedString("Sun & public holidays", comment: "")).tag(ServiceDay.holiday)
+                    Text(NSLocalizedString("Mon - Sat", comment: "") + " " + NSLocalizedString("non-teaching days", comment: "")).tag(ServiceDay.ordinaryNotTeachingDay)
                     Text(NSLocalizedString("teaching days only", comment: "")).tag(ServiceDay.teachingDay)
                 }
                 DatePicker(NSLocalizedString("start at", comment: ""), selection: $startTime, displayedComponents: .hourAndMinute)

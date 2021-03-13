@@ -90,9 +90,3 @@ struct BusPage: View {
         }.resume()
     }
 }
-
-struct BusPage_Previews: PreviewProvider {
-    static var previews: some View {
-        BusPage()
-    }
-}

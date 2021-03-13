@@ -1,58 +1,81 @@
 import SwiftUI
 
-enum LocPageType {
-    case locList
-    case editLoc
-    case newLoc
-}
-
 struct LocPage: View {
+    @Environment(\.colorScheme) var colorScheme
     
-    @State var locations: [Location] = []
+    @Binding var locations: [Location]
     @State var selectedLoc: Location? = nil
     @Binding var current: Coor3D
     
-    @State var pageType: LocPageType = .locList
+    @Binding var showToolBar: Bool
+    @State var showLocList: Bool = false
+    @State var showNewLocSheet: Bool = false
     
     var body: some View {
-        VStack(spacing: 0) {
+        ZStack {
             LocMapView(locations: $locations, selectedLoc: $selectedLoc)
-                .ignoresSafeArea(.all)
-            
-            Divider()
-            switch pageType {
-            case .locList :
-                LocListView(locations: $locations, selectedLoc: $selectedLoc, pageType: $pageType)
-                    .frame(height: UIScreen.main.bounds.height * 0.33, alignment: .topLeading)
-            case .editLoc:
-                EditLocView(locations: $locations, id: selectedLoc!.id, nameEn: selectedLoc!.nameEn, nameZh: selectedLoc!.nameZh, latitude: String(selectedLoc!.latitude), longitude: String(selectedLoc!.longitude), altitude: String(selectedLoc!.altitude), type: String(selectedLoc!.type.toInt()), isEditing: false, pageType: $pageType)
-                    .frame(height: UIScreen.main.bounds.height * 0.33, alignment: .topLeading)
-            case .newLoc:
-                NewLocView(locations: $locations, selectedLoc: $selectedLoc, latitude: String(current.latitude), longitude: String(current.longitude), altitude: String(current.altitude), pageType: $pageType)
-                    .frame(height: UIScreen.main.bounds.height * 0.33, alignment: .topLeading)
-            }
+            searchArea
+            addButton
+            sheet
         }
         .navigationBarHidden(true)
-        .onAppear {
-            loadLocations()
+        .onChange(of: selectedLoc, perform: { value in
+            if let _ = value {
+                showToolBar = false
+            } else {
+                showToolBar = true
+            }
+        })
+        .sheet(isPresented: $showNewLocSheet) {
+            NewLocView(locations: $locations, current: $current)
         }
     }
     
-    
-    private func loadLocations() {
-        let url = URL(string: server + "/locations")!
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            guard let data = data else { return }
-            do {
-                let locRes = try JSONDecoder().decode([LocResponse].self, from: data)
-                var locations: [Location] = []
-                for loc in locRes {
-                    locations.append(loc.toLocation())
+    var searchArea: some View {
+        VStack {
+            HStack {
+                NavigationLink(destination: LocListView(placeholder: "Search for location", keyword: selectedLoc?.nameEn ?? "", locations: locations, selectedLoc: $selectedLoc, showing: $showLocList), isActive: $showLocList) {
+                    Text(selectedLoc?.nameEn ?? "Search for location")
+                        .foregroundColor(selectedLoc == nil ? .secondary : .primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                self.locations = locations
-            } catch let error {
-                print(error)
+                selectedLoc == nil ? nil : Image(systemName: "xmark").contentShape(Rectangle()).onTapGesture { selectedLoc = nil }
             }
-        }.resume()
+            .padding()
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.secondary, lineWidth: 1))
+            .background(colorScheme == .light ? Color.white : Color.black)
+            .cornerRadius(16)
+            .clipped()
+            .shadow(radius: 5)
+            .padding()
+            Spacer()
+        }
+    }
+    
+    var sheet: some View {
+        BottomSheetView(showing: .constant(selectedLoc != nil)) {
+            LocDetailsView(locations: $locations, loc: $selectedLoc)
+        }
+    }
+    
+    var addButton: some View {
+        VStack {
+            Spacer()
+            HStack {
+                Spacer()
+                Button(action: {
+                    showNewLocSheet = true
+                }) {
+                    Image(systemName: "plus")
+                        .resizable()
+                        .frame(width: UIScreen.main.bounds.width * 0.05, height: UIScreen.main.bounds.width * 0.05, alignment: .center)
+                        .scaledToFit()
+                        .padding(10)
+                }
+                .buttonStyle(AddButtonStyle(fgColor: .white, bgColor: .accentColor))
+                .padding()
+                .padding()
+            }
+        }
     }
 }

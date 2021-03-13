@@ -33,7 +33,7 @@ struct BusMapView: UIViewRepresentable {
         for i in 0..<bus.stops.count-1 {
             let startLoc = bus.stops[i]
             let endLoc = bus.stops[i+1]
-            let route = routes.first(where: { $0.startLoc.id == startLoc.id && $0.endLoc.id == endLoc.id && $0.type == RouteType.bus })
+            let route = routes.first(where: { $0.startLoc.id == startLoc.id && $0.endLoc.id == endLoc.id && $0.type == RouteType.byBus })
             for point in route?.points ?? [] {
                 coordinates.append(CLLocationCoordinate2D(latitude: point.latitude, longitude: point.longitude))
             }

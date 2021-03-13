@@ -2,7 +2,7 @@ import SwiftUI
 
 struct NewLocView: View {
     @Binding var locations: [Location]
-    @Binding var selectedLoc: Location?
+    @Binding var current: Coor3D
     
     // for editing
     @State var nameEn = ""
@@ -12,82 +12,60 @@ struct NewLocView: View {
     @State var altitude = ""
     @State var type = ""
     
-    @Binding var pageType: LocPageType
-    
-    let width = UIScreen.main.bounds.width * 0.24
-    
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                Button(action: {
-                    pageType = .locList
-                }) {
-                    HStack {
-                        Image(systemName: "arrow.uturn.backward")
-                        Text(NSLocalizedString("button.back", comment: ""))
-                    }
+        NavigationView {
+            List {
+                Section(header: Text(NSLocalizedString("name", comment: ""))) {
+                    TextField(NSLocalizedString("English name", comment: ""), text: $nameEn)
+                    TextField(NSLocalizedString("Chinese name", comment: ""), text: $nameZh)
                 }
-                Spacer()
-                Text(NSLocalizedString("new.location", comment: ""))
-                    .bold()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.3)
-                Spacer()
-                let disabled = Double(latitude) == nil || Double(longitude) == nil || Double(altitude) == nil || !(Int(type) ?? -1).isValidLocationType()
                 
+                Section(header: Text(NSLocalizedString("location", comment: ""))) {
+                    TextField(NSLocalizedString("latitude", comment: ""), text: $latitude)
+                    TextField(NSLocalizedString("longitude", comment: ""), text: $longitude)
+                    TextField(NSLocalizedString("altitude", comment: ""), text: $altitude)
+                }
+                
+                let num = Int(type) ?? -1
+                Section(
+                    header: Text(NSLocalizedString("type", comment: "")),
+                    footer: num.isValidLocationType() ? Text("* " + num.toLocationType().toString()).italic() :
+                        Text("* " + NSLocalizedString("invalid", comment: "")).italic().foregroundColor(.red)
+                ) {
+                    TextField("", text: $type).keyboardType(.numberPad)
+                }
+                
+                let disabled = nameEn.isEmpty || Double(latitude) == nil || Double(longitude) == nil || Double(altitude) == nil || !num.isValidLocationType()
                 
                 Button(action: {
-                    uploadLoc()
+                    createLoc()
                 }) {
                     HStack {
-                        Image(systemName: "checkmark")
-                        Text("OK")
-                    }.foregroundColor(disabled ? Color.secondary : Color.green)
+                        Spacer()
+                        Text(NSLocalizedString("button.confirm", comment: ""))
+                        Spacer()
+                    }
                 }
                 .disabled(disabled)
             }
-            .padding()
-            
-            
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 10) {
-                    NewItem(title: "English name", text: $nameEn, width: width)
-                    NewItem(title: "Chinese name", text: $nameZh, width: width)
-                    NewItem(title: "latitude", text: $latitude, width: width)
-                    NewItem(title: "longitude", text: $longitude, width: width)
-                    NewItem(title: "altitude", text: $altitude, width: width)
-                    HStack {
-                        Text(NSLocalizedString("type", comment: "")).lineLimit(1).minimumScaleFactor(0.3).frame(width: width, alignment: .leading)
-                        TextField("", text: $type)
-                            .padding(10).overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.secondary, lineWidth: 0.5))
-                        
-                        let num = Int(type) ?? -1
-                        Text(num.isValidLocationType() ? num.toLocationType().toString() : NSLocalizedString("invalid", comment: ""))
-                            .lineLimit(1).minimumScaleFactor(0.3)
-                            .frame(width: width, alignment: .center)
-                    }
-                }
-                .padding()
-            }
+            .listStyle(GroupedListStyle())
+            .navigationTitle(Text(NSLocalizedString("new.location", comment: "")))
         }
-    }
-    struct NewItem: View {
-        var title: String
-        @Binding var text: String
-        
-        let width: CGFloat
-
-        var body: some View {
-            HStack {
-                Text(NSLocalizedString(title, comment: "")).lineLimit(1).minimumScaleFactor(0.3).frame(width: width, alignment: .leading)
-                TextField("", text: $text)
-                    .foregroundColor(Color.primary)
-                    .padding(10).overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.secondary, lineWidth: 0.5))
-            }
+        .onAppear {
+            clean()
         }
     }
     
-    private func uploadLoc() {
+    private func clean() {
+        nameEn = ""
+        nameZh = ""
+        latitude = String(current.latitude)
+        longitude = String(current.longitude)
+        altitude = String(current.altitude)
+        type = "0"
+    }
+    
+    private func createLoc() {
         let locRes = LocResponse(_id: "", name_en: nameEn, name_zh: nameZh, latitude: Double(latitude)!, longitude: Double(longitude)!, altitude: Double(altitude)!, type: Int(type)!)
         do {
             let jsonData = try JSONEncoder().encode(locRes)
@@ -100,10 +78,8 @@ struct NewLocView: View {
                 guard let data = data else { return }
                 do {
                     let res = try JSONDecoder().decode(LocResponse.self, from: data)
-                    let loc = res.toLocation()
-                    locations.append(loc)
-                    selectedLoc = loc
-                    pageType = .editLoc
+                    locations.append(res.toLocation())
+                    clean()
                 } catch let error {
                     print(error)
                 }
