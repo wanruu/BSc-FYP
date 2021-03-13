@@ -18,11 +18,8 @@ struct Route: Identifiable, Equatable {
 }
 
 enum RouteType {
-    case onFoot
-    case byBus
-}
-
-extension RouteType {
+    case onFoot, byBus
+    
     func toInt() -> Int {
         switch self {
         case .onFoot: return 0

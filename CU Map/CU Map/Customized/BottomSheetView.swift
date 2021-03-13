@@ -92,6 +92,7 @@ struct BottomSheetView<Content: View>: View {
                 VStack(spacing: 0) {
                     indicator
                     content
+                        .frame(height: curHeight.toCGFloat() - 43, alignment: .top)
                 }
                 .frame(width: geometry.size.width, height: largeHeight, alignment: .top)
                 .background(bgColor)

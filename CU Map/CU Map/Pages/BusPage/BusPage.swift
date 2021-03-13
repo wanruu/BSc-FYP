@@ -15,6 +15,8 @@ struct BusPage: View {
                     HStack {
                         VStack {
                             Text(bus.line).font(.system(size: 45, weight: .semibold, design: .rounded))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.2)
                             Text(bus.nameEn).font(.system(size: 15, design: .rounded))
                                 .lineLimit(2)
                                 .minimumScaleFactor(0.2)
