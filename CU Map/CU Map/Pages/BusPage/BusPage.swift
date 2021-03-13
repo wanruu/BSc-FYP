@@ -16,7 +16,12 @@ struct BusPage: View {
                         VStack {
                             Text(bus.line).font(.system(size: 45, weight: .semibold, design: .rounded))
                             Text(bus.nameEn).font(.system(size: 15, design: .rounded))
-                        }.lineLimit(1).minimumScaleFactor(0.2).frame(width: UIScreen.main.bounds.width * 0.2)
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.2)
+                                .multilineTextAlignment(.center)
+                        }
+                        .frame(width: UIScreen.main.bounds.width * 0.2)
+                        
                         VStack(alignment: .leading) {
                             Text(bus.serviceHour.toString())
                             bus.serviceDay.toView()
