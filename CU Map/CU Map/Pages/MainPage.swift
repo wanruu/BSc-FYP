@@ -46,6 +46,7 @@ struct MainPage: View {
                 }
             }
             .environmentObject(locationModel)
+            .navigationViewStyle(StackNavigationViewStyle())
         }
     }
     

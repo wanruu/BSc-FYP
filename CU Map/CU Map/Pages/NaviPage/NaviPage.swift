@@ -24,13 +24,12 @@ struct NaviPage: View {
     @State var minTimeOnFoot: Double = .infinity
 
     @Binding var showing: Bool
-    @State var showPlans: Bool = false
     
     var body: some View {
         ZStack {
             NaviMapView(startLoc: $startLoc, endLoc: $endLoc, selectedPlan: $selectedPlan)
                 .ignoresSafeArea(.all)
-            TopBottomView(showBottom: $showPlans, top: {
+            TopBottomView(showBottom: .constant(startLoc != nil && endLoc != nil), top: {
                 SearchAreaView(locations: locations, startLoc: $startLoc, endLoc: $endLoc, planType: $planType, minTimeByBus: $minTimeByBus, minTimeOnFoot: $minTimeOnFoot, showing: $showing)
             }, bottom: {
                 if planType == .byBus {
@@ -81,7 +80,6 @@ struct NaviPage: View {
     
     private func RP() {
         // Step 1: Clear result
-        showPlans = false
         plansOnFoot.removeAll()
         plansByBus.removeAll()
         selectedPlan = nil
@@ -140,8 +138,6 @@ struct NaviPage: View {
             isBusChecked[bus.id] = false
         }
         checkRoutes(locations: newLocs, routesOnFoot: newRoutesOnFoot, curEndLoc: startLoc!, curRoutes: [], curWalkDist: 0, isBusChecked: isBusChecked, maxWalkDist: 500)
-        
-        showPlans = true
     }
     
     // DFS recursion for find plan by bus
