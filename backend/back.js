@@ -32,13 +32,21 @@ db.once('open', () => {
 // define schema
 var Schema = mongoose.Schema;
 
+var ShortNameSchema = Schema({
+    shortName: { type: String, require: true },
+    fullName: { type: String, require: true },
+    description: { type: String},
+    loc:[{ type: Schema.Types.ObjectId, ref: 'Location' }],
+    type: { type: Number, require: true } // 0: building, 1: hall  2:other
+});
+
 var LocationSchema = Schema({
     name_en: { type: String, require: true },
     name_zh: { type: String, require: true },
     latitude: { type: Number, require: true },
     longitude: { type: Number, require: true },
     altitude: { type: Number, require: true },
-    type: { type: Number, require: true } 
+    type: { type: Number, require: true } // 0: building, 1: bus stop
 });
 var TrajectorySchema = Schema({
     points: [{ latitude: Number, longitude: Number, altitude: Number }]
@@ -55,7 +63,7 @@ var BusSchema = Schema({
     name_en: String,
     name_zh: String,
     serviceHour: { type: String, require: true }, // eg. 07:40-18:40
-    serviceDay: { type: Number, require: true }, // 0: Mon-Sat, 1: Sun&PH, 2: teach, 3: Mon-Sat (excluding teach)
+    serviceDay: { type: Number, require: true }, // 0: Mon-Sat, 1: Sun&PH, 2: teach
     stops: [{ type: Schema.Types.ObjectId, ref: 'Location' }], // locations the bus pass by
     departTime: [{ type: Number, require: true }], // depart hourly at (mins)
 });
@@ -71,7 +79,7 @@ const TrajectoryModel = mongoose.model('Trajectory', TrajectorySchema);
 const RouteModel = mongoose.model('Route', RouteSchema);
 const BusModel = mongoose.model('Bus', BusSchema);
 const VersionModel = mongoose.model('Version', VersionSchema);
-
+const ShortNameModel = mongoose.model('abbreviation', ShortNameSchema);
 // set header
 /* app.all('/', (req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
