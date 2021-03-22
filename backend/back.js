@@ -407,7 +407,7 @@ app.get('/routes_dev', (req, res) => {
         } else {
             var str = "";
             for (let i in result) {
-                str += result[i].startLoc.name_en + " - " + result[i].endLoc.name_en + " " + result[i].type + "</br>";
+                str += result[i].startLoc.name_en + " - " + result[i].endLoc.name_en + " " + result[i].type + " " + result[i].dist + "</br>";
             }
             res.send(str);
         }

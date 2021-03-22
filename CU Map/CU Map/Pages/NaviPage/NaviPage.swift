@@ -13,6 +13,7 @@ struct NaviPage: View {
     // user selected
     @State var startLoc: Location? = nil
     @State var endLoc: Location? = nil
+    @State var searchTime: Date = Date()
     @State var planType: PlanType = .byBus
     
     // result
@@ -33,7 +34,7 @@ struct NaviPage: View {
                 SearchAreaView(locations: locations, startLoc: $startLoc, endLoc: $endLoc, planType: $planType, minTimeByBus: $minTimeByBus, minTimeOnFoot: $minTimeOnFoot, showing: $showing)
             }, bottom: {
                 if planType == .byBus {
-                    PlansByBusView(plansByBus: $plansByBus, selectedPlan: $selectedPlan)
+                    PlansByBusView(plansByBus: $plansByBus, selectedPlan: $selectedPlan, searchTime: $searchTime)
                 } else {
                     PlansOnFootView(plansOnFoot: $plansOnFoot, selectedPlan: $selectedPlan)
                 }
@@ -53,27 +54,43 @@ struct NaviPage: View {
         }
         .navigationBarHidden(true)
         .onChange(of: startLoc) { _ in
-            let queue = DispatchQueue(label: "route planning")
-            queue.async {
+            if !isRoutePlanning {
                 isRoutePlanning = true
-                RP()
-                isRoutePlanning = false
+                let queue = DispatchQueue(label: "route planning")
+                queue.async {
+                    RP()
+                    isRoutePlanning = false
+                }
             }
         }
         .onChange(of: endLoc) { _ in
-            let queue = DispatchQueue(label: "route planning")
-            queue.async {
+            if !isRoutePlanning {
                 isRoutePlanning = true
-                RP()
-                isRoutePlanning = false
+                let queue = DispatchQueue(label: "route planning")
+                queue.async {
+                    RP()
+                    isRoutePlanning = false
+                }
             }
         }
-        .onAppear {
-            let queue = DispatchQueue(label: "route planning")
-            queue.async {
+        .onChange(of: searchTime, perform: { _ in
+            if !isRoutePlanning {
                 isRoutePlanning = true
-                RP()
-                isRoutePlanning = false
+                let queue = DispatchQueue(label: "route planning")
+                queue.async {
+                    RP()
+                    isRoutePlanning = false
+                }
+            }
+        })
+        .onAppear {
+            if !isRoutePlanning {
+                isRoutePlanning = true
+                let queue = DispatchQueue(label: "route planning")
+                queue.async {
+                    RP()
+                    isRoutePlanning = false
+                }
             }
         }
     }
@@ -132,24 +149,43 @@ struct NaviPage: View {
             newRoutesOnFoot = routesOnFoot
         }
         
+        // Step 5: filter bus
+        var newBuses: [Bus] = buses
+        // The weekday units are the numbers 1 through N (where for the Gregorian calendar N=7 and 1 is Sunday).
+        let calender = Calendar(identifier: Calendar.Identifier.gregorian)
+        let comp = calender.component(Calendar.Component.weekday, from: searchTime)
+        if comp == 1 { // sunday
+            newBuses = newBuses.filter({ $0.serviceDay == .holiday })
+        } // TODO
+        else {
+            newBuses = newBuses.filter({ $0.serviceDay != .holiday  })
+        }
+        newBuses = newBuses.filter({ $0.serviceHour.isValidTime(time: searchTime) })
+        
         // Step 4: Searching for route plans
         var isBusChecked: [String: Bool] = [:]
-        for bus in buses {
+        for bus in newBuses {
             isBusChecked[bus.id] = false
         }
-        checkRoutes(locations: newLocs, routesOnFoot: newRoutesOnFoot, curEndLoc: startLoc!, curRoutes: [], curWalkDist: 0, isBusChecked: isBusChecked, maxWalkDist: 500)
+        checkRoutes(locations: newLocs, routesOnFoot: newRoutesOnFoot, buses: newBuses, curEndLoc: startLoc!, curRoutes: [], curWalkDist: 0, isBusChecked: isBusChecked)
+        plansOnFoot.sort(by: { $0.dist < $1.dist})
+        plansByBus.sort(by: { $0.dist < $1.dist })
+
     }
     
+    
+    let maxWalkDist: Double = 500
+    
     // DFS recursion for find plan by bus
-    private func checkRoutes(locations: [Location], routesOnFoot: [Route], curEndLoc: Location, curRoutes: [Route], curWalkDist: Double, isBusChecked: [String: Bool], maxWalkDist: Double) {
+    private func checkRoutes(locations: [Location], routesOnFoot: [Route], buses: [Bus], curEndLoc: Location, curRoutes: [Route], curWalkDist: Double, isBusChecked: [String: Bool]) {
         
         let busCount = isBusChecked.filter({ $0.value }).count
-        if busCount > 2 || (busCount != 0 && curWalkDist > maxWalkDist) {
+        if busCount > 1 || (busCount != 0 && curWalkDist > maxWalkDist) {
             return
         }
         
         // 1. Found way to endLoc
-        if curEndLoc == endLoc {
+        if curEndLoc.id == endLoc?.id {
             var dist: Double = 0
             var type: PlanType = .onFoot
             for route in curRoutes {
@@ -163,11 +199,10 @@ struct NaviPage: View {
             let plan = Plan(startLoc: startLoc, endLoc: curEndLoc, routes: curRoutes, dist: dist, time: 0, ascent: 0, type: type)
             if type == .onFoot {
                 plansOnFoot.append(plan)
-                plansOnFoot.sort(by: { $0.dist < $1.dist})
             } else if type == .byBus {
                 plansByBus.append(plan)
-                plansByBus.sort(by: { $0.dist < $1.dist })
             }
+            
             return
         }
         
@@ -208,10 +243,9 @@ struct NaviPage: View {
                         }
                         
                         if !isBack(routes: curRoutes, loc: bus.stops[j]) {
-                            checkRoutes(locations: locations, routesOnFoot: routesOnFoot, curEndLoc: bus.stops[j], curRoutes: curRoutes + newRoutes, curWalkDist: curWalkDist, isBusChecked: isBusChecked, maxWalkDist: maxWalkDist)
+                            checkRoutes(locations: locations, routesOnFoot: routesOnFoot, buses: buses, curEndLoc: bus.stops[j], curRoutes: curRoutes + newRoutes, curWalkDist: curWalkDist, isBusChecked: isBusChecked)
                         }
                     }
-                    
                 }
             }
         }
@@ -219,15 +253,16 @@ struct NaviPage: View {
         // check route on foot
         for route in routesOnFoot {
             if route.startLoc == curEndLoc && !isBack(routes: curRoutes, newRoute: route) {
-                checkRoutes(locations: locations, routesOnFoot: routesOnFoot, curEndLoc: route.endLoc, curRoutes: curRoutes + [route], curWalkDist: curWalkDist + route.dist, isBusChecked: isBusChecked, maxWalkDist: maxWalkDist)
+                checkRoutes(locations: locations, routesOnFoot: routesOnFoot, buses: buses, curEndLoc: route.endLoc, curRoutes: curRoutes + [route], curWalkDist: curWalkDist + route.dist, isBusChecked: isBusChecked)
             } else if route.endLoc == curEndLoc {
-                let newRoute = Route(id: UUID().uuidString, startLoc: route.endLoc, endLoc: route.startLoc, points: route.points.reversed(), dist: route.dist, type: route.type)
+                let newRoute = Route(id: route.id, startLoc: route.endLoc, endLoc: route.startLoc, points: route.points.reversed(), dist: route.dist, type: route.type)
                 if !isBack(routes: curRoutes, newRoute: newRoute) {
-                    checkRoutes(locations: locations, routesOnFoot: routesOnFoot, curEndLoc: route.startLoc, curRoutes: curRoutes + [newRoute], curWalkDist: curWalkDist + route.dist, isBusChecked: isBusChecked, maxWalkDist: maxWalkDist)
+                    checkRoutes(locations: locations, routesOnFoot: routesOnFoot, buses: buses, curEndLoc: route.startLoc, curRoutes: curRoutes + [newRoute], curWalkDist: curWalkDist + route.dist, isBusChecked: isBusChecked)
                 }
             }
         }
     }
+    
     
     private func isBack(routes: [Route], newRoute: Route) -> Bool {
         var count = 0
@@ -256,6 +291,6 @@ struct NaviPage: View {
         }
         return false
     }
-
+    
 }
 

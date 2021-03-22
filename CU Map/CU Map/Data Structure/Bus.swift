@@ -30,6 +30,24 @@ struct ServiceHour {
         formatter.dateFormat = "HH:mm"
         return formatter.string(from: startTime) + "-" + formatter.string(from: endTime)
     }
+    
+    func isValidTime(time: Date) -> Bool {
+        let formatter = DateFormatter()
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.dateFormat = "HH:mm"
+        
+        let start = formatter.string(from: startTime).split(separator: ":").map({ Int($0)! })
+        let end = formatter.string(from: endTime).split(separator: ":").map({ Int($0)! })
+        
+        formatter.timeZone = TimeZone.current
+        let time = formatter.string(from: time).split(separator: ":").map({ Int($0)! })
+        if time[0] > start[0] || (time[0] == start[0] && time[1] > start[1]) {
+            if time[0] < end[0] || (time[0] == end[0] && time[1] < end[1]) {
+                return true
+            }
+        }
+        return false
+    }
 }
 
 extension String {

@@ -22,12 +22,15 @@ struct PlansOnFootView: View {
 struct PlansByBusView: View {
     @Binding var plansByBus: [Plan]
     @Binding var selectedPlan: Plan?
-
+    @Binding var searchTime: Date
     
     var body: some View {
-        List {
-            ForEach(plansByBus) { plan in
-                PlansByBusItemView(plan: plan, selectedPlan: $selectedPlan)
+        VStack {
+            DatePicker("Depart at", selection: $searchTime).padding(.horizontal)
+            List {
+                ForEach(plansByBus) { plan in
+                    PlansByBusItemView(plan: plan, selectedPlan: $selectedPlan)
+                }
             }
         }
     }

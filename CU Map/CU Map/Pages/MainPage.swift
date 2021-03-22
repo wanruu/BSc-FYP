@@ -14,6 +14,7 @@ struct MainPage: View {
     @State var buses: [Bus] = []
     @State var routesOnFoot: [Route] = []
     @State var routesByBus: [Route] = []
+    @State var almanac: [Date: Day] = [:]
     
     @State var showToolBar: Bool = true
     @State var pageType: PageType = .loadPage
@@ -46,7 +47,7 @@ struct MainPage: View {
                 }
             }
             .environmentObject(locationModel)
-            .navigationViewStyle(StackNavigationViewStyle())
+            //.navigationViewStyle(StackNavigationViewStyle())
         }
     }
     

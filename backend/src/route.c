@@ -101,6 +101,10 @@ void find_routes (traj_t* trajs, int trajs_size, int* is_trajs_marked,
                 repeated = 1;
                 break;
             }
+            if (strcmp(routes[i].start_loc.id, cur_route.start_loc.id) == 0 && strcmp(routes[i].end_loc.id, cur_route.end_loc.id) == 0) {
+                repeated = 1;
+                break;
+            }
         }
         if (!repeated && strcmp(cur_route.start_loc.id, cur_route.end_loc.id) != 0) {
             // compute distance
