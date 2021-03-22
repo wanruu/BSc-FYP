@@ -94,14 +94,16 @@ struct SearchAreaView: View {
     
     struct PlanTypeSelectorView: View {
         var thisPlanType: PlanType
-        @Binding var time: Double // min
+        @Binding var time: Double // s
         @Binding var planType: PlanType
         
         var body: some View {
             HStack {
                 thisPlanType.toImage()
-                time == .infinity ? nil : Text(String(time) + " " + NSLocalizedString("mins", comment: ""))
+                time == .infinity ? nil : Text(String(Int(time / 60)) + " " + NSLocalizedString("mins", comment: ""))
             }
+            .lineLimit(1)
+            .minimumScaleFactor(0.5)
             .padding(.horizontal, 8)
             .padding(.vertical, 5)
             .background(planType == thisPlanType ? CU_PURPLE.opacity(0.2) : nil)

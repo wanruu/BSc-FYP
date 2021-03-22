@@ -83,6 +83,9 @@ struct NaviPage: View {
                 }
             }
         })
+        .onChange(of: planType, perform: { _ in
+            selectedPlan = nil
+        })
         .onAppear {
             if !isRoutePlanning {
                 isRoutePlanning = true
@@ -170,7 +173,22 @@ struct NaviPage: View {
         checkRoutes(locations: newLocs, routesOnFoot: newRoutesOnFoot, buses: newBuses, curEndLoc: startLoc!, curRoutes: [], curWalkDist: 0, isBusChecked: isBusChecked)
         plansOnFoot.sort(by: { $0.dist < $1.dist})
         plansByBus.sort(by: { $0.dist < $1.dist })
-
+        
+        var min: Double = .infinity
+        for plan in plansByBus {
+            if plan.time < min {
+                min = plan.time
+            }
+        }
+        minTimeByBus = min
+        
+        min = .infinity
+        for plan in plansOnFoot {
+            if plan.time < min {
+                min = plan.time
+            }
+        }
+        minTimeOnFoot = min
     }
     
     
@@ -187,16 +205,20 @@ struct NaviPage: View {
         // 1. Found way to endLoc
         if curEndLoc.id == endLoc?.id {
             var dist: Double = 0
+            var time: Double = 0
             var type: PlanType = .onFoot
             for route in curRoutes {
                 dist += route.dist
                 if route.type == .byBus {
                     type = .byBus
+                    time += route.dist / SPEED_BY_BUS
+                } else {
+                    time += route.dist / SPEED_ON_FOOT
                 }
             }
             // TODO: calculate time & ascent
             
-            let plan = Plan(startLoc: startLoc, endLoc: curEndLoc, routes: curRoutes, dist: dist, time: 0, ascent: 0, type: type)
+            let plan = Plan(startLoc: startLoc, endLoc: curEndLoc, routes: curRoutes, dist: dist, time: time, ascent: 0, type: type)
             if type == .onFoot {
                 plansOnFoot.append(plan)
             } else if type == .byBus {
