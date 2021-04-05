@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 // var session = require('express-session');
 var http = require('http');
 var cors = require('cors');
+var fs = require('fs');
 
 // define app to use express
 var app = express();
@@ -48,6 +49,13 @@ var LocationSchema = Schema({
     altitude: { type: Number, require: true },
     type: { type: Number, require: true } // 0: building, 1: bus stop
 });
+
+var CommentSchema = Schema({
+    text: { type: String, require: true },
+    time : { type : Number },
+    locId:{ type: String, require: true },
+});
+
 var TrajectorySchema = Schema({
     points: [{ latitude: Number, longitude: Number, altitude: Number }]
 });
@@ -80,6 +88,7 @@ const RouteModel = mongoose.model('Route', RouteSchema);
 const BusModel = mongoose.model('Bus', BusSchema);
 const VersionModel = mongoose.model('Version', VersionSchema);
 const ShortNameModel = mongoose.model('abbreviation', ShortNameSchema);
+const CommentModel = mongoose.model('Comment', CommentSchema);
 // set header
 /* app.all('/', (req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -407,7 +416,7 @@ app.get('/routes_dev', (req, res) => {
         } else {
             var str = "";
             for (let i in result) {
-                str += result[i].startLoc.name_en + " - " + result[i].endLoc.name_en + " " + result[i].type + " " + result[i].dist + "</br>";
+                str += result[i].startLoc.name_en + " - " + result[i].endLoc.name_en + " " + result[i].type + "</br>";
             }
             res.send(str);
         }
@@ -518,6 +527,61 @@ app.all('/process', (req, res) => {
         }
     });
 });
+
+
+
+/* *************************************************************** */
+
+// Comment Model
+/*app.post('/comment', (req, res) => {
+    console.log("POST /comment - " + Date());
+    var text = req.body.text;
+    var locId = req.body.locId;
+    var time = new Date().getTime()
+
+    var newComment = {text: text, locId: locId, time: time};
+    CommentModel.create(newComment, (err, result) => {
+        if(err) {
+            console.log(err);
+            res.status(404).send();
+        } else {
+            res.send(result);
+        }
+    });
+});
+*/
+
+app.post('/comment', (req, res) => {
+    console.log("POST /comment - " + Date());
+    var text = req.body.text;
+    var time = new Date();
+    var locId = req.body.locId;
+
+
+    var newComment = {text: text, time: time, locId: locId};
+    CommentModel.create(newComment, (err, result) => {
+        if(err) {
+            console.log(err);
+            res.status(404).send();
+        } else {
+            res.send(result);
+        }
+    });
+});
+
+
+app.get('/comment', (req, res) => {
+    console.log("GET /comment - " + Date());
+    CommentModel.find({}, (err, result) => {
+        if(err) {
+            console.log(err);
+            res.status(404).send();
+        } else {
+            res.send(result);
+        }
+    });
+});
+
 
 http.createServer(app).listen(8000);
 
