@@ -1,9 +1,10 @@
 import SwiftUI
 
 struct SearchAreaView: View {
+    @EnvironmentObject var store: Store
     @Environment(\.colorScheme) var colorScheme
     // input data
-    @State var locations: [Location]
+    //@State var locations: [Location] = []
     
     // user selected
     @Binding var startLoc: Location?
@@ -32,14 +33,13 @@ struct SearchAreaView: View {
                     .onTapGesture { showing.toggle() }
                     .padding(.bottom, 60)
                 
-
+                
                 // text field
                 VStack {
                     VStack(spacing: 12) {
                         NavigationLink(destination: LocListView(
                                         placeholder: "From",
                                         keyword: startLoc?.nameEn ?? "",
-                                        locations: locations,
                                         showCurrent: !(endLoc?.type == LocationType.user),
                                         selectedLoc: $startLoc,
                                         showing: $showStartLocList), isActive: $showStartLocList) {
@@ -53,7 +53,6 @@ struct SearchAreaView: View {
                         NavigationLink(destination: LocListView(
                                         placeholder: "To",
                                         keyword: endLoc?.nameEn ?? "",
-                                        locations: locations,
                                         showCurrent: !(startLoc?.type == LocationType.user),
                                         selectedLoc: $endLoc,
                                         showing: $showEndLocList), isActive: $showEndLocList) {
@@ -79,7 +78,7 @@ struct SearchAreaView: View {
             }
             .padding(.top)
             .padding(.horizontal, 20)
-
+            
             // search mode
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 30) {
@@ -91,26 +90,33 @@ struct SearchAreaView: View {
         }
         .background(colorScheme == .light ? Color.white : Color.black)
     }
+}
+
+
+struct PlanTypeSelectorView: View {
+    var thisPlanType: PlanType
+    @Binding var time: Double // min
+    @Binding var planType: PlanType
     
-    struct PlanTypeSelectorView: View {
-        var thisPlanType: PlanType
-        @Binding var time: Double // s
-        @Binding var planType: PlanType
-        
-        var body: some View {
-            HStack {
-                thisPlanType.toImage()
-                time == .infinity ? nil : Text(String(Int(time / 60)) + " " + NSLocalizedString("mins", comment: ""))
-            }
-            .lineLimit(1)
-            .minimumScaleFactor(0.5)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 5)
-            .background(planType == thisPlanType ? CU_PURPLE.opacity(0.2) : nil)
-            .cornerRadius(20)
-            .onTapGesture {
-                planType = thisPlanType
-            }
+    var body: some View {
+        HStack {
+            thisPlanType.toImage()
+            time == .infinity ? nil : Text(String(time) + " " + NSLocalizedString("mins", comment: ""))
         }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 5)
+        .background(planType == thisPlanType ? CU_PURPLE.opacity(0.2) : nil)
+        .cornerRadius(20)
+        .onTapGesture {
+            planType = thisPlanType
+        }
+    }
+}
+
+
+struct SearchAreaView_Previews: PreviewProvider {
+    static var previews: some View {
+        SearchAreaView(startLoc: .constant(nil), endLoc: .constant(nil), planType: .constant(.byBus), minTimeByBus: .constant(10), minTimeOnFoot: .constant(10), showing: .constant(true))
+            .environmentObject(LocationModel())
     }
 }

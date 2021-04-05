@@ -102,7 +102,7 @@ struct TopBottomView<Top: View, Bottom: View>: View {
                     VStack(spacing: 0) {
                         indicator
                         bottom
-                            .frame(height: curHeight.toCGFloat() - 43, alignment: .top)
+                            .frame(height: curHeight.toCGFloat() - 43)
                     }
                     .frame(width: geometry.size.width, height: largeHeight, alignment: .top)
                     .background(bgColor)

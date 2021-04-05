@@ -2,8 +2,14 @@ import SwiftUI
 import MapKit
 
 struct LocMapView: View {
-    @State var locations: [Location]
+    
+    
+    @EnvironmentObject var store: Store
+    
+    //@State var locations: [Location] = []
     @Binding var selectedLoc: Location?
+    
+    @Binding var showBottomSheet: Bool
     
     @State var region = MKCoordinateRegion(center: CENTER_COOR2D, span: LARGE_SPAN)
     @State var trackingMode: MapUserTrackingMode = .none
@@ -19,7 +25,7 @@ struct LocMapView: View {
         if let selectedLoc = selectedLoc {
             locs.append(selectedLoc)
         }
-        for location in locations {
+        for location in store.locations {
             var overlapped = false
             for loc in locs {
                 if abs(loc.longitude - location.longitude) < minLnfDiff && abs(loc.latitude - location.latitude) < minLatDiff {
@@ -42,6 +48,7 @@ struct LocMapView: View {
                         .background(Circle().fill(CU_YELLOW).shadow(radius: 5))
                         .onTapGesture {
                             selectedLoc = loc
+                            showBottomSheet = true
                         }
                         .scaleEffect(loc.id == selectedLoc?.id ? 1.4 : 1)
                     Text(loc.nameEn)

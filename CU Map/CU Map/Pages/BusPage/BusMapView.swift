@@ -2,8 +2,9 @@ import SwiftUI
 import MapKit
 
 struct BusMapView: UIViewRepresentable {
+    @EnvironmentObject var store: Store
+    
     @State var bus: Bus
-    @State var routesByBus: [Route]
 
     func makeUIView(context: Context) -> MKMapView {
         let mapView = MKMapView()
@@ -33,7 +34,7 @@ struct BusMapView: UIViewRepresentable {
         for i in 0..<bus.stops.count-1 {
             let startLoc = bus.stops[i]
             let endLoc = bus.stops[i+1]
-            let route = routesByBus.first(where: { $0.startLoc.id == startLoc.id && $0.endLoc.id == endLoc.id })
+            let route = store.routesByBus.first(where: { $0.startLoc.id == startLoc.id && $0.endLoc.id == endLoc.id })
             for point in route?.points ?? [] {
                 coordinates.append(CLLocationCoordinate2D(latitude: point.latitude, longitude: point.longitude))
             }

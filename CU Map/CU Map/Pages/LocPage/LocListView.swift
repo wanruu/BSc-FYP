@@ -1,15 +1,17 @@
 import SwiftUI
 
 struct LocListView: View {
+    
+    @EnvironmentObject var store: Store
     @EnvironmentObject var locationModel: LocationModel
     
     // search box
-    @State var placeholder: String
-    @State var keyword: String
+    @State var placeholder: String = ""
+    @State var keyword: String = ""
     
     // location list
-    @State var locations: [Location]
-    @State var showCurrent: Bool
+    //@State var locations: [Location] = []
+    @State var showCurrent: Bool = true
     
     // chosen location
     @Binding var selectedLoc: Location?
@@ -43,7 +45,7 @@ struct LocListView: View {
                     }
                     
                     // other locations
-                    ForEach(locations) { loc in
+                    ForEach(store.locations) { loc in
                         if keyword.isEmpty || loc.nameEn.lowercased().contains(keyword.lowercased()) {
                             LocListItemView(loc: loc, imageColor: .primary, selectedLoc: $selectedLoc, showing: $showing)
                         }
@@ -80,5 +82,14 @@ struct LocListItemView: View {
         }
         .buttonStyle(RoundedShrinkDarkerButtonStyle(bgColor: CU_PALE_YELLOW))
         Divider().padding(.horizontal)
+    }
+}
+
+
+
+struct LocListView_Previews: PreviewProvider {
+    static var previews: some View {
+        LocListView(selectedLoc: .constant(nil), showing: .constant(true))
+            .environmentObject(LocationModel())
     }
 }

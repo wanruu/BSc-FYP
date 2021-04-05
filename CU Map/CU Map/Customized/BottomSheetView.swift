@@ -14,17 +14,28 @@ enum BottomSheetHeight {
 
 struct BottomSheetView<Content: View>: View {
     @Environment(\.colorScheme) var colorScheme
-    @State var curHeight: BottomSheetHeight = .small
+    @Binding var curHeight: BottomSheetHeight
     let largeHeight = BottomSheetHeight.large.toCGFloat()
     let mediumHeight = BottomSheetHeight.medium.toCGFloat()
     let smallHeight = BottomSheetHeight.small.toCGFloat()
     
     @Binding var showing: Bool
+    
+    var heightChanged: (BottomSheetHeight) -> Void
+    
     let content: Content
     
-    init(showing: Binding<Bool>, @ViewBuilder content: () -> Content) {
+    init(showing: Binding<Bool>, height: Binding<BottomSheetHeight>, heightChanged: @escaping (BottomSheetHeight) -> Void, @ViewBuilder content: () -> Content) {
+        self._curHeight = height
         self.content = content()
         self._showing = showing
+        
+        self.heightChanged = { height in
+            withAnimation {
+                heightChanged(height)
+            }
+        }
+            
     }
     
     // gesture
@@ -39,28 +50,34 @@ struct BottomSheetView<Content: View>: View {
             }
             .onEnded { value in
                 let change = -value.translation.height
-
+                
                 switch curHeight {
                 case .small:
                     if change > 0 {
                         if change + smallHeight >= mediumHeight * 0.5 + largeHeight * 0.5 {
                             curHeight = .large
+                            heightChanged(curHeight)
                         } else {
                             curHeight = .medium
+                            heightChanged(curHeight)
                         }
                     }
                 case .medium:
                     if change > 0 {
                         curHeight = .large
+                        heightChanged(curHeight)
                     } else {
                         curHeight = .small
+                        heightChanged(curHeight)
                     }
                 case .large:
                     if change < 0 {
                         if change + largeHeight <= smallHeight * 0.5 + mediumHeight * 0.5 {
                             curHeight = .small
+                            heightChanged(curHeight)
                         } else {
                             curHeight = .medium
+                            heightChanged(curHeight)
                         }
                     }
                 }
@@ -83,27 +100,51 @@ struct BottomSheetView<Content: View>: View {
         }
     }
     
-    // body
+    
     var body: some View {
-        let bgColor = colorScheme == .dark ? Color.black : Color.white
-        GeometryReader { geometry in
-            VStack {
-                Spacer()
+        ZStack{
+            
+            if self.showing{
+                Color(.systemBackground)
+                    .opacity(0.000001)
+                    .edgesIgnoringSafeArea(.bottom)
+                    .onTapGesture {
+                        Store.shared.endEditing()
+                        withAnimation {
+                            self.showing = false
+                        }
+                    }
+            }
+            
+            GeometryReader { geometry in
                 VStack(spacing: 0) {
-                    indicator
+                    HStack{
+                        indicator
+                    }.frame(maxWidth: .infinity)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        Store.shared.endEditing()
+                        withAnimation {
+                            self.showing = false
+                        }
+                    }
+                    
                     content
-                        .frame(height: curHeight.toCGFloat() - 43, alignment: .top)
+                        .frame(height: curHeight.toCGFloat(), alignment: .top)
                 }
-                .frame(width: geometry.size.width, height: largeHeight, alignment: .top)
-                .background(bgColor)
+                .frame(width: geometry.size.width, height: geometry.size.height, alignment: .top)
+                .background(Color(.systemBackground))
                 .cornerRadius(10)
                 .offset(y: offset)
                 .animation(.interactiveSpring(), value: showing)
                 .animation(.interactiveSpring(), value: translation)
                 .shadow(radius: 5)
-            }
-        }
-        .gesture(drag)
-        .edgesIgnoringSafeArea(.all)
+            }.gesture(drag)
+            .edgesIgnoringSafeArea(.bottom)
+        }.edgesIgnoringSafeArea(.bottom)
+       
     }
 }
+
+
+

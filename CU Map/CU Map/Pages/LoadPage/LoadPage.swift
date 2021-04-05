@@ -82,6 +82,16 @@ struct LoadPage: View {
                 saveBuses(buses)
                 saveRoutes(routesByBus + routesOnFoot)
                 pageType = .locPage
+                
+      
+                let store = Store.shared
+                store.locations = locations
+                store.buses = buses
+                store.routesByBus = routesByBus
+                store.routesOnFoot = routesOnFoot
+                
+         
+                store.run()
             }
         }
     }

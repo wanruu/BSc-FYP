@@ -3,14 +3,16 @@
 import SwiftUI
 
 struct BusPage: View {
-    @State var locations: [Location]
-    @State var buses: [Bus]
-    @State var routesByBus: [Route]
     
+    @EnvironmentObject var store: Store
+//    @State var locations: [Location] = []
+//    @State var buses: [Bus] = []
+//    @State var routesByBus: [Route] = []
+//
     var body: some View {
         List {
-            ForEach(buses) { bus in
-                NavigationLink(destination: BusMapView(bus: bus, routesByBus: routesByBus).ignoresSafeArea(.all)) {
+            ForEach(store.buses) { bus in
+                NavigationLink(destination: BusMapView(bus: bus).ignoresSafeArea(.all)) {
                     // BusListItem
                     HStack {
                         VStack {
@@ -36,6 +38,14 @@ struct BusPage: View {
         }
         .listStyle(PlainListStyle())
         .navigationBarTitle(NSLocalizedString("School bus", comment: ""))
+    }
+}
+
+
+struct BusPage_Previews: PreviewProvider {
+    static var previews: some View {
+        BusPage()
+            .environmentObject(LocationModel())
     }
 }
 

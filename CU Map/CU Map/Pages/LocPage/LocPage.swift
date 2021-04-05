@@ -1,14 +1,23 @@
 import SwiftUI
+import UIKit
 
 struct LocPage: View {
+    
+    @EnvironmentObject var store: Store
+    
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var locationModel: LocationModel
     
+    
+    var binding: Binding<AppState.LocPage>{
+        $store.appState.locPage
+    }
+    
     // input data
-    @State var locations: [Location]
-    @State var buses: [Bus]
-    @State var routesOnFoot: [Route]
-    @State var routesByBus: [Route]
+    //    @State var locations: [Location] = []
+    //    @State var buses: [Bus] = []
+    //    @State var routesOnFoot: [Route] = []
+    //    @State var routesByBus: [Route] = []
     
     @State var selectedLoc: Location? = nil
     
@@ -17,38 +26,39 @@ struct LocPage: View {
     @State var showBottomSheet = false
     @Binding var showToolBar: Bool
     
-    @Binding var pageType: PageType
-
+    
+    @State var isLiked = false
+    
     var body: some View {
         ZStack {
-            LocMapView(locations: locations, selectedLoc: $selectedLoc)
+            LocMapView(selectedLoc: $selectedLoc, showBottomSheet: $showBottomSheet)
             if !showBottomSheet {
                 naviButton
             }
             searchArea
-            sheet
+            SheetView(showNavi: $showNavi, showBottomSheet: $showBottomSheet, selectedLoc: $selectedLoc, height: .small)
         }
         .navigationBarHidden(true)
-        .onChange(of: selectedLoc, perform: { value in
-            if let _ = value {
-                showBottomSheet = true
-                showToolBar = false
-            } else {
-                showBottomSheet = false
-                showToolBar = true
-            }
-        })
+        
+        .onChange(of: showBottomSheet){ _ in
+            showToolBar = !showBottomSheet
+        }
+        
     }
     
     var searchArea: some View {
         VStack {
             HStack {
-                NavigationLink(destination: LocListView(placeholder: "Search for location", keyword: selectedLoc?.nameEn ?? "", locations: locations, showCurrent: false, selectedLoc: $selectedLoc, showing: $showLocList), isActive: $showLocList) {
+                NavigationLink(destination: LocListView(placeholder: "Search for location", keyword: selectedLoc?.nameEn ?? "", showCurrent: false, selectedLoc: $selectedLoc, showing: $showLocList), isActive: $showLocList) {
                     Text(selectedLoc?.nameEn ?? "Search for location")
                         .foregroundColor(selectedLoc == nil ? .secondary : .primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                selectedLoc == nil ? nil : Image(systemName: "xmark").contentShape(Rectangle()).onTapGesture { selectedLoc = nil }
+                selectedLoc == nil ? nil : Image(systemName: "xmark").contentShape(Rectangle())
+                    .onTapGesture {
+                        selectedLoc = nil
+                        showBottomSheet = false
+                    }
             }
             .padding()
             .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.secondary, lineWidth: 1))
@@ -66,7 +76,7 @@ struct LocPage: View {
             Spacer()
             HStack {
                 Spacer()
-                NavigationLink(destination: NaviPage(locations: locations, buses: buses, routesOnFoot: routesOnFoot, routesByBus: routesByBus, showing: $showNavi), isActive: $showNavi) {
+                NavigationLink(destination: NaviPage(showing: $showNavi), isActive: $showNavi) {
                     Image(systemName: "arrow.triangle.swap")
                         .resizable()
                         .frame(width: UIScreen.main.bounds.width * 0.05, height: UIScreen.main.bounds.width * 0.05, alignment: .center)
@@ -80,23 +90,13 @@ struct LocPage: View {
             }
         }
     }
-    
-    var sheet: some View {
-        BottomSheetView(showing: $showBottomSheet) {
-            if let loc = selectedLoc {
-                VStack(alignment: .leading) {
-                    Text(loc.nameEn).font(.headline)
-                    Text(loc.type.toString()).font(.subheadline)
-                    HStack {
-                        NavigationLink(destination: NaviPage(locations: locations, buses: buses, routesOnFoot: routesOnFoot, routesByBus: routesByBus, startLoc: Location(id: UUID().uuidString, nameEn: "Your Location", nameZh: "你的位置", latitude: locationModel.current.latitude, longitude: locationModel.current.longitude, altitude: locationModel.current.altitude, type: .user), endLoc: loc, showing: $showNavi), isActive: $showNavi) {
-                                Text("Directions")
-                            }
-                    }
-                    Divider()
-                }
-                .padding(.horizontal)
-            }
-        }
+}
+
+
+
+struct LocPage_Previews: PreviewProvider {
+    static var previews: some View {
+        LocPage(showToolBar: .constant(true))
+            .environmentObject(LocationModel())
     }
-    
 }

@@ -1,19 +1,16 @@
 import SwiftUI
 
+let queue = DispatchQueue(label: "route planning")
+
 struct NaviPage: View {
-    // @EnvironmentObject var locationModel: LocationModel
+    @EnvironmentObject var store: Store
+    
     @Environment(\.colorScheme) var colorScheme
     
-    // input data
-    @State var locations: [Location]
-    @State var buses: [Bus]
-    @State var routesOnFoot: [Route]
-    @State var routesByBus: [Route]
-    
+   
     // user selected
     @State var startLoc: Location? = nil
     @State var endLoc: Location? = nil
-    @State var searchTime: Date = Date()
     @State var planType: PlanType = .byBus
     
     // result
@@ -25,81 +22,64 @@ struct NaviPage: View {
     @State var minTimeOnFoot: Double = .infinity
 
     @Binding var showing: Bool
+    @State var showPlans: Bool = false
+    
+    
     
     var body: some View {
         ZStack {
             NaviMapView(startLoc: $startLoc, endLoc: $endLoc, selectedPlan: $selectedPlan)
                 .ignoresSafeArea(.all)
-            TopBottomView(showBottom: .constant(startLoc != nil && endLoc != nil), top: {
-                SearchAreaView(locations: locations, startLoc: $startLoc, endLoc: $endLoc, planType: $planType, minTimeByBus: $minTimeByBus, minTimeOnFoot: $minTimeOnFoot, showing: $showing)
+            TopBottomView(showBottom: $showPlans, top: {
+                SearchAreaView(startLoc: $startLoc, endLoc: $endLoc, planType: $planType, minTimeByBus: $minTimeByBus, minTimeOnFoot: $minTimeOnFoot, showing: $showing)
             }, bottom: {
                 if planType == .byBus {
-                    PlansByBusView(plansByBus: $plansByBus, selectedPlan: $selectedPlan, searchTime: $searchTime)
+                    PlansByBusView(plansByBus: $plansByBus, selectedPlan: $selectedPlan)
                 } else {
                     PlansOnFootView(plansOnFoot: $plansOnFoot, selectedPlan: $selectedPlan)
                 }
             })
             
-            isRoutePlanning ?
-            ProgressView("Processing", value: 0)
-                .progressViewStyle(CircularProgressViewStyle())
-                .frame(width: UIScreen.main.bounds.width * 0.7, height: UIScreen.main.bounds.width * 0.2)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(colorScheme == .light ? Color.white : Color.black).shadow(radius: 5)
-                )
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.gray.opacity(0.2))
-                .ignoresSafeArea(.all) : nil
+            if isRoutePlanning {
+                ProgressView("Processing", value: 0)
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .frame(width: UIScreen.main.bounds.width * 0.7, height: UIScreen.main.bounds.width * 0.2)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(colorScheme == .light ? Color.white : Color.black).shadow(radius: 5)
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.gray.opacity(0.2))
+                    .ignoresSafeArea(.all)
+            }
         }
         .navigationBarHidden(true)
         .onChange(of: startLoc) { _ in
-            if !isRoutePlanning {
+            queue.async {
                 isRoutePlanning = true
-                let queue = DispatchQueue(label: "route planning")
-                queue.async {
-                    RP()
-                    isRoutePlanning = false
-                }
+                RP()
+                isRoutePlanning = false
             }
         }
         .onChange(of: endLoc) { _ in
-            if !isRoutePlanning {
+            queue.async {
                 isRoutePlanning = true
-                let queue = DispatchQueue(label: "route planning")
-                queue.async {
-                    RP()
-                    isRoutePlanning = false
-                }
+                RP()
+                isRoutePlanning = false
             }
         }
-        .onChange(of: searchTime, perform: { _ in
-            if !isRoutePlanning {
-                isRoutePlanning = true
-                let queue = DispatchQueue(label: "route planning")
-                queue.async {
-                    RP()
-                    isRoutePlanning = false
-                }
-            }
-        })
-        .onChange(of: planType, perform: { _ in
-            selectedPlan = nil
-        })
         .onAppear {
-            if !isRoutePlanning {
+            queue.async {
                 isRoutePlanning = true
-                let queue = DispatchQueue(label: "route planning")
-                queue.async {
-                    RP()
-                    isRoutePlanning = false
-                }
+                RP()
+                isRoutePlanning = false
             }
         }
     }
     
     private func RP() {
         // Step 1: Clear result
+        showPlans = false
         plansOnFoot.removeAll()
         plansByBus.removeAll()
         selectedPlan = nil
@@ -110,7 +90,7 @@ struct NaviPage: View {
         }
         
         // Step 3: Consider current location and generate new data for processing
-        var newLocs = locations
+        var newLocs = store.locations
         var newRoutesOnFoot: [Route] = []
         
         if startLoc!.type == .user || endLoc!.type == .user {
@@ -122,7 +102,7 @@ struct NaviPage: View {
             }
             newLocs.append(curLoc)
             
-            for route in routesOnFoot {
+            for route in store.routesOnFoot {
                 // find closest point
                 var closestPointIndex = -1
                 var minDist: Double = .infinity
@@ -149,88 +129,53 @@ struct NaviPage: View {
                 }
             }
         } else {
-            newRoutesOnFoot = routesOnFoot
+            newRoutesOnFoot = store.routesOnFoot
         }
-        
-        // Step 5: filter bus
-        var newBuses: [Bus] = buses
-        // The weekday units are the numbers 1 through N (where for the Gregorian calendar N=7 and 1 is Sunday).
-        let calender = Calendar(identifier: Calendar.Identifier.gregorian)
-        let comp = calender.component(Calendar.Component.weekday, from: searchTime)
-        if comp == 1 { // sunday
-            newBuses = newBuses.filter({ $0.serviceDay == .holiday })
-        } // TODO
-        else {
-            newBuses = newBuses.filter({ $0.serviceDay != .holiday  })
-        }
-        newBuses = newBuses.filter({ $0.serviceHour.isValidTime(time: searchTime) })
         
         // Step 4: Searching for route plans
         var isBusChecked: [String: Bool] = [:]
-        for bus in newBuses {
+        for bus in store.buses {
             isBusChecked[bus.id] = false
         }
-        checkRoutes(locations: newLocs, routesOnFoot: newRoutesOnFoot, buses: newBuses, curEndLoc: startLoc!, curRoutes: [], curWalkDist: 0, isBusChecked: isBusChecked)
-        plansOnFoot.sort(by: { $0.dist < $1.dist})
-        plansByBus.sort(by: { $0.dist < $1.dist })
+        checkRoutes(locations: newLocs, routesOnFoot: newRoutesOnFoot, curEndLoc: startLoc!, curRoutes: [], curWalkDist: 0, isBusChecked: isBusChecked, maxWalkDist: 500)
         
-        var min: Double = .infinity
-        for plan in plansByBus {
-            if plan.time < min {
-                min = plan.time
-            }
-        }
-        minTimeByBus = min
-        
-        min = .infinity
-        for plan in plansOnFoot {
-            if plan.time < min {
-                min = plan.time
-            }
-        }
-        minTimeOnFoot = min
+        showPlans = true
     }
     
-    
-    let maxWalkDist: Double = 500
-    
     // DFS recursion for find plan by bus
-    private func checkRoutes(locations: [Location], routesOnFoot: [Route], buses: [Bus], curEndLoc: Location, curRoutes: [Route], curWalkDist: Double, isBusChecked: [String: Bool]) {
+    private func checkRoutes(locations: [Location], routesOnFoot: [Route], curEndLoc: Location, curRoutes: [Route], curWalkDist: Double, isBusChecked: [String: Bool], maxWalkDist: Double) {
         
         let busCount = isBusChecked.filter({ $0.value }).count
-        if busCount > 1 || (busCount != 0 && curWalkDist > maxWalkDist) {
+        if busCount > 2 || (busCount != 0 && curWalkDist > maxWalkDist) {
             return
         }
         
         // 1. Found way to endLoc
-        if curEndLoc.id == endLoc?.id {
+        if curEndLoc == endLoc {
             var dist: Double = 0
-            var time: Double = 0
             var type: PlanType = .onFoot
             for route in curRoutes {
                 dist += route.dist
                 if route.type == .byBus {
                     type = .byBus
-                    time += route.dist / SPEED_BY_BUS
-                } else {
-                    time += route.dist / SPEED_ON_FOOT
                 }
             }
             // TODO: calculate time & ascent
             
-            let plan = Plan(startLoc: startLoc, endLoc: curEndLoc, routes: curRoutes, dist: dist, time: time, ascent: 0, type: type)
+            let plan = Plan(startLoc: startLoc, endLoc: curEndLoc, routes: curRoutes, dist: dist, time: 0, ascent: 0, type: type)
             if type == .onFoot {
                 plansOnFoot.append(plan)
+                plansOnFoot.sort(by: { $0.dist < $1.dist})
             } else if type == .byBus {
                 plansByBus.append(plan)
+                plansByBus.sort(by: { $0.dist < $1.dist })
             }
-            
             return
         }
         
         // 2. check next possible route
         // check bus
-        for bus in buses { // for each bus
+        for bus in store.buses { // for each bus
             
             // whether this bus is checked or not
             if isBusChecked[bus.id] == true {
@@ -257,7 +202,7 @@ struct NaviPage: View {
                     var newRoutes: [Route] = []
                     
                     for j in thisIndex+1..<nextIndex { // for each stop between two indexes, append routes
-                        if var route = routesByBus.first(where: { $0.startLoc == bus.stops[j-1] && $0.endLoc == bus.stops[j] }) {
+                        if var route = store.routesByBus.first(where: { $0.startLoc == bus.stops[j-1] && $0.endLoc == bus.stops[j] }) {
                             route.id = UUID().uuidString
                             route.bus = bus
                             route.type = .byBus
@@ -265,9 +210,10 @@ struct NaviPage: View {
                         }
                         
                         if !isBack(routes: curRoutes, loc: bus.stops[j]) {
-                            checkRoutes(locations: locations, routesOnFoot: routesOnFoot, buses: buses, curEndLoc: bus.stops[j], curRoutes: curRoutes + newRoutes, curWalkDist: curWalkDist, isBusChecked: isBusChecked)
+                            checkRoutes(locations: locations, routesOnFoot: routesOnFoot, curEndLoc: bus.stops[j], curRoutes: curRoutes + newRoutes, curWalkDist: curWalkDist, isBusChecked: isBusChecked, maxWalkDist: maxWalkDist)
                         }
                     }
+                    
                 }
             }
         }
@@ -275,16 +221,15 @@ struct NaviPage: View {
         // check route on foot
         for route in routesOnFoot {
             if route.startLoc == curEndLoc && !isBack(routes: curRoutes, newRoute: route) {
-                checkRoutes(locations: locations, routesOnFoot: routesOnFoot, buses: buses, curEndLoc: route.endLoc, curRoutes: curRoutes + [route], curWalkDist: curWalkDist + route.dist, isBusChecked: isBusChecked)
+                checkRoutes(locations: locations, routesOnFoot: routesOnFoot, curEndLoc: route.endLoc, curRoutes: curRoutes + [route], curWalkDist: curWalkDist + route.dist, isBusChecked: isBusChecked, maxWalkDist: maxWalkDist)
             } else if route.endLoc == curEndLoc {
-                let newRoute = Route(id: route.id, startLoc: route.endLoc, endLoc: route.startLoc, points: route.points.reversed(), dist: route.dist, type: route.type)
+                let newRoute = Route(id: UUID().uuidString, startLoc: route.endLoc, endLoc: route.startLoc, points: route.points.reversed(), dist: route.dist, type: route.type)
                 if !isBack(routes: curRoutes, newRoute: newRoute) {
-                    checkRoutes(locations: locations, routesOnFoot: routesOnFoot, buses: buses, curEndLoc: route.startLoc, curRoutes: curRoutes + [newRoute], curWalkDist: curWalkDist + route.dist, isBusChecked: isBusChecked)
+                    checkRoutes(locations: locations, routesOnFoot: routesOnFoot, curEndLoc: route.startLoc, curRoutes: curRoutes + [newRoute], curWalkDist: curWalkDist + route.dist, isBusChecked: isBusChecked, maxWalkDist: maxWalkDist)
                 }
             }
         }
     }
-    
     
     private func isBack(routes: [Route], newRoute: Route) -> Bool {
         var count = 0
@@ -313,6 +258,13 @@ struct NaviPage: View {
         }
         return false
     }
-    
+
 }
 
+
+struct NaviPage_Previews: PreviewProvider {
+    static var previews: some View {
+        NaviPage(showing: .constant(true))
+            .environmentObject(LocationModel())
+    }
+}

@@ -14,7 +14,6 @@ struct MainPage: View {
     @State var buses: [Bus] = []
     @State var routesOnFoot: [Route] = []
     @State var routesByBus: [Route] = []
-    @State var almanac: [Date: Day] = [:]
     
     @State var showToolBar: Bool = true
     @State var pageType: PageType = .loadPage
@@ -26,9 +25,9 @@ struct MainPage: View {
             NavigationView {
                 ZStack {
                     switch pageType {
-                    case .locPage: LocPage(locations: locations, buses: buses, routesOnFoot: routesOnFoot, routesByBus: routesByBus, showToolBar: $showToolBar, pageType: $pageType)
-                    case .busPage: BusPage(locations: locations, buses: buses, routesByBus: routesByBus)
-                    case .pcPage: PCPage()
+                    case .locPage: LocPage(showToolBar: $showToolBar)
+                    case .busPage: BusPage()
+                    case .pcPage: PCPage(showToolBar: $showToolBar)
                     default: Text("This shouldn't be seen.")
                     }
                 }
@@ -47,7 +46,6 @@ struct MainPage: View {
                 }
             }
             .environmentObject(locationModel)
-            //.navigationViewStyle(StackNavigationViewStyle())
         }
     }
     
